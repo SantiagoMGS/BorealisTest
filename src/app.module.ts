@@ -11,6 +11,8 @@ import { AuthModule } from './presentation/controllers/auth/auth.module';
     }),
     PassportModule.register({ defaultStrategy: 'jwt' }), // 👈 Asegura que Passport está activo
 
+    
+
     AuthModule, 
   ],
   controllers: [AppController],

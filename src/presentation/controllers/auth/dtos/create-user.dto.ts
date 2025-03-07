@@ -3,10 +3,8 @@ import { IsEmail, IsNotEmpty, MinLength, IsEnum, IsString, IsUUID, IsBoolean } f
 
 export class CreateUserDto {
 
-  @IsUUID(4, { message: 'El id debe ser un UUID' })
-  id: string; 
 
-  @ApiProperty({ example: 'Fabio Sánchez', description: 'Nombre del usuario' })
+  @ApiProperty({ example: 'Pepito Perez', description: 'Nombre del usuario' })
   @IsNotEmpty({ message: 'El nombre es obligatorio' })
   @IsString({ message: 'El nombre debe ser un texto' })
   name: string;
@@ -19,5 +17,6 @@ export class CreateUserDto {
   @ApiProperty({ example: 'password123', description: 'Contraseña del usuario' })
   @MinLength(6, { message: 'La contraseña debe tener al menos 6 caracteres' })
   @IsNotEmpty({ message: 'La contraseña es obligatoria' })
+  @IsString({ message: 'La contraseña debe ser un texto' })
   password: string;
 }

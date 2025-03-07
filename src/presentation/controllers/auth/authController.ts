@@ -24,7 +24,7 @@ export class AuthController {
   }
 
   @Post('create-user')
-  async createUser(@Body() userDto: CreateUserDto, @Req() req) {
-    return this.createUserUseCase.execute(userDto);
+  async createUser(@Body() createUserDto: CreateUserDto) {
+    return this.createUserUseCase.execute(createUserDto);
   }
 }
