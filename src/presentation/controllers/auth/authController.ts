@@ -1,9 +1,12 @@
-import { Controller, Get, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, UseGuards, Req, Post, Body } from '@nestjs/common';
+import { CreateUserUseCase } from 'src/core/domain/uses-cases/auth/create-user.use-case';
 import { CustomAuthGuard } from 'src/core/domain/uses-cases/auth/guards/custom-auth.guard';
+import { CreateUserDto } from './dtos/create-user.dto';
 
 @Controller('api')
 export class AuthController {
-  constructor() {
+  constructor(private readonly createUserUseCase: CreateUserUseCase,
+  ) {
     console.log('✅ AuthController inicializado');
   }
 
@@ -18,5 +21,10 @@ export class AuthController {
     }
 
     return { message: 'Acceso permitido a datos protegidos', user: request.user };
+  }
+
+  @Post('create-user')
+  async createUser(@Body() userDto: CreateUserDto, @Req() req) {
+    return this.createUserUseCase.execute(userDto);
   }
 }

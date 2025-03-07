@@ -2,9 +2,8 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
-import { AuthModule } from './core/domain/uses-cases/auth/auth.module';
 import { PassportModule } from '@nestjs/passport';
-
+import { AuthModule } from './presentation/controllers/auth/auth.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -12,7 +11,7 @@ import { PassportModule } from '@nestjs/passport';
     }),
     PassportModule.register({ defaultStrategy: 'jwt' }), // 👈 Asegura que Passport está activo
 
-    AuthModule, // 👈 REGÍSTRALO PRIMERO
+    AuthModule, 
   ],
   controllers: [AppController],
   providers: [AppService],

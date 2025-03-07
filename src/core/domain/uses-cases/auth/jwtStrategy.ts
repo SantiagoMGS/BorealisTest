@@ -7,7 +7,7 @@ import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
-  private client:jwksClient.JwksClient 
+  private client: jwksClient.JwksClient
   constructor(private configService: ConfigService) {
     console.log('✅ JwtStrategy se está registrando en NestJS');
     super({
@@ -15,7 +15,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       secretOrKeyProvider: (req, rawJwtToken, done) => {
         const decoded = jwt.decode(rawJwtToken, { complete: true }) as any;
         const kid = decoded?.header?.kid;
-  
+
         if (!kid) {
           return done(new UnauthorizedException('No se encontró KID en el token'));
         }
@@ -37,7 +37,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     // Ahora inicializamos `this.client` después de llamar a `super()`
     this.client = jwksClient({
       jwksUri: `https://login.microsoftonline.com/${configService.get<string>('AZURE_AD_TENANT_ID')}/discovery/v2.0/keys`,
-    });    
+    });
   }
 
   async validate(payload: any) {
@@ -46,13 +46,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       console.error('🔴 No se recibió payload en el token');
       throw new UnauthorizedException('Token inválido');
     }
-
-    if (!payload.roles || !payload.roles.includes('API.ReadWrite')) {
-      console.error('🔴 Acceso denegado: No tiene el rol API.ReadWrite');
-      throw new UnauthorizedException('Acceso denegado: No tiene los permisos adecuados');
-    }
-
-    console.log('✅ Usuario autenticado correctamente:', { userId: payload.sub, roles: payload.roles });
-    return { userId: payload.sub, roles: payload.roles };
+    console.log('✅ Usuario autenticado correctamente:', { userId: payload.sub, user: payload });
+    return { userId: payload.sub, name: payload.given_name + payload.family_name, email: payload.unique_name };
   }
 }
