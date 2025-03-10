@@ -13,6 +13,7 @@ export class CreateResourceUseCase {
       crypto.randomUUID(),
       resourceDto.name
     );
-    return this.ResourceRepository.createResource(newResource);
+    await this.ResourceRepository.createResource(newResource);
+    return newResource;
   }
 }

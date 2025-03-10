@@ -1,24 +1,32 @@
-import { Module, Res } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { PrismaService } from 'src/infrastructure/prisma/prisma.service';
-import { PrismaUserRepository } from 'src/infrastructure/prisma/auth/prisma-user.repository';
 import { CreateUserUseCase } from 'src/core/domain/uses-cases/user/create-user.use-case';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from 'src/core/domain/uses-cases/auth/jwtStrategy';
 import { CreateRoleUseCase } from 'src/core/domain/uses-cases/role/crate-role.user-case';
-import { PrismaRoleRepository } from 'src/infrastructure/prisma/auth/prisma-role.repository';
-import { PrismaResourceRepository } from 'src/infrastructure/prisma/prisma-resource.repository';
+import { GetAllRolesUseCase } from 'src/core/domain/uses-cases/role/get-all-roles.use-case';
+import { GetRoleByIdUseCase } from 'src/core/domain/uses-cases/role/get-role-by-id.use-case';
+import { UpdateRoleUseCase } from 'src/core/domain/uses-cases/role/update-role.use-case';
+import { DeleteRoleUseCase } from 'src/core/domain/uses-cases/role/delete-role.use-case';
 import { CreateResourceUseCase } from 'src/core/domain/uses-cases/resource/create-resource.use-case';
-import { PrismaCompanyRepository } from 'src/infrastructure/prisma/auth/prisma-company.repository';
 import { CreateCompanyUseCase } from 'src/core/domain/uses-cases/company/create-company.use-case';
+import { ActionSeedUseCase } from 'src/core/domain/uses-cases/action/action-seed.use-case';
 import { AuthController } from './controllers/auth/auth.controller';
 import { CompanyController } from './controllers/company/company.controller';
-import { ResourceController } from './controllers/resource/resource.controlle';
 import { RoleController } from './controllers/role/role.controller';
 import { UserController } from './controllers/user/user.controller';
+import { ActionController } from './controllers/action/action.controller';
+import { PrismaUserRepository, PrismaRoleRepository, PrismaResourceRepository, PrismaCompanyRepository, PrismaActionRepository, PrismaRolePermissionRepository } from 'src/infrastructure/prisma/auth';
+import { ResourceController } from './controllers/resource/resource.controlle';
+import { RolePermissionController } from './controllers/role/rolePermissionController';
+import { GetPermissionsByRoleUseCase } from 'src/core/domain/uses-cases/role/role-permission/get-permissions-by-role.use-case';
+import { RemovePermissionUseCase } from 'src/core/domain/uses-cases/role/role-permission/remove-permission.use-case';
+import { CheckPermissionUseCase } from 'src/core/domain/uses-cases/role/role-permission/check-permission.use-case';
+import { AssignPermissionsUseCase } from 'src/core/domain/uses-cases/role/role-permission/assign-permissins.use-case';
 
 @Module({
-  controllers: [AuthController, CompanyController, ResourceController, RoleController, UserController],
+  controllers: [AuthController, CompanyController, ResourceController, RoleController, UserController, ActionController, RolePermissionController],
   providers: [
     JwtStrategy,
     PrismaService,
@@ -35,14 +43,29 @@ import { UserController } from './controllers/user/user.controller';
     {
       provide: 'ICompanyRepository', useClass: PrismaCompanyRepository
     },
+    {
+      provide: 'IActionRepository', useClass: PrismaActionRepository
+    },
+    {
+      provide: 'IRolePermissionRepository', useClass: PrismaRolePermissionRepository
+    },
     CreateUserUseCase,
     CreateRoleUseCase,
+    GetAllRolesUseCase,  // 🔹 Agregado aquí
+    GetRoleByIdUseCase,
+    UpdateRoleUseCase,
+    DeleteRoleUseCase,
     CreateResourceUseCase,
-    CreateCompanyUseCase
-
+    CreateCompanyUseCase,
+    ActionSeedUseCase,
+    GetPermissionsByRoleUseCase,
+    RemovePermissionUseCase, 
+    CheckPermissionUseCase,
+    AssignPermissionsUseCase 
+    
   ],
   imports: [
-    PassportModule.register({ defaultStrategy: 'jwt', session: false }), // 👈 IMPORTANTE
+    PassportModule.register({ defaultStrategy: 'jwt', session: false }),
     JwtModule.register({}),
   ],
   exports: [
@@ -51,8 +74,17 @@ import { UserController } from './controllers/user/user.controller';
     JwtStrategy,
     CreateUserUseCase,
     CreateRoleUseCase,
+    GetAllRolesUseCase,  // 🔹 Agregado aquí
+    GetRoleByIdUseCase,
+    UpdateRoleUseCase,
+    DeleteRoleUseCase,
     CreateResourceUseCase,
-    CreateCompanyUseCase
-  ], // 👈 EXPORTARLO PARA QUE OTROS MÓDULOS LO VEAN
+    CreateCompanyUseCase,
+    ActionSeedUseCase,
+    GetPermissionsByRoleUseCase,
+    RemovePermissionUseCase, 
+    CheckPermissionUseCase,
+    AssignPermissionsUseCase
+  ],
 })
 export class AuthModule { }

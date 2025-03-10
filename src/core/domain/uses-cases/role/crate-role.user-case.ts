@@ -1,7 +1,7 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import { IRoleRepository } from '../../repositories/role.repository';
-import { CreateRoleDto } from 'src/presentation/controllers/dtos/create-role.dto';
+import { CreateRoleDto } from 'src/presentation/controllers/dtos/role/create-role.dto';
 import { Role } from '../../entities/role.entity';
 
 @Injectable()
@@ -10,10 +10,12 @@ export class CreateRoleUseCase {
 
 
   async execute(roleDto: CreateRoleDto): Promise<Role> {
-    const newUser = new Role(
+    const newRole = new Role(
       crypto.randomUUID(),
       roleDto.name,
     );
-    return this.roleRepository.createRole(newUser);
+    await this.roleRepository.createRole(newRole);
+    return newRole; 
+
   }
 }

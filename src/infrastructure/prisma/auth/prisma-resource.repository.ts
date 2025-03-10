@@ -1,74 +1,56 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from './prisma.service';
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { PrismaService } from '../prisma.service';
 import { IResourceRepository } from 'src/core/domain/repositories/resource.repository';
 import { Resource } from 'src/core/domain/entities/resource.entity';
+
 @Injectable()
 export class PrismaResourceRepository implements IResourceRepository {
-  constructor(private readonly prisma: PrismaService) { }
-
+  constructor(private readonly prisma: PrismaService) {}
 
   async createResource(resource: Resource): Promise<Resource> {
     try {
       const createdResource = await this.prisma.resource.create({
-        data: {
-          id: resource.id,
-          name: resource.name,
-        },
+        data: { name: resource.name },
       });
       return new Resource(createdResource.id, createdResource.name);
     } catch (error) {
-      throw error;
+      throw new ConflictException(`El recurso "${resource.name}" ya existe.`);
     }
   }
-
-
 
   async findById(resourceId: string): Promise<Resource | null> {
     const resource = await this.prisma.resource.findUnique({ where: { id: resourceId } });
     return resource ? new Resource(resource.id, resource.name) : null;
   }
 
-
   async deleteResource(id: string): Promise<void> {
-    const resource = await this.prisma.resource.findUnique({ where: { id: id } });
-
-    if (!resource) {
-      throw new NotFoundException('Resource no encontrado');
-    }
-
-    await this.prisma.resource.delete({ where: { id: id } });
+    const resource = await this.findById(id);
+    if (!resource) throw new NotFoundException('Recurso no encontrado');
+    await this.prisma.resource.delete({ where: { id } });
   }
 
-
-  async findAll(page: number, limit: number): Promise<{ resource: Omit<Resource, 'password'>[], total: number }> {
+  async findAll(page: number, limit: number): Promise<{ resources: Resource[]; total: number }> {
     const skip = (page - 1) * limit;
 
-    const [resource, total] = await Promise.all([
+    const [resources, total] = await Promise.all([
       this.prisma.resource.findMany({
         skip,
         take: limit,
-        select: { id: true, name: true }
+        select: { id: true, name: true },
       }),
-      this.prisma.resource.count()
+      this.prisma.resource.count(),
     ]);
 
-    return { resource, total };
+    return { resources, total };
   }
 
   async updateResource(id: string, resourceData: Partial<Resource>): Promise<Resource> {
     const existingResource = await this.findById(id);
-    if (!existingResource) throw new NotFoundException(`Tole con ID ${id} no encontrado`);
-
-    const { ...rest } = resourceData;
-    resourceData = rest;
-
+    if (!existingResource) throw new NotFoundException(`Recurso con ID ${id} no encontrado`);
 
     const updatedResource = await this.prisma.resource.update({
       where: { id },
-      data: {
-        ...resourceData,
-        name: resourceData.name,
-      },
+      data: { name: resourceData.name },
     });
 
     return new Resource(updatedResource.id, updatedResource.name);
