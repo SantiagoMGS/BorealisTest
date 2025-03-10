@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, MinLength, IsEnum, IsString, IsUUID, IsBoolean } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
-export class CreateRoleDto {
+export class CreateResourceDto {
 
 
   @ApiProperty({ example: 'Operario', description: 'Nombre del rol' })

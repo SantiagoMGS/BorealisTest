@@ -2,7 +2,7 @@
 import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { User } from '../../entities/user.entity';
 import { IUserRepository } from '../../repositories/user.repository';
-import { CreateUserDto } from 'src/presentation/controllers/auth/dtos/create-user.dto';
+import { CreateUserDto } from 'src/presentation/controllers/dtos/create-user.dto';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
