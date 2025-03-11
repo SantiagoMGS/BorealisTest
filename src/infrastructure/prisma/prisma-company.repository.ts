@@ -26,6 +26,23 @@ export class PrismaCompanyRepository implements ICompanyRepository {
   async findByName(name: string): Promise<Company | null> {
     return this.prisma.company.findUnique({ where: { name } }); // 🔹 Busca por nombre único
   }
+  async updateCompany(id: string, companyData: Partial<Company>): Promise<Company> {
+    return this.prisma.company.update({
+      where: { id },
+      data: companyData,
+    });
+  }
+  async findAll(page: number, limit: number): Promise<{ companies: Company[]; total: number }> {
+    const [companies, total] = await Promise.all([
+      this.prisma.company.findMany({
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+      this.prisma.company.count(),
+    ]);
+
+    return { companies, total };
+  }
   async assignApplicationToCompanies(companyIds: string[], applicationIds: string[]): Promise<void> {
     const data = companyIds.flatMap(companyId =>
       applicationIds.map(applicationId => ({
