@@ -1,5 +1,5 @@
 import { ConflictException, Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma.service';
+import { PrismaService } from './prisma.service';
 import { IActionRepository } from 'src/core/domain/repositories/action.repository';
 import { Action } from 'src/core/domain/entities/action.entity';
 

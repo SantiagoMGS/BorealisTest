@@ -2,7 +2,7 @@ import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { IUserRepository } from '../../repositories/user.repository';
 import { ICompanyRepository } from '../../repositories/company.repository';
-import { CreateUserDto } from 'src/presentation/controllers/dtos/create-user.dto';
+import { CreateUserDto } from 'src/presentation/controllers/user/dtos/create-user.dto';
 import { User } from '../../entities/user.entity';
 
 @Injectable()
@@ -29,7 +29,7 @@ export class CreateUserUseCase {
       new User('', userDto.name, userDto.email, hashedPassword),
     );
 
-    await this.userRepository.assignUserToCompanies(newUser.id, userDto.companyIds);
+    await this.userRepository.assignUserToCompanies(newUser.id, userDto.companyIds, "0d54d481-d13f-4ed2-974f-f58e2af02d7d");
 
     return newUser; 
   }

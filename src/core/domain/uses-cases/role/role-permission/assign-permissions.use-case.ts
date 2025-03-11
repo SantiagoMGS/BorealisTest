@@ -1,7 +1,7 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { IRolePermissionRepository } from 'src/core/domain/repositories/role-permission.repository';
 import { IRoleRepository } from 'src/core/domain/repositories/role.repository';
-import { AssignPermissionsDto } from 'src/presentation/controllers/dtos/role/assign-permissions.dto';
+import { AssignPermissionsDto } from 'src/presentation/controllers/role/dtos/assign-permissions.dto';
 
 
 @Injectable()

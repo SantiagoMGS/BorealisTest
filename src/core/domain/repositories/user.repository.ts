@@ -6,5 +6,5 @@ export interface IUserRepository {
   deleteUser(id: string): Promise<void>;
   findAll(page: number, limit: number): Promise<{ users: Omit<User, 'password'>[], total: number }>;
   update(id: string, userData: Partial<User>): Promise<User>;
-  assignUserToCompanies(userId: string, companyIds: string[]): Promise<void>;
+  assignUserToCompanies(userId: string, companyIds: string[], roleId: string): Promise<void>;
 }

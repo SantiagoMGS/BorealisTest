@@ -1,10 +1,10 @@
 import { Body, Controller, Post, Get, Delete, Param } from '@nestjs/common';
-import { AssignPermissionsUseCase } from 'src/core/domain/uses-cases/role/role-permission/assign-permissins.use-case';
+import { AssignPermissionsUseCase } from 'src/core/domain/uses-cases/role/role-permission/assign-permissions.use-case';
 import { CheckPermissionUseCase } from 'src/core/domain/uses-cases/role/role-permission/check-permission.use-case';
 import { GetPermissionsByRoleUseCase } from 'src/core/domain/uses-cases/role/role-permission/get-permissions-by-role.use-case';
 import { RemovePermissionUseCase } from 'src/core/domain/uses-cases/role/role-permission/remove-permission.use-case';
-import { AssignPermissionsDto } from '../dtos/role/assign-permissions.dto';
-import { CheckPermissionDto } from '../dtos/role/check-permission.dto';
+import { AssignPermissionsDto } from './dtos/assign-permissions.dto';
+import { CheckPermissionDto } from './dtos/check-permission.dto';
 
 @Controller('api/role-permission') // ✅ Asegúrate de que esta ruta es correcta
 export class RolePermissionController {

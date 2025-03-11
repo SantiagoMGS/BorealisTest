@@ -1,6 +1,6 @@
 import { Body, Controller, Post } from "@nestjs/common";
 import { CreateResourceUseCase } from "src/core/domain/uses-cases/resource/create-resource.use-case";
-import { CreateResourceDto } from "../dtos/create-resource.dto";
+import { CreateResourceDto } from "./dtos/create-resource.dto";
 
 @Controller('api/resource')
 export class ResourceController {

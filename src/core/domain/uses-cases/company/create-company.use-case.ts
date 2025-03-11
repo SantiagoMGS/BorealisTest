@@ -1,27 +1,37 @@
 import { ConflictException, Inject, Injectable } from '@nestjs/common';
 import { ICompanyRepository } from '../../repositories/company.repository';
+import { IApplicationRepository } from '../../repositories/application.repository';
 import { Company } from '../../entities/company.entity';
-import { CreateCompanyDto } from 'src/presentation/controllers/dtos/create-company.dto';
+import { CreateCompanyDto } from 'src/presentation/controllers/company/dtos/create-company.dto';
 
 @Injectable()
 export class CreateCompanyUseCase {
-  constructor(@Inject('ICompanyRepository') private readonly companyRepository: ICompanyRepository) { }
+  constructor(
+    @Inject('ICompanyRepository') private readonly companyRepository: ICompanyRepository,
+    @Inject('IApplicationRepository') private readonly applicationRepository: IApplicationRepository, // 🔹 Repositorio de aplicaciones
+  ) { }
 
   async execute(companyDto: CreateCompanyDto): Promise<Company> {
-    // Verificar si ya existe una compañía con el mismo nombre
     const existingCompany = await this.companyRepository.findByName(companyDto.name);
     if (existingCompany) {
       throw new ConflictException(`La compañía "${companyDto.name}" ya existe.`);
     }
-
-    //Crear la nueva compañía
-    const newCompany = new Company(
-      '',
-      companyDto.name,
-      companyDto.logo
+  
+    const newCompany = await this.companyRepository.createCompany(
+      new Company('', companyDto.name, companyDto.logo)
     );
-
-    return await this.companyRepository.createCompany(newCompany);
-    
+  
+    // Verificar que todas las aplicaciones existan
+    const applications = await this.applicationRepository.findManyByIds(companyDto.applicationIds);
+    if (applications.length !== companyDto.applicationIds.length) {
+      throw new ConflictException(`Algunas aplicaciones no existen.`);
+    }
+  
+    // Asignar aplicaciones a la compañía
+    await this.companyRepository.assignApplicationToCompanies([newCompany.id], companyDto.applicationIds);
+  
+    return newCompany;
   }
+  
+
 }

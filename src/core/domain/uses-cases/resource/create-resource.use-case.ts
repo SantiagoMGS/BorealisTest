@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { IResourceRepository } from '../../repositories/resource.repository';
 import { Resource } from '../../entities/resource.entity';
-import { CreateResourceDto } from 'src/presentation/controllers/dtos/create-resource.dto';
+import { CreateResourceDto } from 'src/presentation/controllers/resource/dtos/create-resource.dto';
 
 @Injectable()
 export class CreateResourceUseCase {

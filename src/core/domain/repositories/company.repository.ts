@@ -6,4 +6,6 @@ export interface ICompanyRepository {
   createCompany(company: Company): Promise<Company>;
   deleteCompany(id: string): Promise<void>;
   findByName(name: string): Promise<Company | null>; 
+  assignApplicationToCompanies(companyIds: string[], applicationIds: string[]): Promise<void>;
+
 }

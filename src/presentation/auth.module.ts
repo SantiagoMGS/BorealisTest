@@ -4,7 +4,7 @@ import { CreateUserUseCase } from 'src/core/domain/uses-cases/user/create-user.u
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from 'src/core/domain/uses-cases/auth/jwtStrategy';
-import { CreateRoleUseCase } from 'src/core/domain/uses-cases/role/crate-role.user-case';
+import { CreateRoleUseCase } from 'src/core/domain/uses-cases/role/create-role.user-case';
 import { GetAllRolesUseCase } from 'src/core/domain/uses-cases/role/get-all-roles.use-case';
 import { GetRoleByIdUseCase } from 'src/core/domain/uses-cases/role/get-role-by-id.use-case';
 import { UpdateRoleUseCase } from 'src/core/domain/uses-cases/role/update-role.use-case';
@@ -17,16 +17,18 @@ import { CompanyController } from './controllers/company/company.controller';
 import { RoleController } from './controllers/role/role.controller';
 import { UserController } from './controllers/user/user.controller';
 import { ActionController } from './controllers/action/action.controller';
-import { PrismaUserRepository, PrismaRoleRepository, PrismaResourceRepository, PrismaCompanyRepository, PrismaActionRepository, PrismaRolePermissionRepository } from 'src/infrastructure/prisma/auth';
-import { ResourceController } from './controllers/resource/resource.controlle';
-import { RolePermissionController } from './controllers/role/rolePermissionController';
+import { PrismaUserRepository, PrismaRoleRepository, PrismaResourceRepository, PrismaCompanyRepository, PrismaActionRepository, PrismaRolePermissionRepository, PrismaApplicationRepository } from 'src/infrastructure/prisma';
+import { ResourceController } from './controllers/resource/resource.controller';
+import { RolePermissionController } from './controllers/role/role-permission.controller';
 import { GetPermissionsByRoleUseCase } from 'src/core/domain/uses-cases/role/role-permission/get-permissions-by-role.use-case';
 import { RemovePermissionUseCase } from 'src/core/domain/uses-cases/role/role-permission/remove-permission.use-case';
 import { CheckPermissionUseCase } from 'src/core/domain/uses-cases/role/role-permission/check-permission.use-case';
-import { AssignPermissionsUseCase } from 'src/core/domain/uses-cases/role/role-permission/assign-permissins.use-case';
+import { AssignPermissionsUseCase } from 'src/core/domain/uses-cases/role/role-permission/assign-permissions.use-case';
+import { ApplicationSeedUseCase } from 'src/core/domain/uses-cases/application/application-seed.use-case';
+import { ApplicationController } from './controllers/applications/applications.controller';
 
 @Module({
-  controllers: [AuthController, CompanyController, ResourceController, RoleController, UserController, ActionController, RolePermissionController],
+  controllers: [AuthController, CompanyController, ResourceController, RoleController, UserController, ActionController, RolePermissionController, ApplicationController],
   providers: [
     JwtStrategy,
     PrismaService,
@@ -49,6 +51,11 @@ import { AssignPermissionsUseCase } from 'src/core/domain/uses-cases/role/role-p
     {
       provide: 'IRolePermissionRepository', useClass: PrismaRolePermissionRepository
     },
+    {
+      provide: 'IApplicationRepository', useClass: PrismaApplicationRepository
+    },
+
+    
     CreateUserUseCase,
     CreateRoleUseCase,
     GetAllRolesUseCase,  // 🔹 Agregado aquí
@@ -58,6 +65,7 @@ import { AssignPermissionsUseCase } from 'src/core/domain/uses-cases/role/role-p
     CreateResourceUseCase,
     CreateCompanyUseCase,
     ActionSeedUseCase,
+    ApplicationSeedUseCase,
     GetPermissionsByRoleUseCase,
     RemovePermissionUseCase, 
     CheckPermissionUseCase,
@@ -81,6 +89,7 @@ import { AssignPermissionsUseCase } from 'src/core/domain/uses-cases/role/role-p
     CreateResourceUseCase,
     CreateCompanyUseCase,
     ActionSeedUseCase,
+    ApplicationSeedUseCase,
     GetPermissionsByRoleUseCase,
     RemovePermissionUseCase, 
     CheckPermissionUseCase,

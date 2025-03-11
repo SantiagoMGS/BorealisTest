@@ -9,12 +9,12 @@ import {
   Query, 
   NotFoundException 
 } from "@nestjs/common";
-import { CreateRoleUseCase } from "src/core/domain/uses-cases/role/crate-role.user-case";
+import { CreateRoleUseCase } from "src/core/domain/uses-cases/role/create-role.user-case";
 import { DeleteRoleUseCase } from "src/core/domain/uses-cases/role/delete-role.use-case";
 import { GetAllRolesUseCase } from "src/core/domain/uses-cases/role/get-all-roles.use-case";
 import { GetRoleByIdUseCase } from "src/core/domain/uses-cases/role/get-role-by-id.use-case";
-import { CreateRoleDto } from "../dtos/role/create-role.dto";
-import { UpdateRoleDto } from "../dtos/role/update-role.dto";
+import { CreateRoleDto } from "./dtos/create-role.dto";
+import { UpdateRoleDto } from "./dtos/update-role.dto";
 import { UpdateRoleUseCase } from "src/core/domain/uses-cases/role/update-role.use-case";
 @Controller('api/role')
 export class RoleController {

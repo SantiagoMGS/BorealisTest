@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ICompanyRepository } from 'src/core/domain/repositories/company.repository';
-import { PrismaService } from '../prisma.service';
+import { PrismaService } from './prisma.service';
 import { Company } from 'src/core/domain/entities/company.entity';
 @Injectable()
 export class PrismaCompanyRepository implements ICompanyRepository {
@@ -26,4 +26,18 @@ export class PrismaCompanyRepository implements ICompanyRepository {
   async findByName(name: string): Promise<Company | null> {
     return this.prisma.company.findUnique({ where: { name } }); // 🔹 Busca por nombre único
   }
+  async assignApplicationToCompanies(companyIds: string[], applicationIds: string[]): Promise<void> {
+    const data = companyIds.flatMap(companyId =>
+      applicationIds.map(applicationId => ({
+        companyId,
+        applicationId,
+      }))
+    );
+
+    await this.prisma.companyAplications.createMany({
+      data,
+      skipDuplicates: true, // Evita errores si la relación ya existe
+    });
+  }
+
 }

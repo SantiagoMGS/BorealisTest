@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { PrismaRolePermissionRepository } from 'src/presentation/controllers/dtos/role/prisma-role-permission.repository';
-import { RolePermissionController } from 'src/presentation/controllers/role/rolePermissionController';
-import { AssignPermissionsUseCase } from './assign-permissins.use-case';
+import { PrismaRolePermissionRepository } from 'src/infrastructure/prisma/prisma-role-permission.repository';
+import { RolePermissionController } from 'src/presentation/controllers/role/role-permission.controller';
+import { AssignPermissionsUseCase } from './assign-permissions.use-case';
 import { GetPermissionsByRoleUseCase } from './get-permissions-by-role.use-case';
 import { RemovePermissionUseCase } from './remove-permission.use-case';
 import { CheckPermissionUseCase } from './check-permission.use-case';

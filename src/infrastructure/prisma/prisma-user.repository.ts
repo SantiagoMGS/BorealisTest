@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { IUserRepository } from 'src/core/domain/repositories/user.repository';
-import { PrismaService } from '../prisma.service';
+import { PrismaService } from './prisma.service';
 import { User } from 'src/core/domain/entities/user.entity';
 
 @Injectable()
@@ -45,11 +45,12 @@ export class PrismaUserRepository implements IUserRepository {
   }
 
   // 🔹 Implementación del nuevo método para asociar usuario con compañías
-  async assignUserToCompanies(userId: string, companyIds: string[]): Promise<void> {
+  async assignUserToCompanies(userId: string, companyIds: string[], roleId: string): Promise<void> {
     await this.prisma.userCompany.createMany({
       data: companyIds.map(companyId => ({
         userId,
         companyId,
+        roleId
       })),
       skipDuplicates: true, // Evita errores si ya existe la relación
     });

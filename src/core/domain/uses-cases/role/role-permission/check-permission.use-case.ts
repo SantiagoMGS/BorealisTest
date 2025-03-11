@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { IRolePermissionRepository } from 'src/core/domain/repositories/role-permission.repository';
-import { CheckPermissionDto } from 'src/presentation/controllers/dtos/role/check-permission.dto';
+import { CheckPermissionDto } from 'src/presentation/controllers/role/dtos/check-permission.dto';
 
 @Injectable()
 export class CheckPermissionUseCase {
