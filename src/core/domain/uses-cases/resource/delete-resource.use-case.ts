@@ -1,16 +1,23 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { IResourceRepository } from '../../repositories/resource.repository';
 
 @Injectable()
 export class DeleteResourceUseCase {
+  private readonly logger = new Logger(DeleteResourceUseCase.name);
+
   constructor(
     @Inject('IResourceRepository') private readonly resourceRepository: IResourceRepository,
-  ) {}
+  ) { }
 
   async execute(id: string): Promise<void> {
-    const existingResource = await this.resourceRepository.findById(id);
-    if (!existingResource) throw new NotFoundException(`Recurso con ID ${id} no encontrado`);
+    try {
+      const existingResource = await this.resourceRepository.findById(id);
+      if (!existingResource) throw new NotFoundException(`Recurso con ID ${id} no encontrado`);
 
-    await this.resourceRepository.deleteResource(id);
+      await this.resourceRepository.deleteResource(id);
+    } catch (error) {
+      this.logger.error(`Failed to delete resource ID: ${id}`, error.stack);
+      throw error;
+    }
   }
 }
