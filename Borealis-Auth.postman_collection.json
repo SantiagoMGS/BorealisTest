@@ -1,0 +1,846 @@
+{
+	"info": {
+		"_postman_id": "3055cabf-101e-4583-8b09-a259519f359a",
+		"name": "Borealis-Auth",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "42420882"
+	},
+	"item": [
+		{
+			"name": "Roles",
+			"item": [
+				{
+					"name": "update-role",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"superadmin\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/role/6e901abf-0b7b-44b9-8f03-12c48dd361f3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"role",
+								"6e901abf-0b7b-44b9-8f03-12c48dd361f3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-role-id",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/role/6e901abf-0b7b-44b9-8f03-12c48dd361f3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"role",
+								"6e901abf-0b7b-44b9-8f03-12c48dd361f3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create-role",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"user\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/role/create-role",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"role",
+								"create-role"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "roles",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/role?page=1&limit=10",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"role"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete-role",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/role/6e901abf-0b7b-44b9-8f03-12c48dd361f3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"role",
+								"6e901abf-0b7b-44b9-8f03-12c48dd361f3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "role-permission",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"roleId\": \"df806c42-32a7-4d8a-bb51-22b7bd64b36b\",\r\n  \"permissions\": [\r\n    { \"actionId\": \"6490cba0-275e-47d8-bcd8-ee61b344fd7b\", \"resourceId\": \"433b6bed-0dc8-415e-9824-6b43e226abfe\" },\r\n    { \"actionId\": \"6490cba0-275e-47d8-bcd8-ee61b344fd7b\", \"resourceId\": \"9b93cf3b-f0c1-4f6c-a204-db77986b1b07\" }\r\n  ]\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/role-permission",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"role-permission"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "role-permission-get",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/role-permission/df806c42-32a7-4d8a-bb51-22b7bd64b36b",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"role-permission",
+								"df806c42-32a7-4d8a-bb51-22b7bd64b36b"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete-role-permission",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"roleId\": \"8ee41de7-df3c-40e4-856e-8381d95be5b5\",\r\n  \"actionId\": \"3a30ebcd-bc94-477b-b53a-ec4e63a0e429\",\r\n  \"resourceId\": \"5282a103-6fb2-4271-8391-1b98063d5bb6\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/role-permission",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"role-permission"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "role-permission/check",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"roleId\": \"df806c42-32a7-4d8a-bb51-22b7bd64b36b\",\r\n  \"actionId\": \"6490cba0-275e-47d8-bcd8-ee61b344fd7b\",\r\n  \"resourceId\": \"433b6bed-0dc8-415e-9824-6b43e226abfe\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/role-permission/check",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"role-permission",
+								"check"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Seeds",
+			"item": [
+				{
+					"name": "execute-application-seed",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/application/execute-application-seed",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"application",
+								"execute-application-seed"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "execute-action-seed",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/action/execute-action-seed",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"action",
+								"execute-action-seed"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "create-user",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Anggy Ruiz\",\r\n  \"email\": \"a.ruiz@example.com\",\r\n  \"password\": \"SecurePass123\",\r\n  \"companyIds\": [\r\n    \"e8299310-8839-40f6-9a60-358ac68b8b0d\"\r\n  ]\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/user/create-user",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"user",
+								"create-user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "find-users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/user?page=1&limit=10",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"user"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "find-user-by-email",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/user/a.ruiz@example.com",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"user",
+								"a.ruiz@example.com"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update-user",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Dahiana\",\r\n  \"email\": \"a.dahiana@example.com\",\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/user/a.ruiz@example.com",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"user",
+								"a.ruiz@example.com"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete-user",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/user/a.ruiz@example.com",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"user",
+								"a.ruiz@example.com"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "secure-data",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Cache-Control",
+								"value": "no-cache",
+								"type": "text"
+							},
+							{
+								"key": "Postman-Token",
+								"value": "<calculated when request is sent>",
+								"type": "text"
+							},
+							{
+								"key": "Host",
+								"value": "<calculated when request is sent>",
+								"type": "text"
+							},
+							{
+								"key": "User-Agent",
+								"value": "PostmanRuntime/7.39.1",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "*/*",
+								"type": "text"
+							},
+							{
+								"key": "Accept-Encoding",
+								"value": "gzip, deflate, br",
+								"type": "text"
+							},
+							{
+								"key": "Connection",
+								"value": "keep-alive",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IkpETmFfNGk0cjdGZ2lnTDNzSElsSTN4Vi1JVSIsImtpZCI6IkpETmFfNGk0cjdGZ2lnTDNzSElsSTN4Vi1JVSJ9.eyJhdWQiOiJhcGk6Ly8wNTU0ODFiYi00ZDE1LTQ5YjMtYTUzOS1iOTNjMjdlZjc1OTgiLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC9kMGFhYjQ0MS1mY2FiLTQ4MDctYTdhYS04MmJhMmI3ODAyM2YvIiwiaWF0IjoxNzQxMzU5OTU0LCJuYmYiOjE3NDEzNTk5NTQsImV4cCI6MTc0MTM2NTQ2MCwiYWNyIjoiMSIsImFpbyI6IkFYUUFpLzhaQUFBQW1ESTBRR2dsOVNsaFNlZUtreXJLRzhNeUkzak91S1NrWGVMS2ZQYUsxaVMzMS9qTjhRNTYwalUyOXRuc29lWDUrdTd5M0k3S2I0V3ZQeXR0ZFgrTTBlOXd5SUJPb2RVMVRYa3JlWEJ2S3FQWHQreGVCRTd0bjRmS0lYdE5mYzVQR3E4d3Z2a3ZqZDJSN3I3aFRKTGxXdz09IiwiYW1yIjpbInB3ZCIsIm1mYSJdLCJhcHBpZCI6IjA1NTQ4MWJiLTRkMTUtNDliMy1hNTM5LWI5M2MyN2VmNzU5OCIsImFwcGlkYWNyIjoiMCIsImZhbWlseV9uYW1lIjoiU2FsZGFycmlhZ2EgQ2FyZG9uYSIsImdpdmVuX25hbWUiOiJMdWlzIEV1Z2VuaW8iLCJpcGFkZHIiOiI4LjI0Mi4xODYuODIiLCJuYW1lIjoiTHVpcyBFdWdlbmlvIFNhbGRhcnJpYWdhIENhcmRvbmEiLCJvaWQiOiI3ZjE1OGJmMC0wMTlmLTQ1OGQtODYzYS01YmMwZjNkNWQ3MDgiLCJyaCI6IjEuQVVZQVFiU3EwS3Y4QjBpbnFvSzZLM2dDUDd1QlZBVVZUYk5KcFRtNVBDZnZkWmhHQU14R0FBLiIsInNjcCI6ImFjY2Vzc19hc191c2VyIiwic2lkIjoiMDAyZWUwMTktMDc1NS03YTYzLTAwMzQtNmQzMmZjODdhNGFmIiwic3ViIjoiZERnbTI5V3Nfdm1RWEhlTzd4NWQwdGY1dHNWRUZLMUxreDZyU2UyYnFsUSIsInRpZCI6ImQwYWFiNDQxLWZjYWItNDgwNy1hN2FhLTgyYmEyYjc4MDIzZiIsInVuaXF1ZV9uYW1lIjoibHNhbGRhcnJpYWdhQG1vbmFtaW5hcy5jb20iLCJ1cG4iOiJsc2FsZGFycmlhZ2FAbW9uYW1pbmFzLmNvbSIsInV0aSI6IlNqdmp4ZGsxRDB5MTJDM1RQMHdHQUEiLCJ2ZXIiOiIxLjAifQ.gNQQA3TJ0mEyLNQwLSzWOdv0zFHIyEQxbesHgrYD4Psybvo-gW_SgSwiBoE9gaYTX5nqtQAOsuvxyh8eg4avENYg55PeWE4QNkf8xLmm-HAfYshhjL5xYScaFfJlyawO1raZq3eGAXOU0gZHMQYnUnzLzLbuKonViuXw0reOtPd_LniTiVxNVltWCRDoQq4Rj72TJSTwrsimdZKPq921w7abMVkoTuGP2Cw7KmpLfKadNCwydK9c9Bk1t9qJa9mqsuGC4igmtoNnoz3DqBEuRXA_0hXoVxqZbCNXAKHyB-sOppZPA1wDArZ3q5CPSCdAHshL1qBpH_RANZMduxM4uw",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/api/secure-data",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"secure-data"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Resources",
+			"item": [
+				{
+					"name": "create-resource",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"users\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/resource/create-resource",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"resource",
+								"create-resource"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-resource-id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/resource/7dda634a-7204-44cf-a5e4-11a1eb70ad9d",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"resource",
+								"7dda634a-7204-44cf-a5e4-11a1eb70ad9d"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete-resource",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/resource/7dda634a-7204-44cf-a5e4-11a1eb70ad9d",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"resource",
+								"7dda634a-7204-44cf-a5e4-11a1eb70ad9d"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Company",
+			"item": [
+				{
+					"name": "create-company",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Mona Minas\",\r\n  \"logo\": \"https://MonaMinas.com/logo.png\",\r\n  \"applicationIds\": [\"cbe5c3ff-0d2a-45c8-8977-ad7ff7eb3ad9\"]\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/company/create-company",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"company",
+								"create-company"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-all-company",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/company?page=1&limit=10",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"company"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-company",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/company/e8299310-8839-40f6-9a60-358ac68b8b0d",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"company",
+								"e8299310-8839-40f6-9a60-358ac68b8b0d"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-company-name",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/company/Quintana",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"company",
+								"Quintana"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "assign-applications",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"companyIds\": [\"a1b2c3d4-e5f6-7890-abcd-ef1234567890\"],\r\n  \"applicationIds\": [\"b2c3d4e5-f6a1-7890-abcd-ef1234567890\"]\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/company/assign-applications",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"company",
+								"assign-applications"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete-company",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/company/e8299310-8839-40f6-9a60-358ac68b8b0d",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"company",
+								"e8299310-8839-40f6-9a60-358ac68b8b0d"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update-company",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"TechCorp Updated\",\r\n  \"logo\": \"updated-logo.png\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/company/a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"company",
+								"a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
