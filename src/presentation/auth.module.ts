@@ -26,6 +26,10 @@ import { CheckPermissionUseCase } from 'src/core/domain/uses-cases/role/role-per
 import { AssignPermissionsUseCase } from 'src/core/domain/uses-cases/role/role-permission/assign-permissions.use-case';
 import { ApplicationSeedUseCase } from 'src/core/domain/uses-cases/application/application-seed.use-case';
 import { ApplicationController } from './controllers/applications/applications.controller';
+import { FindAllUsersUseCase } from 'src/core/domain/uses-cases/user/find-all-user.use-case';
+import { UpdateUserUseCase } from 'src/core/domain/uses-cases/user/update-user.use-case';
+import { DeleteUserUseCase } from 'src/core/domain/uses-cases/user/delete-user.use-case';
+import { FindUserUseCase } from 'src/core/domain/uses-cases/user/find-user.use-case';
 
 @Module({
   controllers: [AuthController, CompanyController, ResourceController, RoleController, UserController, ActionController, RolePermissionController, ApplicationController],
@@ -69,7 +73,11 @@ import { ApplicationController } from './controllers/applications/applications.c
     GetPermissionsByRoleUseCase,
     RemovePermissionUseCase, 
     CheckPermissionUseCase,
-    AssignPermissionsUseCase 
+    AssignPermissionsUseCase,
+    FindAllUsersUseCase,
+    UpdateUserUseCase,
+    DeleteUserUseCase,
+    FindUserUseCase,
     
   ],
   imports: [
@@ -93,7 +101,11 @@ import { ApplicationController } from './controllers/applications/applications.c
     GetPermissionsByRoleUseCase,
     RemovePermissionUseCase, 
     CheckPermissionUseCase,
-    AssignPermissionsUseCase
+    AssignPermissionsUseCase,
+    FindAllUsersUseCase,
+    UpdateUserUseCase,
+    DeleteUserUseCase,
+    FindUserUseCase,
   ],
 })
 export class AuthModule { }

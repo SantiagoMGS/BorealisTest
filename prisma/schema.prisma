@@ -14,7 +14,7 @@ model User {
   password  String
   isActive  Boolean  @default(false)
   createdAt DateTime @default(now())
-  updateAt  DateTime @updatedAt
+  updatedAt  DateTime @updatedAt
 
   companies UserCompany[]
 }
@@ -23,7 +23,7 @@ model Role {
   id        String   @id @default(uuid()) @db.Uuid
   name      String   @unique
   createdAt DateTime @default(now())
-  updateAt  DateTime @updatedAt
+  updatedAt  DateTime @updatedAt
 
   permissions RolePermission[] // Relación con permisos
   users       UserCompany[] // Relación con usuarios
@@ -33,7 +33,7 @@ model Resource {
   id        String   @id @default(uuid()) @db.Uuid
   name      String   @unique
   createdAt DateTime @default(now())
-  updateAt  DateTime @updatedAt
+  updatedAt  DateTime @updatedAt
 
   permissions RolePermission[]
 }
@@ -43,7 +43,7 @@ model Action {
   name      String   @unique
   level     Int
   createdAt DateTime @default(now())
-  updateAt  DateTime @updatedAt
+  updatedAt  DateTime @updatedAt
 
   permissions RolePermission[]
 }
@@ -53,7 +53,7 @@ model Company {
   name      String   @unique
   logo      String   @unique
   createdAt DateTime @default(now())
-  updateAt  DateTime @updatedAt
+  updatedAt  DateTime @updatedAt
 
   users        UserCompany[]
   applications CompanyAplications[]
@@ -64,7 +64,7 @@ model UserCompany {
   companyId String   @db.Uuid
   roleId    String   @db.Uuid
   createdAt DateTime @default(now())
-  updateAt  DateTime @updatedAt
+  updatedAt  DateTime @updatedAt
 
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
@@ -78,7 +78,7 @@ model RolePermission {
   actionId   String   @db.Uuid
   resourceId String   @db.Uuid
   createdAt  DateTime @default(now())
-  updateAt   DateTime @updatedAt
+  updatedAt   DateTime @updatedAt
 
   role     Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
   action   Action   @relation(fields: [actionId], references: [id], onDelete: Cascade)
@@ -92,7 +92,7 @@ model Aplications {
   name      String   @unique
   isActive  Boolean
   createdAt DateTime @default(now())
-  updateAt  DateTime @updatedAt
+  updatedAt  DateTime @updatedAt
 
   companies CompanyAplications[]
 }
@@ -101,7 +101,7 @@ model CompanyAplications {
   companyId     String   @db.Uuid
   applicationId String   @db.Uuid
   createdAt     DateTime @default(now())
-  updateAt      DateTime @updatedAt
+  updatedAt      DateTime @updatedAt
 
   company    Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
   aplication Aplications @relation(fields: [applicationId], references: [id], onDelete: Cascade)
