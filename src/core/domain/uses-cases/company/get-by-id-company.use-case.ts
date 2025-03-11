@@ -3,7 +3,7 @@ import { ICompanyRepository } from '../../repositories/company.repository';
 import { Company } from '@prisma/client';
 
 @Injectable()
-export class FindByIdCompanyUseCase {
+export class GetByIdCompanyUseCase {
   constructor(
     @Inject('ICompanyRepository') private readonly companyRepository: ICompanyRepository,
   ) {}
