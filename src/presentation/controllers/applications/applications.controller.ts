@@ -1,16 +1,22 @@
-import { Controller, Post } from "@nestjs/common";
+import { Controller, Post, HttpCode, HttpStatus, Logger } from "@nestjs/common";
 import { ApplicationSeedUseCase } from "src/core/domain/uses-cases/application/application-seed.use-case";
 
-@Controller('api/application')
+@Controller('application') 
 export class ApplicationController {
   constructor(
     private readonly applicationSeedUseCase: ApplicationSeedUseCase
-  ) { }
+  ) {}
 
-
-  @Post('execute-application-seed')
+  @Post('execute-seed')
+  @HttpCode(HttpStatus.OK)
   async executeApplicationSeed() {
-    this.applicationSeedUseCase.execute();
-    return { response: '✅ Application seed executed' };
+    try {
+      await this.applicationSeedUseCase.execute();
+      Logger.log('✅ Application seed executed successfully');
+      return { message: '✅ Application seed executed successfully' };
+    } catch (error) {
+      Logger.error('❌ Error executing application seed:', error);
+      throw error;
+    }
   }
 }

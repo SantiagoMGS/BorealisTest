@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Get, Delete, Param } from '@nestjs/common';
+import { Body, Controller, Post, Get, Delete, Param, HttpCode, HttpStatus, Logger, ParseUUIDPipe } from '@nestjs/common';
 import { AssignPermissionsUseCase } from 'src/core/domain/uses-cases/role/role-permission/assign-permissions.use-case';
 import { CheckPermissionUseCase } from 'src/core/domain/uses-cases/role/role-permission/check-permission.use-case';
 import { GetPermissionsByRoleUseCase } from 'src/core/domain/uses-cases/role/role-permission/get-permissions-by-role.use-case';
@@ -6,7 +6,7 @@ import { RemovePermissionUseCase } from 'src/core/domain/uses-cases/role/role-pe
 import { AssignPermissionsDto } from './dtos/assign-permissions.dto';
 import { CheckPermissionDto } from './dtos/check-permission.dto';
 
-@Controller('api/role-permission') // ✅ Asegúrate de que esta ruta es correcta
+@Controller('role-permission')
 export class RolePermissionController {
   constructor(
     private readonly assignPermissionsUseCase: AssignPermissionsUseCase,
@@ -16,22 +16,25 @@ export class RolePermissionController {
   ) {}
 
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   async assignPermissions(@Body() assignPermissionsDto: AssignPermissionsDto) {
     return this.assignPermissionsUseCase.execute(assignPermissionsDto);
   }
 
   @Get(':roleId')
-  async getPermissions(@Param('roleId') roleId: string) {
+  @HttpCode(HttpStatus.OK)
+  async getPermissions(@Param('roleId', ParseUUIDPipe) roleId: string) {
     return this.getPermissionsByRoleUseCase.execute(roleId);
   }
 
   @Delete()
+  @HttpCode(HttpStatus.NO_CONTENT)
   async removePermission(@Body() removePermissionDto: { roleId: string; actionId: string; resourceId: string }) {
-    const { roleId, actionId, resourceId } = removePermissionDto;
-    return this.removePermissionUseCase.execute(roleId, actionId, resourceId);
+    return this.removePermissionUseCase.execute(removePermissionDto.roleId, removePermissionDto.actionId, removePermissionDto.resourceId);
   }
 
   @Post('/check')
+  @HttpCode(HttpStatus.OK)
   async checkPermission(@Body() checkPermissionDto: CheckPermissionDto) {
     return this.checkPermissionUseCase.execute(checkPermissionDto);
   }

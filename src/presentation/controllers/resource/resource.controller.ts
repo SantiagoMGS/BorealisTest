@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Put, Query } from "@nestjs/common";
+import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Put, Query, HttpCode, HttpStatus, Logger, ParseIntPipe, ParseUUIDPipe } from "@nestjs/common";
 import { CreateResourceUseCase } from "src/core/domain/uses-cases/resource/create-resource.use-case";
 import { CreateResourceDto } from "./dtos/create-resource.dto";
 import { UpdateResourceDto } from "./dtos/update-resource.dto";
@@ -7,7 +7,7 @@ import { UpdateResourceUseCase } from "src/core/domain/uses-cases/resource/updat
 import { GetAllResourcesUseCase } from "src/core/domain/uses-cases/resource/get-all-resorce.use-case";
 import { GetByIdResourceUseCase } from "src/core/domain/uses-cases/resource/get-resoure.use-case";
 
-@Controller('api/resource')
+@Controller('resource')
 export class ResourceController {
   constructor(
     private readonly createResourceUseCase: CreateResourceUseCase,
@@ -15,33 +15,37 @@ export class ResourceController {
     private readonly deleteResourceUseCase: DeleteResourceUseCase,
     private readonly findByIdResourceUseCase: GetByIdResourceUseCase,
     private readonly findAllResourcesUseCase: GetAllResourcesUseCase,
-  ) { }
+  ) {}
 
-
-  @Post('create-resource')
+  @Post()
+  @HttpCode(HttpStatus.CREATED)
   async createResource(@Body() createResourceDto: CreateResourceDto) {
     return this.createResourceUseCase.execute(createResourceDto);
   }
 
   @Get()
-  async getAllResources(@Query('page') page: number = 1, @Query('limit') limit: number = 10) {
-    return this.findAllResourcesUseCase.execute(Number(page), Number(limit));
+  @HttpCode(HttpStatus.OK)
+  async getAllResources(@Query('page', ParseIntPipe) page = 1, @Query('limit', ParseIntPipe) limit = 10) {
+    return this.findAllResourcesUseCase.execute(page, limit);
   }
 
   @Get(':id')
-  async getResourceById(@Param('id') id: string) {
+  @HttpCode(HttpStatus.OK)
+  async getResourceById(@Param('id', ParseUUIDPipe) id: string) {
     const resource = await this.findByIdResourceUseCase.execute(id);
     if (!resource) throw new NotFoundException(`Recurso con ID ${id} no encontrado`);
     return resource;
   }
+
   @Put(':id')
-  async updateResource(@Param('id') id: string, @Body() updateResourceDto: UpdateResourceDto) {
+  @HttpCode(HttpStatus.OK)
+  async updateResource(@Param('id', ParseUUIDPipe) id: string, @Body() updateResourceDto: UpdateResourceDto) {
     return this.updateResourceUseCase.execute(id, updateResourceDto);
   }
 
   @Delete(':id')
-  async deleteResource(@Param('id') id: string) {
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteResource(@Param('id', ParseUUIDPipe) id: string) {
     return this.deleteResourceUseCase.execute(id);
   }
-
 }
