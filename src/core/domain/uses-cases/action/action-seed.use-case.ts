@@ -12,7 +12,7 @@ export class ActionSeedUseCase {
     const actions: Action[] =
       actionInitialData.map(action =>
         new Action(
-          crypto.randomUUID(),
+          '',
           action.name,
           action.level
         )

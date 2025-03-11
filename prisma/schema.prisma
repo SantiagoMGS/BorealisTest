@@ -8,75 +8,103 @@ datasource db {
 }
 
 model User {
-  id        String    @id @default(uuid())
+  id        String   @id @default(uuid()) @db.Uuid
   name      String
-  email     String    @unique
+  email     String   @unique
   password  String
-  isActive  Boolean   @default(false)
-  createdAt DateTime  @default(now())
-  updateAt  DateTime  @default(now())
+  isActive  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updateAt  DateTime @updatedAt
 
   companies UserCompany[]
 }
 
 model Role {
-  id          String           @id @default(uuid())
-  name        String           @unique
-  createdAt   DateTime         @default(now())
-  updateAt    DateTime         @default(now())
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updateAt  DateTime @updatedAt
 
   permissions RolePermission[] // Relación con permisos
+  users       UserCompany[] // Relación con usuarios
 }
 
 model Resource {
-  id          String           @id @default(uuid())
-  name        String           @unique
-  createdAt   DateTime         @default(now())
-  updateAt    DateTime         @default(now())
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updateAt  DateTime @updatedAt
 
-  permissions RolePermission[] 
+  permissions RolePermission[]
 }
 
 model Action {
-  id          String           @id @default(uuid())
-  name        String           @unique
-  level       Int
-  createdAt   DateTime         @default(now())
-  updateAt    DateTime         @default(now())
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String   @unique
+  level     Int
+  createdAt DateTime @default(now())
+  updateAt  DateTime @updatedAt
 
   permissions RolePermission[]
 }
 
 model Company {
-  id        String    @id @default(uuid())
-  name      String    @unique
-  logo      String    @unique
-  createdAt DateTime  @default(now())
-  updateAt  DateTime  @default(now())
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String   @unique
+  logo      String   @unique
+  createdAt DateTime @default(now())
+  updateAt  DateTime @updatedAt
 
-  users UserCompany[]
+  users        UserCompany[]
+  applications CompanyAplications[]
 }
 
 model UserCompany {
-  userId    String
-  companyId String
-  createdAt DateTime  @default(now())
+  userId    String   @db.Uuid
+  companyId String   @db.Uuid
+  roleId    String   @db.Uuid
+  createdAt DateTime @default(now())
+  updateAt  DateTime @updatedAt
 
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  company   Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  role    Role    @relation(fields: [roleId], references: [id], onDelete: Cascade)
 
-  @@id([userId, companyId]) 
+  @@id([userId, companyId, roleId])
 }
 
 model RolePermission {
-  roleId     String
-  actionId   String
-  resourceId String
-  createdAt  DateTime  @default(now())
+  roleId     String   @db.Uuid
+  actionId   String   @db.Uuid
+  resourceId String   @db.Uuid
+  createdAt  DateTime @default(now())
+  updateAt   DateTime @updatedAt
 
-  role       Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
-  action     Action   @relation(fields: [actionId], references: [id], onDelete: Cascade)
-  resource   Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  role     Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  action   Action   @relation(fields: [actionId], references: [id], onDelete: Cascade)
+  resource Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
 
-  @@id([roleId, actionId, resourceId]) 
+  @@id([roleId, actionId, resourceId])
+}
+
+model Aplications {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String   @unique
+  isActive  Boolean
+  createdAt DateTime @default(now())
+  updateAt  DateTime @updatedAt
+
+  companies CompanyAplications[]
+}
+
+model CompanyAplications {
+  companyId     String   @db.Uuid
+  applicationId String   @db.Uuid
+  createdAt     DateTime @default(now())
+  updateAt      DateTime @updatedAt
+
+  company    Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  aplication Aplications @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@id([companyId, applicationId])
 }

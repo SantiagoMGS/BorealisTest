@@ -5,7 +5,7 @@ import { CreateCompanyDto } from 'src/presentation/controllers/dtos/create-compa
 
 @Injectable()
 export class CreateCompanyUseCase {
-  constructor(@Inject('ICompanyRepository') private readonly companyRepository: ICompanyRepository) {}
+  constructor(@Inject('ICompanyRepository') private readonly companyRepository: ICompanyRepository) { }
 
   async execute(companyDto: CreateCompanyDto): Promise<Company> {
     // Verificar si ya existe una compañía con el mismo nombre
@@ -16,12 +16,12 @@ export class CreateCompanyUseCase {
 
     //Crear la nueva compañía
     const newCompany = new Company(
-      crypto.randomUUID(), // O deja que Prisma genere el ID automáticamente
+      '',
       companyDto.name,
       companyDto.logo
     );
 
-    await this.companyRepository.createCompany(newCompany);
-    return newCompany;
+    return await this.companyRepository.createCompany(newCompany);
+    
   }
 }

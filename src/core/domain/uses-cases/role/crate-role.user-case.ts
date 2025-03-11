@@ -11,11 +11,10 @@ export class CreateRoleUseCase {
 
   async execute(roleDto: CreateRoleDto): Promise<Role> {
     const newRole = new Role(
-      crypto.randomUUID(),
+    '',
       roleDto.name,
     );
-    await this.roleRepository.createRole(newRole);
-    return newRole; 
+    return await this.roleRepository.createRole(newRole);
 
   }
 }

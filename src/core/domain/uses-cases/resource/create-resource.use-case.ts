@@ -1,4 +1,4 @@
-import {  Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { IResourceRepository } from '../../repositories/resource.repository';
 import { Resource } from '../../entities/resource.entity';
 import { CreateResourceDto } from 'src/presentation/controllers/dtos/create-resource.dto';
@@ -10,10 +10,8 @@ export class CreateResourceUseCase {
 
   async execute(resourceDto: CreateResourceDto): Promise<Resource> {
     const newResource = new Resource(
-      crypto.randomUUID(),
-      resourceDto.name
+      '', resourceDto.name
     );
-    await this.ResourceRepository.createResource(newResource);
-    return newResource;
+    return await this.ResourceRepository.createResource(newResource);
   }
 }
