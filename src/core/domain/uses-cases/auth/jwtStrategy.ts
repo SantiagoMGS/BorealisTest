@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
@@ -9,7 +9,7 @@ import * as jwt from 'jsonwebtoken';
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   private client: jwksClient.JwksClient
   constructor(private configService: ConfigService) {
-    console.log('✅ JwtStrategy se está registrando en NestJS');
+    Logger.log('✅ JwtStrategy se está registrando en NestJS');
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKeyProvider: (req, rawJwtToken, done) => {
@@ -22,7 +22,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 
         this.client.getSigningKey(kid, (err, key) => {
           if (err) {
-            console.error('🔴 Error al obtener la clave de firma:', err);
+            Logger.error('🔴 Error al obtener la clave de firma:', err);
             return done(err);
           }
           const signingKey = key!.getPublicKey();
@@ -43,10 +43,10 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   async validate(payload: any) {
 
     if (!payload) {
-      console.error('🔴 No se recibió payload en el token');
+      Logger.error('🔴 No se recibió payload en el token');
       throw new UnauthorizedException('Token inválido');
     }
-    console.log('✅ Usuario autenticado correctamente:', { userId: payload.sub, user: payload });
+   Logger.log('✅ Usuario autenticado correctamente:', { userId: payload.sub, user: payload });
     return { userId: payload.sub, name: payload.given_name + payload.family_name, email: payload.unique_name };
   }
 }
