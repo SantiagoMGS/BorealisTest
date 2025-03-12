@@ -2,7 +2,15 @@ import { Module } from '@nestjs/common';
 
 // **Infrastructure Services**
 import { PrismaService } from 'src/infrastructure/prisma/prisma.service';
-import { PrismaUserRepository, PrismaRoleRepository, PrismaResourceRepository, PrismaCompanyRepository, PrismaActionRepository, PrismaRolePermissionRepository, PrismaApplicationRepository, } from 'src/infrastructure/prisma';
+import {
+  PrismaUserRepository,
+  PrismaRoleRepository,
+  PrismaResourceRepository,
+  PrismaCompanyRepository,
+  PrismaActionRepository,
+  PrismaRolePermissionRepository,
+  PrismaApplicationRepository,
+} from 'src/infrastructure/prisma';
 
 // **Authentication & Security**
 import { JwtAzureStrategy } from 'src/core/domain/uses-cases/auth/jwt-azure.strategy';
@@ -71,7 +79,7 @@ import { AuthUseCase } from 'src/core/domain/uses-cases/auth/auth.use-case';
     UserController,
     ActionController,
     RolePermissionController,
-    ApplicationController
+    ApplicationController,
   ],
   providers: [
     // **Security**
@@ -109,7 +117,6 @@ import { AuthUseCase } from 'src/core/domain/uses-cases/auth/auth.use-case';
       provide: 'IApplicationRepository',
       useClass: PrismaApplicationRepository,
     },
-
 
     // **User Use Cases**
     CreateUserUseCase,
@@ -150,7 +157,7 @@ import { AuthUseCase } from 'src/core/domain/uses-cases/auth/auth.use-case';
     // **Other Use Cases**
     ActionSeedUseCase,
     ApplicationSeedUseCase,
-    AuthUseCase
+    AuthUseCase,
   ],
   imports: [
     PassportModule.register({ defaultStrategy: 'internal', session: false }),
@@ -209,7 +216,7 @@ import { AuthUseCase } from 'src/core/domain/uses-cases/auth/auth.use-case';
     // **Other Use Cases**
     ActionSeedUseCase,
     ApplicationSeedUseCase,
-    AuthUseCase
+    AuthUseCase,
   ],
 })
-export class AuthModule { }
+export class AuthModule {}

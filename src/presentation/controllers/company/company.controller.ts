@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Query, HttpCode, HttpStatus, Logger, ParseIntPipe, ParseUUIDPipe, Put } from "@nestjs/common";
+import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Query, HttpCode, HttpStatus, Logger, ParseIntPipe, ParseUUIDPipe, Put, UseGuards } from "@nestjs/common";
 import { CreateCompanyUseCase } from "src/core/domain/uses-cases/company/create-company.use-case";
 import { CreateCompanyDto } from "./dtos/create-company.dto";
 import { AssignApplicationToCompaniesUseCase } from "src/core/domain/uses-cases/company/assign-application-to-companies.use-case";
@@ -8,6 +8,7 @@ import { GetAllCompaniesUseCase } from "src/core/domain/uses-cases/company/get-a
 import { GetByIdCompanyUseCase } from "src/core/domain/uses-cases/company/get-by-id-company.use-case";
 import { UpdateCompanyUseCase } from "src/core/domain/uses-cases/company/update-company.use-case";
 import { UpdateCompanyDto } from "./dtos/update-company.dto";
+import { AuthGuard } from "@nestjs/passport";
 
 @Controller('company')
 export class CompanyController {
@@ -22,18 +23,21 @@ export class CompanyController {
   ) {}
 
   @Post()
+  @UseGuards(AuthGuard('internal'))
   @HttpCode(HttpStatus.CREATED)
   async createCompany(@Body() createCompanyDto: CreateCompanyDto) {
     return this.createCompanyUseCase.execute(createCompanyDto);
   }
 
   @Get()
+  @UseGuards(AuthGuard('internal'))
   @HttpCode(HttpStatus.OK)
   async getAllCompanies(@Query('page', ParseIntPipe) page = 1, @Query('limit', ParseIntPipe) limit = 10) {
     return this.getAllCompaniesUseCase.execute(page, limit);
   }
 
   @Get(':id')
+  @UseGuards(AuthGuard('internal'))
   @HttpCode(HttpStatus.OK)
   async getCompanyById(@Param('id', ParseUUIDPipe) id: string) {
     const company = await this.getByIdCompanyUseCase.execute(id);
@@ -42,6 +46,7 @@ export class CompanyController {
   }
 
   @Get('name/:name')
+  @UseGuards(AuthGuard('internal'))
   @HttpCode(HttpStatus.OK)
   async getCompanyByName(@Param('name') name: string) {    
     const company = await this.getByNameCompanyUseCase.execute(name);
@@ -49,6 +54,7 @@ export class CompanyController {
     return company;
   }  
   @Put(':id')
+  @UseGuards(AuthGuard('internal'))
   @HttpCode(HttpStatus.OK)
   async updateCompany(@Param('id', ParseUUIDPipe) id: string, @Body() updateCompanyDto: UpdateCompanyDto) {
     const updatedCompany = await this.updateCompanyUseCase.execute(id, updateCompanyDto);
@@ -56,6 +62,7 @@ export class CompanyController {
   }
 
   @Post('assign-applications')
+  @UseGuards(AuthGuard('internal'))
   @HttpCode(HttpStatus.OK)
   async assignApplicationsToCompanies(
     @Body() assignDto: { companyIds: string[], applicationIds: string[] }
