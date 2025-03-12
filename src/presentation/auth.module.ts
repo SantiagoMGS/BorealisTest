@@ -160,8 +160,8 @@ import { AuthUseCase } from 'src/core/domain/uses-cases/auth/auth.use-case';
     AuthUseCase,
   ],
   imports: [
-    PassportModule.register({ defaultStrategy: 'internal', session: false }),
     ConfigModule.forRoot(),
+    PassportModule.register({ defaultStrategy: 'internal', session: false }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
