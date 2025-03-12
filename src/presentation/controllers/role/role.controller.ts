@@ -15,7 +15,7 @@ export class RoleController {
     private readonly getRoleByIdUseCase: GetRoleByIdUseCase,
     private readonly updateRoleUseCase: UpdateRoleUseCase,
     private readonly deleteRoleUseCase: DeleteRoleUseCase
-  ) {}
+  ) { }
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -40,12 +40,16 @@ export class RoleController {
   @Put(':id')
   @HttpCode(HttpStatus.OK)
   async updateRole(@Param('id', ParseUUIDPipe) id: string, @Body() updateRoleDto: UpdateRoleDto) {
-    return this.updateRoleUseCase.execute(id, updateRoleDto);
+    const role = this.updateRoleUseCase.execute(id, updateRoleDto);
+    if (!role) throw new NotFoundException(`Rol con ID ${id} no encontrado`);
+    return role
   }
 
   @Delete(':id')
-  @HttpCode(HttpStatus.NO_CONTENT)
+  @HttpCode(HttpStatus.OK)
   async deleteRole(@Param('id', ParseUUIDPipe) id: string) {
-    return this.deleteRoleUseCase.execute(id);
+    const role = this.deleteRoleUseCase.execute(id);
+    if (!role) throw new NotFoundException(`Rol con ID ${id} no encontrado`);
+    return  { message: `El Rol: ${id} eliminado correctamente.` };
   }
 }

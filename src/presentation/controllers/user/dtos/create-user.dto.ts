@@ -27,4 +27,9 @@ export class CreateUserDto {
   @ArrayNotEmpty({ message: 'Debe haber al menos una compañía asociada' })
   @IsUUID('4', { each: true, message: 'Cada companyId debe ser un UUID válido' })
   companyIds: string[];
+
+  @ApiProperty({ example: '1', description: 'ID del rol  debe ser un UUIDs' })
+  @IsNotEmpty({ message: 'El rol es obligatorio' })
+  @IsUUID('4', { each: true, message: 'Cada rolId debe ser un UUID válido' })
+  roleId: string;
 }

@@ -32,8 +32,8 @@ export class PrismaUserRepository implements IUserRepository {
     });
   }
 
-  async deleteUser(id: string): Promise<void> {
-    await this.prisma.user.delete({ where: { id } });
+  async deleteUser(email: string): Promise<void> {
+    await this.prisma.user.delete({ where: { email } });
   }
   async findAll(page: number, limit: number): Promise<{ users: Omit<User, 'password'>[], total: number }> {
     const skip = (page - 1) * limit;

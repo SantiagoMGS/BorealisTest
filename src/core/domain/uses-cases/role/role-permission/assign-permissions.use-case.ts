@@ -19,6 +19,8 @@ export class AssignPermissionsUseCase {
 
     try {
       const role = await this.roleRepository.findById(roleId);
+      console.log(role);
+      
       if (!role) throw new NotFoundException(`Rol con ID ${roleId} no encontrado`);
 
       await this.rolePermissionRepository.assignPermissions(roleId, permissions);

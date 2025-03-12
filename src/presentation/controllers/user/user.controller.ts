@@ -43,9 +43,10 @@ export class UserController {
     return this.updateUserUseCase.execute(id, updateUserDto);
   }
 
-  @Delete(':id')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async deleteUser(@Param('id', ParseUUIDPipe) id: string) {
-    return this.deleteUserUseCase.execute(id);
+  @Delete(':email')
+  @HttpCode(HttpStatus.OK)
+  async deleteUser(@Param('email') email: string) {
+    await this.deleteUserUseCase.execute(email);
+    return { message: `Usuario con email ${email} eliminado correctamente.` };
   }
 }

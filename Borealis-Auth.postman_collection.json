@@ -27,7 +27,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3000/api/role/6e901abf-0b7b-44b9-8f03-12c48dd361f3",
+							"raw": "http://localhost:3000/api/role/666c42f2-1868-4b1d-b35f-8afd0a65bd3f",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -36,7 +36,7 @@
 							"path": [
 								"api",
 								"role",
-								"6e901abf-0b7b-44b9-8f03-12c48dd361f3"
+								"666c42f2-1868-4b1d-b35f-8afd0a65bd3f"
 							]
 						}
 					},
@@ -51,7 +51,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:3000/api/role/6e901abf-0b7b-44b9-8f03-12c48dd361f3",
+							"raw": "http://localhost:3000/api/role/666c42f2-1868-4b1d-b35f-8afd0a65bd3f",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -60,7 +60,7 @@
 							"path": [
 								"api",
 								"role",
-								"6e901abf-0b7b-44b9-8f03-12c48dd361f3"
+								"666c42f2-1868-4b1d-b35f-8afd0a65bd3f"
 							]
 						}
 					},
@@ -76,7 +76,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"name\": \"user\"\r\n}\r\n",
+							"raw": "{\r\n  \"name\": \"prueba\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -84,7 +84,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3000/api/role/create-role",
+							"raw": "http://localhost:3000/api/role",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -92,8 +92,7 @@
 							"port": "3000",
 							"path": [
 								"api",
-								"role",
-								"create-role"
+								"role"
 							]
 						}
 					},
@@ -141,7 +140,7 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:3000/api/role/6e901abf-0b7b-44b9-8f03-12c48dd361f3",
+							"raw": "http://localhost:3000/api/role/89a60bb7-bba2-4d3a-92d7-7c1ad4949211",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -150,7 +149,7 @@
 							"path": [
 								"api",
 								"role",
-								"6e901abf-0b7b-44b9-8f03-12c48dd361f3"
+								"89a60bb7-bba2-4d3a-92d7-7c1ad4949211"
 							]
 						}
 					},
@@ -166,7 +165,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"roleId\": \"df806c42-32a7-4d8a-bb51-22b7bd64b36b\",\r\n  \"permissions\": [\r\n    { \"actionId\": \"6490cba0-275e-47d8-bcd8-ee61b344fd7b\", \"resourceId\": \"433b6bed-0dc8-415e-9824-6b43e226abfe\" },\r\n    { \"actionId\": \"6490cba0-275e-47d8-bcd8-ee61b344fd7b\", \"resourceId\": \"9b93cf3b-f0c1-4f6c-a204-db77986b1b07\" }\r\n  ]\r\n}\r\n",
+							"raw": "{\r\n  \"roleId\": \"666c42f2-1868-4b1d-b35f-8afd0a65bd3f\",\r\n  \"permissions\": [\r\n    { \"actionId\": \"c68a43da-bc39-4095-b408-0dab9b242bc5\", \"resourceId\": \"979b2ca9-a987-422c-8d5f-bc8a0d8aa51e\" },\r\n    { \"actionId\": \"c68a43da-bc39-4095-b408-0dab9b242bc5\", \"resourceId\": \"8d001db9-9ed1-40d0-b57d-1f2b5a809f9c\" }\r\n  ]\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -209,7 +208,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3000/api/role-permission/df806c42-32a7-4d8a-bb51-22b7bd64b36b",
+							"raw": "http://localhost:3000/api/role-permission/666c42f2-1868-4b1d-b35f-8afd0a65bd3f",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -218,7 +217,7 @@
 							"path": [
 								"api",
 								"role-permission",
-								"df806c42-32a7-4d8a-bb51-22b7bd64b36b"
+								"666c42f2-1868-4b1d-b35f-8afd0a65bd3f"
 							]
 						}
 					},
@@ -303,7 +302,7 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:3000/api/application/execute-application-seed",
+							"raw": "http://localhost:3000/api/application/execute-seed",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -312,7 +311,7 @@
 							"path": [
 								"api",
 								"application",
-								"execute-application-seed"
+								"execute-seed"
 							]
 						}
 					},
@@ -357,7 +356,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"name\": \"Anggy Ruiz\",\r\n  \"email\": \"a.ruiz@example.com\",\r\n  \"password\": \"SecurePass123\",\r\n  \"companyIds\": [\r\n    \"e8299310-8839-40f6-9a60-358ac68b8b0d\"\r\n  ]\r\n}\r\n",
+							"raw": "{\r\n  \"name\": \"Anggy Ruiz\",\r\n  \"email\": \"a.ruix@example.com\",\r\n  \"password\": \"SecurePass123\",\r\n  \"companyIds\": [\r\n    \"1b3a270e-8ea8-4b6f-a44f-f9589d9b6a25\"\r\n  ],\r\n  \"roleId\": \"666c42f2-1868-4b1d-b35f-8afd0a65bd3f\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -365,7 +364,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3000/api/user/create-user",
+							"raw": "http://localhost:3000/api/user",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -373,8 +372,7 @@
 							"port": "3000",
 							"path": [
 								"api",
-								"user",
-								"create-user"
+								"user"
 							]
 						}
 					},
@@ -473,7 +471,7 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:3000/api/user/a.ruiz@example.com",
+							"raw": "http://localhost:3000/api/user/a.ruix@example.com",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -482,7 +480,7 @@
 							"path": [
 								"api",
 								"user",
-								"a.ruiz@example.com"
+								"a.ruix@example.com"
 							]
 						}
 					},
@@ -540,7 +538,7 @@
 							}
 						],
 						"url": {
-							"raw": "http://localhost:3000/api/secure-data",
+							"raw": "http://localhost:3000/api/auth/secure-data",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -548,6 +546,7 @@
 							"port": "3000",
 							"path": [
 								"api",
+								"auth",
 								"secure-data"
 							]
 						}
@@ -569,7 +568,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"name\": \"users\"\r\n}\r\n",
+							"raw": "{\r\n  \"name\": \"role\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -577,7 +576,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3000/api/resource/create-resource",
+							"raw": "http://localhost:3000/api/resource",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -585,8 +584,7 @@
 							"port": "3000",
 							"path": [
 								"api",
-								"resource",
-								"create-resource"
+								"resource"
 							]
 						}
 					},
@@ -652,7 +650,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"name\": \"Mona Minas\",\r\n  \"logo\": \"https://MonaMinas.com/logo.png\",\r\n  \"applicationIds\": [\"cbe5c3ff-0d2a-45c8-8977-ad7ff7eb3ad9\"]\r\n}\r\n",
+							"raw": "{\r\n  \"name\": \"prueba\",\r\n  \"logo\": \"https://prueba.com/logo.png\",\r\n  \"applicationIds\": [\"0cbdc802-ae04-486e-a08e-70e8fb236499\"]\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -660,7 +658,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3000/api/company/create-company",
+							"raw": "http://localhost:3000/api/company",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -668,8 +666,7 @@
 							"port": "3000",
 							"path": [
 								"api",
-								"company",
-								"create-company"
+								"company"
 							]
 						}
 					},
@@ -714,7 +711,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:3000/api/company/e8299310-8839-40f6-9a60-358ac68b8b0d",
+							"raw": "http://localhost:3000/api/company/dbb1b2e4-b2c3-4c4e-97b9-927552558a7c",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -723,7 +720,7 @@
 							"path": [
 								"api",
 								"company",
-								"e8299310-8839-40f6-9a60-358ac68b8b0d"
+								"dbb1b2e4-b2c3-4c4e-97b9-927552558a7c"
 							]
 						}
 					},
@@ -738,7 +735,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:3000/api/company/Quintana",
+							"raw": "http://localhost:3000/api/company/name/Quintana2",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -747,7 +744,8 @@
 							"path": [
 								"api",
 								"company",
-								"Quintana"
+								"name",
+								"Quintana2"
 							]
 						}
 					},
@@ -795,7 +793,7 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:3000/api/company/e8299310-8839-40f6-9a60-358ac68b8b0d",
+							"raw": "http://localhost:3000/api/company/b16fe5ad-b90e-4e5a-8896-6317b9e1c612",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -804,7 +802,7 @@
 							"path": [
 								"api",
 								"company",
-								"e8299310-8839-40f6-9a60-358ac68b8b0d"
+								"b16fe5ad-b90e-4e5a-8896-6317b9e1c612"
 							]
 						}
 					},
@@ -817,7 +815,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"name\": \"TechCorp Updated\",\r\n  \"logo\": \"updated-logo.png\"\r\n}\r\n",
+							"raw": "{\r\n  \"name\": \"Quintana2\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -825,7 +823,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3000/api/company/a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+							"raw": "http://localhost:3000/api/company/dbb1b2e4-b2c3-4c4e-97b9-927552558a7c",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -834,7 +832,7 @@
 							"path": [
 								"api",
 								"company",
-								"a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+								"dbb1b2e4-b2c3-4c4e-97b9-927552558a7c"
 							]
 						}
 					},

@@ -12,18 +12,18 @@ export class DeleteUserUseCase {
 
   /**
    * Deletes a user.
-   * @param id - The ID of the email to delete.
+   * @param email - The ID of the email to delete.
    * @throws NotFoundException if the user with the given ID is not found.
    */
-  async execute(id: string): Promise<void> {
-    this.logger.log(`Deleting role ID: ${id}`);
+  async execute(email: string): Promise<void> {
+    this.logger.log(`Deleting user email: ${email}`);
     try {
-      const existingUser = await this.userRepository.findByEmail(id);
+      const existingUser = await this.userRepository.findByEmail(email);
       if (!existingUser) throw new NotFoundException('Usuario no encontrado');
-      await this.userRepository.deleteUser(id);
-      this.logger.log(`User email: ${id} deleted successfully`);
+      await this.userRepository.deleteUser(email);
+      this.logger.log(`User email: ${email} deleted successfully`);
     } catch (error) {
-      this.logger.error(`Failed to delete user email: ${id}`, error.stack);
+      this.logger.error(`Failed to delete user email: ${email}`, error.stack);
       throw error;
     }
   }

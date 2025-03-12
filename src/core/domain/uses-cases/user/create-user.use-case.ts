@@ -19,7 +19,7 @@ export class CreateUserUseCase {
     try {
       const existingUser = await this.userRepository.findByEmail(userDto.email);
       if (existingUser) {
-        throw new ForbiddenException(`El rol "${userDto.email}" ya esta en uso.`);
+        throw new ForbiddenException(`El email "${userDto.email}" ya esta en uso.`);
       }
 
       const companies = await this.companyRepository.findManyByIds(userDto.companyIds);
@@ -33,7 +33,7 @@ export class CreateUserUseCase {
         new User('', userDto.name, userDto.email, hashedPassword),
       );
 
-      await this.userRepository.assignUserToCompanies(newUser.id, userDto.companyIds, "0d54d481-d13f-4ed2-974f-f58e2af02d7d");
+      await this.userRepository.assignUserToCompanies(newUser.id, userDto.companyIds, userDto.roleId);
       this.logger.log('User created successfully');
       return newUser;
     } catch (error) {

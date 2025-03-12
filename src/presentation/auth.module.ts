@@ -57,6 +57,7 @@ import { DeleteCompanyUseCase } from 'src/core/domain/uses-cases/company/delete-
 // **Use Cases - Other**
 import { ActionSeedUseCase } from 'src/core/domain/uses-cases/action/action-seed.use-case';
 import { ApplicationSeedUseCase } from 'src/core/domain/uses-cases/application/application-seed.use-case';
+import { UpdateCompanyUseCase } from 'src/core/domain/uses-cases/company/update-company.use-case';
 
 @Module({
   controllers: [
@@ -139,6 +140,7 @@ import { ApplicationSeedUseCase } from 'src/core/domain/uses-cases/application/a
     GetAllCompaniesUseCase,
     AssignApplicationToCompaniesUseCase,
     DeleteCompanyUseCase,
+    UpdateCompanyUseCase,
 
     // **Other Use Cases**
     ActionSeedUseCase,
@@ -187,6 +189,7 @@ import { ApplicationSeedUseCase } from 'src/core/domain/uses-cases/application/a
     GetAllCompaniesUseCase,
     AssignApplicationToCompaniesUseCase,
     DeleteCompanyUseCase,
+    UpdateCompanyUseCase,
 
     // **Other Use Cases**
     ActionSeedUseCase,

@@ -1,7 +1,7 @@
 import { Controller, Post } from "@nestjs/common";
 import { ActionSeedUseCase } from "src/core/domain/uses-cases/action/action-seed.use-case";
 
-@Controller('api/action')
+@Controller('action')
 export class  ActionController {
   constructor(
     private readonly actionSeedUseCase: ActionSeedUseCase

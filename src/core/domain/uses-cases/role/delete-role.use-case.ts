@@ -19,8 +19,9 @@ export class DeleteRoleUseCase {
       const existingRole = await this.roleRepository.findById(id);
       if (!existingRole) throw new NotFoundException(`Rol con ID ${id} no encontrado`);
 
-      await this.roleRepository.deleteRole(id);
+      const deleteRole = await this.roleRepository.deleteRole(id);
       this.logger.log(`Role ID: ${id} deleted successfully`);
+      // Role ID: ${id} deleted successfully
     } catch (error) {
       this.logger.error(`Failed to delete role ID: ${id}`, error.stack);
       throw error;

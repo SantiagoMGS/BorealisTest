@@ -15,7 +15,7 @@ export class CreateRoleUseCase {
     this.logger.log('Creating new role');
 
     try {
-      const existingRole = await this.roleRepository.findById(roleDto.name);
+      const existingRole = await this.roleRepository.findByName(roleDto.name);
       if (existingRole) {
         throw new ConflictException(`El rol "${roleDto.name}" ya existe.`);
       }
