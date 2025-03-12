@@ -30,7 +30,9 @@ export class AuthUseCase {
     // Retornar datos sin la contraseña
     const { password: _, ...result } = user;
 
-    return result;
+    // Obtener las compañías asociadas al usuario
+    const companies = await this.userRepository.getCompanyByUserId(user.id);
+    return { ...result, companies }
   }
 
   async login(user: any) {
@@ -42,7 +44,7 @@ export class AuthUseCase {
     const payload = { email: user.email, sub: user.id };
     try {
       const token = this.jwtService.sign(payload);
-      return { access_token: token };
+      return { access_token: token};
     } catch (error) {
       this.logger.log("🔴 Error generando el token JWT:", error);
       throw new Error("Error interno al generar el token");

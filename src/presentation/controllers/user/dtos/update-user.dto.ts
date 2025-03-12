@@ -1,5 +1,5 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { IsOptional, IsString, IsEmail, MinLength, IsBoolean } from 'class-validator';
+import { IsOptional, IsString, IsEmail, MinLength, IsBoolean, IsNotEmpty, IsUUID } from 'class-validator';
 import { CreateUserDto } from './create-user.dto';
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {
@@ -24,4 +24,9 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   @IsOptional()
   @IsBoolean({ message: 'El estado debe ser un booleano' })
   isActive?: boolean;
+
+  @ApiProperty({ example: '1', description: 'ID del rol  debe ser un UUIDs' })
+  @IsNotEmpty({ message: 'El rol es obligatorio' })
+  @IsUUID('4', { each: true, message: 'Cada rolId debe ser un UUID válido' })
+  roleId: string;
 }

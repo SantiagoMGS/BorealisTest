@@ -8,4 +8,7 @@ export interface IUserRepository {
   findAll(page: number, limit: number): Promise<{ users: Omit<User, 'password'>[], total: number }>;
   update(id: string, userData: Partial<User>): Promise<User>;
   assignUserToCompanies(userId: string, companyIds: string[], roleId: string): Promise<void>;
+  updateUserRole(userId: string, companyId: string, roleId: string): Promise<void>;
+  getCompanyByUserId(userId: string): Promise<{ companyId: string; companyName: string }[]>;
+
 }

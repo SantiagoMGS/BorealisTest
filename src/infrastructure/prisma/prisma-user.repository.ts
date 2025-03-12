@@ -21,7 +21,7 @@ export class PrismaUserRepository implements IUserRepository {
     return this.prisma.user.findUnique({
       where: { email },
     });
-  
+
   }
 
   async findByEmail(email: string): Promise<Omit<User, 'password'> | null> {
@@ -60,9 +60,9 @@ export class PrismaUserRepository implements IUserRepository {
 
 
 
-  async update(id: string, userData: Partial<User>): Promise<User> {
-    const existingUser = await this.findByEmail(id);
-    if (!existingUser) throw new NotFoundException(`Usuario con ID ${id} no encontrado`);
+  async update(email: string, userData: Partial<User>): Promise<User> {
+    const existingUser = await this.findByEmail(email);
+    if (!existingUser) throw new NotFoundException(`Usuario con email ${email} no encontrado`);
 
     if (userData.password !== undefined && userData.password !== null) {
       userData = { ...userData, password: await bcrypt.hash(userData.password, 10) };
@@ -72,7 +72,7 @@ export class PrismaUserRepository implements IUserRepository {
     }
 
     const updatedUser = await this.prisma.user.update({
-      where: { id },
+      where: { email },
       data: {
         ...userData,
         password: userData.password ?? undefined,
@@ -93,4 +93,35 @@ export class PrismaUserRepository implements IUserRepository {
       skipDuplicates: true, // Evita errores si ya existe la relación
     });
   }
+  async updateUserRole(userId: string, companyId: string, roleId: string): Promise<void> {
+    await this.prisma.userCompany.updateMany({
+      where: {
+        userId,
+        companyId,
+      },
+      data: {
+        roleId,
+      },
+    });
+  }
+  async getCompanyByUserId(userId: string): Promise<{ companyId: string; companyName: string }[]> {
+    const userCompanies = await this.prisma.userCompany.findMany({
+      where: { userId },
+      select: {
+        company: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+
+    return userCompanies.map(({ company }) => ({
+      companyId: company.id,
+      companyName: company.name,
+    }));
+  }
+
+
 }

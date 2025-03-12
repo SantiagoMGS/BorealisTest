@@ -69,6 +69,7 @@ import { ApplicationSeedUseCase } from 'src/core/domain/uses-cases/application/a
 import { UpdateCompanyUseCase } from 'src/core/domain/uses-cases/company/update-company.use-case';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthUseCase } from 'src/core/domain/uses-cases/auth/auth.use-case';
+import { UpdateUserCompanyRoleUseCase } from 'src/core/domain/uses-cases/user/update-user-company.use-case';
 
 @Module({
   controllers: [
@@ -124,6 +125,7 @@ import { AuthUseCase } from 'src/core/domain/uses-cases/auth/auth.use-case';
     UpdateUserUseCase,
     DeleteUserUseCase,
     FindUserUseCase,
+    UpdateUserCompanyRoleUseCase,
 
     // **Role Use Cases**
     CreateRoleUseCase,
@@ -183,6 +185,7 @@ import { AuthUseCase } from 'src/core/domain/uses-cases/auth/auth.use-case';
     UpdateUserUseCase,
     DeleteUserUseCase,
     FindUserUseCase,
+    UpdateUserCompanyRoleUseCase,
 
     // **Role Use Cases**
     CreateRoleUseCase,

@@ -27,9 +27,9 @@ export class AuthController {
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
     const user = await this.authUseCase.validateUser(loginDto.email, loginDto.password);
-    console.log(user);
+    console.log("user", user);
     
-    return this.authUseCase.login(user);
+    return {...await this.authUseCase.login(user), companies:user.companies};
   }
 
   @Get('profile')
