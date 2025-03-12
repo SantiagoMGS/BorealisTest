@@ -8,8 +8,9 @@ import * as jwt from 'jsonwebtoken';
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   private client: jwksClient.JwksClient;
+  private logger = new Logger(JwtStrategy.name);
+
   constructor(private configService: ConfigService) {
-    Logger.log('✅ JwtStrategy se está registrando en NestJS');
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKeyProvider: (req, rawJwtToken, done) => {
@@ -35,7 +36,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       issuer: `https://sts.windows.net/${configService.get<string>('AZURE_AD_TENANT_ID')}/`,
       algorithms: ['RS256'],
     });
-
+    this.logger.log('🔑 Inicializando estrategia JWT');
     // Ahora inicializamos `this.client` después de llamar a `super()`
     this.client = jwksClient({
       jwksUri: `https://login.microsoftonline.com/${configService.get<string>('AZURE_AD_TENANT_ID')}/discovery/v2.0/keys`,

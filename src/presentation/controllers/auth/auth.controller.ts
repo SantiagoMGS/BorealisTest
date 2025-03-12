@@ -1,10 +1,19 @@
-import { Controller, Get, UseGuards, Req, HttpStatus, HttpCode, Logger } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  UseGuards,
+  Req,
+  HttpStatus,
+  HttpCode,
+  Logger,
+} from '@nestjs/common';
 import { CustomAuthGuard } from 'src/core/domain/uses-cases/auth/guards/custom-auth.guard';
 
 @Controller('auth')
 export class AuthController {
+  private logger = new Logger(AuthController.name);
   constructor() {
-    Logger.log('✅ AuthController inicializado');
+    this.logger.log('✅ AuthController inicializado');
   }
 
   @UseGuards(CustomAuthGuard)
@@ -15,9 +24,15 @@ export class AuthController {
 
     if (!request.user) {
       Logger.error('🔴 request.user es undefined');
-      return { message: 'Acceso denegado', error: 'El usuario no fue autenticado correctamente' };
+      return {
+        message: 'Acceso denegado',
+        error: 'El usuario no fue autenticado correctamente',
+      };
     }
 
-    return { message: '✅ Acceso permitido a datos protegidos', user: request.user };
+    return {
+      message: '✅ Acceso permitido a datos protegidos',
+      user: request.user,
+    };
   }
 }
