@@ -350,7 +350,14 @@
 					"name": "create-user",
 					"request": {
 						"auth": {
-							"type": "noauth"
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImEucnJyckBleGFtcGxlLmNvbSIsInN1YiI6ImVjZjI0NWJhLTkzYTMtNGZlNi05N2QxLWRmODhjNzdlNTNjMCIsImlhdCI6MTc0MTc5MTg5MCwiZXhwIjoxNzQxNzk1NDkwfQ.KXCQpkqVeequGjA_XIA4SPQwdn3DOuzzYQKf713LqEY",
+									"type": "string"
+								}
+							]
 						},
 						"method": "POST",
 						"header": [],
@@ -548,6 +555,67 @@
 								"api",
 								"auth",
 								"secure-data"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"a.rrrr@example.com\",\r\n  \"password\": \"SecurePass123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/auth/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImEucnJyckBleGFtcGxlLmNvbSIsInN1YiI6ImVjZjI0NWJhLTkzYTMtNGZlNi05N2QxLWRmODhjNzdlNTNjMCIsImlhdCI6MTc0MTc5MTg5MCwiZXhwIjoxNzQxNzk1NDkwfQ.KXCQpkqVeequGjA_XIA4SPQwdn3DOuzzYQKf713LqEY",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/auth/profile",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"auth",
+								"profile"
 							]
 						}
 					},

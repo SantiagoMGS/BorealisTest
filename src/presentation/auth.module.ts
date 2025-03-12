@@ -1,13 +1,14 @@
 import { Module } from '@nestjs/common';
-import { PassportModule } from '@nestjs/passport';
-import { JwtModule } from '@nestjs/jwt';
 
 // **Infrastructure Services**
 import { PrismaService } from 'src/infrastructure/prisma/prisma.service';
 import { PrismaUserRepository, PrismaRoleRepository, PrismaResourceRepository, PrismaCompanyRepository, PrismaActionRepository, PrismaRolePermissionRepository, PrismaApplicationRepository, } from 'src/infrastructure/prisma';
 
 // **Authentication & Security**
-import { JwtStrategy } from 'src/core/domain/uses-cases/auth/jwtStrategy';
+import { JwtAzureStrategy } from 'src/core/domain/uses-cases/auth/jwt-azure.strategy';
+import { JwtInternalStrategy } from 'src/core/domain/uses-cases/auth/jwt-internal.strategy';
+import { PassportModule } from '@nestjs/passport';
+import { JwtModule } from '@nestjs/jwt';
 
 // **Controllers**
 import { AuthController } from './controllers/auth/auth.controller';
@@ -58,21 +59,25 @@ import { DeleteCompanyUseCase } from 'src/core/domain/uses-cases/company/delete-
 import { ActionSeedUseCase } from 'src/core/domain/uses-cases/action/action-seed.use-case';
 import { ApplicationSeedUseCase } from 'src/core/domain/uses-cases/application/application-seed.use-case';
 import { UpdateCompanyUseCase } from 'src/core/domain/uses-cases/company/update-company.use-case';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { AuthUseCase } from 'src/core/domain/uses-cases/auth/auth.use-case';
 
 @Module({
   controllers: [
-    AuthController, 
-    CompanyController, 
-    ResourceController, 
-    RoleController, 
-    UserController, 
-    ActionController, 
-    RolePermissionController, 
+    AuthController,
+    CompanyController,
+    ResourceController,
+    RoleController,
+    UserController,
+    ActionController,
+    RolePermissionController,
     ApplicationController
   ],
   providers: [
     // **Security**
-    JwtStrategy,
+
+    JwtAzureStrategy,
+    JwtInternalStrategy,
     PrismaService,
 
     // **Repositories**
@@ -104,7 +109,7 @@ import { UpdateCompanyUseCase } from 'src/core/domain/uses-cases/company/update-
       provide: 'IApplicationRepository',
       useClass: PrismaApplicationRepository,
     },
-    
+
 
     // **User Use Cases**
     CreateUserUseCase,
@@ -122,7 +127,7 @@ import { UpdateCompanyUseCase } from 'src/core/domain/uses-cases/company/update-
 
     // **Role Permission Use Cases**
     GetPermissionsByRoleUseCase,
-    RemovePermissionUseCase, 
+    RemovePermissionUseCase,
     CheckPermissionUseCase,
     AssignPermissionsUseCase,
 
@@ -144,16 +149,26 @@ import { UpdateCompanyUseCase } from 'src/core/domain/uses-cases/company/update-
 
     // **Other Use Cases**
     ActionSeedUseCase,
-    ApplicationSeedUseCase
+    ApplicationSeedUseCase,
+    AuthUseCase
   ],
   imports: [
-    PassportModule.register({ defaultStrategy: 'jwt', session: false }),
-    JwtModule.register({}),
+    PassportModule.register({ defaultStrategy: 'internal', session: false }),
+    ConfigModule.forRoot(),
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET') || 'default_secret', // ✅ Evita que sea undefined
+        signOptions: { expiresIn: '1h' },
+      }),
+    }),
   ],
   exports: [
     PassportModule,
     JwtModule,
-    JwtStrategy,
+    JwtAzureStrategy,
+    JwtInternalStrategy,
 
     // **User Use Cases**
     CreateUserUseCase,
@@ -171,7 +186,7 @@ import { UpdateCompanyUseCase } from 'src/core/domain/uses-cases/company/update-
 
     // **Role Permission Use Cases**
     GetPermissionsByRoleUseCase,
-    RemovePermissionUseCase, 
+    RemovePermissionUseCase,
     CheckPermissionUseCase,
     AssignPermissionsUseCase,
 
@@ -193,7 +208,8 @@ import { UpdateCompanyUseCase } from 'src/core/domain/uses-cases/company/update-
 
     // **Other Use Cases**
     ActionSeedUseCase,
-    ApplicationSeedUseCase
+    ApplicationSeedUseCase,
+    AuthUseCase
   ],
 })
-export class AuthModule {}
+export class AuthModule { }

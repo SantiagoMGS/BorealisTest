@@ -18,9 +18,7 @@ export class AssignPermissionsUseCase {
     this.logger.log(`Assigning permissions to role ID: ${roleId}`);
 
     try {
-      const role = await this.roleRepository.findById(roleId);
-      console.log(role);
-      
+      const role = await this.roleRepository.findById(roleId);      
       if (!role) throw new NotFoundException(`Rol con ID ${roleId} no encontrado`);
 
       await this.rolePermissionRepository.assignPermissions(roleId, permissions);

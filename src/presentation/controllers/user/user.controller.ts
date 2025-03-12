@@ -1,4 +1,9 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Put, Query, HttpCode, HttpStatus, Logger, ParseIntPipe, ParseUUIDPipe } from "@nestjs/common";
+import {
+  Body, Controller, Delete, Get, NotFoundException, Param,
+  Post, Put, Query, HttpCode, HttpStatus, ParseIntPipe,
+  ParseUUIDPipe, UseGuards
+} from "@nestjs/common";
+import { AuthGuard } from '@nestjs/passport';
 import { CreateUserUseCase } from "src/core/domain/uses-cases/user/create-user.use-case";
 import { CreateUserDto } from "./dtos/create-user.dto";
 import { FindAllUsersUseCase } from "src/core/domain/uses-cases/user/find-all-user.use-case";
@@ -15,21 +20,24 @@ export class UserController {
     private readonly findUserByEmailUseCase: FindUserUseCase,
     private readonly updateUserUseCase: UpdateUserUseCase,
     private readonly deleteUserUseCase: DeleteUserUseCase
-  ) {}
+  ) { }
 
   @Post()
+  @UseGuards(AuthGuard('internal'))
   @HttpCode(HttpStatus.CREATED)
   async createUser(@Body() createUserDto: CreateUserDto) {
     return this.createUserUseCase.execute(createUserDto);
   }
 
   @Get()
+  @UseGuards(AuthGuard('internal'))
   @HttpCode(HttpStatus.OK)
   async getAllUsers(@Query('page', ParseIntPipe) page = 1, @Query('limit', ParseIntPipe) limit = 10) {
     return this.findAllUsersUseCase.execute(page, limit);
   }
 
   @Get(':email')
+  @UseGuards(AuthGuard('internal'))
   @HttpCode(HttpStatus.OK)
   async getUserByEmail(@Param('email') email: string) {
     const user = await this.findUserByEmailUseCase.execute(email);
@@ -38,12 +46,14 @@ export class UserController {
   }
 
   @Put(':id')
+  @UseGuards(AuthGuard('internal'))
   @HttpCode(HttpStatus.OK)
   async updateUser(@Param('id', ParseUUIDPipe) id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.updateUserUseCase.execute(id, updateUserDto);
   }
 
   @Delete(':email')
+  @UseGuards(AuthGuard('azure'))
   @HttpCode(HttpStatus.OK)
   async deleteUser(@Param('email') email: string) {
     await this.deleteUserUseCase.execute(email);

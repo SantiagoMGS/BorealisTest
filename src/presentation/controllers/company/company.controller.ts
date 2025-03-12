@@ -43,9 +43,7 @@ export class CompanyController {
 
   @Get('name/:name')
   @HttpCode(HttpStatus.OK)
-  async getCompanyByName(@Param('name') name: string) {
-    console.log(name);
-    
+  async getCompanyByName(@Param('name') name: string) {    
     const company = await this.getByNameCompanyUseCase.execute(name);
     if (!company) throw new NotFoundException(`Compañía con nombre ${name} no encontrada`);
     return company;
