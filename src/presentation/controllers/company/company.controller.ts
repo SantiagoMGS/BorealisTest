@@ -71,6 +71,7 @@ export class CompanyController {
   }
 
   @Delete(':id')
+  @UseGuards(AuthGuard('internal'))
   @HttpCode(HttpStatus.OK)
   async deleteCompany(@Param('id', ParseUUIDPipe) id: string) {
     await  this.deleteCompanyUseCase.execute(id);
