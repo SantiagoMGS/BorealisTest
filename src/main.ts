@@ -5,6 +5,7 @@ import { HttpExceptionFilter } from './infrastructure/ilters/http-exception.filt
 import { ResponseInterceptor } from './infrastructure/interceptores/response.interceptor';
 
 async function bootstrap() {
+  const logger = new Logger('BorealisMain');
   try {
     const app = await NestFactory.create(AppModule);
 
@@ -22,22 +23,22 @@ async function bootstrap() {
 
     // **Habilitar CORS**
     app.enableCors({
-      origin: '*', 
+      origin: '*',
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
       allowedHeaders: ['Content-Type', 'Authorization'],
     });
 
     // **Prefijo global para la API**
-    app.setGlobalPrefix('api'); 
+    app.setGlobalPrefix('api');
 
     // **Iniciar la aplicación**
     const port = process.env.PORT || 3000;
     await app.listen(port);
 
-    Logger.log(`🚀 Aplicación iniciada en http://localhost:${port}/api`);
+    logger.log(`🚀 Aplicación iniciada en http://localhost:${port}/api`);
   } catch (error) {
-    Logger.error('❌ Error al iniciar la aplicación', error);
-    process.exit(1); 
+    logger.error('❌ Error al iniciar la aplicación', error);
+    process.exit(1);
   }
 }
 
