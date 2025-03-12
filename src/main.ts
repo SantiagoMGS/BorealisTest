@@ -3,12 +3,16 @@ import { AppModule } from './app.module';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { HttpExceptionFilter } from './infrastructure/ilters/http-exception.filter';
 import { ResponseInterceptor } from './infrastructure/interceptores/response.interceptor';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
+
   try {
     const app = await NestFactory.create(AppModule);
 
     // **Configuraciones globales**
+    app.get(ConfigService);
+
     app.useGlobalFilters(new HttpExceptionFilter());
     app.useGlobalInterceptors(new ResponseInterceptor());
 
