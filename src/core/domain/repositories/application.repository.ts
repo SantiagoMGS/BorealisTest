@@ -1,4 +1,4 @@
-import { Application } from "../entities/applicaiton.entity";
+import { Application } from "../entities/application.entity";
 
 export interface IApplicationRepository {
   createApplication(applicaiton: Application[]): Promise<Application[]>; 

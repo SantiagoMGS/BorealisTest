@@ -1,5 +1,5 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { Application } from '../../entities/applicaiton.entity';
+import { Application } from '../../entities/application.entity';
 import { actionInitialData } from 'src/infrastructure/prisma/seed/application.seed';
 import { IApplicationRepository } from '../../repositories/application.repository';
 
