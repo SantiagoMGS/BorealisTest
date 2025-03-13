@@ -1,9 +1,12 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { HttpExceptionFilter } from './infrastructure/ilters/http-exception.filter';
 import { ResponseInterceptor } from './infrastructure/interceptores/response.interceptor';
 import { ConfigService } from '@nestjs/config';
+import { AuthGuard } from '@nestjs/passport';
+import { PermissionGuard } from './core/domain/uses-cases/auth/guards/permission.guard';
+import { PrismaService } from './infrastructure/prisma/prisma.service';
 
 async function bootstrap() {
 
@@ -15,7 +18,7 @@ async function bootstrap() {
 
     app.useGlobalFilters(new HttpExceptionFilter());
     app.useGlobalInterceptors(new ResponseInterceptor());
-
+  
     app.useGlobalPipes(
       new ValidationPipe({
         whitelist: true,

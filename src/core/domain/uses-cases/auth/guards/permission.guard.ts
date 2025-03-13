@@ -1,62 +1,105 @@
-import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, ForbiddenException, Logger } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { PrismaService } from 'src/infrastructure/prisma/prisma.service';
 
 @Injectable()
 export class PermissionGuard implements CanActivate {
-  constructor(private readonly reflector: Reflector) { }
+    private readonly logger = new Logger(PermissionGuard.name);
+  
+  constructor(private readonly reflector: Reflector, private readonly prisma: PrismaService) { }
 
-  canActivate(context: ExecutionContext): boolean {
-    const requiredPermissions = this.reflector.get<{ resource: string; action: string }[]>(
-      'permissions',
-      context.getHandler(),
-    );
-
-    if (!requiredPermissions) return true; // Si no se requieren permisos, permite la acción
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    this.logger.log("✅ PermissionGuard ejecutándose...");
 
     const request = context.switchToHttp().getRequest();
     const user = request.user;
+    const routePath = request.route.path;  // 🔹 Obtiene la ruta actual
+    const method = request.method;         // 🔹 Obtiene el método HTTP
 
-    if (!user || !user.permissions) {
+     this.logger.log(`🔹 Validando permisos para ${method} en ${routePath}`);
+
+    if (!user || !user.userId) {
+       this.logger.log("❌ No hay usuario autenticado en la solicitud.");
       throw new ForbiddenException('No tienes permisos para realizar esta acción');
     }
 
-    console.log("🔹 Permisos del usuario en guardia:", user.permissions); // 🔥 LOG PARA DEPURAR
+    // 🔹 Mapear métodos HTTP a acciones
+    const actionMap: Record<string, string> = {
+      GET: 'read',
+      POST: 'create',
+      PUT: 'update',
+      DELETE: 'delete'
+    };
 
-    // Verifica si el usuario tiene un nivel suficiente para el permiso requerido
-    const hasPermission = requiredPermissions.some(requiredPermission =>
-      user.permissions.some(userPermission => {
-        console.log(`🔹 COMPARANDO: `, {
-          requiredResource: requiredPermission.resource,
-          requiredAction: requiredPermission.action,
-          requiredLevel: getActionLevel(requiredPermission.action),
-          userResource: userPermission.resource,
-          userAction: userPermission.action,
-          userLevel: userPermission.level,
-        });
+    const actionName = actionMap[method]; // 🔹 Determina la acción según el método HTTP
+    if (!actionName) {
+       this.logger.log(`⚠️ Método HTTP ${method} no tiene una acción asignada.`);
+      return false;
+    }
 
-        return (
-          userPermission.resource === requiredPermission.resource &&
-          userPermission.level >= getActionLevel(requiredPermission.action)
-        );
-      })
-    );
+    // 🔹 Determinar el recurso a partir de la ruta
+    const resourceName = PermissionGuard.extractResourceName(routePath);
+     this.logger.log(`🔹 Acción detectada: ${actionName}, Recurso detectado: ${resourceName}`);
 
+    // 🔹 Obtener el rol del usuario en la empresa
+    const userCompany = await this.prisma.userCompany.findFirst({
+      where: { userId: user.id },
+      select: { roleId: true }
+    });
+
+    if (!userCompany) {
+
+      throw new ForbiddenException('El usuario no tiene un rol asignado en ninguna empresa.');
+    }
+    
+    // 🔹 Buscar permisos del rol con el recurso y la acción correspondientes
+    const rolePermissions = await this.prisma.rolePermission.findMany({
+      where: { roleId: userCompany.roleId },
+      include: {
+        resource: true,
+        action: true,
+      },
+    });
+
+
+    // 🔹 Validar si el usuario tiene el permiso necesario con el nivel adecuado
+    const hasPermission = rolePermissions.some(rolePermission => {
+      return (
+        rolePermission.resource.name === resourceName &&
+        rolePermission.action.level >= PermissionGuard.getActionLevel(actionName) // ✅ Permite nivel superior
+      );
+    });
 
     if (!hasPermission) {
+       this.logger.log(`❌ Permiso denegado para ${actionName} en ${resourceName}`);
       throw new ForbiddenException('No tienes permisos suficientes');
     }
 
+     this.logger.log(`✅ Permiso concedido para ${actionName} en ${resourceName}`);
     return true;
   }
-}
 
-// Mapeo de acciones con niveles jerárquicos
-const getActionLevel = (action: string): number => {
-  const actionLevels: Record<string, number> = {
-    read: 1,
-    create: 2,
-    update: 3,
-    delete: 4,  // NIVEL MÁS ALTO
-  };
-  return actionLevels[action] || 0; 
-};
+  /**
+   * 🔹 Extrae el nombre del recurso desde la ruta.
+   * Por ejemplo: '/user/:id' -> 'user'
+   */
+  private static extractResourceName(routePath: string): string {
+    const parts = routePath.split('/').filter(part => part !== 'api' && part !== ''); // Filtra 'api' y vacíos
+    return parts.length > 0 ? parts[0] : 'unknown'; // Retorna el primer segmento después de '/api/'
+  }
+
+
+  /**
+   * 🔹 Obtiene el nivel jerárquico de una acción.
+   * Los niveles permiten controlar permisos escalables (ej. 'delete' > 'create').
+   */
+  private static getActionLevel(action: string): number {
+    const actionLevels: Record<string, number> = {
+      read: 1,
+      create: 2,
+      update: 3,
+      delete: 4, // 🔥 NIVEL MÁS ALTO
+    };
+    return actionLevels[action] || 0;
+  }
+}
