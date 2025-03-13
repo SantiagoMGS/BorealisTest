@@ -9,6 +9,6 @@ export interface IUserRepository {
   update(id: string, userData: Partial<User>): Promise<User>;
   assignUserToCompanies(userId: string, companyIds: string[], roleId: string): Promise<void>;
   updateUserRole(userId: string, companyId: string, roleId: string): Promise<void>;
-  getCompanyByUserId(userId: string): Promise<{ companyId: string; companyName: string }[]>;
+  getCompanyByUserId(userId: string): Promise<{ companyId: string; companyName: string; logo: string }[]>;
 
 }

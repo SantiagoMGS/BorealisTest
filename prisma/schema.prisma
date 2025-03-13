@@ -52,6 +52,9 @@ model Company {
   id        String   @id @default(uuid()) @db.Uuid
   name      String   @unique
   logo      String   @unique
+  primaryColor      String   
+  secondaryColor      String   
+  thirdColor      String   
   createdAt DateTime @default(now())
   updatedAt  DateTime @updatedAt
 

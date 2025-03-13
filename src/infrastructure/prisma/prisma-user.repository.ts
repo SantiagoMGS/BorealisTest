@@ -104,7 +104,7 @@ export class PrismaUserRepository implements IUserRepository {
       },
     });
   }
-  async getCompanyByUserId(userId: string): Promise<{ companyId: string; companyName: string }[]> {
+  async getCompanyByUserId(userId: string): Promise<{ companyId: string; companyName: string, logo: string }[]> {
     const userCompanies = await this.prisma.userCompany.findMany({
       where: { userId },
       select: {
@@ -112,6 +112,10 @@ export class PrismaUserRepository implements IUserRepository {
           select: {
             id: true,
             name: true,
+            logo: true,
+            primaryColor: true,
+            secondaryColor: true,
+            thirdColor: true,
           },
         },
       },
@@ -120,6 +124,10 @@ export class PrismaUserRepository implements IUserRepository {
     return userCompanies.map(({ company }) => ({
       companyId: company.id,
       companyName: company.name,
+      logo: company.logo,
+      primaryColor: company.primaryColor,
+      secondaryColor: company.secondaryColor,
+      thirdColor: company.thirdColor,
     }));
   }
 

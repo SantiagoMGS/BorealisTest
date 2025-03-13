@@ -22,7 +22,7 @@ export class CreateCompanyUseCase {
       }
 
       const newCompany = await this.companyRepository.createCompany(
-        new Company('', companyDto.name, companyDto.logo)
+        new Company('', companyDto.name, companyDto.logo, companyDto.primaryColor, companyDto.secondaryColor, companyDto.thirdColor)
       );
 
       // Verificar que todas las aplicaciones existan

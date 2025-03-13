@@ -4,7 +4,7 @@
 		"name": "Borealis-Auth",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "42420882",
-		"_collection_link": "https://team-borealis.postman.co/workspace/8a040f2c-eecc-4371-8b56-2247fe0e2349/collection/42420882-3055cabf-101e-4583-8b09-a259519f359a?action=share&source=collection_link&creator=42420882"
+		"_collection_link": "https://team-borealis.postman.co/workspace/team-borealis-Workspace~8a040f2c-eecc-4371-8b56-2247fe0e2349/collection/42420882-3055cabf-101e-4583-8b09-a259519f359a?action=share&source=collection_link&creator=42420882"
 	},
 	"item": [
 		{
@@ -78,13 +78,20 @@
 					"name": "create-role",
 					"request": {
 						"auth": {
-							"type": "noauth"
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwic3ViIjoiZDJjMTA1YTktYTU1Ny00ZGJmLWIwOTYtNDZkNjk3NmIxOWRkIiwiaWF0IjoxNzQxODgwNjU3LCJleHAiOjE3NDE4ODQyNTd9.UW9vHlDifMl3fecI9VA0GsxHhBtngQAOzpzQOZTyo0Q",
+									"type": "string"
+								}
+							]
 						},
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"name\": \"prueba\"\r\n}\r\n",
+							"raw": "{\r\n  \"name\": \"admin\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -171,7 +178,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImEucnJyckBleGFtcGxlLmNvbSIsInN1YiI6ImVjZjI0NWJhLTkzYTMtNGZlNi05N2QxLWRmODhjNzdlNTNjMCIsImlhdCI6MTc0MTgxMTM3MiwiZXhwIjoxNzQxODE0OTcyfQ.l2S_7THI_yIwzpjTSt1csFsTat79iEoIfTDiEXcWrt4",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwic3ViIjoiZDJjMTA1YTktYTU1Ny00ZGJmLWIwOTYtNDZkNjk3NmIxOWRkIiwiaWF0IjoxNzQxODgwNjU3LCJleHAiOjE3NDE4ODQyNTd9.UW9vHlDifMl3fecI9VA0GsxHhBtngQAOzpzQOZTyo0Q",
 									"type": "string"
 								}
 							]
@@ -180,7 +187,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"roleId\": \"c79ead85-9aba-4b39-b4c9-7fca13d3b2af\",\r\n  \"permissions\": [\r\n    { \"actionId\": \"e9cb7bd3-0d02-4d4e-80dd-4b561cab84a7\", \"resourceId\": \"979b2ca9-a987-422c-8d5f-bc8a0d8aa51e\" }\r\n  ]\r\n}\r\n",
+							"raw": "{\r\n  \"roleId\": \"9583b2d5-ee2a-43a6-aee1-0c4ae3bb0fbd\",\r\n  \"permissions\": [\r\n    { \"actionId\": \"fbdd8bf4-b253-4dfe-a93a-16222cf5c968\", \"resourceId\": \"7a344a1c-037d-4b46-816b-de0992c5e760\" }\r\n  ]\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -376,7 +383,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImEuZGFoaWFuYUBleGFtcGxlLmNvbSIsInN1YiI6IjZkYWRmZmJjLTM2YzEtNDBkYy1hMDE4LTE1MzRkYmZkMjVkNSIsImlhdCI6MTc0MTgxMTM4NiwiZXhwIjoxNzQxODE0OTg2fQ.ozNmcrojemWxRBoht7yXkGStuHJUGh3M3GS-CVmr6hY",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwic3ViIjoiYzQ5ODdmNGItYTgyZC00M2Q0LWEzYWMtNWQ4YmM5MmJmOThhIiwiaWF0IjoxNzQxODc0NTMyLCJleHAiOjE3NDE4NzgxMzJ9.I11W9B2hZ2vAnIxi9spgWHNW5RdC7gAI-WtuyKzVmF0",
 									"type": "string"
 								}
 							]
@@ -385,7 +392,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"name\": \"Sofia\",\r\n  \"email\": \"a.sofi@example.com\",\r\n  \"password\": \"SecurePass123\",\r\n  \"companyIds\": [\r\n    \"1b3a270e-8ea8-4b6f-a44f-f9589d9b6a25\"\r\n  ],\r\n  \"roleId\": \"666c42f2-1868-4b1d-b35f-8afd0a65bd3f\"\r\n}\r\n",
+							"raw": "{\r\n  \"name\": \"Sofia\",\r\n  \"email\": \"a.sofi@example.com\",\r\n  \"password\": \"SecurePass123\",\r\n  \"companyIds\": [\r\n    \"1b3a270e-8ea8-4b6f-a44f-f9589d9b6a25\"\r\n  ],\r\n  \"roleId\": \"a5635c86-592a-4b2f-9ff5-7470da20857c\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -606,7 +613,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"email\": \"a.dahiana@example.com\",\r\n  \"password\": \"SecurePass123\"\r\n}",
+							"raw": "{\r\n  \"email\": \"admin@example.com\",\r\n  \"password\": \"SecurePass123\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -669,13 +676,20 @@
 					"name": "create-resource",
 					"request": {
 						"auth": {
-							"type": "noauth"
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwic3ViIjoiZDJjMTA1YTktYTU1Ny00ZGJmLWIwOTYtNDZkNjk3NmIxOWRkIiwiaWF0IjoxNzQxODgwNjU3LCJleHAiOjE3NDE4ODQyNTd9.UW9vHlDifMl3fecI9VA0GsxHhBtngQAOzpzQOZTyo0Q",
+									"type": "string"
+								}
+							]
 						},
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"name\": \"role\"\r\n}\r\n",
+							"raw": "{\r\n  \"name\": \"company\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -755,7 +769,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImEuZGFoaWFuYUBleGFtcGxlLmNvbSIsInN1YiI6IjZkYWRmZmJjLTM2YzEtNDBkYy1hMDE4LTE1MzRkYmZkMjVkNSIsImlhdCI6MTc0MTgxMTM4NiwiZXhwIjoxNzQxODE0OTg2fQ.ozNmcrojemWxRBoht7yXkGStuHJUGh3M3GS-CVmr6hY",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwic3ViIjoiZDJjMTA1YTktYTU1Ny00ZGJmLWIwOTYtNDZkNjk3NmIxOWRkIiwiaWF0IjoxNzQxODgwNjU3LCJleHAiOjE3NDE4ODQyNTd9.UW9vHlDifMl3fecI9VA0GsxHhBtngQAOzpzQOZTyo0Q",
 									"type": "string"
 								}
 							]
@@ -764,7 +778,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"name\": \"prueba\",\r\n  \"logo\": \"https://prueba.com/logo.png\",\r\n  \"applicationIds\": [\"0cbdc802-ae04-486e-a08e-70e8fb236499\"]\r\n}\r\n",
+							"raw": "{\r\n  \"name\": \"prueba\",\r\n  \"logo\": \"https://prueba.com/logo.png\",\r\n  \"applicationIds\": [\"d48a9610-0e4d-4e24-b8f9-e845e39e52b2\"],\r\n  \"primaryColor\": \"#FFFFFF\",\r\n  \"secondaryColor\":\"#000000\",\r\n  \"thirdColor\": \"#1487447\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -947,6 +961,46 @@
 								"api",
 								"company",
 								"dbb1b2e4-b2c3-4c4e-97b9-927552558a7c"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update-role-company",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImEucnJyckBleGFtcGxlLmNvbSIsInN1YiI6ImVjZjI0NWJhLTkzYTMtNGZlNi05N2QxLWRmODhjNzdlNTNjMCIsImlhdCI6MTc0MTgxMDAwOCwiZXhwIjoxNzQxODEzNjA4fQ.1e7XECk9pu1CbdqK7lxR5p-rFc6vLk_WShErjGE6yyA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userId\": \"6dadffbc-36c1-40dc-a018-1534dbfd25d5\",\r\n    \"companyId\": \"1b3a270e-8ea8-4b6f-a44f-f9589d9b6a25\",\r\n    \"roleId\": \"c79ead85-9aba-4b39-b4c9-7fca13d3b2af\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/user/update-role",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"user",
+								"update-role"
 							]
 						}
 					},

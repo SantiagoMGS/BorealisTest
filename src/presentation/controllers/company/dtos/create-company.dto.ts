@@ -21,4 +21,17 @@ export class CreateCompanyDto {
   @ArrayNotEmpty({ message: 'Debe haber al menos una aplicación asociada' })
   @IsUUID('4', { each: true, message: 'Cada applicationId debe ser un UUID válido' })
   applicationIds: string[];
+
+  @ApiProperty({ example: '#FFFFFF', description: 'Color primario de la compañía' })
+  @IsString({ message: 'El color primario debe ser un texto' })
+  primaryColor: string;
+
+  @ApiProperty({ example: '#000000', description: 'Color secundario de la compañía' })
+  @IsString({ message: 'El color secundario debe ser un texto' })
+  secondaryColor: string;
+
+  @ApiProperty({ example: '#FF0000', description: 'Color terciario de la compañía' })
+  @IsString({ message: 'El color terciario debe ser un texto' })
+  thirdColor: string;
+
 }

@@ -17,7 +17,15 @@ export class PrismaCompanyRepository implements ICompanyRepository {
   }
 
   async createCompany(company: Company): Promise<Company> {
-    return this.prisma.company.create({ data: { name: company.name, logo: company.logo } });
+    return this.prisma.company.create({
+      data: {
+        name: company.name,
+        logo: company.logo,
+        primaryColor: company.primaryColor,
+        secondaryColor: company.secondaryColor,
+        thirdColor: company.thirdColor
+      }
+    });
   }
 
   async deleteCompany(id: string): Promise<void> {
