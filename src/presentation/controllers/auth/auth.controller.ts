@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards, Req, HttpStatus, HttpCode,  Post, Body, Request, Logger } from '@nestjs/common';
+import { Controller, Get, UseGuards, Req, HttpStatus, HttpCode, Post, Body, Request, Logger } from '@nestjs/common';
 import { CustomAuthGuard } from 'src/core/domain/uses-cases/auth/guards/custom-auth.guard';
 import { LoginDto } from '../user/dtos/login.dto';
 import { AuthUseCase } from 'src/core/domain/uses-cases/auth/auth.use-case';
@@ -32,9 +32,7 @@ export class AuthController {
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
     const user = await this.authUseCase.validateUser(loginDto.email, loginDto.password);
-    this.logger.log("user", user);
-
-    return { ...await this.authUseCase.login(user), companies: user.companies };
+    return { ...await this.authUseCase.login(user), user: user };
   }
 
   @Get('profile')

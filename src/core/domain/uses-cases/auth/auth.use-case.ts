@@ -29,7 +29,6 @@ export class AuthUseCase {
 
     // Retornar datos sin la contraseña
     const { password: _, ...result } = user;
-
     // Obtener las compañías asociadas al usuario
     const companies = await this.userRepository.getCompanyByUserId(user.id);
     return { ...result, companies }
