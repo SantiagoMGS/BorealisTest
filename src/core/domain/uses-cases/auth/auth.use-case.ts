@@ -37,7 +37,7 @@ export class AuthUseCase {
 
   async login(user: any) {
     if (!user || !user.email || !user.id) {
-      console.error("🔴 Error: Datos de usuario inválidos en login()", user);
+      this.logger.error("🔴 Error: Datos de usuario inválidos en login()", user);
       throw new Error("No se puede generar el token: Datos de usuario inválidos");
     }
 

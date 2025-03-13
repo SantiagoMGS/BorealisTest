@@ -69,8 +69,6 @@ export class UserController {
   async updateUserRole(@Body() updateUserRoleDto: UpdateUserCompanyDto): Promise<void> {
     const permission = await this.permissionService.getPermissions('user', 'update');
     Permissions(permission);
-
-    console.log('Llega acá');
     const { userId, companyId, roleId } = updateUserRoleDto;
     await this.updateUserCompanyRoleUseCase.execute(userId, companyId, roleId);
   }

@@ -3,6 +3,7 @@ import { ApplicationSeedUseCase } from "src/core/domain/uses-cases/application/a
 
 @Controller('application') 
 export class ApplicationController {
+  private logger = new Logger(ApplicationController.name);
   constructor(
     private readonly applicationSeedUseCase: ApplicationSeedUseCase
   ) {}
@@ -12,10 +13,10 @@ export class ApplicationController {
   async executeApplicationSeed() {
     try {
       await this.applicationSeedUseCase.execute();
-      Logger.log('✅ Application seed executed successfully');
+      this.logger.log('✅ Application seed executed successfully');
       return { message: '✅ Application seed executed successfully' };
     } catch (error) {
-      Logger.error('❌ Error executing application seed:', error);
+      this.logger.error('❌ Error executing application seed:', error);
       throw error;
     }
   }

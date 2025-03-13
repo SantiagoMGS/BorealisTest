@@ -7,10 +7,11 @@ import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class JwtAzureStrategy extends PassportStrategy(Strategy, 'jwt') {
+  private logger = new Logger(JwtAzureStrategy.name);
+
   private client: jwksClient.JwksClient
 
   constructor(private configService: ConfigService) {
-    Logger.log('✅ JwtStrategy se está registrando en NestJS');
 
 
     super({
@@ -26,7 +27,7 @@ export class JwtAzureStrategy extends PassportStrategy(Strategy, 'jwt') {
 
           const key = this.client.getSigningKey(kid, (err, key) => {
             if (err) {
-              Logger.error('🔴 Error al obtener la clave de firma:', err);
+              this.logger.error('🔴 Error al obtener la clave de firma:', err);
               return done(err);
             }
             const signingKey = key!.getPublicKey();
@@ -34,7 +35,7 @@ export class JwtAzureStrategy extends PassportStrategy(Strategy, 'jwt') {
 
           });
         } catch (error) {
-          Logger.error('🔴 Error al obtener la clave de firma:', error);
+          this.logger.error('🔴 Error al obtener la clave de firma:', error);
           done(error);
         }
       },
@@ -42,6 +43,7 @@ export class JwtAzureStrategy extends PassportStrategy(Strategy, 'jwt') {
       issuer: `https://sts.windows.net/${configService.get<string>('AZURE_AD_TENANT_ID')}/`,
       algorithms: ['RS256'],
     });
+    this.logger.log('✅ JwtStrategy se está registrando en NestJS');
 
     this.client = jwksClient({
       jwksUri: `https://login.microsoftonline.com/${configService.get<string>('AZURE_AD_TENANT_ID')}/discovery/v2.0/keys`,
@@ -51,10 +53,10 @@ export class JwtAzureStrategy extends PassportStrategy(Strategy, 'jwt') {
   async validate(payload: any) {
 
     if (!payload) {
-      Logger.error('🔴 No se recibió payload en el token');
+      this.logger.error('🔴 No se recibió payload en el token');
       throw new UnauthorizedException('Token inválido');
     }
-    Logger.log('✅ Usuario autenticado correctamente:', { userId: payload.sub, user: payload });
+    this.logger.log('✅ Usuario autenticado correctamente:', { userId: payload.sub, user: payload });
     return { userId: payload.sub, name: payload.given_name + payload.family_name, email: payload.unique_name };
   }
 }
