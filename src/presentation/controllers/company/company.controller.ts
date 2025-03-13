@@ -9,8 +9,11 @@ import { GetByIdCompanyUseCase } from "src/core/domain/uses-cases/company/get-by
 import { UpdateCompanyUseCase } from "src/core/domain/uses-cases/company/update-company.use-case";
 import { UpdateCompanyDto } from "./dtos/update-company.dto";
 import { AuthGuard } from "@nestjs/passport";
+import { PermissionGuard } from "src/core/domain/uses-cases/auth/guards/permission.guard";
 
 @Controller('company')
+@UseGuards(AuthGuard('internal'), PermissionGuard) 
+
 export class CompanyController {
   constructor(
     private readonly createCompanyUseCase: CreateCompanyUseCase,
@@ -23,21 +26,18 @@ export class CompanyController {
   ) {}
 
   @Post()
-  @UseGuards(AuthGuard('internal'))
   @HttpCode(HttpStatus.CREATED)
   async createCompany(@Body() createCompanyDto: CreateCompanyDto) {
     return this.createCompanyUseCase.execute(createCompanyDto);
   }
 
   @Get()
-  @UseGuards(AuthGuard('internal'))
   @HttpCode(HttpStatus.OK)
   async getAllCompanies(@Query('page', ParseIntPipe) page = 1, @Query('limit', ParseIntPipe) limit = 10) {
     return this.getAllCompaniesUseCase.execute(page, limit);
   }
 
   @Get(':id')
-  @UseGuards(AuthGuard('internal'))
   @HttpCode(HttpStatus.OK)
   async getCompanyById(@Param('id', ParseUUIDPipe) id: string) {
     const company = await this.getByIdCompanyUseCase.execute(id);
@@ -46,7 +46,6 @@ export class CompanyController {
   }
 
   @Get('name/:name')
-  @UseGuards(AuthGuard('internal'))
   @HttpCode(HttpStatus.OK)
   async getCompanyByName(@Param('name') name: string) {    
     const company = await this.getByNameCompanyUseCase.execute(name);
@@ -54,7 +53,6 @@ export class CompanyController {
     return company;
   }  
   @Put(':id')
-  @UseGuards(AuthGuard('internal'))
   @HttpCode(HttpStatus.OK)
   async updateCompany(@Param('id', ParseUUIDPipe) id: string, @Body() updateCompanyDto: UpdateCompanyDto) {
     const updatedCompany = await this.updateCompanyUseCase.execute(id, updateCompanyDto);
@@ -62,7 +60,6 @@ export class CompanyController {
   }
 
   @Post('assign-applications')
-  @UseGuards(AuthGuard('internal'))
   @HttpCode(HttpStatus.OK)
   async assignApplicationsToCompanies(
     @Body() assignDto: { companyIds: string[], applicationIds: string[] }
@@ -71,7 +68,6 @@ export class CompanyController {
   }
 
   @Delete(':id')
-  @UseGuards(AuthGuard('internal'))
   @HttpCode(HttpStatus.OK)
   async deleteCompany(@Param('id', ParseUUIDPipe) id: string) {
     await  this.deleteCompanyUseCase.execute(id);

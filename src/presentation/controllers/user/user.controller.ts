@@ -18,7 +18,7 @@ import { UpdateUserCompanyRoleUseCase } from "src/core/domain/uses-cases/user/up
 import { PermissionService } from "src/core/domain/uses-cases/auth/services/permission.service";
 
 @Controller('user')
-@UseGuards(AuthGuard('internal'), PermissionGuard) // ✅ Aplica `PermissionGuard` solo aquí
+@UseGuards(AuthGuard('internal'), PermissionGuard) 
 
 export class UserController {
   constructor(
@@ -40,7 +40,6 @@ export class UserController {
 
   // Solo los usuarios con permiso para LEER usuarios pueden acceder
   @Get()
-  @UseGuards(AuthGuard('internal'))
   @HttpCode(HttpStatus.OK)
   async getAllUsers(
     @Query('page', ParseIntPipe) page = 1,
@@ -53,7 +52,6 @@ export class UserController {
 
   // Solo los usuarios con permiso para LEER un usuario específico pueden acceder
   @Get(':email')
-  @UseGuards(AuthGuard('internal'))
   @HttpCode(HttpStatus.OK)
   async getUserByEmail(@Param('email') email: string) {
     const permission = await this.permissionService.getPermissions('user', 'read');
@@ -64,7 +62,6 @@ export class UserController {
   }
 
   @Put('update-role')
-  @UseGuards(AuthGuard('internal'))
   @HttpCode(HttpStatus.OK)
   async updateUserRole(@Body() updateUserRoleDto: UpdateUserCompanyDto): Promise<void> {
     const permission = await this.permissionService.getPermissions('user', 'update');
@@ -75,7 +72,6 @@ export class UserController {
 
   // Solo los usuarios con permiso para ACTUALIZAR usuarios pueden acceder
   @Put(':email')
-  @UseGuards(AuthGuard('internal'))
   @HttpCode(HttpStatus.OK)
   async updateUser(@Param('email') email: string, @Body() updateUserDto: UpdateUserDto) {
     const permission = await this.permissionService.getPermissions('user', 'update');
@@ -85,7 +81,6 @@ export class UserController {
 
   // Solo los usuarios con permiso para ELIMINAR usuarios pueden acceder
   @Delete(':email')
-  @UseGuards(AuthGuard('internal'))
   @HttpCode(HttpStatus.OK)
   async deleteUser(@Param('email') email: string) {
     const permission = await this.permissionService.getPermissions('user', 'delete');

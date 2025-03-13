@@ -6,8 +6,11 @@ import { RemovePermissionUseCase } from 'src/core/domain/uses-cases/role/role-pe
 import { AssignPermissionsDto } from './dtos/assign-permissions.dto';
 import { CheckPermissionDto } from './dtos/check-permission.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { PermissionGuard } from 'src/core/domain/uses-cases/auth/guards/permission.guard';
 
 @Controller('role-permission')
+@UseGuards(AuthGuard('internal'), PermissionGuard) 
+
 export class RolePermissionController {
   constructor(
     private readonly assignPermissionsUseCase: AssignPermissionsUseCase,
@@ -17,28 +20,24 @@ export class RolePermissionController {
   ) {}
 
   @Post()
-  @UseGuards(AuthGuard('internal'))
   @HttpCode(HttpStatus.CREATED)
   async assignPermissions(@Body() assignPermissionsDto: AssignPermissionsDto) {
     return this.assignPermissionsUseCase.execute(assignPermissionsDto);
   }
 
   @Get(':roleId')
-  @UseGuards(AuthGuard('internal'))
   @HttpCode(HttpStatus.OK)
   async getPermissions(@Param('roleId', ParseUUIDPipe) roleId: string) {
     return this.getPermissionsByRoleUseCase.execute(roleId);
   }
 
   @Delete()
-  @UseGuards(AuthGuard('internal'))
   @HttpCode(HttpStatus.NO_CONTENT)
   async removePermission(@Body() removePermissionDto: { roleId: string; actionId: string; resourceId: string }) {
     return this.removePermissionUseCase.execute(removePermissionDto.roleId, removePermissionDto.actionId, removePermissionDto.resourceId);
   }
 
   @Post('/check')
-  @UseGuards(AuthGuard('internal'))
   @HttpCode(HttpStatus.OK)
   async checkPermission(@Body() checkPermissionDto: CheckPermissionDto) {
     return this.checkPermissionUseCase.execute(checkPermissionDto);

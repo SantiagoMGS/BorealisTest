@@ -7,8 +7,11 @@ import { UpdateResourceUseCase } from "src/core/domain/uses-cases/resource/updat
 import { GetAllResourcesUseCase } from "src/core/domain/uses-cases/resource/get-all-resorce.use-case";
 import { GetByIdResourceUseCase } from "src/core/domain/uses-cases/resource/get-resoure.use-case";
 import { AuthGuard } from "@nestjs/passport";
+import { PermissionGuard } from "src/core/domain/uses-cases/auth/guards/permission.guard";
 
 @Controller('resource')
+@UseGuards(AuthGuard('internal'), PermissionGuard) 
+
 export class ResourceController {
   constructor(
     private readonly createResourceUseCase: CreateResourceUseCase,
@@ -19,21 +22,18 @@ export class ResourceController {
   ) {}
 
   @Post()
-  @UseGuards(AuthGuard('internal'))  
   @HttpCode(HttpStatus.CREATED)
   async createResource(@Body() createResourceDto: CreateResourceDto) {
     return this.createResourceUseCase.execute(createResourceDto);
   }
 
   @Get()
-  @UseGuards(AuthGuard('internal'))
   @HttpCode(HttpStatus.OK)
   async getAllResources(@Query('page', ParseIntPipe) page = 1, @Query('limit', ParseIntPipe) limit = 10) {
     return this.findAllResourcesUseCase.execute(page, limit);
   }
 
   @Get(':id')
-  @UseGuards(AuthGuard('internal'))
   @HttpCode(HttpStatus.OK)
   async getResourceById(@Param('id', ParseUUIDPipe) id: string) {
     const resource = await this.findByIdResourceUseCase.execute(id);
@@ -42,14 +42,12 @@ export class ResourceController {
   }
 
   @Put(':id')
-  @UseGuards(AuthGuard('internal'))
   @HttpCode(HttpStatus.OK)
   async updateResource(@Param('id', ParseUUIDPipe) id: string, @Body() updateResourceDto: UpdateResourceDto) {
     return this.updateResourceUseCase.execute(id, updateResourceDto);
   }
 
   @Delete(':id')
-  @UseGuards(AuthGuard('internal'))
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteResource(@Param('id', ParseUUIDPipe) id: string) {
     return this.deleteResourceUseCase.execute(id);

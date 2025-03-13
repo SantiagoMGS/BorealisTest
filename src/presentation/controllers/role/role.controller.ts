@@ -7,8 +7,11 @@ import { CreateRoleDto } from "./dtos/create-role.dto";
 import { UpdateRoleDto } from "./dtos/update-role.dto";
 import { UpdateRoleUseCase } from "src/core/domain/uses-cases/role/update-role.use-case";
 import { AuthGuard } from "@nestjs/passport";
+import { PermissionGuard } from "src/core/domain/uses-cases/auth/guards/permission.guard";
 
 @Controller('role')
+@UseGuards(AuthGuard('internal'), PermissionGuard)
+
 export class RoleController {
   constructor(
     private readonly createRoleUseCase: CreateRoleUseCase,
@@ -18,21 +21,18 @@ export class RoleController {
     private readonly deleteRoleUseCase: DeleteRoleUseCase
   ) { }
   @Post()
-  @UseGuards(AuthGuard('internal'))
   @HttpCode(HttpStatus.CREATED)
   async createRole(@Body() createRoleDto: CreateRoleDto) {
     return this.createRoleUseCase.execute(createRoleDto);
   }
 
   @Get()
-  @UseGuards(AuthGuard('internal'))
   @HttpCode(HttpStatus.OK)
   async getAllRoles(@Query('page', ParseIntPipe) page = 1, @Query('limit', ParseIntPipe) limit = 10) {
     return this.getAllRolesUseCase.execute(page, limit);
   }
 
   @Get(':id')
-  @UseGuards(AuthGuard('internal'))
   @HttpCode(HttpStatus.OK)
   async getRoleById(@Param('id', ParseUUIDPipe) id: string) {
     const role = await this.getRoleByIdUseCase.execute(id);
@@ -41,7 +41,6 @@ export class RoleController {
   }
 
   @Put(':id')
-  @UseGuards(AuthGuard('internal'))
   @HttpCode(HttpStatus.OK)
   async updateRole(@Param('id', ParseUUIDPipe) id: string, @Body() updateRoleDto: UpdateRoleDto) {
     const role = this.updateRoleUseCase.execute(id, updateRoleDto);
@@ -50,11 +49,10 @@ export class RoleController {
   }
 
   @Delete(':id')
-  @UseGuards(AuthGuard('internal'))
   @HttpCode(HttpStatus.OK)
   async deleteRole(@Param('id', ParseUUIDPipe) id: string) {
     const role = this.deleteRoleUseCase.execute(id);
     if (!role) throw new NotFoundException(`Rol con ID ${id} no encontrado`);
-    return  { message: `El Rol: ${id} eliminado correctamente.` };
+    return { message: `El Rol: ${id} eliminado correctamente.` };
   }
 }
