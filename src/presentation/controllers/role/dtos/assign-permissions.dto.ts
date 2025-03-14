@@ -1,16 +1,32 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsString, IsUUID, ArrayNotEmpty } from 'class-validator';
+import { IsArray, IsString, IsUUID, ArrayNotEmpty, IsNotEmpty } from 'class-validator';
 
 export class AssignPermissionsDto {
-  @ApiProperty({ example: '550e8400-e29b-41d4-a716-446655440000', description: 'ID del rol' })
+  @ApiProperty({
+    description: 'The UUID of the role',
+    example: '123e4567-e89b-12d3-a456-426614174000'
+  })
   @IsUUID()
+  @IsNotEmpty()
   roleId: string;
 
   @ApiProperty({
-    example: [{ actionId: '1', subresourceId: '1' }],
-    description: 'Lista de permisos a asignar',
+    description: 'List of permission IDs to assign to the role',
+    example: [
+      { actionId: '123e4567-e89b-12d3-a456-426614174001', resourceId: '123e4567-e89b-12d3-a456-426614174002' },
+      { actionId: '123e4567-e89b-12d3-a456-426614174003', resourceId: '123e4567-e89b-12d3-a456-426614174004' }
+    ],
+    type: 'array',
+    items: {
+      type: 'object',
+      properties: {
+        actionId: { type: 'string', format: 'uuid' },
+        resourceId: { type: 'string', format: 'uuid' }
+      }
+    }
   })
   @IsArray()
-  @ArrayNotEmpty()
+  @IsNotEmpty()
   permissions: { actionId: string; subresourceId: string }[];
+
 }

@@ -1,16 +1,28 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsUUID } from 'class-validator';
+import { IsString, IsNotEmpty, IsUUID } from 'class-validator';
 
 export class CheckPermissionDto {
-  @ApiProperty({ example: '550e8400-e29b-41d4-a716-446655440000', description: 'ID del rol' })
+  @ApiProperty({
+    description: 'The UUID of the role',
+    example: '123e4567-e89b-12d3-a456-426614174000'
+  })
   @IsUUID()
+  @IsNotEmpty()
   roleId: string;
 
-  @ApiProperty({ example: '1', description: 'ID de la acción' })
+  @ApiProperty({
+    description: 'The UUID of the action',
+    example: '123e4567-e89b-12d3-a456-426614174001'
+  })
   @IsUUID()
+  @IsNotEmpty()
   actionId: string;
 
-  @ApiProperty({ example: '1', description: 'ID del recurso' })
+  @ApiProperty({
+    description: 'The UUID of the resource',
+    example: '123e4567-e89b-12d3-a456-426614174002'
+  })
   @IsUUID()
+  @IsNotEmpty()
   resourceId: string;
 }

@@ -24,36 +24,36 @@ export class RoleController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Create a new role' })
+  @ApiOperation({ summary: 'Crear un nuevo rol' })
   @ApiBody({ type: CreateRoleDto })
-  @ApiResponse({ status: HttpStatus.CREATED, description: 'The role has been successfully created.' })
-  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Invalid input data.' })
-  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized.' })
-  @ApiResponse({ status: HttpStatus.FORBIDDEN, description: 'Forbidden resource.' })
+  @ApiResponse({ status: HttpStatus.CREATED, description: 'El rol ha sido creado exitosamente.' })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Datos de entrada inválidos.' })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'No autorizado.' })
+  @ApiResponse({ status: HttpStatus.FORBIDDEN, description: 'Recurso prohibido.' })
   async createRole(@Body() createRoleDto: CreateRoleDto) {
     return this.createRoleUseCase.execute(createRoleDto);
   }
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get all roles with pagination' })
-  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number, default is 1' })
-  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Number of items per page, default is 10' })
-  @ApiResponse({ status: HttpStatus.OK, description: 'List of roles.' })
-  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized.' })
-  @ApiResponse({ status: HttpStatus.FORBIDDEN, description: 'Forbidden resource.' })
+  @ApiOperation({ summary: 'Obtener todos los roles con paginación' })
+  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Número de página, el valor predeterminado es 1' })
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Número de elementos por página, el valor predeterminado es 10' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Lista de roles.' })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'No autorizado.' })
+  @ApiResponse({ status: HttpStatus.FORBIDDEN, description: 'Recurso prohibido.' })
   async getAllRoles(@Query('page', ParseIntPipe) page = 1, @Query('limit', ParseIntPipe) limit = 10) {
     return this.getAllRolesUseCase.execute(page, limit);
   }
 
   @Get(':id')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get a role by ID' })
-  @ApiParam({ name: 'id', required: true, description: 'Role UUID' })
-  @ApiResponse({ status: HttpStatus.OK, description: 'The role details.' })
-  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Role not found.' })
-  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized.' })
-  @ApiResponse({ status: HttpStatus.FORBIDDEN, description: 'Forbidden resource.' })
+  @ApiOperation({ summary: 'Obtener un rol por ID' })
+  @ApiParam({ name: 'id', required: true, description: 'UUID del rol' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Detalles del rol.' })
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Rol no encontrado.' })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'No autorizado.' })
+  @ApiResponse({ status: HttpStatus.FORBIDDEN, description: 'Recurso prohibido.' })
   async getRoleById(@Param('id', ParseUUIDPipe) id: string) {
     const role = await this.getRoleByIdUseCase.execute(id);
     if (!role) throw new NotFoundException(`Rol con ID ${id} no encontrado`);
@@ -62,14 +62,14 @@ export class RoleController {
 
   @Put(':id')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Update a role' })
-  @ApiParam({ name: 'id', required: true, description: 'Role UUID' })
+  @ApiOperation({ summary: 'Actualizar un rol' })
+  @ApiParam({ name: 'id', required: true, description: 'UUID del rol' })
   @ApiBody({ type: UpdateRoleDto })
-  @ApiResponse({ status: HttpStatus.OK, description: 'The role has been successfully updated.' })
-  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Role not found.' })
-  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Invalid input data.' })
-  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized.' })
-  @ApiResponse({ status: HttpStatus.FORBIDDEN, description: 'Forbidden resource.' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'El rol ha sido actualizado exitosamente.' })
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Rol no encontrado.' })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Datos de entrada inválidos.' })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'No autorizado.' })
+  @ApiResponse({ status: HttpStatus.FORBIDDEN, description: 'Recurso prohibido.' })
   async updateRole(@Param('id', ParseUUIDPipe) id: string, @Body() updateRoleDto: UpdateRoleDto) {
     const role = this.updateRoleUseCase.execute(id, updateRoleDto);
     if (!role) throw new NotFoundException(`Rol con ID ${id} no encontrado`);
@@ -78,12 +78,12 @@ export class RoleController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Delete a role' })
-  @ApiParam({ name: 'id', required: true, description: 'Role UUID' })
-  @ApiResponse({ status: HttpStatus.OK, description: 'The role has been successfully deleted.' })
-  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Role not found.' })
-  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized.' })
-  @ApiResponse({ status: HttpStatus.FORBIDDEN, description: 'Forbidden resource.' })
+  @ApiOperation({ summary: 'Eliminar un rol' })
+  @ApiParam({ name: 'id', required: true, description: 'UUID del rol' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'El rol ha sido eliminado exitosamente.' })
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Rol no encontrado.' })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'No autorizado.' })
+  @ApiResponse({ status: HttpStatus.FORBIDDEN, description: 'Recurso prohibido.' })
   async deleteRole(@Param('id', ParseUUIDPipe) id: string) {
     const role = this.deleteRoleUseCase.execute(id);
     if (!role) throw new NotFoundException(`Rol con ID ${id} no encontrado`);
