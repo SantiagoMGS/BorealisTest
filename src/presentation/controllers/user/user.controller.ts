@@ -18,7 +18,7 @@ import { UpdateUserCompanyRoleUseCase } from "src/core/domain/uses-cases/user/up
 import { PermissionService } from "src/core/domain/uses-cases/auth/services/permission.service";
 
 @Controller('user')
-//@UseGuards(AuthGuard('internal'), PermissionGuard) 
+@UseGuards(AuthGuard('internal'), PermissionGuard) 
 
 export class UserController {
   constructor(
