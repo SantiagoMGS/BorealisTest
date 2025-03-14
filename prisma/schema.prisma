@@ -14,7 +14,7 @@ model User {
   password  String
   isActive  Boolean  @default(false)
   createdAt DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  updatedAt DateTime @updatedAt
 
   companies UserCompany[]
 }
@@ -23,7 +23,7 @@ model Role {
   id        String   @id @default(uuid()) @db.Uuid
   name      String   @unique
   createdAt DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  updatedAt DateTime @updatedAt
 
   permissions RolePermission[] // Relación con permisos
   users       UserCompany[] // Relación con usuarios
@@ -33,9 +33,9 @@ model Resource {
   id        String   @id @default(uuid()) @db.Uuid
   name      String   @unique
   createdAt DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  updatedAt DateTime @updatedAt
 
-  permissions RolePermission[]
+  subresorces Subresource[]
 }
 
 model Action {
@@ -43,20 +43,20 @@ model Action {
   name      String   @unique
   level     Int
   createdAt DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  updatedAt DateTime @updatedAt
 
   permissions RolePermission[]
 }
 
 model Company {
-  id        String   @id @default(uuid()) @db.Uuid
-  name      String   @unique
-  logo      String   @unique
-  primaryColor      String   
-  secondaryColor      String   
-  thirdColor      String   
-  createdAt DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id             String   @id @default(uuid()) @db.Uuid
+  name           String   @unique
+  logo           String   @unique
+  primaryColor   String
+  secondaryColor String
+  thirdColor     String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   users        UserCompany[]
   applications CompanyAplications[]
@@ -67,7 +67,7 @@ model UserCompany {
   companyId String   @db.Uuid
   roleId    String   @db.Uuid
   createdAt DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  updatedAt DateTime @updatedAt
 
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
@@ -77,17 +77,27 @@ model UserCompany {
 }
 
 model RolePermission {
-  roleId     String   @db.Uuid
-  actionId   String   @db.Uuid
-  resourceId String   @db.Uuid
-  createdAt  DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  roleId        String   @db.Uuid
+  actionId      String   @db.Uuid
+  subresourceId String   @db.Uuid
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-  role     Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
-  action   Action   @relation(fields: [actionId], references: [id], onDelete: Cascade)
-  resource Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  role        Role        @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  action      Action      @relation(fields: [actionId], references: [id], onDelete: Cascade)
+  subresource Subresource @relation(fields: [subresourceId], references: [id], onDelete: Cascade)
 
-  @@id([roleId, actionId, resourceId])
+  @@id([roleId, actionId, subresourceId])
+}
+
+model Subresource {
+  id              String           @id @default(uuid()) @db.Uuid
+  name            String
+  resourceId      String           @db.Uuid
+  updatedAt       DateTime         @updatedAt
+  createdAt       DateTime         @default(now())
+  resource        Resource         @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  rolePermissions RolePermission[]
 }
 
 model Aplications {
@@ -95,7 +105,7 @@ model Aplications {
   name      String   @unique
   isActive  Boolean
   createdAt DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  updatedAt DateTime @updatedAt
 
   companies CompanyAplications[]
 }
@@ -104,7 +114,7 @@ model CompanyAplications {
   companyId     String   @db.Uuid
   applicationId String   @db.Uuid
   createdAt     DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  updatedAt     DateTime @updatedAt
 
   company    Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
   aplication Aplications @relation(fields: [applicationId], references: [id], onDelete: Cascade)

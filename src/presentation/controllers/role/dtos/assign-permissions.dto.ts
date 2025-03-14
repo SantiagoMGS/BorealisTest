@@ -7,10 +7,10 @@ export class AssignPermissionsDto {
   roleId: string;
 
   @ApiProperty({
-    example: [{ actionId: '1', resourceId: '1' }],
+    example: [{ actionId: '1', subresourceId: '1' }],
     description: 'Lista de permisos a asignar',
   })
   @IsArray()
   @ArrayNotEmpty()
-  permissions: { actionId: string; resourceId: string }[];
+  permissions: { actionId: string; subresourceId: string }[];
 }

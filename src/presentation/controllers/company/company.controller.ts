@@ -12,7 +12,7 @@ import { AuthGuard } from "@nestjs/passport";
 import { PermissionGuard } from "src/core/domain/uses-cases/auth/guards/permission.guard";
 
 @Controller('company')
-@UseGuards(AuthGuard('internal'), PermissionGuard) 
+//@UseGuards(AuthGuard('internal'), PermissionGuard) 
 
 export class CompanyController {
   constructor(

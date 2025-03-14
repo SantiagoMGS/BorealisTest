@@ -7,12 +7,12 @@ import { PrismaService } from 'src/infrastructure/prisma/prisma.service';
 export class PrismaRolePermissionRepository implements IRolePermissionRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async assignPermissions(roleId: string, permissions: { actionId: string; resourceId: string }[]): Promise<RolePermission[]> {
+  async assignPermissions(roleId: string, permissions: { actionId: string; subresourceId: string }[]): Promise<RolePermission[]> {
     await this.prisma.rolePermission.createMany({
       data: permissions.map(permission => ({
         roleId,
         actionId: permission.actionId,
-        resourceId: permission.resourceId,
+        subresourceId: permission.subresourceId,
       })),
       skipDuplicates: true,
     });
@@ -23,25 +23,25 @@ export class PrismaRolePermissionRepository implements IRolePermissionRepository
   async getPermissionsByRole(roleId: string): Promise<RolePermission[]> {
     return this.prisma.rolePermission.findMany({
       where: { roleId },
-      include: { action: true, resource: true },
+      include: { action: true, subresource: true },
     });
   }
 
-  async removePermission(roleId: string, actionId: string, resourceId: string): Promise<void> {
-    await this.prisma.rolePermission.deleteMany({ where: { roleId, actionId, resourceId } });
+  async removePermission(roleId: string, actionId: string, subresourceId: string): Promise<void> {
+    await this.prisma.rolePermission.deleteMany({ where: { roleId, actionId, subresourceId } });
   }
 
-  async checkPermission(roleId: string, actionId: string, resourceId: string): Promise<boolean> {
+  async checkPermission(roleId: string, actionId: string, subresourceId: string): Promise<boolean> {
     const permission = await this.prisma.rolePermission.findFirst({
-      where: { roleId, actionId, resourceId },
+      where: { roleId, actionId, subresourceId },
     });
 
     return !!permission;
   }
 
-  async findPermission(roleId: string, actionId: string, resourceId: string): Promise<RolePermission | null> { // 🔹 Implementación agregada
+  async findPermission(roleId: string, actionId: string, subresourceId: string): Promise<RolePermission | null> { // 🔹 Implementación agregada
     return this.prisma.rolePermission.findFirst({
-      where: { roleId, actionId, resourceId },
+      where: { roleId, actionId, subresourceId },
     });
   }
 }

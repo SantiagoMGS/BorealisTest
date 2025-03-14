@@ -4,9 +4,12 @@ import { IsNotEmpty, IsString } from 'class-validator';
 export class CreateRoleDto {
 
 
-  @ApiProperty({ example: 'Operario', description: 'Nombre del rol' })
-  @IsNotEmpty({ message: 'El nombre es obligatorio' })
+  @ApiProperty({
+    description: 'Nombre del Rol',
+    example: 'Operario'
+  })
   @IsString({ message: 'El nombre debe ser un texto' })
+  @IsNotEmpty()
   name: string;
 
 }

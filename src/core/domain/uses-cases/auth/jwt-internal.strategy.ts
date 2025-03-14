@@ -28,7 +28,7 @@ export class JwtInternalStrategy extends PassportStrategy(Strategy, 'internal') 
               include: {
                 permissions: {
                   include: {
-                    resource: true,
+                    subresource: true,
                     action: true, // ✅ OBTENER EL `level` DESDE `Action`
                   },
                 },
@@ -44,7 +44,7 @@ export class JwtInternalStrategy extends PassportStrategy(Strategy, 'internal') 
     // Extraer permisos con `level`
     const permissions = user.companies.flatMap(uc =>
       uc.role.permissions.map(p => ({
-        resource: p.resource.name,
+        resource: p.subresource.name,
         action: p.action.name,
         level: p.action.level,  // ✅ Incluir `level`
       }))

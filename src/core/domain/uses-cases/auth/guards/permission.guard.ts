@@ -56,7 +56,7 @@ export class PermissionGuard implements CanActivate {
     const rolePermissions = await this.prisma.rolePermission.findMany({
       where: { roleId: userCompany.roleId },
       include: {
-        resource: true,
+        subresource: true,
         action: true,
       },
     });
@@ -65,7 +65,7 @@ export class PermissionGuard implements CanActivate {
     // 🔹 Validar si el usuario tiene el permiso necesario con el nivel adecuado
     const hasPermission = rolePermissions.some(rolePermission => {
       return (
-        rolePermission.resource.name === resourceName &&
+        rolePermission.subresource.name === resourceName &&
         rolePermission.action.level >= PermissionGuard.getActionLevel(actionName) // ✅ Permite nivel superior
       );
     });
