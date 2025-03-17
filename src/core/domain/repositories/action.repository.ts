@@ -1,5 +1,6 @@
-import { Action } from "../entities/action.entity";
+import { Action } from '../entities/action.entity';
 
 export interface IActionRepository {
-  createActions(actions: Action[]): Promise<Action[]>; 
+  createActions(actions: Action[]): Promise<Action[]>;
+  findByName(name: string): Promise<Action | null>;
 }

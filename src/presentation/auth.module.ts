@@ -28,6 +28,7 @@ import {
   ActionController,
   RolePermissionController,
   ApplicationController,
+  SeedController,
 } from './controllers';
 
 // **Use Cases **
@@ -41,13 +42,13 @@ import {
   DeleteUserUseCase,
   FindUserUseCase,
   UpdateUserCompanyRoleUseCase,
-   // **Role Use Cases**
+  // **Role Use Cases**
   CreateRoleUseCase,
   GetAllRolesUseCase,
   GetRoleByIdUseCase,
   UpdateRoleUseCase,
   DeleteRoleUseCase,
-   // **Role Permission Use Cases**
+  // **Role Permission Use Cases**
   GetPermissionsByRoleUseCase,
   RemovePermissionUseCase,
   CheckPermissionUseCase,
@@ -70,7 +71,6 @@ import {
   ActionSeedUseCase,
   ApplicationSeedUseCase,
   AuthUseCase,
-
 } from 'src/core/domain/uses-cases';
 
 @Module({
@@ -83,6 +83,7 @@ import {
     ActionController,
     RolePermissionController,
     ApplicationController,
+    SeedController,
   ],
   providers: [
     // **Security**
@@ -225,4 +226,4 @@ import {
     AuthUseCase,
   ],
 })
-export class AuthModule { }
+export class AuthModule {}

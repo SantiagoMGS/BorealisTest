@@ -10,7 +10,7 @@ export class PrismaActionRepository implements IActionRepository {
   async createActions(actions: Action[]): Promise<Action[]> {
     try {
       await this.prisma.action.createMany({
-        data: actions.map(action => ({
+        data: actions.map((action) => ({
           name: action.name,
           level: action.level,
         })),
@@ -20,11 +20,15 @@ export class PrismaActionRepository implements IActionRepository {
       // Recuperamos las acciones recién creadas para retornarlas
       return await this.prisma.action.findMany({
         where: {
-          name: { in: actions.map(action => action.name) },
+          name: { in: actions.map((action) => action.name) },
         },
       });
     } catch (error) {
       throw new ConflictException('Algunas acciones ya existen.');
     }
+  }
+
+  async findByName(name: string): Promise<Action | null> {
+    return this.prisma.action.findUnique({ where: { name } });
   }
 }

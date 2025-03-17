@@ -10,7 +10,7 @@ export class PrismaApplicationRepository implements IApplicationRepository {
   async createApplication(actions: Application[]): Promise<Application[]> {
     try {
       await this.prisma.aplications.createMany({
-        data: actions.map(action => ({
+        data: actions.map((action) => ({
           name: action.name,
           isActive: action.isActive,
         })),
@@ -19,7 +19,7 @@ export class PrismaApplicationRepository implements IApplicationRepository {
 
       return await this.prisma.aplications.findMany({
         where: {
-          name: { in: actions.map(action => action.name) },
+          name: { in: actions.map((action) => action.name) },
         },
       });
     } catch (error) {
@@ -40,6 +40,12 @@ export class PrismaApplicationRepository implements IApplicationRepository {
       where: {
         id: { in: applicationIds },
       },
+    });
+  }
+
+  async findByName(name: string): Promise<Application | null> {
+    return this.prisma.aplications.findUnique({
+      where: { name },
     });
   }
 }
