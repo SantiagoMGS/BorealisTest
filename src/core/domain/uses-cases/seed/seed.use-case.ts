@@ -1,4 +1,11 @@
-import { ConflictException, Inject, Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  ForbiddenException,
+  Inject,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 import { ICompanyRepository } from '../../repositories/company.repository';
 import { Company } from '../../entities/company.entity';
 import { companyInitialData } from 'src/infrastructure/prisma/seed/company.seed';
@@ -18,6 +25,10 @@ import { actionInitialData } from 'src/infrastructure/prisma/seed/action.seed';
 import { Application } from '../../entities/application.entity';
 import { applicationInitialData } from 'src/infrastructure/prisma/seed/application.seed';
 import { Action } from '../../entities/action.entity';
+import { User } from '../../entities/user.entity';
+import { userInitialData } from 'src/infrastructure/prisma/seed/user.seed';
+import { IUserRepository } from '../../repositories/user.repository';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class SeedUseCase {
@@ -38,6 +49,8 @@ export class SeedUseCase {
     private readonly resourseRepository: IResourceRepository,
     @Inject('ISubResourceRepository')
     private readonly subresourceRepository: ISubResourceRepository,
+    @Inject('IUserRepository')
+    private readonly userRepository: IUserRepository,
   ) {}
 
   async execute(): Promise<String> {
@@ -60,28 +73,38 @@ export class SeedUseCase {
         (application) => new Application('', application.name, true),
       );
 
-      await this.applicationRepository.createApplication(applications);
-      this.logger.log('Application seed executed successfully');
+      try {
+        await this.applicationRepository.createApplication(applications);
+        this.logger.log('Application seed executed successfully');
+      } catch (error) {
+        this.logger.warn(
+          'Applications already exist or failed to create applications',
+        );
+      }
 
       // Crear compañías
       for (const newCompany of newCompanies) {
-        // Crear cada compañía del seed
+        try {
+          const createdCompany =
+            await this.companyRepository.createCompany(newCompany);
+          // Verificar que todas las aplicaciones existan
+          const application =
+            await this.applicationRepository.findByName('BOREALIS');
 
-        const createdCompany =
-          await this.companyRepository.createCompany(newCompany);
-        // Verificar que todas las aplicaciones existan
-        const application =
-          await this.applicationRepository.findByName('BOREALIS');
-
-        if (!application) {
-          throw new Error('Application not found');
+          if (!application) {
+            throw new Error('Application not found');
+          }
+          // Asignar aplicaciones a la compañía
+          await this.companyRepository.assignApplicationToCompanies(
+            [createdCompany.id],
+            [application.id],
+          );
+          this.logger.log('Company created successfully');
+        } catch (error) {
+          this.logger.warn(
+            `Company ${newCompany.name} already exists or failed to create company`,
+          );
         }
-        // Asignar aplicaciones a la compañía
-        await this.companyRepository.assignApplicationToCompanies(
-          [createdCompany.id],
-          [application.id],
-        );
-        this.logger.log('Company created successfully');
       }
 
       // Crear Recursos
@@ -90,36 +113,52 @@ export class SeedUseCase {
       );
 
       for (const newResource of newResources) {
-        // Crear cada recurso del seed
-        await this.resourseRepository.createResource(newResource);
-        this.logger.log(`Resource ${newResource.name} created successfully`);
+        try {
+          await this.resourseRepository.createResource(newResource);
+          this.logger.log(`Resource ${newResource.name} created successfully`);
+        } catch (error) {
+          this.logger.warn(
+            `Resource ${newResource.name} already exists or failed to create resource`,
+          );
+        }
       }
 
       // Crear Subrecursos
-      const newSubresources: SubResource[] = await Promise.all(
-        subresourseInitialData.map(async (subresource) => {
-          const resource = await this.resourseRepository.findByName(
-            subresource.resourceName,
-          );
-
-          if (resource) {
-            const newSubResource = new SubResource(
-              '',
-              subresource.name,
-              resource.id,
-            );
-            const createdSubresource =
-              await this.subresourceRepository.createSubResource(
-                newSubResource,
+      const newSubresources: SubResource[] = (
+        await Promise.all(
+          subresourseInitialData.map(async (subresource) => {
+            try {
+              const resource = await this.resourseRepository.findByName(
+                subresource.resourceName,
               );
-            this.logger.log(
-              `Subresource ${newSubResource.name} created successfully`,
-            );
-            return createdSubresource; // Return the created subresource
-          } else {
-            throw new Error('Resource not found');
-          }
-        }),
+
+              if (resource) {
+                const newSubResource = new SubResource(
+                  '',
+                  subresource.name,
+                  resource.id,
+                );
+                const createdSubresource =
+                  await this.subresourceRepository.createSubResource(
+                    newSubResource,
+                  );
+                this.logger.log(
+                  `Subresource ${newSubResource.name} created successfully`,
+                );
+                return createdSubresource; // Return the created subresource
+              } else {
+                throw new Error('Resource not found');
+              }
+            } catch (error) {
+              this.logger.warn(
+                `Subresource ${subresource.name} already exists or failed to create subresource`,
+              );
+              return null; // Return null if creation failed
+            }
+          }),
+        )
+      ).filter(
+        (subresource): subresource is SubResource => subresource !== null,
       );
 
       // Crear Acciones
@@ -127,8 +166,12 @@ export class SeedUseCase {
         (action) => new Action('', action.name, action.level),
       );
 
-      await this.actionRepository.createActions(actions);
-      this.logger.log('Action seed executed successfully');
+      try {
+        await this.actionRepository.createActions(actions);
+        this.logger.log('Action seed executed successfully');
+      } catch (error) {
+        this.logger.warn('Actions already exist or failed to create actions');
+      }
 
       // Crear roles
       const newRoles: Role[] = roleInitialData.map(
@@ -136,31 +179,71 @@ export class SeedUseCase {
       );
 
       for (const newRole of newRoles) {
-        // Crear cada rol del seed
-        const createdRole = await this.roleRepository.createRole(newRole);
-        this.logger.log('Role created successfully');
+        try {
+          const createdRole = await this.roleRepository.createRole(newRole);
+          this.logger.log('Role created successfully');
 
-        const action = await this.actionRepository.findByName('DELETE');
-        console.log(createdRole.id);
-        console.log(action!.id);
-        console.log(newSubresources);
+          const action = await this.actionRepository.findByName('DELETE');
 
-        if (!action) {
-          throw new Error('Permission not found');
-        } else {
-          for (const newSubresource of newSubresources) {
-            await this.rolePermissionRepository.assignPermissions(
-              createdRole.id,
-              [
-                {
-                  actionId: action.id,
-                  subresourceId: newSubresource.id,
-                },
-              ],
-            );
+          if (!action) {
+            throw new Error('Permission not found');
+          } else {
+            for (const newSubresource of newSubresources) {
+              if (newSubresource) {
+                await this.rolePermissionRepository.assignPermissions(
+                  createdRole.id,
+                  [
+                    {
+                      actionId: action.id,
+                      subresourceId: newSubresource.id,
+                    },
+                  ],
+                );
+              }
+            }
           }
+        } catch (error) {
+          this.logger.warn(
+            `Role ${newRole.name} already exists or failed to create role`,
+          );
         }
       }
+
+      const user = userInitialData;
+
+      const userCompany = await this.companyRepository.findByName(
+        user.companyName,
+      );
+
+      const userRole = await this.roleRepository.findByName(user.role);
+
+      if (!userCompany) {
+        throw new ConflictException('Company not found');
+      }
+
+      if (!userRole) {
+        throw new ConflictException('Role not found');
+      }
+
+      const existingUser = await this.userRepository.findByEmail(user.email);
+      if (existingUser) {
+        throw new BadRequestException(
+          `El email "${user.email}" ya esta en uso.`,
+        );
+      }
+
+      const newUser = new User('', user.name, user.email, user.password);
+      const hashedPassword = await bcrypt.hash(newUser.password, 10);
+
+      const createdUser = await this.userRepository.createUser(
+        new User('', newUser.name, newUser.email, hashedPassword),
+      );
+      console.log(newUser);
+      console.log({ companyId: userCompany.id, roleId: userRole.id });
+
+      await this.userRepository.assignUserToCompanies(createdUser.id, [
+        { companyId: userCompany.id, roleId: userRole.id },
+      ]);
 
       this.logger.log('Seed seed executed successfully');
       return 'Seed executed successfully';

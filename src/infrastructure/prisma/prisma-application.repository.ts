@@ -9,7 +9,7 @@ export class PrismaApplicationRepository implements IApplicationRepository {
 
   async createApplication(applications: Application[]): Promise<Application[]> {
     try {
-      await this.prisma.aplications.createMany({
+      await this.prisma.application.createMany({
         data: applications.map((action) => ({
           name: action.name,
           isActive: action.isActive,
@@ -17,7 +17,7 @@ export class PrismaApplicationRepository implements IApplicationRepository {
         skipDuplicates: true,
       });
 
-      return await this.prisma.aplications.findMany({
+      return await this.prisma.application.findMany({
         where: {
           name: { in: applications.map((action) => action.name) },
         },
@@ -29,14 +29,14 @@ export class PrismaApplicationRepository implements IApplicationRepository {
 
   // 🔹 Implementación del método findById
   async findById(applicationId: string): Promise<Application | null> {
-    return this.prisma.aplications.findUnique({
+    return this.prisma.application.findUnique({
       where: { id: applicationId },
     });
   }
 
   // 🔹 Implementación del método findManyByIds
   async findManyByIds(applicationIds: string[]): Promise<Application[]> {
-    return this.prisma.aplications.findMany({
+    return this.prisma.application.findMany({
       where: {
         id: { in: applicationIds },
       },
@@ -44,7 +44,7 @@ export class PrismaApplicationRepository implements IApplicationRepository {
   }
 
   async findByName(name: string): Promise<Application | null> {
-    return this.prisma.aplications.findUnique({
+    return this.prisma.application.findUnique({
       where: { name },
     });
   }

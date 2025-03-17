@@ -1,5 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, MinLength, IsString, IsUUID, IsArray, ArrayNotEmpty } from 'class-validator';
+import { permission } from 'process';
+import {
+  IsEmail,
+  IsNotEmpty,
+  MinLength,
+  IsString,
+  IsUUID,
+  IsArray,
+  ArrayNotEmpty,
+} from 'class-validator';
 
 export class CreateUserDto {
   @ApiProperty({ example: 'Pepito Perez', description: 'Nombre del usuario' })
@@ -7,29 +16,45 @@ export class CreateUserDto {
   @IsString({ message: 'El nombre debe ser un texto' })
   name: string;
 
-  @ApiProperty({ example: 'fabio@example.com', description: 'Correo del usuario' })
+  @ApiProperty({
+    example: 'fabio@example.com',
+    description: 'Correo del usuario',
+  })
   @IsEmail({}, { message: 'El email debe ser válido' })
   @IsNotEmpty({ message: 'El email es obligatorio' })
   email: string;
 
-  @ApiProperty({ example: 'password123', description: 'Contraseña del usuario' })
+  @ApiProperty({
+    example: 'password123',
+    description: 'Contraseña del usuario',
+  })
   @MinLength(6, { message: 'La contraseña debe tener al menos 6 caracteres' })
   @IsNotEmpty({ message: 'La contraseña es obligatoria' })
   @IsString({ message: 'La contraseña debe ser un texto' })
   password: string;
 
   @ApiProperty({
-    example: ['550e8400-e29b-41d4-a716-446655440000', '123e4567-e89b-12d3-a456-426614174000'],
-    description: 'IDs de las compañías a las que pertenece el usuario',
-    isArray: true,
+    description: 'List of company IDs to assign to the user',
+    example: [
+      {
+        companyId: '123e4567-e89b-12d3-a456-426614174001',
+        roleId: '123e4567-e89b-12d3-a456-426614174002',
+      },
+      {
+        companyId: '123e4567-e89b-12d3-a456-426614174003',
+        roleId: '123e4567-e89b-12d3-a456-426614174004',
+      },
+    ],
+    type: 'array',
+    items: {
+      type: 'object',
+      properties: {
+        actionId: { type: 'string', format: 'uuid' },
+        resourceId: { type: 'string', format: 'uuid' },
+      },
+    },
   })
-  @IsArray({ message: 'companyIds debe ser un array de UUIDs' })
-  @ArrayNotEmpty({ message: 'Debe haber al menos una compañía asociada' })
-  @IsUUID('4', { each: true, message: 'Cada companyId debe ser un UUID válido' })
-  companyIds: string[];
-
-  @ApiProperty({ example: '1', description: 'ID del rol  debe ser un UUIDs' })
-  @IsNotEmpty({ message: 'El rol es obligatorio' })
-  @IsUUID('4', { each: true, message: 'Cada rolId debe ser un UUID válido' })
-  roleId: string;
+  @IsArray()
+  @IsNotEmpty()
+  permissions: { companyId: string; roleId: string }[];
 }

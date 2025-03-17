@@ -98,9 +98,12 @@ model Subresource {
   createdAt       DateTime         @default(now())
   resource        Resource         @relation(fields: [resourceId], references: [id], onDelete: Cascade)
   rolePermissions RolePermission[]
+
+  @@unique([name, resourceId])
 }
 
-model Aplications {
+
+model Application {
   id        String   @id @default(uuid()) @db.Uuid
   name      String   @unique
   isActive  Boolean
@@ -117,7 +120,7 @@ model CompanyAplications {
   updatedAt     DateTime @updatedAt
 
   company    Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  aplication Aplications @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  aplication Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
 
   @@id([companyId, applicationId])
 }
