@@ -7,7 +7,7 @@ import { SeedUseCase } from 'src/core/domain/uses-cases/seed/seed.use-case';
 export class SeedController {
   private logger = new Logger(SeedController.name);
 
-  //constructor(private readonly seedUseCase: SeedUseCase) {}
+  constructor(private readonly seedUseCase: SeedUseCase) {}
 
   @Post('execute-seed')
   @HttpCode(HttpStatus.OK)
@@ -30,7 +30,7 @@ export class SeedController {
   })
   async executeSeed() {
     try {
-      //await this.seedUseCase.execute();
+      await this.seedUseCase.execute();
       this.logger.log('✅ Seed ejecutado exitosamente');
       return { response: '✅ Seed ejecutado exitosamente' };
     } catch (error) {

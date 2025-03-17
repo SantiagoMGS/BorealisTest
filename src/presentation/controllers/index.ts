@@ -1,3 +1,4 @@
+export { SubResourceController } from './subresource/subresource.controller';
 export { ActionController } from './action/action.controller';
 export { ApplicationController } from './applications/applications.controller';
 export { AuthController } from './auth/auth.controller';

@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { PrismaService } from './prisma.service';
 import { IResourceRepository } from 'src/core/domain/repositories/resource.repository';
 import { Resource } from 'src/core/domain/entities/resource.entity';
@@ -19,7 +23,9 @@ export class PrismaResourceRepository implements IResourceRepository {
   }
 
   async findById(resourceId: string): Promise<Resource | null> {
-    const resource = await this.prisma.resource.findUnique({ where: { id: resourceId } });
+    const resource = await this.prisma.resource.findUnique({
+      where: { id: resourceId },
+    });
     return resource ? new Resource(resource.id, resource.name) : null;
   }
 
@@ -29,7 +35,10 @@ export class PrismaResourceRepository implements IResourceRepository {
     await this.prisma.resource.delete({ where: { id } });
   }
 
-  async findAll(page: number, limit: number): Promise<{ resources: Resource[]; total: number }> {
+  async findAll(
+    page: number,
+    limit: number,
+  ): Promise<{ resources: Resource[]; total: number }> {
     const skip = (page - 1) * limit;
 
     const [resources, total] = await Promise.all([
@@ -44,9 +53,13 @@ export class PrismaResourceRepository implements IResourceRepository {
     return { resources, total };
   }
 
-  async updateResource(id: string, resourceData: Partial<Resource>): Promise<Resource> {
+  async updateResource(
+    id: string,
+    resourceData: Partial<Resource>,
+  ): Promise<Resource> {
     const existingResource = await this.findById(id);
-    if (!existingResource) throw new NotFoundException(`Recurso con ID ${id} no encontrado`);
+    if (!existingResource)
+      throw new NotFoundException(`Recurso con ID ${id} no encontrado`);
 
     const updatedResource = await this.prisma.resource.update({
       where: { id },
@@ -54,5 +67,9 @@ export class PrismaResourceRepository implements IResourceRepository {
     });
 
     return new Resource(updatedResource.id, updatedResource.name);
+  }
+
+  async findByName(name: string): Promise<Resource | null> {
+    return await this.prisma.resource.findUnique({ where: { name } });
   }
 }

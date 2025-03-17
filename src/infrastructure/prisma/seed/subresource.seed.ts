@@ -1,21 +1,27 @@
-interface SeedRole {
+interface SeedSubresourse {
   name: string;
+  resourceName: string;
 }
 
-export const roleInitialData: SeedRole[] = [
+export const subresourseInitialData: SeedSubresourse[] = [
   {
-    name: 'admin',
+    name: 'ROLES',
+    resourceName: 'ROLES',
   },
   {
-    name: 'admin',
+    name: 'USERS',
+    resourceName: 'USERS',
   },
   {
-    name: 'admin',
+    name: 'COMPANIES',
+    resourceName: 'COMPANIES',
   },
   {
-    name: 'admin',
+    name: 'RESOURCES',
+    resourceName: 'RESOURCES',
   },
   {
-    name: 'admin',
+    name: 'SUBRESOURCES',
+    resourceName: 'SUBRESOURCES',
   },
 ];

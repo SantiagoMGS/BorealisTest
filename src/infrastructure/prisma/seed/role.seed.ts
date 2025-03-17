@@ -4,6 +4,6 @@ interface SeedRole {
 
 export const roleInitialData: SeedRole[] = [
   {
-    name: 'admin',
+    name: 'ADMIN',
   },
 ];

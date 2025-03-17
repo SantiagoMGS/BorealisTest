@@ -10,6 +10,7 @@ import {
   PrismaActionRepository,
   PrismaRolePermissionRepository,
   PrismaApplicationRepository,
+  PrismaSubResourceRepository,
 } from 'src/infrastructure/prisma';
 
 // **Authentication & Security**
@@ -29,6 +30,7 @@ import {
   RolePermissionController,
   ApplicationController,
   SeedController,
+  SubResourceController,
 } from './controllers';
 
 // **Use Cases **
@@ -71,6 +73,8 @@ import {
   ActionSeedUseCase,
   ApplicationSeedUseCase,
   AuthUseCase,
+  CreateSubResourceUseCase,
+  SeedUseCase,
 } from 'src/core/domain/uses-cases';
 
 @Module({
@@ -84,6 +88,7 @@ import {
     RolePermissionController,
     ApplicationController,
     SeedController,
+    SubResourceController,
   ],
   providers: [
     // **Security**
@@ -122,6 +127,10 @@ import {
       provide: 'IApplicationRepository',
       useClass: PrismaApplicationRepository,
     },
+    {
+      provide: 'ISubResourceRepository',
+      useClass: PrismaSubResourceRepository,
+    },
 
     // **User Use Cases**
     CreateUserUseCase,
@@ -159,11 +168,13 @@ import {
     AssignApplicationToCompaniesUseCase,
     DeleteCompanyUseCase,
     UpdateCompanyUseCase,
-
+    // **SubResource Use Cases**
+    CreateSubResourceUseCase,
     // **Other Use Cases**
     ActionSeedUseCase,
     ApplicationSeedUseCase,
     AuthUseCase,
+    SeedUseCase,
   ],
   imports: [
     ConfigModule.forRoot(),
@@ -219,11 +230,13 @@ import {
     AssignApplicationToCompaniesUseCase,
     DeleteCompanyUseCase,
     UpdateCompanyUseCase,
-
+    // **SubResource Use Cases**
+    CreateSubResourceUseCase,
     // **Other Use Cases**
     ActionSeedUseCase,
     ApplicationSeedUseCase,
     AuthUseCase,
+    SeedUseCase,
   ],
 })
 export class AuthModule {}

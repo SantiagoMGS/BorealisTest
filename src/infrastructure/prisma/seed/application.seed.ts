@@ -2,7 +2,7 @@ interface SeedApplication {
   name: string;
 }
 
-export const actionInitialData: SeedApplication[] = [
+export const applicationInitialData: SeedApplication[] = [
   { name: 'LIMS' },
   { name: 'PLANTA' },
   { name: 'CI' },
