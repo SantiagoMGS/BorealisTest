@@ -8,7 +8,7 @@ import { CreateSubResourceDto } from "./dtos/create-subresource.dto";
 
 @ApiTags('SubResources')
 @Controller('subResource')
-//@UseGuards(AuthGuard('internal'), PermissionGuard) 
+@UseGuards(AuthGuard('internal'), PermissionGuard) 
 export class SubResourceController {
   constructor(
     private readonly createSubresourceCase: CreateSubResourceUseCase,

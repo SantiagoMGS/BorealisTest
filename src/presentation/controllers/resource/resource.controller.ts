@@ -12,7 +12,7 @@ import { PermissionGuard } from "src/core/domain/uses-cases/auth/guards/permissi
 
 @ApiTags('Resources')
 @Controller('resource')
-//@UseGuards(AuthGuard('internal'), PermissionGuard) 
+@UseGuards(AuthGuard('internal'), PermissionGuard) 
 export class ResourceController {
   constructor(
     private readonly createResourceUseCase: CreateResourceUseCase,
