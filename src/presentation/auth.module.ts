@@ -10,6 +10,7 @@ import {
   PrismaActionRepository,
   PrismaRolePermissionRepository,
   PrismaApplicationRepository,
+  PrismaSubResourceRepository,
 } from 'src/infrastructure/prisma';
 
 // **Authentication & Security**
@@ -28,6 +29,7 @@ import {
   ActionController,
   RolePermissionController,
   ApplicationController,
+  SubResourceController
 } from './controllers';
 
 // **Use Cases **
@@ -41,13 +43,13 @@ import {
   DeleteUserUseCase,
   FindUserUseCase,
   UpdateUserCompanyRoleUseCase,
-   // **Role Use Cases**
+  // **Role Use Cases**
   CreateRoleUseCase,
   GetAllRolesUseCase,
   GetRoleByIdUseCase,
   UpdateRoleUseCase,
   DeleteRoleUseCase,
-   // **Role Permission Use Cases**
+  // **Role Permission Use Cases**
   GetPermissionsByRoleUseCase,
   RemovePermissionUseCase,
   CheckPermissionUseCase,
@@ -72,6 +74,7 @@ import {
   AuthUseCase,
 
 } from 'src/core/domain/uses-cases';
+import { CreateSubResourceUseCase } from 'src/core/domain/uses-cases/subresource/create-subresource.use-case';
 
 @Module({
   controllers: [
@@ -83,6 +86,7 @@ import {
     ActionController,
     RolePermissionController,
     ApplicationController,
+    SubResourceController
   ],
   providers: [
     // **Security**
@@ -121,6 +125,10 @@ import {
       provide: 'IApplicationRepository',
       useClass: PrismaApplicationRepository,
     },
+    {
+      provide: 'ISubResourceRepository',
+      useClass: PrismaSubResourceRepository,
+    },
 
     // **User Use Cases**
     CreateUserUseCase,
@@ -158,7 +166,8 @@ import {
     AssignApplicationToCompaniesUseCase,
     DeleteCompanyUseCase,
     UpdateCompanyUseCase,
-
+    // **SubResource Use Cases**
+    CreateSubResourceUseCase,
     // **Other Use Cases**
     ActionSeedUseCase,
     ApplicationSeedUseCase,
@@ -218,7 +227,8 @@ import {
     AssignApplicationToCompaniesUseCase,
     DeleteCompanyUseCase,
     UpdateCompanyUseCase,
-
+    // **SubResource Use Cases**
+    CreateSubResourceUseCase,
     // **Other Use Cases**
     ActionSeedUseCase,
     ApplicationSeedUseCase,

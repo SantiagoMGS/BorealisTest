@@ -1,39 +1,31 @@
 import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Put, Query, HttpCode, HttpStatus, Logger, ParseIntPipe, ParseUUIDPipe, UseGuards } from "@nestjs/common";
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery, ApiBody } from '@nestjs/swagger';
-import { CreateResourceUseCase } from "src/core/domain/uses-cases/resource/create-resource.use-case";
-import { CreateResourceDto } from "./dtos/create-resource.dto";
-import { UpdateResourceDto } from "./dtos/update-resource.dto";
-import { DeleteResourceUseCase } from "src/core/domain/uses-cases/resource/delete-resource.use-case";
-import { UpdateResourceUseCase } from "src/core/domain/uses-cases/resource/update-resource.use-case";
-import { GetAllResourcesUseCase } from "src/core/domain/uses-cases/resource/get-all-resorce.use-case";
-import { GetByIdResourceUseCase } from "src/core/domain/uses-cases/resource/get-resoure.use-case";
+
 import { AuthGuard } from "@nestjs/passport";
 import { PermissionGuard } from "src/core/domain/uses-cases/auth/guards/permission.guard";
+import { CreateSubResourceUseCase } from "src/core/domain/uses-cases/subresource/create-subresource.use-case";
+import { CreateSubResourceDto } from "./dtos/create-subresource.dto";
 
-@ApiTags('Resources')
-@Controller('resource')
+@ApiTags('SubResources')
+@Controller('subResource')
 //@UseGuards(AuthGuard('internal'), PermissionGuard) 
-export class ResourceController {
+export class SubResourceController {
   constructor(
-    private readonly createResourceUseCase: CreateResourceUseCase,
-    private readonly updateResourceUseCase: UpdateResourceUseCase,
-    private readonly deleteResourceUseCase: DeleteResourceUseCase,
-    private readonly findByIdResourceUseCase: GetByIdResourceUseCase,
-    private readonly findAllResourcesUseCase: GetAllResourcesUseCase,
+    private readonly createSubresourceCase: CreateSubResourceUseCase,
   ) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Crear un nuevo recurso' })
-  @ApiBody({ type: CreateResourceDto })
-  @ApiResponse({ status: HttpStatus.CREATED, description: 'El recurso ha sido creado exitosamente.' })
+  @ApiOperation({ summary: 'Crear un nuevo subrecurso' })
+  @ApiBody({ type: CreateSubResourceDto })
+  @ApiResponse({ status: HttpStatus.CREATED, description: 'El sub recurso ha sido creado exitosamente.' })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Datos de entrada inválidos.' })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'No autorizado.' })
   @ApiResponse({ status: HttpStatus.FORBIDDEN, description: 'Acceso prohibido al recurso.' })
-  async createResource(@Body() createResourceDto: CreateResourceDto) {
-    return this.createResourceUseCase.execute(createResourceDto);
+  async createResource(@Body() createSubResourceDto: CreateSubResourceDto) {
+    return this.createSubresourceCase.execute(createSubResourceDto);
   }
-
+/* 
   @Get()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Obtener todos los recursos con paginación' })
@@ -84,5 +76,5 @@ export class ResourceController {
   @ApiResponse({ status: HttpStatus.FORBIDDEN, description: 'Acceso prohibido al recurso.' })
   async deleteResource(@Param('id', ParseUUIDPipe) id: string) {
     return this.deleteResourceUseCase.execute(id);
-  }
+  } */
 }
