@@ -6,7 +6,7 @@ import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class PrismaUserRepository implements IUserRepository {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async createUser(user: User): Promise<User> {
     return this.prisma.user.create({
@@ -21,7 +21,6 @@ export class PrismaUserRepository implements IUserRepository {
     return this.prisma.user.findUnique({
       where: { email },
     });
-
   }
 
   async findByEmail(email: string): Promise<Omit<User, 'password'> | null> {
@@ -41,7 +40,10 @@ export class PrismaUserRepository implements IUserRepository {
   async deleteUser(email: string): Promise<void> {
     await this.prisma.user.delete({ where: { email } });
   }
-  async findAll(page: number, limit: number): Promise<{ users: Omit<User, 'password'>[], total: number }> {
+  async findAll(
+    page: number,
+    limit: number,
+  ): Promise<{ users: Omit<User, 'password'>[]; total: number }> {
     const skip = (page - 1) * limit;
     const [users, total] = await Promise.all([
       await this.prisma.user.findMany({
@@ -58,14 +60,16 @@ export class PrismaUserRepository implements IUserRepository {
     return { users, total };
   }
 
-
-
   async update(email: string, userData: Partial<User>): Promise<User> {
     const existingUser = await this.findByEmail(email);
-    if (!existingUser) throw new NotFoundException(`Usuario con email ${email} no encontrado`);
+    if (!existingUser)
+      throw new NotFoundException(`Usuario con email ${email} no encontrado`);
 
     if (userData.password !== undefined && userData.password !== null) {
-      userData = { ...userData, password: await bcrypt.hash(userData.password, 10) };
+      userData = {
+        ...userData,
+        password: await bcrypt.hash(userData.password, 10),
+      };
     } else {
       const { password, ...rest } = userData;
       userData = rest;
@@ -79,21 +83,33 @@ export class PrismaUserRepository implements IUserRepository {
       },
     });
 
-    return new User(updatedUser.id, updatedUser.name, updatedUser.email, updatedUser.password);
+    return new User(
+      updatedUser.id,
+      updatedUser.name,
+      updatedUser.email,
+      updatedUser.password,
+    );
   }
 
   // 🔹 Implementación del nuevo método para asociar usuario con compañías
-  async assignUserToCompanies(userId: string, companyIds: string[], roleId: string): Promise<void> {
+  async assignUserToCompanies(
+    userId: string,
+    permissions: { companyId: string; roleId: string }[],
+  ): Promise<void> {
     await this.prisma.userCompany.createMany({
-      data: companyIds.map(companyId => ({
+      data: permissions.map((permission) => ({
         userId,
-        companyId,
-        roleId
+        companyId: permission.companyId,
+        roleId: permission.roleId,
       })),
       skipDuplicates: true, // Evita errores si ya existe la relación
     });
   }
-  async updateUserRole(userId: string, companyId: string, roleId: string): Promise<void> {
+  async updateUserRole(
+    userId: string,
+    companyId: string,
+    roleId: string,
+  ): Promise<void> {
     await this.prisma.userCompany.updateMany({
       where: {
         userId,
@@ -104,7 +120,9 @@ export class PrismaUserRepository implements IUserRepository {
       },
     });
   }
-  async getCompanyByUserId(userId: string): Promise<{ companyId: string; companyName: string, logo: string }[]> {
+  async getCompanyByUserId(
+    userId: string,
+  ): Promise<{ companyId: string; companyName: string; logo: string }[]> {
     const userCompanies = await this.prisma.userCompany.findMany({
       where: { userId },
       select: {
@@ -130,6 +148,4 @@ export class PrismaUserRepository implements IUserRepository {
       thirdColor: company.thirdColor,
     }));
   }
-
-
 }

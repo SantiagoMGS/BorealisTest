@@ -8,8 +8,9 @@ export class AssignPermissionsUseCase {
   private readonly logger = new Logger(AssignPermissionsUseCase.name);
 
   constructor(
-    @Inject('IRolePermissionRepository') private readonly rolePermissionRepository: IRolePermissionRepository,
-    @Inject('IRoleRepository') private readonly roleRepository: IRoleRepository
+    @Inject('IRolePermissionRepository')
+    private readonly rolePermissionRepository: IRolePermissionRepository,
+    @Inject('IRoleRepository') private readonly roleRepository: IRoleRepository,
   ) {}
 
   async execute(assignPermissionsDto: AssignPermissionsDto): Promise<void> {
@@ -18,13 +19,20 @@ export class AssignPermissionsUseCase {
     this.logger.log(`Assigning permissions to role ID: ${roleId}`);
 
     try {
-      const role = await this.roleRepository.findById(roleId);      
-      if (!role) throw new NotFoundException(`Rol con ID ${roleId} no encontrado`);
+      const role = await this.roleRepository.findById(roleId);
+      if (!role)
+        throw new NotFoundException(`Rol con ID ${roleId} no encontrado`);
 
-      await this.rolePermissionRepository.assignPermissions(roleId, permissions);
+      await this.rolePermissionRepository.assignPermissions(
+        roleId,
+        permissions,
+      );
       this.logger.log(`Permissions assigned to role ID: ${roleId}`);
     } catch (error) {
-      this.logger.error(`Failed to assign permissions to role ID: ${roleId}`, error.stack);
+      this.logger.error(
+        `Failed to assign permissions to role ID: ${roleId}`,
+        error.stack,
+      );
       throw error;
     }
   }
