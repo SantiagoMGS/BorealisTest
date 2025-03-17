@@ -168,7 +168,6 @@ export class SeedUseCase {
 
       try {
         await this.actionRepository.createActions(actions);
-        this.logger.log('Action seed executed successfully');
       } catch (error) {
         this.logger.warn('Actions already exist or failed to create actions');
       }
