@@ -1,8 +1,8 @@
 import { ConflictException, Inject, Injectable, Logger } from '@nestjs/common';
 import { ICompanyRepository } from '../../repositories/company.repository';
 import { IApplicationRepository } from '../../repositories/application.repository';
-import { Company } from '../../entities/company.entity';
 import { CreateCompanyDto } from 'src/presentation/controllers/company/dtos/create-company.dto';
+import { Company } from '../../entities';
 
 @Injectable()
 export class CreateCompanyUseCase {

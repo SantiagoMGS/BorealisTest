@@ -9,8 +9,8 @@ import * as bcrypt from 'bcrypt';
 import { IUserRepository } from '../../repositories/user.repository';
 import { ICompanyRepository } from '../../repositories/company.repository';
 import { CreateUserDto } from 'src/presentation/controllers/user/dtos/create-user.dto';
-import { User } from '../../entities/user.entity';
 import { IRoleRepository } from '../../repositories/role.repository';
+import { User } from '../../entities';
 
 @Injectable()
 export class CreateUserUseCase {

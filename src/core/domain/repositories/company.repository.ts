@@ -1,4 +1,4 @@
-import { Company } from '../entities/company.entity';
+import { Company } from "../entities";
 
 export interface ICompanyRepository {
   findById(id: string): Promise<Company | null>;

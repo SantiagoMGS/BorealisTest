@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { CreateSubResourceDto } from 'src/presentation/controllers/subresource/dtos/create-subresource.dto';
-import { SubResource } from '../../entities/subresource.entity';
 import { ISubResourceRepository } from '../../repositories/subresource.reposiroty';
+import { SubResource } from '../../entities';
 
 @Injectable()
 export class CreateSubResourceUseCase {

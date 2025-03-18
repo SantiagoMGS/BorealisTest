@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { IUserRepository } from 'src/core/domain/repositories/user.repository';
 import { PrismaService } from './prisma.service';
-import { User } from 'src/core/domain/entities/user.entity';
 import * as bcrypt from 'bcrypt';
+import { User } from 'src/core/domain/entities';
 
 @Injectable()
 export class PrismaUserRepository implements IUserRepository {

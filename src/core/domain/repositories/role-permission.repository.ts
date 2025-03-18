@@ -1,4 +1,4 @@
-import { RolePermission } from '../entities/role-permission.entity';
+import { RolePermission } from "../entities";
 
 export interface IRolePermissionRepository {
   assignPermissions(

@@ -1,4 +1,4 @@
-import { Resource } from '../entities/resource.entity';
+import { Resource } from "../entities";
 
 export interface IResourceRepository {
   createResource(resource: Resource): Promise<Resource>;

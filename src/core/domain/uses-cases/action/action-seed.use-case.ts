@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { IActionRepository } from '../../repositories/action.repository';
-import { Action } from '../../entities/action.entity';
-import { actionInitialData } from 'src/infrastructure/prisma/seed/action.seed';
+import { Action } from '../../entities';
+import { actionInitialData } from 'src/infrastructure/prisma/seed';
 
 @Injectable()
 export class ActionSeedUseCase {

@@ -1,6 +1,6 @@
 import { Inject, Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { IRoleRepository } from 'src/core/domain/repositories/role.repository';
-import { Role } from 'src/core/domain/entities/role.entity';
+import { Role } from '../../entities';
 
 @Injectable()
 export class UpdateRoleUseCase {
@@ -8,13 +8,6 @@ export class UpdateRoleUseCase {
 
   constructor(@Inject('IRoleRepository') private readonly roleRepository: IRoleRepository) {}
 
-  /**
-   * Updates a role with the given ID and role data.
-   * @param id - The ID of the role to update.
-   * @param roleData - The data to update the role with.
-   * @returns The updated role.
-   * @throws NotFoundException if the role with the given ID is not found.
-   */
   async execute(id: string, roleData: Partial<Role>): Promise<Role> {
     this.logger.log(`Updating role ID: ${id}`);
 

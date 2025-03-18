@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import { RolePermission } from 'src/core/domain/entities';
 import { IRolePermissionRepository } from 'src/core/domain/repositories/role-permission.repository';
-import { RolePermission } from 'src/core/domain/entities/role-permission.entity';
 import { PrismaService } from 'src/infrastructure/prisma/prisma.service';
 
 @Injectable()

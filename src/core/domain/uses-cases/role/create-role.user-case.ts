@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger, ConflictException } from '@nestjs/common';
 import { IRoleRepository } from '../../repositories/role.repository';
 import { CreateRoleDto } from 'src/presentation/controllers/role/dtos/create-role.dto';
-import { Role } from '../../entities/role.entity';
+import { Role } from '../../entities';
 
 
 

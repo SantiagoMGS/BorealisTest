@@ -1,4 +1,4 @@
-import { Action } from '../entities/action.entity';
+import { Action } from "../entities";
 
 export interface IActionRepository {
   createActions(actions: Action[]): Promise<Action[]>;

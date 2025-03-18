@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { Application } from '../../entities/application.entity';
 import { IApplicationRepository } from '../../repositories/application.repository';
-import { applicationInitialData } from 'src/infrastructure/prisma/seed/application.seed';
+import { Application } from '../../entities';
+import { applicationInitialData } from 'src/infrastructure/prisma/seed';
 
 @Injectable()
 export class ApplicationSeedUseCase {

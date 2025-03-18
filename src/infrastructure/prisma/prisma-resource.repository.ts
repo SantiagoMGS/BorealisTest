@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
 import { IResourceRepository } from 'src/core/domain/repositories/resource.repository';
-import { Resource } from 'src/core/domain/entities/resource.entity';
+import { Resource } from 'src/core/domain/entities';
 
 @Injectable()
 export class PrismaResourceRepository implements IResourceRepository {
