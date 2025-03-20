@@ -19,7 +19,7 @@ export class CheckPermissionUseCase {
       const hasPermission = await this.rolePermissionRepository.findPermission(roleId, actionId, resourceId);
       return { access: !!hasPermission };
     } catch (error) {
-      this.logger.error(`Failed to check permission for role ID: ${roleId}`, error.stack);
+      this.logger.error(`Failed to check permission for role ID: ${roleId}`, (error as Error).stack);
       throw error;
     }
   }

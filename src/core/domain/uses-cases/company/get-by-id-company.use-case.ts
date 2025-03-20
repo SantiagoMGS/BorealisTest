@@ -18,7 +18,7 @@ export class GetByIdCompanyUseCase {
       return company;
     }
     catch (error) {
-      this.logger.error(`Failed to get company by ID: ${id}`, error.stack);
+      this.logger.error(`Failed to get company by ID: ${id}`, (error as Error).stack);
       throw error;
     }
   }

@@ -16,8 +16,8 @@ export class UpdateUserUseCase {
       this.logger.log(`User email: ${email} updated successfully`);
       const { password, ...userWithoutPassword } = updatedUser;
       return userWithoutPassword;
-    } catch (error) {
-      this.logger.error(`Failed to update user email: ${email}`, error.stack);
+    } catch (error: unknown) {
+      this.logger.error(`Failed to update user email: ${email}`, (error as Error).stack);
       throw error;
     }
   }

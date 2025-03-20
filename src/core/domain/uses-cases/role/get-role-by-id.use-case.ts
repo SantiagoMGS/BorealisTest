@@ -16,7 +16,7 @@ export class GetRoleByIdUseCase {
       if (!role) throw new NotFoundException(`Rol con ID ${id} no encontrado`);
       return role;
     } catch (error) {
-      this.logger.error(`Failed to get role by ID: ${id}`, error.stack);
+      this.logger.error(`Failed to get role by ID: ${id}`, (error as Error).stack);
       throw error;
     }
   }

@@ -21,7 +21,7 @@ export class ActionSeedUseCase {
       this.logger.log('Action seed executed successfully');
       return actions;
     } catch (error) {
-      this.logger.error('Failed to execute action seed', error.stack);
+      this.logger.error('Failed to execute action seed', (error as Error).stack);
       throw error;
     }
   }

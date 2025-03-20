@@ -23,7 +23,7 @@ export class DeleteUserUseCase {
       await this.userRepository.deleteUser(email);
       this.logger.log(`User email: ${email} deleted successfully`);
     } catch (error) {
-      this.logger.error(`Failed to delete user email: ${email}`, error.stack);
+      this.logger.error(`Failed to delete user email: ${email}`, (error as Error).stack);
       throw error;
     }
   }

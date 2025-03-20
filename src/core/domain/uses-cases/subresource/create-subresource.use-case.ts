@@ -18,7 +18,7 @@ export class CreateSubResourceUseCase {
       this.logger.log('Resource created successfully');
       return createdSubResource;
     } catch (error) {
-      this.logger.error('Failed to create resource', error.stack);
+      this.logger.error('Failed to create resource', (error as Error).stack);
       throw error;
     }
   }

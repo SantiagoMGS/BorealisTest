@@ -16,7 +16,7 @@ export class DeleteResourceUseCase {
 
       await this.resourceRepository.deleteResource(id);
     } catch (error) {
-      this.logger.error(`Failed to delete resource ID: ${id}`, error.stack);
+      this.logger.error(`Failed to delete resource ID: ${id}`, (error as Error).stack);
       throw error;
     }
   }

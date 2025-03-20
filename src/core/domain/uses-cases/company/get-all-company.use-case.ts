@@ -16,7 +16,7 @@ export class GetAllCompaniesUseCase {
     try {
       return this.companyRepository.findAll(page, limit);
     } catch (error) {
-      this.logger.error('Failed to get all companys', error.stack);
+      this.logger.error('Failed to get all companys', (error as Error).stack);
       throw error;
 
     }

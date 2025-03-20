@@ -18,7 +18,7 @@ export class GetAllResourcesUseCase {
       }
       return this.resourceRepository.findAll(page, limit);
     } catch (error) {
-      this.logger.error('Failed to get all resource', error.stack);
+      this.logger.error('Failed to get all resource', (error as Error).stack);
       throw error;
     }
   }

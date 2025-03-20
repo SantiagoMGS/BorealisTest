@@ -14,7 +14,7 @@ export class GetAllRolesUseCase {
     try {
       return this.roleRepository.findAll(page, limit);
     } catch (error) {
-      this.logger.error('Failed to get all roles', error.stack);
+      this.logger.error('Failed to get all roles', (error as Error).stack);
       throw error;
     }
   }

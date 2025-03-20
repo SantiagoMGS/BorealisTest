@@ -14,7 +14,7 @@ export class UpdateUserCompanyRoleUseCase {
       await this.userRepository.updateUserRole(userId, companyId, roleId);
       this.logger.log(`User ${userId} role updated successfully in company ${companyId}`);
     } catch (error) {
-      this.logger.error(`Failed to update user role in company ${companyId}`, error.stack);
+      this.logger.error(`Failed to update user role in company ${companyId}`, (error as Error).stack);
       throw error;
     }
   }

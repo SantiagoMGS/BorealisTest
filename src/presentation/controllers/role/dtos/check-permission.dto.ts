@@ -8,7 +8,7 @@ export class CheckPermissionDto {
   })
   @IsUUID()
   @IsNotEmpty()
-  roleId: string;
+  roleId!: string;
 
   @ApiProperty({
     description: 'The UUID of the action',
@@ -16,7 +16,7 @@ export class CheckPermissionDto {
   })
   @IsUUID()
   @IsNotEmpty()
-  actionId: string;
+  actionId!: string;
 
   @ApiProperty({
     description: 'The UUID of the resource',
@@ -24,5 +24,5 @@ export class CheckPermissionDto {
   })
   @IsUUID()
   @IsNotEmpty()
-  resourceId: string;
+  resourceId!: string;
 }

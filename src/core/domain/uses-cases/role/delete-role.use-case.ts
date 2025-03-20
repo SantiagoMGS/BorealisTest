@@ -23,7 +23,7 @@ export class DeleteRoleUseCase {
       this.logger.log(`Role ID: ${id} deleted successfully`);
       // Role ID: ${id} deleted successfully
     } catch (error) {
-      this.logger.error(`Failed to delete role ID: ${id}`, error.stack);
+      this.logger.error(`Failed to delete role ID: ${id}`, (error as Error).stack);
       throw error;
     }
   }

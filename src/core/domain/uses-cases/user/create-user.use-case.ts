@@ -68,7 +68,7 @@ export class CreateUserUseCase {
       this.logger.log('User created successfully');
       return newUser;
     } catch (error) {
-      this.logger.error('Failed to create user', error.stack);
+      this.logger.error('Failed to create user', (error as Error).stack);
       throw error;
     }
   }

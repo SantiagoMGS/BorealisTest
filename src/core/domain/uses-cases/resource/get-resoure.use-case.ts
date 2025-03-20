@@ -17,7 +17,7 @@ export class GetByIdResourceUseCase {
       if (!resource) throw new NotFoundException(`Recurso con ID ${id} no encontrado`);
       return resource;
     } catch (error) {
-      this.logger.error(`Failed to get resource by ID: ${id}`, error.stack);
+      this.logger.error(`Failed to get resource by ID: ${id}`, (error as Error).stack);
       throw error;
     }
   }

@@ -19,7 +19,7 @@ export class UpdateRoleUseCase {
       this.logger.log(`Role ID: ${id} updated successfully`);
       return updatedRole;
     } catch (error) {
-      this.logger.error(`Failed to update role ID: ${id}`, error.stack);
+      this.logger.error(`Failed to update role ID: ${id}`, (error as Error).stack);
       throw error;
     }
   }

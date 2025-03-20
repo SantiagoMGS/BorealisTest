@@ -23,7 +23,7 @@ export class CreateRoleUseCase {
       this.logger.log('Role created successfully');
       return createdRole;
     } catch (error) {
-      this.logger.error('Failed to create role', error.stack);
+      this.logger.error('Failed to create role', (error as Error).stack);
       throw error;
     }
   }

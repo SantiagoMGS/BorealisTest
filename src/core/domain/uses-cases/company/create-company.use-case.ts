@@ -37,7 +37,7 @@ export class CreateCompanyUseCase {
       return newCompany;
 
     } catch (error) {
-      this.logger.error('Failed to create company', error.stack);
+      this.logger.error('Failed to create company', (error as Error).stack);
       throw error;
     }
 

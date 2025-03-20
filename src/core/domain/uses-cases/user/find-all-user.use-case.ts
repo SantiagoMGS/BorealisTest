@@ -17,7 +17,7 @@ export class FindAllUsersUseCase {
       return this.userRepository.findAll(page, limit);
 
     } catch (error) {
-      this.logger.error('Failed to get all users', error.stack);
+      this.logger.error('Failed to get all users', (error as Error).stack);
       throw error;
     }
   }

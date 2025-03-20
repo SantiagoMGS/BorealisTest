@@ -14,7 +14,7 @@ export class AssignApplicationToCompaniesUseCase {
     try {
       await this.companyRepository.assignApplicationToCompanies(companyIds, applicationIds);
     } catch (error) {
-      this.logger.error(`Failed to Assign company ID: ${companyIds}`, error.stack);
+      this.logger.error(`Failed to Assign company ID: ${companyIds}`, (error as Error).stack);
       throw error;
     }
 

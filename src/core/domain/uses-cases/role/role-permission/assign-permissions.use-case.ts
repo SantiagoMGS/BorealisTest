@@ -31,7 +31,7 @@ export class AssignPermissionsUseCase {
     } catch (error) {
       this.logger.error(
         `Failed to assign permissions to role ID: ${roleId}`,
-        error.stack,
+        error instanceof Error ? error.stack : 'Unknown error',
       );
       throw error;
     }

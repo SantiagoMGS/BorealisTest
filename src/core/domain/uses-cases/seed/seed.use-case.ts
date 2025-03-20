@@ -42,7 +42,7 @@ export class SeedUseCase {
       this.logger.log('Seed process executed successfully');
       return 'Seed executed successfully';
     } catch (error) {
-      this.logger.error('Failed to execute seed process', error.stack);
+      this.logger.error('Failed to execute seed process', error instanceof Error ? error.stack : 'Unknown error');
       throw error;
     }
   }

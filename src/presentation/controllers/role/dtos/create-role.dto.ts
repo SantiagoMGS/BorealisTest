@@ -10,6 +10,6 @@ export class CreateRoleDto {
   })
   @IsString({ message: 'El nombre debe ser un texto' })
   @IsNotEmpty()
-  name: string;
+  name!: string;
 
 }

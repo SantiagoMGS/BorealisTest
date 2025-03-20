@@ -28,5 +28,5 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   @ApiProperty({ example: '1', description: 'ID del rol  debe ser un UUIDs' })
   @IsNotEmpty({ message: 'El rol es obligatorio' })
   @IsUUID('4', { each: true, message: 'Cada rolId debe ser un UUID válido' })
-  roleId: string;
+  roleId!: string;
 }

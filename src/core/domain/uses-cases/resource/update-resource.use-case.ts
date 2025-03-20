@@ -17,7 +17,7 @@ export class UpdateResourceUseCase {
       if (!existingResource) throw new NotFoundException(`Recurso con ID ${id} no encontrado`);
       return this.resourceRepository.updateResource(id, resourceData);
     } catch (error) {
-      this.logger.error(`Failed to update user ID: ${id}`, error.stack);
+      this.logger.error(`Failed to update user ID: ${id}`, (error as Error).stack);
       throw error;
     }
   }

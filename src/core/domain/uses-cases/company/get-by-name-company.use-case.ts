@@ -17,7 +17,7 @@ export class GetByNameCompanyUseCase {
     if (!company) throw new NotFoundException(`Compañía con nombre ${name} no encontrada`);
     return company;
   } catch (error) {
-    this.logger.error(`Failed to get company by ID: ${name}`, error.stack);
+    this.logger.error(`Failed to get company by ID: ${name}`, (error as Error).stack);
     throw error;
   }
   }

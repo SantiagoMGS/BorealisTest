@@ -14,7 +14,7 @@ export class CreateUserDto {
   @ApiProperty({ example: 'Pepito Perez', description: 'Nombre del usuario' })
   @IsNotEmpty({ message: 'El nombre es obligatorio' })
   @IsString({ message: 'El nombre debe ser un texto' })
-  name: string;
+  name!: string;
 
   @ApiProperty({
     example: 'fabio@example.com',
@@ -22,7 +22,7 @@ export class CreateUserDto {
   })
   @IsEmail({}, { message: 'El email debe ser válido' })
   @IsNotEmpty({ message: 'El email es obligatorio' })
-  email: string;
+  email!: string;
 
   @ApiProperty({
     example: 'password123',
@@ -31,7 +31,7 @@ export class CreateUserDto {
   @MinLength(6, { message: 'La contraseña debe tener al menos 6 caracteres' })
   @IsNotEmpty({ message: 'La contraseña es obligatoria' })
   @IsString({ message: 'La contraseña debe ser un texto' })
-  password: string;
+  password!: string;
 
   @ApiProperty({
     description: 'List of company IDs to assign to the user',
@@ -56,5 +56,5 @@ export class CreateUserDto {
   })
   @IsArray()
   @IsNotEmpty()
-  permissions: { companyId: string; roleId: string }[];
+  permissions!: { companyId: string; roleId: string }[];
 }

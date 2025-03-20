@@ -24,7 +24,7 @@ export class ApplicationSeedUseCase {
       this.logger.log('Application seed executed successfully');
       return applications;
     } catch (error) {
-      this.logger.error('Failed to execute application seed', error.stack);
+      this.logger.error('Failed to execute application seed', (error as Error).stack);
       throw error;
     }
   }

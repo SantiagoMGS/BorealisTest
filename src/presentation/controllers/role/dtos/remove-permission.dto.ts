@@ -8,7 +8,7 @@ export class RemovePermissionDto {
   })
   @IsUUID(4, { message: 'El roleId debe ser un UUID válido' })
   @IsNotEmpty({ message: 'El roleId es requerido' })
-  roleId: string;
+  roleId!: string;
 
   @ApiProperty({
     description: 'ID de la acción',
@@ -16,7 +16,7 @@ export class RemovePermissionDto {
   })
   @IsUUID(4, { message: 'El actionId debe ser un UUID válido' })
   @IsNotEmpty({ message: 'El actionId es requerido' })
-  actionId: string;
+  actionId!: string;
 
   @ApiProperty({
     description: 'ID del recurso',
@@ -24,5 +24,5 @@ export class RemovePermissionDto {
   })
   @IsUUID(4, { message: 'El resourceId debe ser un UUID válido' })
   @IsNotEmpty({ message: 'El resourceId es requerido' })
-  resourceId: string;
+  resourceId!: string;
 }

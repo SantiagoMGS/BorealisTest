@@ -1,9 +1,9 @@
 export class UserPermissionsEntity {
-  userId: string;
-  userName: string;
-  userEmail: string; // Agregar este campo
-  isActive: boolean;
-  companies: {
+  userId!: string; 
+  userName!: string;
+  userEmail!: string; // Agregar este campo
+  isActive!: boolean;
+  companies!: {
     companyId: string;
     companyName: string;
     applications: {

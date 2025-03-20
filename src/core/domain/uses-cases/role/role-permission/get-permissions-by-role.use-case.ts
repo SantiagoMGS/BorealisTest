@@ -18,7 +18,7 @@ export class GetPermissionsByRoleUseCase {
 
       return { roleId, permissions };
     } catch (error) {
-      this.logger.error(`Failed to get permissions for role ID: ${roleId}`, error.stack);
+      this.logger.error(`Failed to get permissions for role ID: ${roleId}`, (error as Error).stack);
       throw error;
     }
   }

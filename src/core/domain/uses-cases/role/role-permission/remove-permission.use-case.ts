@@ -19,7 +19,7 @@ export class RemovePermissionUseCase {
       await this.rolePermissionRepository.removePermission(roleId, actionId, subresourceId);
       this.logger.log(`Permission removed for role ID: ${roleId}`);
     } catch (error) {
-      this.logger.error(`Failed to remove permission for role ID: ${roleId}`, error.stack);
+      this.logger.error(`Failed to remove permission for role ID: ${roleId}`, (error as Error).stack);
       throw error;
     }
   }

@@ -18,7 +18,7 @@ export class DeleteCompanyUseCase {
       await this.companyRepository.deleteCompany(id);
       this.logger.log(`Company ID: ${id} deleted successfully`);
     } catch (error) {
-      this.logger.error(`Failed to delete company ID: ${id}`, error.stack);
+      this.logger.error(`Failed to delete company ID: ${id}`, (error as Error).stack);
       throw error;
     }
   }

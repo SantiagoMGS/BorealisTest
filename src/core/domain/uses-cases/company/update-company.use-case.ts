@@ -20,8 +20,8 @@ export class UpdateCompanyUseCase {
       const updateCompany = this.companyRepository.updateCompany(id, companyData);
       this.logger.log(`Company ID: ${id} updated successfully`);
       return updateCompany
-    } catch (error) {
-      this.logger.error(`Failed to update company ID: ${id}`, error.stack);
+    } catch (error ) {
+      this.logger.error(`Failed to update company ID: ${id}`, (error as Error).stack);
       throw error;
     }
   }

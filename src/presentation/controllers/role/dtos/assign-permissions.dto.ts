@@ -14,7 +14,7 @@ export class AssignPermissionsDto {
   })
   @IsUUID()
   @IsNotEmpty()
-  roleId: string;
+  roleId!: string;
 
   @ApiProperty({
     description: 'List of permission IDs to assign to the role',
@@ -39,5 +39,5 @@ export class AssignPermissionsDto {
   })
   @IsArray()
   @IsNotEmpty()
-  permissions: { actionId: string; subresourceId: string }[];
+  permissions!: { actionId: string; subresourceId: string }[];
 }

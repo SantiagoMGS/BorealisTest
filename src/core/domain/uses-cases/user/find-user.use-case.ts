@@ -21,7 +21,7 @@ export class FindUserUseCase {
       }
       return existingUser;
     } catch (error) {
-      this.logger.error(`Failed to find user by email: ${email}`, error.stack);
+      this.logger.error(`Failed to find user by email: ${email}`, (error as Error).stack);
       throw error;
     }
   }
