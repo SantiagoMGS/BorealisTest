@@ -29,7 +29,7 @@ import { PermissionGuard } from 'src/core/domain/uses-cases/auth/guards/permissi
 import { RemovePermissionDto } from './dtos/remove-permission.dto';
 
 @ApiTags('Permisos de Rol')
-@Controller('role-permission')
+@Controller('role/role-permission')
 @UseGuards(AuthGuard('internal'), PermissionGuard)
 export class RolePermissionController {
   constructor(

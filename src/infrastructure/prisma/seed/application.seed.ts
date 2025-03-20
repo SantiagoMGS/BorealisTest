@@ -7,5 +7,5 @@ export const applicationInitialData: SeedApplication[] = [
   { name: 'PLANTA' },
   { name: 'CI' },
   { name: 'MINA' },
-  { name: 'BOREALIS' },
+  { name: 'BOREALIS APP' },
 ];

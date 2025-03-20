@@ -1,3 +1,4 @@
+
 export { PrismaSubResourceRepository } from "./prisma-subresource.repository"
 export { PrismaApplicationRepository } from "./prisma-application.repository"
 export { PrismaRolePermissionRepository } from "src/infrastructure/prisma/prisma-role-permission.repository"
@@ -6,3 +7,4 @@ export { PrismaCompanyRepository } from "./prisma-company.repository"
 export { PrismaResourceRepository } from "./prisma-resource.repository"
 export { PrismaRoleRepository } from "./prisma-role.repository"
 export { PrismaUserRepository } from "./prisma-user.repository"
+export { PrismaLoginRepository } from "./prisma-login.repository"

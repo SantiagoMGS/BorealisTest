@@ -1,19 +1,19 @@
 import { Inject, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { IUserRepository } from '../../repositories/user.repository';
+import { ILoginRepository } from '../../repositories/login.repository';
 
 @Injectable()
 export class AuthUseCase {
   private readonly logger = new Logger(AuthUseCase.name);
   constructor(
-    @Inject('IUserRepository') private readonly userRepository: IUserRepository,
+    @Inject('ILoginRepository') private readonly loginRepository: ILoginRepository,
     private readonly jwtService: JwtService,
   ) { }
 
   async validateUser(email: string, password: string): Promise<any> {
     // Debes obtener la contraseña en la consulta    
-    const user = await this.userRepository.findByEmailWithPassword(email);
+    const user = await this.loginRepository.findByEmailWithPassword(email);
 
     if (!user) {
       throw new UnauthorizedException('Credenciales inválidas');
@@ -29,7 +29,7 @@ export class AuthUseCase {
     // Retornar datos sin la contraseña
     const { password: _, ...result } = user;
     // Obtener las compañías asociadas al usuario
-    const companies = await this.userRepository.getCompanyByUserId(user.id);
+    const companies = await this.loginRepository.getCompanyByUserId(user.id);
     return { ...result, companies }
   }
 

@@ -4,18 +4,18 @@ interface SeedResource {
 
 export const resourceInitialData: SeedResource[] = [
   {
-    name: 'ROLES',
+    name: 'ROLE',
   },
   {
-    name: 'USERS',
+    name: 'USER',
   },
   {
-    name: 'COMPANIES',
+    name: 'COMPANY',
   },
   {
-    name: 'RESOURCES',
+    name: 'RESOURCE',
   },
   {
-    name: 'SUBRESOURCES',
+    name: 'SUBRESOURCE',
   },
 ];

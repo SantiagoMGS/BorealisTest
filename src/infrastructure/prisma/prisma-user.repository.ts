@@ -3,10 +3,11 @@ import { IUserRepository } from 'src/core/domain/repositories/user.repository';
 import { PrismaService } from './prisma.service';
 import * as bcrypt from 'bcrypt';
 import { User } from 'src/core/domain/entities';
+import { UserPermissionsEntity } from 'src/core/domain/entities/user-permissions.entity';
 
 @Injectable()
 export class PrismaUserRepository implements IUserRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async createUser(user: User): Promise<User> {
     return this.prisma.user.create({
@@ -148,4 +149,156 @@ export class PrismaUserRepository implements IUserRepository {
       thirdColor: company.thirdColor,
     }));
   }
+  async getUserPermissions(userId: string): Promise<UserPermissionsEntity[]> {
+    try {
+      const userPermissions = await this.prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          isActive: true,
+          companies: {
+            select: {
+              company: {
+                select: {
+                  id: true,
+                  name: true,
+                  logo: true,
+                  primaryColor: true,
+                  secondaryColor: true,
+                  thirdColor: true,
+                  applications: {
+                    select: {
+                      aplication: { // Relación con el modelo Application
+                        select: {
+                          id: true,
+                          name: true,
+                          isActive: true,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              role: {
+                select: {
+                  id: true,
+                  name: true,
+                  permissions: { // Relación con permisos del rol
+                    select: {
+                      action: {
+                        select: {
+                          id: true,
+                          name: true,
+                          level: true,
+                        },
+                      },
+                      subresource: {
+                        select: {
+                          id: true,
+                          name: true,
+                          resource: { // Relación con el recurso del subrecurso
+                            select: {
+                              id: true,
+                              name: true,
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+
+      return [this.transformUserPermissions(userPermissions)];
+    } catch (error) {
+      console.error(error);
+      throw new Error('Error fetching user permissions');
+    }
+  }
+
+  private transformUserPermissions(userPermissions: any): UserPermissionsEntity {
+    if (!userPermissions || !userPermissions.companies) {
+      return {
+        userId: '',
+        userName: '',
+        userEmail: '',
+        isActive: false,
+        companies: [],
+      };
+    }
+
+    return {
+      userId: userPermissions.id,
+      userName: userPermissions.name,
+      userEmail: userPermissions.email,
+      isActive: userPermissions.isActive,
+      companies: userPermissions.companies.map((companyData: any) => {
+        const company = companyData.company;
+        const role = companyData.role;
+
+        return {
+          companyId: company.id,
+          companyName: company.name,
+          applications: company.applications.map((app: any) => ({
+            applicationId: app.aplication.id,
+            applicationName: app.aplication.name,
+            isActive: app.aplication.isActive,
+            resources: this.groupPermissionsByResource(role.permissions),
+          })),
+          roleId: role.id,
+          roleName: role.name,
+        };
+      }),
+    };
+  }
+
+  /**
+   * Agrupa las acciones por recursos y subrecursos.
+   */
+  private groupPermissionsByResource(permissions: any[]): any[] {
+    const resourceMap: { [resourceId: string]: any } = {};
+
+    permissions.forEach((permission) => {
+      const resourceId = permission.subresource.resource.id;
+      const resourceName = permission.subresource.resource.name;
+      const subresourceId = permission.subresource.id;
+      const subresourceName = permission.subresource.name;
+
+      // Si el recurso no existe en el mapa, inicialízalo
+      if (!resourceMap[resourceId]) {
+        resourceMap[resourceId] = {
+          resourceId,
+          resourceName,
+          subresources: {},
+        };
+      }
+
+      // Si el subrecurso no existe en el recurso, inicialízalo
+      if (!resourceMap[resourceId].subresources[subresourceId]) {
+        resourceMap[resourceId].subresources[subresourceId] = {
+          subresourceId,
+          subresourceName,
+          action: {
+            actionId: permission.action.id,
+            actionName: permission.action.name,
+            actionLevel: permission.action.level,
+          },
+        };
+      }
+    });
+
+    // Convierte el mapa de recursos en un arreglo
+    return Object.values(resourceMap).map((resource) => ({
+      ...resource,
+      subresources: Object.values(resource.subresources),
+    }));
+  }
 }
+
+

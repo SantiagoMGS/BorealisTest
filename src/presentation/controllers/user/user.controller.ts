@@ -1,7 +1,9 @@
 import {
   Body, Controller, Delete, Get, NotFoundException, Param,
   Post, Put, Query, HttpCode, HttpStatus, ParseIntPipe,
-  ParseUUIDPipe, UseGuards
+  ParseUUIDPipe, UseGuards,
+  Request,
+
 } from "@nestjs/common";
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery, ApiBody } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
@@ -17,10 +19,12 @@ import { Permissions } from "src/core/domain/uses-cases/auth/decorators/permissi
 import { UpdateUserCompanyDto } from "./dtos/update-user-company.dto";
 import { UpdateUserCompanyRoleUseCase } from "src/core/domain/uses-cases/user/update-user-company.use-case";
 import { PermissionService } from "src/core/domain/uses-cases/auth/services/permission.service";
+import { GetUserPermissionsUseCase } from "src/core/domain/uses-cases";
+import { UserPermissionsResponseDto } from "./dtos/user-permissions.dto";
 
 @ApiTags('Users')
 @Controller('user')
-@UseGuards(AuthGuard('internal'), PermissionGuard) 
+@UseGuards(AuthGuard('internal'), PermissionGuard)
 export class UserController {
   constructor(
     private readonly createUserUseCase: CreateUserUseCase,
@@ -29,6 +33,7 @@ export class UserController {
     private readonly updateUserUseCase: UpdateUserUseCase,
     private readonly deleteUserUseCase: DeleteUserUseCase,
     private readonly updateUserCompanyRoleUseCase: UpdateUserCompanyRoleUseCase,
+    private readonly getUserPermissionsUseCase: GetUserPermissionsUseCase,
     private readonly permissionService: PermissionService,  // 🔹 Inyección del servicio de permisos
   ) { }
 
@@ -45,6 +50,12 @@ export class UserController {
     return this.createUserUseCase.execute(createUserDto);
   }
 
+  @Get('permissions-user')
+  async getUserPermissions(@Request() req) {
+    console.log('Endpoint /permissions-user llamado', req.user.userId);
+
+    return await this.getUserPermissionsUseCase.execute(req.user.userId);
+  }
   // Solo los usuarios con permiso para LEER usuarios pueden acceder
   @Get()
   @HttpCode(HttpStatus.OK)
@@ -128,4 +139,5 @@ export class UserController {
     await this.deleteUserUseCase.execute(email);
     return { message: `Usuario con email ${email} eliminado correctamente.` };
   }
+
 }

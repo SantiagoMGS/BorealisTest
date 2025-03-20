@@ -1,9 +1,9 @@
 import { User } from "../entities";
+import { UserPermissionsEntity } from "../entities/user-permissions.entity";
 
 export interface IUserRepository {
   createUser(user: User): Promise<User>;
   findByEmail(email: string): Promise<Omit<User, 'password'> | null>;
-  findByEmailWithPassword(email: string): Promise<User | null>;
   deleteUser(id: string): Promise<void>;
   findAll(
     page: number,
@@ -19,7 +19,6 @@ export interface IUserRepository {
     companyId: string,
     roleId: string,
   ): Promise<void>;
-  getCompanyByUserId(
-    userId: string,
-  ): Promise<{ companyId: string; companyName: string; logo: string }[]>;
+  getUserPermissions(userId: string): Promise<UserPermissionsEntity[]>;
+
 }

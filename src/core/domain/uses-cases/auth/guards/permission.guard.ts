@@ -37,9 +37,8 @@ export class PermissionGuard implements CanActivate {
       return false;
     }
 
-    // 🔹 Determinar el recurso a partir de la ruta
-    const resourceName = PermissionGuard.extractResourceName(routePath);
-     this.logger.log(`🔹 Acción detectada: ${actionName}, Recurso detectado: ${resourceName}`);
+    const subresourceName = PermissionGuard.extractSubresourceName(routePath);
+    this.logger.log(`🔹 Subrecurso detectado: ${subresourceName}`);
 
     // 🔹 Obtener el rol del usuario en la empresa
     const userCompany = await this.prisma.userCompany.findFirst({
@@ -64,18 +63,22 @@ export class PermissionGuard implements CanActivate {
 
     // 🔹 Validar si el usuario tiene el permiso necesario con el nivel adecuado
     const hasPermission = rolePermissions.some(rolePermission => {
-      return (
-        rolePermission.subresource.name === resourceName &&
-        rolePermission.action.level >= PermissionGuard.getActionLevel(actionName) // ✅ Permite nivel superior
-      );
+      const subresourceMatch = rolePermission.subresource.name.toLowerCase() === subresourceName.toLowerCase();
+      const actionLevelMatch = rolePermission.action.level >= PermissionGuard.getActionLevel(actionName);
+    
+      this.logger.log(`🔹 Comparando subrecurso: ${rolePermission.subresource.name.toLowerCase()} con ${subresourceName.toLowerCase()}`);
+      this.logger.log(`🔹 Nivel de acción en BD: ${rolePermission.action.level}, Nivel requerido: ${PermissionGuard.getActionLevel(actionName)}`);
+      this.logger.log(`🔹 Subrecurso coincide: ${subresourceMatch}, Nivel suficiente: ${actionLevelMatch}`);
+    
+      return subresourceMatch && actionLevelMatch;
     });
 
     if (!hasPermission) {
-       this.logger.log(`❌ Permiso denegado para ${actionName} en ${resourceName}`);
+       this.logger.log(`❌ Permiso denegado para ${actionName} en ${subresourceName}`);
       throw new ForbiddenException('No tienes permisos suficientes');
     }
 
-     this.logger.log(`✅ Permiso concedido para ${actionName} en ${resourceName}`);
+     this.logger.log(`✅ Permiso concedido para ${actionName} en ${subresourceName}`);
     return true;
   }
 
@@ -88,6 +91,18 @@ export class PermissionGuard implements CanActivate {
     return parts.length > 0 ? parts[0] : 'unknown'; // Retorna el primer segmento después de '/api/'
   }
 
+  private static extractSubresourceName(routePath: string): string {
+    const parts = routePath.split('/').filter(part => part !== 'api' && part !== '');
+    console.log(`🔹 Segmentos de la ruta: ${JSON.stringify(parts)}`);
+
+    // Si el recurso principal es 'user', busca el subrecurso
+    if (parts[0] === 'user' && parts.length > 1) {
+      return parts[0]; // Retorna el segundo segmento como subrecurso
+    }
+
+    // Si no hay subrecurso, retorna 'user' como recurso principal o 'unknown'
+    return parts[0] || 'unknown';
+  }
 
   /**
    * 🔹 Obtiene el nivel jerárquico de una acción.

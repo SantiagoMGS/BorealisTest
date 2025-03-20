@@ -11,6 +11,7 @@ import {
   PrismaRolePermissionRepository,
   PrismaApplicationRepository,
   PrismaSubResourceRepository,
+  PrismaLoginRepository,
 } from 'src/infrastructure/prisma';
 
 // **Authentication & Security**
@@ -75,6 +76,7 @@ import {
   AuthUseCase,
   CreateSubResourceUseCase,
   SeedUseCase,
+  GetUserPermissionsUseCase,
 } from 'src/core/domain/uses-cases';
 
 @Module({
@@ -131,6 +133,10 @@ import {
       provide: 'ISubResourceRepository',
       useClass: PrismaSubResourceRepository,
     },
+    {
+      provide: 'ILoginRepository',
+      useClass: PrismaLoginRepository
+    },
 
     // **User Use Cases**
     CreateUserUseCase,
@@ -139,6 +145,7 @@ import {
     DeleteUserUseCase,
     FindUserUseCase,
     UpdateUserCompanyRoleUseCase,
+    GetUserPermissionsUseCase,
 
     // **Role Use Cases**
     CreateRoleUseCase,
@@ -221,6 +228,7 @@ import {
     DeleteResourceUseCase,
     GetByIdResourceUseCase,
     GetAllResourcesUseCase,
+    GetUserPermissionsUseCase,
 
     // **Company Use Cases**
     CreateCompanyUseCase,

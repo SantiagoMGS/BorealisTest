@@ -9,13 +9,26 @@ import { AuthGuard } from '@nestjs/passport';
 @Controller('auth')
 export class AuthController {
   private logger = new Logger(AuthController.name);
-  constructor(private readonly authUseCase: AuthUseCase) { }
+  constructor(private readonly authUseCase: AuthUseCase) {}
 
   @UseGuards(CustomAuthGuard)
   @Get('secure-data')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Obtener datos seguros del usuario' })
-  @ApiResponse({ status: HttpStatus.OK, description: 'Devuelve los datos seguros del usuario autenticado.' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Devuelve los datos seguros del usuario autenticado.',
+    schema: {
+      example: {
+        message: '✅ Acceso permitido a datos protegidos',
+        user: {
+          id: '123e4567-e89b-12d3-a456-426614174000',
+          email: 'usuario@example.com',
+          name: 'Usuario Ejemplo',
+        },
+      },
+    },
+  })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'No autorizado.' })
   @ApiResponse({ status: HttpStatus.FORBIDDEN, description: 'Recurso prohibido.' })
   getSecureData(@Req() request) {
@@ -38,8 +51,33 @@ export class AuthController {
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Autenticar usuario' })
-  @ApiBody({ type: LoginDto })
-  @ApiResponse({ status: HttpStatus.OK, description: 'Usuario autenticado exitosamente.' })
+  @ApiBody({
+    type: LoginDto,
+    description: 'Credenciales del usuario para autenticación.',
+    examples: {
+      example1: {
+        summary: 'Ejemplo de entrada',
+        value: {
+          email: 'usuario@example.com',
+          password: 'password123',
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Usuario autenticado exitosamente.',
+    schema: {
+      example: {
+        accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+        user: {
+          id: '123e4567-e89b-12d3-a456-426614174000',
+          email: 'usuario@example.com',
+          name: 'Usuario Ejemplo',
+        },
+      },
+    },
+  })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Credenciales inválidas.' })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Datos de entrada inválidos.' })
   async login(@Body() loginDto: LoginDto) {
@@ -51,7 +89,20 @@ export class AuthController {
   @UseGuards(AuthGuard('internal'))
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Obtener perfil del usuario' })
-  @ApiResponse({ status: HttpStatus.OK, description: 'Devuelve el perfil del usuario autenticado.' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Devuelve el perfil del usuario autenticado.',
+    schema: {
+      example: {
+        message: 'Perfil del usuario autenticado internamente',
+        user: {
+          id: '123e4567-e89b-12d3-a456-426614174000',
+          email: 'usuario@example.com',
+          name: 'Usuario Ejemplo',
+        },
+      },
+    },
+  })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'No autorizado.' })
   @ApiResponse({ status: HttpStatus.FORBIDDEN, description: 'Recurso prohibido.' })
   getProfile(@Request() req) {

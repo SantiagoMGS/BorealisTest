@@ -5,23 +5,23 @@ interface SeedSubresourse {
 
 export const subresourseInitialData: SeedSubresourse[] = [
   {
-    name: 'ROLES',
-    resourceName: 'ROLES',
+    name: 'ROLE',
+    resourceName: 'ROLE',
   },
   {
-    name: 'USERS',
-    resourceName: 'USERS',
+    name: 'USER',
+    resourceName: 'USER',
   },
   {
-    name: 'COMPANIES',
-    resourceName: 'COMPANIES',
+    name: 'COMPANY',
+    resourceName: 'COMPANY',
   },
   {
-    name: 'RESOURCES',
-    resourceName: 'RESOURCES',
+    name: 'RESOURCE',
+    resourceName: 'RESOURCE',
   },
   {
-    name: 'SUBRESOURCES',
-    resourceName: 'SUBRESOURCES',
+    name: 'SUBRESOURCE',
+    resourceName: 'SUBRESOURCE',
   },
 ];

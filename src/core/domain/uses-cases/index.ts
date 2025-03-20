@@ -1,3 +1,4 @@
+
 export { ActionSeedUseCase } from './action/action-seed.use-case';
 export { ApplicationSeedUseCase } from './application/application-seed.use-case';
 export { AuthUseCase } from './auth/auth.use-case';
@@ -30,3 +31,4 @@ export { UpdateUserCompanyRoleUseCase } from './user/update-user-company.use-cas
 export { UpdateUserUseCase } from './user/update-user.use-case';
 export { CreateSubResourceUseCase } from './subresource/create-subresource.use-case';
 export { SeedUseCase } from './seed/seed.use-case';
+export { GetUserPermissionsUseCase } from './user/get-user-permissions.use-case';
