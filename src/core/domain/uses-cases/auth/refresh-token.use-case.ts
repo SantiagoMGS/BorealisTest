@@ -18,21 +18,17 @@ export class RefreshTokenUseCase {
     return crypto.createHash('sha256').update(token).digest('hex');
   }
 
-  // Generar tokens
   async generateTokens(user: Omit<User, 'password'>) {
-    // Payload para access token
     const accessTokenPayload = {
       sub: user.id,
       email: user.email
     };
 
-    // Generar access token
     const accessToken = this.jwtService.sign(accessTokenPayload, {
       secret: this.configService.get<string>('JWT_SECRET'),
       expiresIn: '15m'
     });
 
-    // Generar refresh token
     const refreshTokenPayload = {
       sub: user.id
     };
@@ -48,17 +44,17 @@ export class RefreshTokenUseCase {
     await this.userRepository.updateRefreshToken(
       user.id,
       hashedRefreshToken,
-      refreshTokenExpired    );
+      refreshTokenExpired
+    );
 
     return {
+      userId: user.id,
       accessToken,
       refreshToken,
-      refreshTokenExpiresAt: refreshTokenExpired.toISOString(),
-
+      refreshTokenExpiresAt: refreshTokenExpired.toISOString()
     };
   }
 
-  // Refrescar token de acceso
   async refreshAccessToken(refreshToken: string) {
     try {
       const decoded = this.jwtService.verify(refreshToken, {
@@ -72,7 +68,6 @@ export class RefreshTokenUseCase {
         throw new UnauthorizedException('Token inválido');
       }
 
-      // Verificar si el token ha expirado
       if (user.refreshTokenExpired && user.refreshTokenExpired < new Date()) {
         await this.userRepository.clearRefreshToken(user.id);
         throw new UnauthorizedException('Refresh token expirado');
@@ -80,7 +75,6 @@ export class RefreshTokenUseCase {
 
       return this.generateTokens(user);
     } catch (error) {
-      // Manejar diferentes tipos de errores
       if (error instanceof UnauthorizedException) {
         throw error;
       }
@@ -88,7 +82,6 @@ export class RefreshTokenUseCase {
     }
   }
 
-  // Cerrar sesión
   async logout(userId: string) {
     await this.userRepository.clearRefreshToken(userId);
   }

@@ -1,4 +1,5 @@
-
+export { ManageSessionUseCase } from './auth/manage-session.use-case';
+export { RefreshTokenUseCase } from './auth/refresh-token.use-case';
 export { ActionSeedUseCase } from './action/action-seed.use-case';
 export { ApplicationSeedUseCase } from './application/application-seed.use-case';
 export { AuthUseCase } from './auth/auth.use-case';

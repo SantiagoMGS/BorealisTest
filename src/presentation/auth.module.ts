@@ -77,6 +77,7 @@ import {
   CreateSubResourceUseCase,
   SeedUseCase,
   GetUserPermissionsUseCase,
+  ManageSessionUseCase,
 } from 'src/core/domain/uses-cases';
 import { RefreshTokenUseCase } from 'src/core/domain/uses-cases/auth/refresh-token.use-case';
 import { RefreshTokenStrategy } from 'src/core/domain/uses-cases/auth/refresh-token.strategy';
@@ -104,6 +105,7 @@ import { PrismaSessionRepository } from 'src/infrastructure/prisma/prisma-sessio
     PermissionService,
     RefreshTokenUseCase,
     RefreshTokenStrategy,
+    ManageSessionUseCase,
 
     // **Repositories**
     {
@@ -211,6 +213,7 @@ import { PrismaSessionRepository } from 'src/infrastructure/prisma/prisma-sessio
     JwtAzureStrategy,
     JwtInternalStrategy,
     RefreshTokenStrategy,
+    ManageSessionUseCase,
 
     // **User Use Cases**
     CreateUserUseCase,

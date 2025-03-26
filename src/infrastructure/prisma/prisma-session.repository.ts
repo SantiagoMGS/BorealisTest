@@ -8,6 +8,7 @@ export class PrismaSessionRepository  implements ISessionRepository{
   constructor(private readonly prisma: PrismaService) { }
 
   async createSession(data: Omit<Session, 'id'>): Promise<Session> {
+     
     return this.prisma.session.create({ data });
   }
 
@@ -32,4 +33,4 @@ export class PrismaSessionRepository  implements ISessionRepository{
       data: { lastActive: new Date() }
     });
   }
-}
+} 

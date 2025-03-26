@@ -6,32 +6,57 @@ import { AuthUseCase } from 'src/core/domain/uses-cases/auth/auth.use-case';
 import { AuthGuard } from '@nestjs/passport';
 import { RefreshTokenUseCase } from 'src/core/domain/uses-cases/auth/refresh-token.use-case';
 import { RefreshTokenGuard } from 'src/core/domain/uses-cases/auth/guards/refresh-token.guard';
+import { ManageSessionUseCase } from 'src/core/domain/uses-cases/auth/manage-session.use-case';
 
 @ApiTags('Autenticación')
 @Controller('auth')
 export class AuthController {
   private logger = new Logger(AuthController.name);
-  constructor(private readonly authUseCase: AuthUseCase, private refreshTokenUseCase: RefreshTokenUseCase
+  constructor(
+    private readonly authUseCase: AuthUseCase,
+    private readonly refreshTokenUseCase: RefreshTokenUseCase,
+    private readonly manageSessionUseCase: ManageSessionUseCase
   ) { }
 
   @Post('refresh')
   @UseGuards(RefreshTokenGuard)
   async refreshTokens(@Request() req) {
     const refreshToken = req.headers['x-refresh-token'];
+    const userAgent = req.headers['user-agent'];
 
-    const tokens = await this.refreshTokenUseCase.refreshAccessToken(refreshToken);
+    const {
+      userId,
+      accessToken,
+      refreshToken: newRefreshToken,
+      refreshTokenExpiresAt
+    } = await this.refreshTokenUseCase.refreshAccessToken(refreshToken);
+
+    await this.manageSessionUseCase.createSession(
+      userId,
+      newRefreshToken,
+      userAgent
+    );
 
     return {
-      access_token: tokens.accessToken,
-      refresh_token: tokens.refreshToken,
-      refreshTokenExpiresAt: tokens.refreshTokenExpiresAt,
+      access_token: accessToken,
+      refresh_token: newRefreshToken,
+      refreshTokenExpiresAt: refreshTokenExpiresAt,
     };
   }
   @Post('logout')
-  async logout(@Body('userId') userId: string) {
-    await this.refreshTokenUseCase.logout(userId);
+  async logout(@Req() req, @Body('refreshToken') refreshToken: string) {
+    await this.refreshTokenUseCase.logout(req.user.id);
+    await this.manageSessionUseCase.invalidateSession(refreshToken);
     return { message: 'Logout exitoso' };
   }
+
+  @Get('sessions')
+  @UseGuards(AuthGuard('internal'))
+  async getSessions(@Req() req) {
+    const sessions = await this.manageSessionUseCase.getActiveSessions(req.user.id);
+    return { sessions };
+  }
+
   @UseGuards(CustomAuthGuard)
   @Get('secure-data')
   @HttpCode(HttpStatus.OK)
@@ -101,13 +126,21 @@ export class AuthController {
   })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Credenciales inválidas.' })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Datos de entrada inválidos.' })
-  async login(@Body() loginDto: LoginDto) {
+  async login(@Body() loginDto: LoginDto, @Req() req) {
 
     const user = await this.authUseCase.validateUser(loginDto.email, loginDto.password);
+    const loginResponse = await this.authUseCase.login(user);
 
+    // 🔧 extraer refresh_token correctamente
+    const refreshToken = loginResponse.tokens.refresh_token;
+
+    await this.manageSessionUseCase.createSession(
+      user.id,
+      refreshToken,
+      req.headers['user-agent']
+    );
     return {
-      ...await this.authUseCase.login(user),
-
+      ...loginResponse,
       user,
     };
   }

@@ -232,7 +232,6 @@ export class PrismaUserRepository implements IUserRepository {
 
       return [this.transformUserPermissions(userPermissions)];
     } catch (error) {
-      console.error(error);
       throw new Error('Error fetching user permissions');
     }
   }
