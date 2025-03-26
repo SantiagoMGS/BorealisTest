@@ -15,7 +15,9 @@ export class HttpExceptionFilter implements ExceptionFilter {
     if (exception instanceof HttpException) {
       status = exception.getStatus();
       const errorResponse = exception.getResponse();
-      message = typeof errorResponse === 'string' ? errorResponse : (errorResponse as any).message;
+      message = typeof errorResponse === 'string'
+        ? errorResponse
+        : (errorResponse as any)?.message ?? exception.message;
     }
 
     const errorResponse = new ApiResponse('error', message, undefined, request.url);
