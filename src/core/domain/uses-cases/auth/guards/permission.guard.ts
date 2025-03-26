@@ -93,7 +93,6 @@ export class PermissionGuard implements CanActivate {
 
   private static extractSubresourceName(routePath: string): string {
     const parts = routePath.split('/').filter(part => part !== 'api' && part !== '');
-    console.log(`🔹 Segmentos de la ruta: ${JSON.stringify(parts)}`);
 
     // Si el recurso principal es 'user', busca el subrecurso
     if (parts[0] === 'user' && parts.length > 1) {

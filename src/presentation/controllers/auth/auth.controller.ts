@@ -4,13 +4,34 @@ import { CustomAuthGuard } from 'src/core/domain/uses-cases/auth/guards/custom-a
 import { LoginDto } from '../user/dtos/login.dto';
 import { AuthUseCase } from 'src/core/domain/uses-cases/auth/auth.use-case';
 import { AuthGuard } from '@nestjs/passport';
+import { RefreshTokenUseCase } from 'src/core/domain/uses-cases/auth/refresh-token.use-case';
+import { RefreshTokenGuard } from 'src/core/domain/uses-cases/auth/guards/refresh-token.guard';
 
 @ApiTags('Autenticación')
 @Controller('auth')
 export class AuthController {
   private logger = new Logger(AuthController.name);
-  constructor(private readonly authUseCase: AuthUseCase) {}
+  constructor(private readonly authUseCase: AuthUseCase, private refreshTokenUseCase: RefreshTokenUseCase
+  ) { }
 
+  @Post('refresh')
+  @UseGuards(RefreshTokenGuard)
+  async refreshTokens(@Request() req) {
+    const refreshToken = req.headers['x-refresh-token'];
+
+    const tokens = await this.refreshTokenUseCase.refreshAccessToken(refreshToken);
+
+    return {
+      access_token: tokens.accessToken,
+      refresh_token: tokens.refreshToken,
+      refreshTokenExpiresAt: tokens.refreshTokenExpiresAt,
+    };
+  }
+  @Post('logout')
+  async logout(@Body('userId') userId: string) {
+    await this.refreshTokenUseCase.logout(userId);
+    return { message: 'Logout exitoso' };
+  }
   @UseGuards(CustomAuthGuard)
   @Get('secure-data')
   @HttpCode(HttpStatus.OK)
@@ -81,8 +102,14 @@ export class AuthController {
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Credenciales inválidas.' })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Datos de entrada inválidos.' })
   async login(@Body() loginDto: LoginDto) {
+
     const user = await this.authUseCase.validateUser(loginDto.email, loginDto.password);
-    return { ...await this.authUseCase.login(user), user: user };
+
+    return {
+      ...await this.authUseCase.login(user),
+
+      user,
+    };
   }
 
   @Get('profile')

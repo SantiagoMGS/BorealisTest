@@ -78,6 +78,9 @@ import {
   SeedUseCase,
   GetUserPermissionsUseCase,
 } from 'src/core/domain/uses-cases';
+import { RefreshTokenUseCase } from 'src/core/domain/uses-cases/auth/refresh-token.use-case';
+import { RefreshTokenStrategy } from 'src/core/domain/uses-cases/auth/refresh-token.strategy';
+import { PrismaSessionRepository } from 'src/infrastructure/prisma/prisma-session.repository';
 
 @Module({
   controllers: [
@@ -99,6 +102,8 @@ import {
     JwtInternalStrategy,
     PrismaService,
     PermissionService,
+    RefreshTokenUseCase,
+    RefreshTokenStrategy,
 
     // **Repositories**
     {
@@ -137,6 +142,10 @@ import {
       provide: 'ILoginRepository',
       useClass: PrismaLoginRepository
     },
+    {
+      provide: 'ISessionRepository',
+      useClass: PrismaSessionRepository
+    },
 
     // **User Use Cases**
     CreateUserUseCase,
@@ -182,6 +191,7 @@ import {
     ApplicationSeedUseCase,
     AuthUseCase,
     SeedUseCase,
+    
   ],
   imports: [
     ConfigModule.forRoot(),
@@ -200,6 +210,7 @@ import {
     JwtModule,
     JwtAzureStrategy,
     JwtInternalStrategy,
+    RefreshTokenStrategy,
 
     // **User Use Cases**
     CreateUserUseCase,
@@ -245,6 +256,7 @@ import {
     ApplicationSeedUseCase,
     AuthUseCase,
     SeedUseCase,
+    RefreshTokenUseCase
   ],
 })
 export class AuthModule {}

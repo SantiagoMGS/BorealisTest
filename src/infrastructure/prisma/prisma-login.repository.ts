@@ -7,15 +7,31 @@ import { ILoginRepository } from 'src/core/domain/repositories/login.repository'
 export class PrismaLoginRepository implements ILoginRepository {
   constructor(private readonly prisma: PrismaService) { }
 
-  
-  async findByEmailWithPassword(email: string): Promise<User | null> {
-    return this.prisma.user.findUnique({
+
+  async findByEmailWithPassword(email: string): Promise<Omit<User, | 'refreshToken' | 'refreshTokenExpired'>> {
+
+    const user = await this.prisma.user.findUnique({
       where: { email },
+      select: {
+        id: true,
+        name: true,
+        password: true,
+        email: true,
+        isActive: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     });
+
+    if (!user) {
+      throw new NotFoundException(`User with email ${email} not found`);
+    }
+
+    return user;
   }
 
-  async findByEmail(email: string): Promise<Omit<User, 'password'> | null> {
-    return this.prisma.user.findUnique({
+  async findByEmail(email: string): Promise<Omit<User, 'password' | 'refreshToken' | 'refreshTokenExpired'>> {
+    const user = await this.prisma.user.findUnique({
       where: { email },
       select: {
         id: true,
@@ -26,6 +42,12 @@ export class PrismaLoginRepository implements ILoginRepository {
         updatedAt: true,
       },
     });
+
+    if (!user) {
+      throw new NotFoundException(`User with email ${email} not found`);
+    }
+
+    return user;
   }
 
   async getCompanyByUserId(
@@ -56,7 +78,7 @@ export class PrismaLoginRepository implements ILoginRepository {
       thirdColor: company.thirdColor,
     }));
   }
- 
+
 }
 
 

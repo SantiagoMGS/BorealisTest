@@ -9,12 +9,17 @@ import { UserPermissionsEntity } from 'src/core/domain/entities/user-permissions
 export class PrismaUserRepository implements IUserRepository {
   constructor(private readonly prisma: PrismaService) { }
 
+
   async createUser(user: User): Promise<User> {
     return this.prisma.user.create({
       data: {
         name: user.name,
         email: user.email,
         password: user.password,
+        isActive: user.isActive,
+        refreshToken: user.refreshToken,
+        refreshTokenExpired: user.refreshTokenExpired
+
       },
     });
   }
@@ -34,6 +39,8 @@ export class PrismaUserRepository implements IUserRepository {
         isActive: true,
         createdAt: true,
         updatedAt: true,
+        refreshToken: true,
+        refreshTokenExpired: true,
       },
     });
   }
@@ -54,6 +61,9 @@ export class PrismaUserRepository implements IUserRepository {
           id: true,
           name: true,
           email: true,
+          isActive: true,
+          refreshToken: true,
+          refreshTokenExpired: true,
         },
       }),
       this.prisma.user.count(),
@@ -89,6 +99,9 @@ export class PrismaUserRepository implements IUserRepository {
       updatedUser.name,
       updatedUser.email,
       updatedUser.password,
+      updatedUser.isActive,
+      updatedUser.refreshToken,
+      updatedUser.refreshTokenExpired
     );
   }
 
@@ -158,6 +171,8 @@ export class PrismaUserRepository implements IUserRepository {
           name: true,
           email: true,
           isActive: true,
+          refreshToken: true,
+          refreshTokenExpired: true,
           companies: {
             select: {
               company: {
@@ -299,6 +314,50 @@ export class PrismaUserRepository implements IUserRepository {
       subresources: Object.values(resource.subresources),
     }));
   }
+  async clearRefreshToken(userId: string): Promise<void> {
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        refreshToken: null,
+        refreshTokenExpired: null,
+      },
+    });
+  }
+
+  async findUserByRefreshToken(refreshToken: string): Promise<Omit<User, 'password'> | null> {
+    const user = await this.prisma.user.findFirst({
+      where: {
+        refreshToken,
+        refreshTokenExpired: {
+          gte: new Date(), // Verifica que el token no esté expirado
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        isActive: true,
+        createdAt: true,
+        updatedAt: true,
+
+        refreshToken: true,
+        refreshTokenExpired: true,
+      },
+    });
+
+    return user;
+  }
+
+  async updateRefreshToken(userId: string, refreshToken: string, expiry: Date): Promise<void> {
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        refreshToken,
+        refreshTokenExpired: expiry,
+      },
+    });
+  }
+
 }
 
 

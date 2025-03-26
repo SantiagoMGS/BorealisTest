@@ -219,10 +219,10 @@ export class SeedUseCase {
       return;
     }
 
-    const newUser = new User('', user.name, user.email, user.password);
+    const newUser = new User('', user.name, user.email, user.password, true, '', null);
     const hashedPassword = await bcrypt.hash(newUser.password, 10);
     const createdUser = await this.userRepository.createUser(
-      new User('', newUser.name, newUser.email, hashedPassword),
+      new User('', newUser.name, newUser.email, hashedPassword, true, null, null),
     );
 
     await this.assignUserToCompany(createdUser, userCompany, userRole);

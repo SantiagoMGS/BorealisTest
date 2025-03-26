@@ -20,5 +20,16 @@ export interface IUserRepository {
     roleId: string,
   ): Promise<void>;
   getUserPermissions(userId: string): Promise<UserPermissionsEntity[]>;
+  updateRefreshToken(
+    userId: string,
+    refreshToken: string,
+    expiry: Date
+  ): Promise<void>;
+  findUserByRefreshToken(
+    refreshToken: string
+  ): Promise<Omit<User, 'password'> | null>;
+
+
+  clearRefreshToken(userId: string): Promise<void>;
 
 }

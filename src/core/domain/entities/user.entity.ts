@@ -1,8 +1,11 @@
 export class User {
   constructor(
-    public readonly id: string,
-    public readonly name: string,
-    public readonly email: string,
-    public readonly password: string ,
+    public id: string,
+    public name: string,
+    public email: string,
+    public password: string,
+    public isActive: boolean,
+    public refreshToken: string | null = null,
+    public refreshTokenExpired: Date | null = null,
   ) {}
 }

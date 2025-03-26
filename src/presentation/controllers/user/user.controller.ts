@@ -52,7 +52,6 @@ export class UserController {
 
   @Get('permissions-user')
   async getUserPermissions(@Request() req) {
-    console.log('Endpoint /permissions-user llamado', req.user.userId);
 
     return await this.getUserPermissionsUseCase.execute(req.user.userId);
   }
