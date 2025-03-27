@@ -35,13 +35,13 @@ export class CreateUserUseCase {
       const hashedPassword = await bcrypt.hash(userDto.password, 10);
 
       const newUser = await this.userRepository.createUser(
-        new User('', userDto.name, userDto.email, hashedPassword, true, null, null),
+        new User('', userDto.name, userDto.email, hashedPassword, false, null, null),
       );
 
       const { permissions } = userDto;
       if (!permissions || permissions.length === 0) {
         throw new NotFoundException(
-          `El usuario debe tener al menos un rol y una compañia asignada.`,
+          `El usuario debe tener al menos un rol y una compañía asignada.`,
         );
       }
 
@@ -58,7 +58,7 @@ export class CreateUserUseCase {
         );
         if (!company) {
           throw new NotFoundException(
-            `Compañia con ID ${permission.companyId} no encontrada.`,
+            `Compañía con ID ${permission.companyId} no encontrada.`,
           );
         }
       }

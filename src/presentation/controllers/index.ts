@@ -1,3 +1,4 @@
+export { WebhookController } from './user/webhook.controller';
 export { SubResourceController } from './subresource/subresource.controller';
 export { ActionController } from './action/action.controller';
 export { ApplicationController } from './applications/applications.controller';

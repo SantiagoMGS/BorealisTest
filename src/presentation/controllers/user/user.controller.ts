@@ -54,7 +54,7 @@ export class UserController {
   async getUserPermissions(@Request() req) {
 
     return await this.getUserPermissionsUseCase.execute(req.user.userId);
-  }
+  } 
   // Solo los usuarios con permiso para LEER usuarios pueden acceder
   @Get()
   @HttpCode(HttpStatus.OK)

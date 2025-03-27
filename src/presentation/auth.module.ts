@@ -32,6 +32,7 @@ import {
   ApplicationController,
   SeedController,
   SubResourceController,
+  WebhookController
 } from './controllers';
 
 // **Use Cases **
@@ -90,6 +91,7 @@ import { PrismaSessionRepository } from 'src/infrastructure/prisma/prisma-sessio
     ResourceController,
     RoleController,
     UserController,
+    WebhookController,
     ActionController,
     RolePermissionController,
     ApplicationController,
