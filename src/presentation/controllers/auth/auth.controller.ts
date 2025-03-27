@@ -1,5 +1,5 @@
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
-import { Controller, Get, UseGuards, Req, HttpStatus, HttpCode, Post, Body, Request, Logger } from '@nestjs/common';
+import { Controller, Get, UseGuards, Req, HttpStatus, HttpCode, Post, Body, Request, Logger, ConflictException } from '@nestjs/common';
 import { CustomAuthGuard } from 'src/core/domain/uses-cases/auth/guards/custom-auth.guard';
 import { LoginDto } from '../user/dtos/login.dto';
 import { AuthUseCase } from 'src/core/domain/uses-cases/auth/auth.use-case';
@@ -127,18 +127,17 @@ export class AuthController {
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Credenciales inválidas.' })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Datos de entrada inválidos.' })
   async login(@Body() loginDto: LoginDto, @Req() req) {
-
     const user = await this.authUseCase.validateUser(loginDto.email, loginDto.password);
     const loginResponse = await this.authUseCase.login(user);
-
-    // 🔧 extraer refresh_token correctamente
     const refreshToken = loginResponse.tokens.refresh_token;
 
+    //  Reemplaza la sesión si ya existe
     await this.manageSessionUseCase.createSession(
       user.id,
       refreshToken,
       req.headers['user-agent']
     );
+
     return {
       ...loginResponse,
       user,

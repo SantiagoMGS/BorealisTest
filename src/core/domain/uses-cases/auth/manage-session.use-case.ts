@@ -1,43 +1,27 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import { ISessionRepository } from "../../repositories/session.repository";
-import { ConfigService } from "@nestjs/config";
 import { Session } from "../../entities/session.entity";
 
 @Injectable()
 export class ManageSessionUseCase {
   private readonly logger = new Logger(ManageSessionUseCase.name);
 
-  private MAX_ACTIVE_SESSIONS: number;
 
   constructor(
     @Inject('ISessionRepository')
     private sessionRepository: ISessionRepository,
-    private configService: ConfigService
   ) {
-    this.MAX_ACTIVE_SESSIONS = this.configService.get<number>('MAX_ACTIVE_SESSIONS', 1);
+
   }
 
   async createSession(userId: string, token: string, deviceInfo?: string): Promise<Session> {
     const activeSessions = await this.sessionRepository.findActiveSessions(userId);
 
-    const sameDevice = activeSessions.find(
-      session => session.device === deviceInfo
-    );
+    for (const session of activeSessions) {
 
-    const differentDeviceSession = activeSessions.find(
-      session => session.device !== deviceInfo
-    );
-
-    // ✅ Si hay otra sesión en distinto dispositivo
-    if (differentDeviceSession) {
-      this.logger.warn(`⚠️ Usuario ${userId} ya tiene sesión activa en otro dispositivo.`);
-
-      throw new Error("Ya hay una sesión activa en otro dispositivo.");
-    }
-
-    // El resto de la lógica sigue...
-    if (activeSessions.length >= this.MAX_ACTIVE_SESSIONS) {
-      await this.sessionRepository.deleteSession(activeSessions[0].token);
+      // Borra todas las sesiones activas existentes, sin importar el device
+      await this.sessionRepository.deleteSession(session.token);
+      this.logger.warn(`🔁 Reemplazando sesión activa: ${session.token}`);
     }
 
     const newSession: Omit<Session, 'id'> = {
@@ -50,6 +34,8 @@ export class ManageSessionUseCase {
 
     return this.sessionRepository.createSession(newSession);
   }
+
+
 
   private generateSessionId(): string {
     // Generate a unique session ID (e.g., using a UUID library or custom logic)
