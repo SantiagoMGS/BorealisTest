@@ -137,10 +137,11 @@ export class AuthController {
       refreshToken,
       req.headers['user-agent']
     );
+    console.log(user, 'user');
 
     return {
       ...loginResponse,
-      user,
+      companies: user.companies,
     };
   }
 

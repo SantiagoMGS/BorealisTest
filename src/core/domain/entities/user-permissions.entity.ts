@@ -1,11 +1,15 @@
 export class UserPermissionsEntity {
-  userId!: string; 
-  userName!: string;
-  userEmail!: string; // Agregar este campo
+  id!: string;
+  name!: string;
+  email!: string; // Agregar este campo
   isActive!: boolean;
   companies!: {
     companyId: string;
     companyName: string;
+    primaryColor: string;
+    secondaryColor: string;
+    thirdColor: string;
+    logo: string;
     applications: {
       applicationId: string;
       applicationName: string;

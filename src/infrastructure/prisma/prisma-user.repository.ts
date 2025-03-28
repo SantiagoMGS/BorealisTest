@@ -236,37 +236,41 @@ export class PrismaUserRepository implements IUserRepository {
     }
   }
 
-  private transformUserPermissions(userPermissions: any): UserPermissionsEntity {
+  private transformUserPermissions(userPermissions): UserPermissionsEntity {
     if (!userPermissions || !userPermissions.companies) {
       return {
-        userId: '',
-        userName: '',
-        userEmail: '',
+        id: '',
+        name: '',
+        email: '',
         isActive: false,
         companies: [],
       };
     }
 
     return {
-      userId: userPermissions.id,
-      userName: userPermissions.name,
-      userEmail: userPermissions.email,
+      id: userPermissions.id,
+      name: userPermissions.name,
+      email: userPermissions.email,
       isActive: userPermissions.isActive,
       companies: userPermissions.companies.map((companyData: any) => {
         const company = companyData.company;
         const role = companyData.role;
-
         return {
           companyId: company.id,
           companyName: company.name,
+          primaryColor: company.primaryColor,
+          secondaryColor: company.secondaryColor,
+          thirdColor: company.thirdColor,
+          logo: company.logo,
+          roleId: role.id,
+          roleName: role.name,
           applications: company.applications.map((app: any) => ({
             applicationId: app.aplication.id,
             applicationName: app.aplication.name,
             isActive: app.aplication.isActive,
             resources: this.groupPermissionsByResource(role.permissions),
           })),
-          roleId: role.id,
-          roleName: role.name,
+          
         };
       }),
     };
@@ -313,9 +317,9 @@ export class PrismaUserRepository implements IUserRepository {
       subresources: Object.values(resource.subresources),
     }));
   }
-  async clearRefreshToken(userId: string): Promise<void> {
+  async clearRefreshToken(id: string): Promise<void> {
     await this.prisma.user.update({
-      where: { id: userId },
+      where: { id: id },
       data: {
         refreshToken: null,
         refreshTokenExpired: null,
@@ -347,9 +351,9 @@ export class PrismaUserRepository implements IUserRepository {
     return user;
   }
 
-  async updateRefreshToken(userId: string, refreshToken: string, expiry: Date): Promise<void> {
+  async updateRefreshToken(id: string, refreshToken: string, expiry: Date): Promise<void> {
     await this.prisma.user.update({
-      where: { id: userId },
+      where: { id: id },
       data: {
         refreshToken,
         refreshTokenExpired: expiry,
