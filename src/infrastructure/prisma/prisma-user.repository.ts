@@ -185,11 +185,12 @@ export class PrismaUserRepository implements IUserRepository {
                   thirdColor: true,
                   applications: {
                     select: {
-                      aplication: { // Relación con el modelo Application
+                      application: { // Relación con el modelo Application
                         select: {
                           id: true,
                           name: true,
                           isActive: true,
+                          logo: true,
                         },
                       },
                     },

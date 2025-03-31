@@ -74,7 +74,7 @@ model Company {
   updatedAt      DateTime @updatedAt
 
   users        UserCompany[]
-  applications CompanyAplications[]
+  applications CompanyApplications[]
 }
 
 model UserCompany {
@@ -123,18 +123,19 @@ model Application {
   isActive  Boolean
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  logo     String   @unique
 
-  companies CompanyAplications[]
+  companies CompanyApplications[]
 }
 
-model CompanyAplications {
+model CompanyApplications {
   companyId     String   @db.Uuid
   applicationId String   @db.Uuid
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
   company    Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  aplication Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
 
   @@id([companyId, applicationId])
 }

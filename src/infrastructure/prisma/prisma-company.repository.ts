@@ -59,7 +59,7 @@ export class PrismaCompanyRepository implements ICompanyRepository {
       }))
     );
 
-    await this.prisma.companyAplications.createMany({
+    await this.prisma.companyApplications.createMany({
       data,
       skipDuplicates: true, // Evita errores si la relación ya existe
     });

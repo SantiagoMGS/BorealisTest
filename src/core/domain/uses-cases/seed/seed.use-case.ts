@@ -51,7 +51,7 @@ export class SeedUseCase {
     this.logger.log('Seeding applications');
 
     const applications: Application[] = applicationInitialData.map(
-      (application) => new Application('', application.name, true),
+      (application) => new Application('', application.name, true, application.logo),
     );
 
     try {

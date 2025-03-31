@@ -17,7 +17,7 @@ export class ApplicationSeedUseCase {
 
     try {
       const applications: Application[] = applicationInitialData.map(
-        (application) => new Application('', application.name, true),
+        (application) => new Application('', application.name, true, application.logo),
       );
 
       await this.applicationRepository.createApplication(applications);

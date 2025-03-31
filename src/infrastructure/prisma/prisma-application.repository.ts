@@ -10,9 +10,11 @@ export class PrismaApplicationRepository implements IApplicationRepository {
   async createApplication(applications: Application[]): Promise<Application[]> {
     try {
       await this.prisma.application.createMany({
-        data: applications.map((action) => ({
-          name: action.name,
-          isActive: action.isActive,
+        data: applications.map((app) => ({
+          name: app.name,
+          isActive: app.isActive,
+          logo: app.logo ?? '', 
+
         })),
         skipDuplicates: true,
       });
