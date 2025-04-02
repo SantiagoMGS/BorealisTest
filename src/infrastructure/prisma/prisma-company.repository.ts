@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { ICompanyRepository } from 'src/core/domain/repositories/company.repository';
-import { PrismaService } from './prisma.service';
 import { Company } from 'src/core/domain/entities';
 import { CompanyBranding } from 'src/core/domain/entities/company-brand.entity';
+import { ICompanyRepository } from 'src/core/domain/repositories/company.repository';
+import { PrismaService } from './prisma.service';
 
 @Injectable()
 export class PrismaCompanyRepository implements ICompanyRepository {
@@ -31,6 +31,7 @@ export class PrismaCompanyRepository implements ICompanyRepository {
     const created = await this.prisma.company.create({
       data: {
         name: company.name,
+        shortName: company.shortName,
         code: company.code,
         isActive: company.isActive,
         createdBy: company.createdBy,
@@ -141,6 +142,7 @@ export class PrismaCompanyRepository implements ICompanyRepository {
     return {
       id: company.id,
       name: company.name,
+      shortName: company.shortName,
       code: company.code,
       isActive: company.isActive,
       createdAt: company.createdAt,

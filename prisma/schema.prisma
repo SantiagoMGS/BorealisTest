@@ -103,6 +103,7 @@ model Company {
   createdBy       String?             @db.Uuid  // Auditoría
   updatedBy       String?             @db.Uuid  // Auditoría
   isDeleted       Boolean             @default(false) // Soft delete
+  shortName       String             // Nombre corto de la empresa
 
   branding        CompanyBranding?    // Relación uno a uno
   users           UserCompany[]

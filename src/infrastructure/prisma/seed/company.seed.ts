@@ -1,29 +1,17 @@
-interface SeedCompany {
-  name: string;
-  logo: string;
-  applicationIds: string[];
-  branding?: SeedBranding
+import { Company } from "src/core/domain/entities";
 
-}
-export interface SeedBranding {
-  logo: string
-  primaryColor: string
-  secondaryColor: string
-  tertiaryColor: string
-
-}
-
-export const companyInitialData: SeedCompany[] = [
+export const companyInitialData: Company[] = [
   {
     name: 'BOREALIS',
-    logo: 'https://borealis.com/logo.png',
-    applicationIds: [],
+    shortName: 'BLS',
     branding: {
+      companyId: '',
       logo: 'https://borealis.com/logo.png',
       primaryColor: '#FFFFFF',
       secondaryColor: '#000000',
       tertiaryColor: '#1487447',
     },
+
 
   },
 ];

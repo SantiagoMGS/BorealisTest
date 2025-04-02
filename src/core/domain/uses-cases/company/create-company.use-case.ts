@@ -25,14 +25,15 @@ export class CreateCompanyUseCase {
     const newCompany = await this.companyRepository.createCompany({
       id: '',
       name: companyDto.name,
+      shortName: companyDto.shortName,
       isActive: false,
       isDeleted: false,
     });
 
     // Crear el branding usando el objeto anidado
     const { branding } = companyDto;
-    await this.companyRepository.createCompanyBranding(newCompany.id, {
-      companyId: newCompany.id,
+    await this.companyRepository.createCompanyBranding(newCompany.id!, {
+      companyId: newCompany.id!,
       logo: branding.logo,
       primaryColor: branding.primaryColor,
       secondaryColor: branding.secondaryColor,
@@ -46,12 +47,12 @@ export class CreateCompanyUseCase {
     }
 
     // Asignar aplicaciones
-    await this.companyRepository.assignApplicationToCompanies([newCompany.id], companyDto.applicationIds);
+    await this.companyRepository.assignApplicationToCompanies([newCompany.id!], companyDto.applicationIds);
 
     this.logger.log(`Company "${companyDto.name}" created successfully`);
 
     // 🔄 Reconsultar con branding
-    const fullCompany = await this.companyRepository.findById(newCompany.id);
+    const fullCompany = await this.companyRepository.findById(newCompany.id!);
     if (!fullCompany) {
       throw new ConflictException(`La compañía con ID "${newCompany.id}" no se encontró después de la creación.`);
     }

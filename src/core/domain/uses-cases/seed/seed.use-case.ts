@@ -98,6 +98,7 @@ export class SeedUseCase {
         const newCompany: Company = {
           id: '',
           name: seedCompany.name,
+          shortName: seedCompany.shortName,
           code: null,
           isActive: true,
           createdAt: null,
@@ -122,8 +123,8 @@ export class SeedUseCase {
         // Crear branding si no existe o está incompleto
         if (seedCompany.branding && (!createdCompany.branding || !createdCompany.branding.logo)) {
           
-          await this.companyRepository.createCompanyBranding(createdCompany.id, {
-            companyId: createdCompany.id,
+          await this.companyRepository.createCompanyBranding(createdCompany.id!, {
+            companyId: createdCompany.id!,
             logo: seedCompany.branding.logo,
             primaryColor: seedCompany.branding.primaryColor,
             secondaryColor: seedCompany.branding.secondaryColor,
@@ -146,7 +147,7 @@ export class SeedUseCase {
     if (!application) throw new Error('❌ Aplicación "BOREALIS" no encontrada');
 
     const alreadyAssigned = await this.companyRepository.isApplicationAssignedToCompany(
-      company.id,
+      company.id!,
       application.id,
     );
 
@@ -155,7 +156,7 @@ export class SeedUseCase {
       return;
     }
 
-    await this.companyRepository.assignApplicationToCompanies([company.id], [application.id]);
+    await this.companyRepository.assignApplicationToCompanies([company.id!], [application.id]);
     this.logger.log(`✅ Aplicación "${application.name}" asignada a la compañía "${company.name}"`);
   }
 
@@ -235,7 +236,7 @@ export class SeedUseCase {
     const created = await this.userRepository.createUser(new User('', user.name, user.email, hashed, true));
 
     await this.userRepository.assignUserToCompanies(created.id, [
-      { companyId: company.id, roleId: role.id },
+      { companyId: company.id!, roleId: role.id },
     ]);
   }
 }

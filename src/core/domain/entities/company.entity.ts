@@ -1,14 +1,15 @@
 import { CompanyBranding } from "./company-brand.entity";
 
 export type Company = {
-  id: string;
+  id?: string;
   name: string;
+  shortName: string;
   code?: string | null;
-  isActive: boolean;
+  isActive?: boolean;
   createdAt?: Date | null;
   updatedAt?: Date | null;
   createdBy?: string | null;
   updatedBy?: string | null;
-  isDeleted: boolean;
+  isDeleted?: boolean;
   branding?: CompanyBranding | null;
 }
