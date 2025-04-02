@@ -1,8 +1,8 @@
 import { ConflictException, Inject, Injectable, Logger } from '@nestjs/common';
-import { ICompanyRepository } from '../../repositories/company.repository';
-import { IApplicationRepository } from '../../repositories/application.repository';
 import { CreateCompanyDto } from 'src/presentation/controllers/company/dtos/create-company.dto';
 import { Company } from '../../entities';
+import { IApplicationRepository } from '../../repositories/application.repository';
+import { ICompanyRepository } from '../../repositories/company.repository';
 
 @Injectable()
 export class CreateCompanyUseCase {
@@ -51,7 +51,7 @@ export class CreateCompanyUseCase {
 
     this.logger.log(`Company "${companyDto.name}" created successfully`);
 
-    // 🔄 Reconsultar con branding
+    // 🔄 Re-consultar con branding
     const fullCompany = await this.companyRepository.findById(newCompany.id!);
     if (!fullCompany) {
       throw new ConflictException(`La compañía con ID "${newCompany.id}" no se encontró después de la creación.`);

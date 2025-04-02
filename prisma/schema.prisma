@@ -8,15 +8,15 @@ datasource db {
 }
 
 model User {
-  id             String    @id @default(uuid()) @db.Uuid
+  id             String        @id @default(uuid()) @db.Uuid
   name           String
-  email          String    @unique
-  hashedPassword String    // Cambiado de 'password' a 'hashedPassword' por seguridad
-  isActive       Boolean   @default(false)
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  email          String        @unique
+  hashedPassword String // Cambiado de 'password' a 'hashedPassword' por seguridad
+  isActive       Boolean       @default(false)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
   sessions       Session[] // Cambiado de 'activeSessions' a 'sessions' para consistencia
-  isDeleted      Boolean   @default(false) // Soft delete
+  isDeleted      Boolean       @default(false) // Soft delete
   companies      UserCompany[]
 
   @@index([email])
@@ -24,16 +24,16 @@ model User {
 }
 
 model Session {
-  id           String    @id @default(uuid()) @db.Uuid
-  userId       String    @db.Uuid
-  token        String    @unique
-  refreshToken String?   // Movido aquí desde User
-  expiresAt    DateTime  // Fecha de expiración del token
+  id               String    @id @default(uuid()) @db.Uuid
+  userId           String    @db.Uuid
+  token            String    @unique
+  refreshToken     String? // Movido aquí desde User
+  expiresAt        DateTime // Fecha de expiración del token
   refreshExpiresAt DateTime? // Expiración del refresh token
-  device       String?   // Información del dispositivo
-  ipAddress    String?   // IP desde donde se creó la sesión
-  lastActive   DateTime  @default(now())
-  createdAt    DateTime  @default(now())
+  device           String? // Información del dispositivo
+  ipAddress        String? // IP desde donde se creó la sesión
+  lastActive       DateTime  @default(now())
+  createdAt        DateTime  @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -43,32 +43,32 @@ model Session {
 }
 
 model Role {
-  id          String          @id @default(uuid()) @db.Uuid
-  name        String          @unique
-  description String?         // Descripción del rol
-  isSystem    Boolean         @default(false) // Para roles del sistema que no se pueden modificar
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
-  createdBy   String?         @db.Uuid       // Auditoría
-  updatedBy   String?         @db.Uuid       // Auditoría
-  isDeleted   Boolean         @default(false) // Soft delete
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String   @unique
+  description String? // Descripción del rol
+  isSystem    Boolean  @default(false) // Para roles del sistema que no se pueden modificar
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdBy   String?  @db.Uuid // Auditoría
+  updatedBy   String?  @db.Uuid // Auditoría
+  isDeleted   Boolean  @default(false) // Soft delete
 
-  permissions RolePermission[] 
-  users       UserCompany[]    
+  permissions RolePermission[]
+  users       UserCompany[]
 
   @@index([name])
   @@map("roles")
 }
 
 model Resource {
-  id           String        @id @default(uuid()) @db.Uuid
-  name         String        @unique
-  description  String?       // Descripción del recurso
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  createdBy    String?       @db.Uuid     // Auditoría
-  updatedBy    String?       @db.Uuid     // Auditoría
-  isDeleted    Boolean       @default(false) // Soft delete
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String   @unique
+  description String? // Descripción del recurso
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdBy   String?  @db.Uuid // Auditoría
+  updatedBy   String?  @db.Uuid // Auditoría
+  isDeleted   Boolean  @default(false) // Soft delete
 
   subresources Subresource[]
 
@@ -77,15 +77,15 @@ model Resource {
 }
 
 model Action {
-  id          String          @id @default(uuid()) @db.Uuid
-  name        String          @unique
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String   @unique
   level       Int
-  description String?         // Descripción de la acción
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
-  createdBy   String?         @db.Uuid      // Auditoría
-  updatedBy   String?         @db.Uuid      // Auditoría
-  isDeleted   Boolean         @default(false) // Soft delete
+  description String? // Descripción de la acción
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdBy   String?  @db.Uuid // Auditoría
+  updatedBy   String?  @db.Uuid // Auditoría
+  isDeleted   Boolean  @default(false) // Soft delete
 
   permissions RolePermission[]
 
@@ -94,22 +94,22 @@ model Action {
 }
 
 model Company {
-  id              String              @id @default(uuid()) @db.Uuid
-  name            String              @unique
-  code            String?             @unique // Código único de la empresa
-  isActive        Boolean             @default(true)
-  createdAt       DateTime            @default(now())
-  updatedAt       DateTime            @updatedAt
-  createdBy       String?             @db.Uuid  // Auditoría
-  updatedBy       String?             @db.Uuid  // Auditoría
-  isDeleted       Boolean             @default(false) // Soft delete
-  shortName       String             // Nombre corto de la empresa
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String   @unique
+  code      String?  @unique // Código único de la empresa
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String?  @db.Uuid // Auditoría
+  updatedBy String?  @db.Uuid // Auditoría
+  isDeleted Boolean  @default(false) // Soft delete
+  shortName String // Nombre corto de la empresa
 
-  branding        CompanyBranding?    // Relación uno a uno
-  users           UserCompany[]
-  applications    CompanyApplication[]
-  batches         Batch[]             // Cambiado de 'lotes' a 'batches'
-  suppliers       SupplierCompany[]   // Relación muchos a muchos
+  branding     CompanyBranding? // Relación uno a uno
+  users        UserCompany[]
+  applications CompanyApplication[]
+  batches      Batch[] // Cambiado de 'lotes' a 'batches'
+  suppliers    SupplierCompany[] // Relación muchos a muchos
 
   @@index([name])
   @@map("companies")
@@ -117,17 +117,17 @@ model Company {
 
 // Nueva tabla para branding
 model CompanyBranding {
-  companyId       String   @id @db.Uuid
-  logo            String?
-  primaryColor    String?  @db.VarChar(25) // Formato #RRGGBB
-  secondaryColor  String?  @db.VarChar(25)
-  tertiaryColor   String?  @db.VarChar(25)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  createdBy       String?  @db.Uuid  // Auditoría
-  updatedBy       String?  @db.Uuid  // Auditoría
+  companyId      String   @id @db.Uuid
+  logo           String?
+  primaryColor   String?  @db.VarChar(25) // Formato #RRGGBB
+  secondaryColor String?  @db.VarChar(25)
+  tertiaryColor  String?  @db.VarChar(25)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  createdBy      String?  @db.Uuid // Auditoría
+  updatedBy      String?  @db.Uuid // Auditoría
 
-  company         Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   @@map("company_brandings")
 }
@@ -139,8 +139,8 @@ model UserCompany {
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  createdBy String?  @db.Uuid  // Auditoría
-  updatedBy String?  @db.Uuid  // Auditoría
+  createdBy String?  @db.Uuid // Auditoría
+  updatedBy String?  @db.Uuid // Auditoría
 
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
@@ -158,8 +158,8 @@ model RolePermission {
   subresourceId String   @db.Uuid
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
-  createdBy     String?  @db.Uuid  // Auditoría
-  updatedBy     String?  @db.Uuid  // Auditoría
+  createdBy     String?  @db.Uuid // Auditoría
+  updatedBy     String?  @db.Uuid // Auditoría
 
   role        Role        @relation(fields: [roleId], references: [id], onDelete: Cascade)
   action      Action      @relation(fields: [actionId], references: [id], onDelete: Cascade)
@@ -172,16 +172,16 @@ model RolePermission {
 }
 
 model Subresource {
-  id              String           @id @default(uuid()) @db.Uuid
-  name            String
-  resourceId      String           @db.Uuid
-  description     String?          // Descripción del subrecurso
-  updatedAt       DateTime         @updatedAt
-  createdAt       DateTime         @default(now())
-  createdBy       String?          @db.Uuid  // Auditoría
-  updatedBy       String?          @db.Uuid  // Auditoría
-  isDeleted       Boolean          @default(false) // Soft delete
-  
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String
+  resourceId  String   @db.Uuid
+  description String? // Descripción del sub-recurso
+  updatedAt   DateTime @updatedAt
+  createdAt   DateTime @default(now())
+  createdBy   String?  @db.Uuid // Auditoría
+  updatedBy   String?  @db.Uuid // Auditoría
+  isDeleted   Boolean  @default(false) // Soft delete
+
   resource        Resource         @relation(fields: [resourceId], references: [id], onDelete: Cascade)
   rolePermissions RolePermission[]
 
@@ -191,35 +191,35 @@ model Subresource {
 }
 
 model Application {
-  id          String               @id @default(uuid()) @db.Uuid
-  name        String               @unique
-  code        String?              @unique // Código único de la aplicación
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String   @unique
+  code        String?  @unique // Código único de la aplicación
   description String?
   logo        String?
-  isActive    Boolean              @default(true)
-  createdAt   DateTime             @default(now())
-  updatedAt   DateTime             @updatedAt
-  createdBy   String?              @db.Uuid  // Auditoría
-  updatedBy   String?              @db.Uuid  // Auditoría
-  isDeleted   Boolean              @default(false) // Soft delete
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdBy   String?  @db.Uuid // Auditoría
+  updatedBy   String?  @db.Uuid // Auditoría
+  isDeleted   Boolean  @default(false) // Soft delete
 
-  companies   CompanyApplication[]
+  companies CompanyApplication[]
 
   @@index([name])
   @@map("applications")
 }
 
 model CompanyApplication {
-  companyId     String    @db.Uuid
-  applicationId String    @db.Uuid
-  isActive      Boolean   @default(true)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  createdBy     String?   @db.Uuid  // Auditoría
-  updatedBy     String?   @db.Uuid  // Auditoría
+  companyId     String   @db.Uuid
+  applicationId String   @db.Uuid
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  createdBy     String?  @db.Uuid // Auditoría
+  updatedBy     String?  @db.Uuid // Auditoría
 
-  company       Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  company     Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
 
   @@id([companyId, applicationId])
   @@index([companyId])
@@ -228,21 +228,21 @@ model CompanyApplication {
 }
 
 model Supplier {
-  id           String           @id @default(uuid()) @db.Uuid
-  name         String           @unique
-  code         String?          @unique // Código único del proveedor
+  id           String   @id @default(uuid()) @db.Uuid
+  name         String   @unique
+  code         String?  @unique // Código único del proveedor
   contactName  String?
   contactEmail String?
   contactPhone String?
-  isActive     Boolean          @default(true)
-  createdAt    DateTime         @default(now())
-  updatedAt    DateTime         @updatedAt
-  createdBy    String?          @db.Uuid  // Auditoría
-  updatedBy    String?          @db.Uuid  // Auditoría
-  isDeleted    Boolean          @default(false) // Soft delete
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  createdBy    String?  @db.Uuid // Auditoría
+  updatedBy    String?  @db.Uuid // Auditoría
+  isDeleted    Boolean  @default(false) // Soft delete
 
-  companies    SupplierCompany[] // Relación muchos a muchos
-  batches      Batch[]           // Cambiado de 'lotes' a 'batches'
+  companies SupplierCompany[] // Relación muchos a muchos
+  batches   Batch[] // Cambiado de 'lotes' a 'batches'
 
   @@index([name])
   @@map("suppliers")
@@ -250,15 +250,15 @@ model Supplier {
 
 // Tabla pivote para la relación muchos a muchos entre Supplier y Company
 model SupplierCompany {
-  supplierId   String   @db.Uuid
-  companyId    String   @db.Uuid
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  createdBy    String?  @db.Uuid  // Auditoría
-  updatedBy    String?  @db.Uuid  // Auditoría
+  supplierId String   @db.Uuid
+  companyId  String   @db.Uuid
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  createdBy  String?  @db.Uuid // Auditoría
+  updatedBy  String?  @db.Uuid // Auditoría
 
-  supplier     Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
-  company      Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  supplier Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  company  Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   @@id([supplierId, companyId])
   @@index([supplierId])
@@ -267,24 +267,24 @@ model SupplierCompany {
 }
 
 model Batch {
-  id           String   @id @default(uuid()) @db.Uuid
-  name         String
-  reference    String
-  companyId    String   @db.Uuid
-  supplierId   String   @db.Uuid
-  batchTypeId  String   @db.Uuid
-  description  String?
-  isActive     Boolean  @default(true)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  createdBy    String?  @db.Uuid  // Auditoría
-  updatedBy    String?  @db.Uuid  // Auditoría
-  isDeleted    Boolean  @default(false) // Soft delete
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String
+  reference   String
+  companyId   String   @db.Uuid
+  supplierId  String   @db.Uuid
+  batchTypeId String   @db.Uuid
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdBy   String?  @db.Uuid // Auditoría
+  updatedBy   String?  @db.Uuid // Auditoría
+  isDeleted   Boolean  @default(false) // Soft delete
 
-  company      Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  supplier     Supplier  @relation(fields: [supplierId], references: [id], onDelete: Cascade)
-  batchType    BatchType @relation(fields: [batchTypeId], references: [id], onDelete: Cascade)
-  samples      Sample[]
+  company   Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  supplier  Supplier  @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  batchType BatchType @relation(fields: [batchTypeId], references: [id], onDelete: Cascade)
+  samples   Sample[]
 
   @@unique([name, companyId]) // Nombre único dentro de una compañía
   @@unique([reference, companyId]) // Referencia única dentro de una compañía
@@ -299,11 +299,11 @@ model BatchType {
   description String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  createdBy   String?  @db.Uuid  // Auditoría
-  updatedBy   String?  @db.Uuid  // Auditoría
+  createdBy   String?  @db.Uuid // Auditoría
+  updatedBy   String?  @db.Uuid // Auditoría
   isDeleted   Boolean  @default(false) // Soft delete
 
-  batches     Batch[]
+  batches Batch[]
 
   @@index([name])
   @@map("batch_types")
@@ -311,39 +311,39 @@ model BatchType {
 
 model Sample {
   id            String   @id @default(uuid()) @db.Uuid
-  code          String?  // Código de muestra
+  code          String? // Código de muestra
   initialWeight Decimal  @db.Decimal(10, 3) // Cambiado de String a Decimal
   finalWeight   Decimal  @db.Decimal(10, 3) // Cambiado de String a Decimal
   batchId       String   @db.Uuid
   description   String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
-  createdBy     String?  @db.Uuid  // Auditoría
-  updatedBy     String?  @db.Uuid  // Auditoría
+  createdBy     String?  @db.Uuid // Auditoría
+  updatedBy     String?  @db.Uuid // Auditoría
   isDeleted     Boolean  @default(false) // Soft delete
 
-  batch         Batch          @relation(fields: [batchId], references: [id], onDelete: Cascade)
-  preparations  Preparation[]
-  subsamples    Subsample[]
+  batch        Batch         @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  preparations Preparation[]
+  subsamples   Subsample[]
 
   @@index([batchId])
   @@map("samples")
 }
 
 model Preparation {
-  id                String          @id @default(uuid()) @db.Uuid
-  preparationTypeId String          @db.Uuid
-  sampleId          String          @db.Uuid
-  value             Json            @db.JsonB // Cambiado a JsonB para mejor rendimiento
+  id                String   @id @default(uuid()) @db.Uuid
+  preparationTypeId String   @db.Uuid
+  sampleId          String   @db.Uuid
+  value             Json     @db.JsonB // Cambiado a JsonB para mejor rendimiento
   description       String?
-  createdAt         DateTime        @default(now())
-  updatedAt         DateTime        @updatedAt
-  createdBy         String?         @db.Uuid  // Auditoría
-  updatedBy         String?         @db.Uuid  // Auditoría
-  isDeleted         Boolean         @default(false) // Soft delete
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  createdBy         String?  @db.Uuid // Auditoría
+  updatedBy         String?  @db.Uuid // Auditoría
+  isDeleted         Boolean  @default(false) // Soft delete
 
-  preparationType   PreparationType @relation(fields: [preparationTypeId], references: [id], onDelete: Cascade)
-  sample            Sample          @relation(fields: [sampleId], references: [id], onDelete: Cascade)
+  preparationType PreparationType @relation(fields: [preparationTypeId], references: [id], onDelete: Cascade)
+  sample          Sample          @relation(fields: [sampleId], references: [id], onDelete: Cascade)
 
   @@index([sampleId])
   @@index([preparationTypeId])
@@ -351,15 +351,15 @@ model Preparation {
 }
 
 model PreparationType {
-  id           String        @id @default(uuid()) @db.Uuid
-  name         String        @unique
-  schema       Json          @db.JsonB // Cambiado a JsonB
-  description  String?
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  createdBy    String?       @db.Uuid  // Auditoría
-  updatedBy    String?       @db.Uuid  // Auditoría
-  isDeleted    Boolean       @default(false) // Soft delete
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String   @unique
+  schema      Json     @db.JsonB // Cambiado a JsonB
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdBy   String?  @db.Uuid // Auditoría
+  updatedBy   String?  @db.Uuid // Auditoría
+  isDeleted   Boolean  @default(false) // Soft delete
 
   preparations Preparation[]
 
@@ -368,23 +368,23 @@ model PreparationType {
 }
 
 model Subsample {
-  id              String        @id @default(uuid()) @db.Uuid
-  code            String?       // Código de submuestra
-  sampleId        String        @db.Uuid
-  subsampleTypeId String        @db.Uuid
-  zoneId          String        @db.Uuid // Cambiado de subZoneId a zoneId
-  weight          Decimal       @db.Decimal(10, 3) // Cambiado de 'peso' a 'weight'
+  id              String   @id @default(uuid()) @db.Uuid
+  code            String? // Código de sub-muestra
+  sampleId        String   @db.Uuid
+  subsampleTypeId String   @db.Uuid
+  zoneId          String   @db.Uuid // Cambiado de subZoneId a zoneId
+  weight          Decimal  @db.Decimal(10, 3) // Cambiado de 'peso' a 'weight'
   description     String?
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-  createdBy       String?       @db.Uuid  // Auditoría
-  updatedBy       String?       @db.Uuid  // Auditoría
-  isDeleted       Boolean       @default(false) // Soft delete
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  createdBy       String?  @db.Uuid // Auditoría
+  updatedBy       String?  @db.Uuid // Auditoría
+  isDeleted       Boolean  @default(false) // Soft delete
 
-  zone            Zone          @relation(fields: [zoneId], references: [id], onDelete: Cascade)
-  sample          Sample        @relation(fields: [sampleId], references: [id], onDelete: Cascade)
-  subsampleType   SubsampleType @relation(fields: [subsampleTypeId], references: [id], onDelete: Cascade)
-  results         Result[]
+  zone          Zone          @relation(fields: [zoneId], references: [id], onDelete: Cascade)
+  sample        Sample        @relation(fields: [sampleId], references: [id], onDelete: Cascade)
+  subsampleType SubsampleType @relation(fields: [subsampleTypeId], references: [id], onDelete: Cascade)
+  results       Result[]
 
   @@index([sampleId])
   @@index([subsampleTypeId])
@@ -393,50 +393,50 @@ model Subsample {
 }
 
 model SubsampleType {
-  id          String      @id @default(uuid()) @db.Uuid
-  name        String      @unique
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String   @unique
   description String?
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  createdBy   String?     @db.Uuid  // Auditoría
-  updatedBy   String?     @db.Uuid  // Auditoría
-  isDeleted   Boolean     @default(false) // Soft delete
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdBy   String?  @db.Uuid // Auditoría
+  updatedBy   String?  @db.Uuid // Auditoría
+  isDeleted   Boolean  @default(false) // Soft delete
 
-  subsamples  Subsample[]
+  subsamples Subsample[]
 
   @@index([name])
   @@map("subsample_types")
 }
 
 model Zone {
-  id          String      @id @default(uuid()) @db.Uuid
-  name        String      @unique
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String   @unique
   description String?
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  createdBy   String?     @db.Uuid  // Auditoría
-  updatedBy   String?     @db.Uuid  // Auditoría
-  isDeleted   Boolean     @default(false) // Soft delete
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdBy   String?  @db.Uuid // Auditoría
+  updatedBy   String?  @db.Uuid // Auditoría
+  isDeleted   Boolean  @default(false) // Soft delete
 
-  subzones    Subzone[]   // Relación corregida - una zona tiene muchas subzonas
-  subsamples  Subsample[] // Relación directa con subsample
+  subzones   Subzone[] // Relación corregida - una zona tiene muchas sub-zonas
+  subsamples Subsample[] // Relación directa con subsample
 
   @@index([name])
   @@map("zones")
 }
 
 model Subzone {
-  id          String    @id @default(uuid()) @db.Uuid
+  id          String   @id @default(uuid()) @db.Uuid
   name        String
-  zoneId      String    @db.Uuid // Relación corregida - una subzona pertenece a una zona
+  zoneId      String   @db.Uuid // Relación corregida - una sub-zona pertenece a una zona
   description String?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  createdBy   String?   @db.Uuid  // Auditoría
-  updatedBy   String?   @db.Uuid  // Auditoría
-  isDeleted   Boolean   @default(false) // Soft delete
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdBy   String?  @db.Uuid // Auditoría
+  updatedBy   String?  @db.Uuid // Auditoría
+  isDeleted   Boolean  @default(false) // Soft delete
 
-  zone        Zone      @relation(fields: [zoneId], references: [id], onDelete: Cascade)
+  zone Zone @relation(fields: [zoneId], references: [id], onDelete: Cascade)
 
   @@unique([name, zoneId]) // Nombre único dentro de una zona
   @@index([zoneId])
@@ -444,22 +444,22 @@ model Subzone {
 }
 
 model Result {
-  id           String    @id @default(uuid()) @db.Uuid
-  subsampleId  String    @db.Uuid
-  testId       String    @db.Uuid
-  value        Json      @db.JsonB // Cambiado a JsonB
-  status       String?   // Para indicar el estado del resultado (pendiente, aprobado, etc.)
-  description  String?
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  createdBy    String?   @db.Uuid  // Auditoría
-  updatedBy    String?   @db.Uuid  // Auditoría
-  approvedBy   String?   @db.Uuid  // Para resultados que requieren aprobación
-  approvedAt   DateTime? // Fecha de aprobación
-  isDeleted    Boolean   @default(false) // Soft delete
+  id          String    @id @default(uuid()) @db.Uuid
+  subsampleId String    @db.Uuid
+  testId      String    @db.Uuid
+  value       Json      @db.JsonB // Cambiado a JsonB
+  status      String? // Para indicar el estado del resultado (pendiente, aprobado, etc.)
+  description String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  createdBy   String?   @db.Uuid // Auditoría
+  updatedBy   String?   @db.Uuid // Auditoría
+  approvedBy  String?   @db.Uuid // Para resultados que requieren aprobación
+  approvedAt  DateTime? // Fecha de aprobación
+  isDeleted   Boolean   @default(false) // Soft delete
 
-  subsample    Subsample @relation(fields: [subsampleId], references: [id], onDelete: Cascade)
-  test         Test      @relation(fields: [testId], references: [id], onDelete: Cascade)
+  subsample Subsample @relation(fields: [subsampleId], references: [id], onDelete: Cascade)
+  test      Test      @relation(fields: [testId], references: [id], onDelete: Cascade)
 
   @@index([subsampleId])
   @@index([testId])
@@ -467,20 +467,20 @@ model Result {
 }
 
 model Test {
-  id           String    @id @default(uuid()) @db.Uuid
-  name         String    @unique
-  code         String?   @unique // Código único del test
-  schema       Json      @db.JsonB // Cambiado a JsonB
-  description  String?
-  category     String?   // Categoría del test
-  unit         String?   // Unidad de medida
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  createdBy    String?   @db.Uuid  // Auditoría
-  updatedBy    String?   @db.Uuid  // Auditoría
-  isDeleted    Boolean   @default(false) // Soft delete
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String   @unique
+  code        String?  @unique // Código único del test
+  schema      Json     @db.JsonB // Cambiado a JsonB
+  description String?
+  category    String? // Categoría del test
+  unit        String? // Unidad de medida
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdBy   String?  @db.Uuid // Auditoría
+  updatedBy   String?  @db.Uuid // Auditoría
+  isDeleted   Boolean  @default(false) // Soft delete
 
-  results      Result[]
+  results Result[]
 
   @@index([name])
   @@index([category])
