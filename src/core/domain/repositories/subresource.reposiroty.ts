@@ -1,7 +1,7 @@
-import { SubResource } from "../entities";
+import { Subresource } from "../entities";
 
 export interface ISubResourceRepository {
-  createSubResource(subResource: SubResource): Promise<SubResource>;
-  findByName(name: string): Promise<SubResource | null>;
+  createSubResource(subResource: Subresource): Promise<Subresource>;
+  findByName(name: string): Promise<Subresource | null>;
  
 }

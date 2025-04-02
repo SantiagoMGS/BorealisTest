@@ -5,7 +5,7 @@ import { Action } from 'src/core/domain/entities';
 
 @Injectable()
 export class PrismaActionRepository implements IActionRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async createActions(actions: Action[]): Promise<Action[]> {
     try {
@@ -17,18 +17,21 @@ export class PrismaActionRepository implements IActionRepository {
         skipDuplicates: true, // ✅ Evita errores si la acción ya existe
       });
 
-      // Recuperamos las acciones recién creadas para retornarlas
-      return await this.prisma.action.findMany({
+      const created = await this.prisma.action.findMany({
         where: {
           name: { in: actions.map((action) => action.name) },
         },
       });
+      return created.map(
+        (a) => new Action(a.id, a.name, a.level)
+      );
     } catch (error) {
       throw new ConflictException('Algunas acciones ya existen.');
     }
   }
 
   async findByName(name: string): Promise<Action | null> {
-    return this.prisma.action.findUnique({ where: { name } });
+    const found = await this.prisma.action.findUnique({ where: { name } });
+    return found ? new Action(found.id, found.name, found.level) : null;
   }
 }

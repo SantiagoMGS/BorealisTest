@@ -50,7 +50,10 @@ export class PrismaResourceRepository implements IResourceRepository {
       this.prisma.resource.count(),
     ]);
 
-    return { resources, total };
+    return {
+      resources: resources.map((r) => new Resource(r.id, r.name)),
+      total,
+    };
   }
 
   async updateResource(
@@ -70,6 +73,7 @@ export class PrismaResourceRepository implements IResourceRepository {
   }
 
   async findByName(name: string): Promise<Resource | null> {
-    return await this.prisma.resource.findUnique({ where: { name } });
+    const resource = await this.prisma.resource.findUnique({ where: { name } });
+    return resource ? new Resource(resource.id, resource.name) : null;
   }
 }

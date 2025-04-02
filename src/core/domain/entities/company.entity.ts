@@ -1,10 +1,14 @@
-export class Company {
-  constructor(
-    public readonly id: string,
-    public readonly name: string,
-    public readonly logo: string,
-    public readonly primaryColor: string,
-    public readonly secondaryColor: string,
-    public readonly thirdColor: string,
-  ) {}
+import { CompanyBranding } from "./company-brand.entity";
+
+export type Company = {
+  id: string;
+  name: string;
+  code?: string | null;
+  isActive: boolean;
+  createdAt?: Date | null;
+  updatedAt?: Date | null;
+  createdBy?: string | null;
+  updatedBy?: string | null;
+  isDeleted: boolean;
+  branding?: CompanyBranding | null;
 }

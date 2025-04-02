@@ -1,6 +1,6 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { User } from '@prisma/client';
 import { IUserRepository } from '../../repositories/user.repository';
+import { User } from '../../entities';
 
 @Injectable()
 export class UpdateUserUseCase {
@@ -8,13 +8,13 @@ export class UpdateUserUseCase {
 
   constructor(@Inject('IUserRepository') private readonly userRepository: IUserRepository) { }
 
-  async execute(email: string, userData: Partial<User>): Promise<Omit<User, 'isActive' | 'createdAt' | 'updatedAt' | 'password'>> {
+  async execute(email: string, userData: Partial<User>): Promise<Omit<User, 'isActive' | 'createdAt' | 'updatedAt' | 'hashedPassword'>> {
     this.logger.log(`Updating user email: ${email}`);
 
     try {
       const updatedUser = await this.userRepository.update(email, userData);
       this.logger.log(`User email: ${email} updated successfully`);
-      const { password, ...userWithoutPassword } = updatedUser;
+      const { hashedPassword, ...userWithoutPassword } = updatedUser;
       return userWithoutPassword;
     } catch (error: unknown) {
       this.logger.error(`Failed to update user email: ${email}`, (error as Error).stack);

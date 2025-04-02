@@ -1,6 +1,6 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ICompanyRepository } from '../../repositories/company.repository';
-import { Company } from '@prisma/client';
+import { Company } from '../../entities';
 
 @Injectable()
 export class GetAllCompaniesUseCase {
@@ -10,8 +10,8 @@ export class GetAllCompaniesUseCase {
     @Inject('ICompanyRepository') private readonly companyRepository: ICompanyRepository,
   ) { }
 
-  async execute(page: number, limit: number): Promise<{ companies: Omit<Company, 'createdAt' | 'updatedAt'>[]; total: number }> {
-    this.logger.log(`Getting all companys with page: ${page}, limit: ${limit}`);
+  async execute(page: number, limit: number): Promise<{ companies: Company[], total: number }> {
+    this.logger.log(`Getting all companies with page: ${page}, limit: ${limit}`);
 
     try {
       return this.companyRepository.findAll(page, limit);

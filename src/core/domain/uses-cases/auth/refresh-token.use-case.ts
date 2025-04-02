@@ -4,54 +4,46 @@ import { IUserRepository } from '../../repositories/user.repository';
 import { ConfigService } from '@nestjs/config';
 import * as crypto from 'crypto';
 import { User } from '../../entities/user.entity';
+import { ISessionRepository } from '../../repositories/session.repository';
 
 @Injectable()
 export class RefreshTokenUseCase {
   constructor(
     private readonly jwtService: JwtService,
-    @Inject('IUserRepository') 
+    @Inject('IUserRepository')
     private readonly userRepository: IUserRepository,
+    @Inject('ISessionRepository')
+    private readonly sessionRepository: ISessionRepository,
+
     private readonly configService: ConfigService,
-  ) {}
+  ) { }
 
   private hashToken(token: string): string {
     return crypto.createHash('sha256').update(token).digest('hex');
   }
 
   async generateTokens(user: Omit<User, 'password'>) {
-    const accessTokenPayload = {
-      sub: user.id,
-      email: user.email
-    };
+    const accessTokenPayload = { sub: user.id, email: user.email };
+    const refreshTokenPayload = { sub: user.id };
+
 
     const accessToken = this.jwtService.sign(accessTokenPayload, {
       secret: this.configService.get<string>('JWT_SECRET'),
-      expiresIn: '15m'
+      expiresIn: this.configService.get<string>('JWT_EXPIRATION')
     });
 
-    const refreshTokenPayload = {
-      sub: user.id
-    };
 
     const refreshToken = this.jwtService.sign(refreshTokenPayload, {
       secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
-      expiresIn: '7d'
+      expiresIn: this.configService.get<string>('JWT_REFRESH_EXPIRATION')
     });
-
-    const hashedRefreshToken = this.hashToken(refreshToken);
-    const refreshTokenExpired = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-
-    await this.userRepository.updateRefreshToken(
-      user.id,
-      hashedRefreshToken,
-      refreshTokenExpired
-    );
 
     return {
       userId: user.id,
       accessToken,
       refreshToken,
-      refreshTokenExpiresAt: refreshTokenExpired.toISOString()
+      refreshTokenExpiresAt: new Date(Date.now() +
+       (this.configService.get<number>('JWT_REFRESH_EXPIRATION') ?? 0) * 1000).toISOString()
     };
   }
 
@@ -62,18 +54,31 @@ export class RefreshTokenUseCase {
       });
 
       const hashedToken = this.hashToken(refreshToken);
-      const user = await this.userRepository.findUserByRefreshToken(hashedToken);
 
-      if (!user) {
+      const session = await this.sessionRepository.findSessionByRefreshToken(hashedToken);
+
+      if (!session || !session.userId) {
         throw new UnauthorizedException('Token inválido');
       }
 
-      if (user.refreshTokenExpired && user.refreshTokenExpired < new Date()) {
-        await this.userRepository.clearRefreshToken(user.id);
+      if (session.refreshExpiresAt && session.refreshExpiresAt < new Date()) {
+        await this.sessionRepository.deleteSession(session.token); // O por ID si prefieres
         throw new UnauthorizedException('Refresh token expirado');
       }
 
-      return this.generateTokens(user);
+      const tokens = await this.generateTokens(session.user);
+
+      await this.sessionRepository.updateSession(session.id, {
+        token: this.hashToken(tokens.accessToken),
+        refreshToken: this.hashToken(tokens.refreshToken),
+        expiresAt: new Date(Date.now() + (this.configService.get<number>('JWT_EXPIRATION') ?? 0) * 1000),
+        refreshExpiresAt: new Date(Date.now() + (this.configService.get<number>('JWT_REFRESH_EXPIRATION') ?? 0) * 1000),
+        lastActive: new Date(),
+
+
+      });
+
+      return tokens;
     } catch (error) {
       if (error instanceof UnauthorizedException) {
         throw error;

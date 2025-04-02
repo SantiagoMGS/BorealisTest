@@ -5,17 +5,15 @@ import { ILoginRepository } from 'src/core/domain/repositories/login.repository'
 
 @Injectable()
 export class PrismaLoginRepository implements ILoginRepository {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
-
-  async findByEmailWithPassword(email: string): Promise<Omit<User, | 'refreshToken' | 'refreshTokenExpired'>> {
-
+  async findByEmailWithPassword(email: string): Promise<Omit<User, 'refreshToken' | 'refreshTokenExpired'>> {
     const user = await this.prisma.user.findUnique({
       where: { email },
       select: {
         id: true,
         name: true,
-        password: true,
+        hashedPassword: true,
         email: true,
         isActive: true,
         createdAt: true,
@@ -27,10 +25,18 @@ export class PrismaLoginRepository implements ILoginRepository {
       throw new NotFoundException(`User with email ${email} not found`);
     }
 
-    return user;
+    return new User(
+      user.id,
+      user.name,
+      user.email,
+      user.hashedPassword,
+      user.isActive,
+      user.createdAt,
+      user.updatedAt
+    );
   }
 
-  async findByEmail(email: string): Promise<Omit<User, 'password' | 'refreshToken' | 'refreshTokenExpired'>> {
+  async findByEmail(email: string): Promise<Omit<User, 'hashedPassword' | 'refreshToken' | 'refreshTokenExpired'>> {
     const user = await this.prisma.user.findUnique({
       where: { email },
       select: {
@@ -47,38 +53,54 @@ export class PrismaLoginRepository implements ILoginRepository {
       throw new NotFoundException(`User with email ${email} not found`);
     }
 
-    return user;
+    return new User(
+      user.id,
+      user.name,
+      user.email,
+      '', // omitimos la contraseña
+      user.isActive,
+      user.createdAt,
+      user.updatedAt
+    );
   }
 
-  async getCompanyByUserId(
-    userId: string,
-  ): Promise<{ companyId: string; companyName: string; logo: string }[]> {
-    const userCompanies = await this.prisma.userCompany.findMany({
-      where: { userId },
-      select: {
-        company: {
-          select: {
-            id: true,
-            name: true,
-            logo: true,
-            primaryColor: true,
-            secondaryColor: true,
-            thirdColor: true,
+  async getCompanyByUserId(userId: string): Promise<
+  {
+    id: string;
+    name: string;
+    branding: {
+      logo: string | null;
+      primaryColor: string | null;
+      secondaryColor: string | null;
+      tertiaryColor: string | null;
+    } | null;
+  }[]
+> {
+  const results = await this.prisma.userCompany.findMany({
+    where: { userId },
+    select: {
+      company: {
+        select: {
+          id: true,
+          name: true,
+          branding: {
+            select: {
+              logo: true,
+              primaryColor: true,
+              secondaryColor: true,
+              tertiaryColor: true,
+            },
           },
         },
       },
-    });
+    },
+  });
 
-    return userCompanies.map(({ company }) => ({
-      companyId: company.id,
-      companyName: company.name,
-      logo: company.logo,
-      primaryColor: company.primaryColor,
-      secondaryColor: company.secondaryColor,
-      thirdColor: company.thirdColor,
-    }));
-  }
-
+  return results.map((item) => ({
+    id: item.company.id,
+    name: item.company.name,
+    branding: item.company.branding,
+  }));
 }
 
-
+}

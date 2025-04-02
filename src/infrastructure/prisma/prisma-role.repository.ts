@@ -14,11 +14,12 @@ export class PrismaRoleRepository implements IRoleRepository {
     return new Role(createdRole.id, createdRole.name);
   }
 
-  async findById(id: string): Promise<Role | null> {  
+  async findById(id: string): Promise<Role | null> {
     const role = await this.prisma.role.findUnique({ where: { id } });
     return role ? new Role(role.id, role.name) : null;
   }
-  async findByName(name: string): Promise<Role | null> {  
+
+  async findByName(name: string): Promise<Role | null> {
     const role = await this.prisma.role.findUnique({ where: { name } });
     return role ? new Role(role.id, role.name) : null;
   }
@@ -35,7 +36,10 @@ export class PrismaRoleRepository implements IRoleRepository {
       this.prisma.role.count(),
     ]);
 
-    return { roles, total };
+    return {
+      roles: roles.map((r) => new Role(r.id, r.name)),
+      total,
+    };
   }
 
   async updateRole(id: string, roleData: Partial<Role>): Promise<Role> {

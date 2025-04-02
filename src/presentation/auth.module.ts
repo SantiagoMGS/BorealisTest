@@ -188,7 +188,7 @@ import { PrismaSessionRepository } from 'src/infrastructure/prisma/prisma-sessio
     AssignApplicationToCompaniesUseCase,
     DeleteCompanyUseCase,
     UpdateCompanyUseCase,
-    // **SubResource Use Cases**
+    // **Subresource Use Cases**
     CreateSubResourceUseCase,
     // **Other Use Cases**
     ActionSeedUseCase,
@@ -254,7 +254,7 @@ import { PrismaSessionRepository } from 'src/infrastructure/prisma/prisma-sessio
     AssignApplicationToCompaniesUseCase,
     DeleteCompanyUseCase,
     UpdateCompanyUseCase,
-    // **SubResource Use Cases**
+    // **Subresource Use Cases**
     CreateSubResourceUseCase,
     // **Other Use Cases**
     ActionSeedUseCase,

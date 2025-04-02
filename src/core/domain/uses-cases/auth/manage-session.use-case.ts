@@ -27,9 +27,10 @@ export class ManageSessionUseCase {
     const newSession: Omit<Session, 'id'> = {
       userId,
       token,
-      device: deviceInfo ?? null,
+      device: deviceInfo,
       lastActive: new Date(),
       createdAt: new Date(),
+      expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24), // Example: expires in 24 hours
     };
 
     return this.sessionRepository.createSession(newSession);

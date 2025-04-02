@@ -4,9 +4,7 @@ import { IRolePermissionRepository } from 'src/core/domain/repositories/role-per
 import { PrismaService } from 'src/infrastructure/prisma/prisma.service';
 
 @Injectable()
-export class PrismaRolePermissionRepository
-  implements IRolePermissionRepository
-{
+export class PrismaRolePermissionRepository implements IRolePermissionRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async assignPermissions(
@@ -22,14 +20,22 @@ export class PrismaRolePermissionRepository
       skipDuplicates: true,
     });
 
-    return this.prisma.rolePermission.findMany({ where: { roleId } });
+    const result = await this.prisma.rolePermission.findMany({ where: { roleId } });
+
+    return result.map(
+      (p) => new RolePermission(p.roleId, p.actionId, p.subresourceId, p.createdAt, p.updatedAt)
+    );
   }
 
   async getPermissionsByRole(roleId: string): Promise<RolePermission[]> {
-    return this.prisma.rolePermission.findMany({
+    const result = await this.prisma.rolePermission.findMany({
       where: { roleId },
       include: { action: true, subresource: true },
     });
+
+    return result.map(
+      (p) => new RolePermission(p.roleId, p.actionId, p.subresourceId, p.createdAt, p.updatedAt)
+    );
   }
 
   async removePermission(
@@ -59,9 +65,12 @@ export class PrismaRolePermissionRepository
     actionId: string,
     subresourceId: string,
   ): Promise<RolePermission | null> {
-    // 🔹 Implementación agregada
-    return this.prisma.rolePermission.findFirst({
+    const p = await this.prisma.rolePermission.findFirst({
       where: { roleId, actionId, subresourceId },
     });
+
+    return p
+      ? new RolePermission(p.roleId, p.actionId, p.subresourceId, p.createdAt, p.updatedAt)
+      : null;
   }
 }

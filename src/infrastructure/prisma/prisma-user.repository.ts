@@ -7,30 +7,46 @@ import { UserPermissionsEntity } from 'src/core/domain/entities/user-permissions
 
 @Injectable()
 export class PrismaUserRepository implements IUserRepository {
-  constructor(private readonly prisma: PrismaService) { }
-
+  constructor(private readonly prisma: PrismaService) {}
 
   async createUser(user: User): Promise<User> {
-    return this.prisma.user.create({
+    const created = await this.prisma.user.create({
       data: {
         name: user.name,
         email: user.email,
-        password: user.password,
+        hashedPassword: user.hashedPassword,
         isActive: user.isActive,
-        refreshToken: user.refreshToken,
-        refreshTokenExpired: user.refreshTokenExpired
-
       },
     });
-  }
-  async findByEmailWithPassword(email: string): Promise<User | null> {
-    return this.prisma.user.findUnique({
-      where: { email },
-    });
+
+    return new User(
+      created.id,
+      created.name,
+      created.email,
+      created.hashedPassword,
+      created.isActive,
+      created.createdAt,
+      created.updatedAt
+    );
   }
 
-  async findByEmail(email: string): Promise<Omit<User, 'password'> | null> {
-    return this.prisma.user.findUnique({
+  async findByEmailWithPassword(email: string): Promise<User | null> {
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    return user
+      ? new User(
+          user.id,
+          user.name,
+          user.email,
+          user.hashedPassword,
+          user.isActive,
+          user.createdAt,
+          user.updatedAt
+        )
+      : null;
+  }
+
+  async findByEmail(email: string): Promise<Omit<User, 'hashedPassword'> | null> {
+    const user = await this.prisma.user.findUnique({
       where: { email },
       select: {
         id: true,
@@ -39,22 +55,20 @@ export class PrismaUserRepository implements IUserRepository {
         isActive: true,
         createdAt: true,
         updatedAt: true,
-        refreshToken: true,
-        refreshTokenExpired: true,
+        isDeleted: true,
       },
     });
+    return user || null;
   }
 
   async deleteUser(email: string): Promise<void> {
     await this.prisma.user.delete({ where: { email } });
   }
-  async findAll(
-    page: number,
-    limit: number,
-  ): Promise<{ users: Omit<User, 'password'>[]; total: number }> {
+
+  async findAll(page: number, limit: number): Promise<{ users: Omit<User, 'hashedPassword'>[]; total: number }> {
     const skip = (page - 1) * limit;
     const [users, total] = await Promise.all([
-      await this.prisma.user.findMany({
+      this.prisma.user.findMany({
         skip,
         take: limit,
         select: {
@@ -62,8 +76,9 @@ export class PrismaUserRepository implements IUserRepository {
           name: true,
           email: true,
           isActive: true,
-          refreshToken: true,
-          refreshTokenExpired: true,
+          createdAt: true,
+          updatedAt: true,
+          isDeleted: true,
         },
       }),
       this.prisma.user.count(),
@@ -72,71 +87,52 @@ export class PrismaUserRepository implements IUserRepository {
   }
 
   async update(email: string, userData: Partial<User>): Promise<User> {
-    const existingUser = await this.findByEmail(email);
+    const existingUser = await this.findByEmailWithPassword(email);
     if (!existingUser)
       throw new NotFoundException(`Usuario con email ${email} no encontrado`);
 
-    if (userData.password !== undefined && userData.password !== null) {
-      userData = {
-        ...userData,
-        password: await bcrypt.hash(userData.password, 10),
-      };
-    } else {
-      const { password, ...rest } = userData;
-      userData = rest;
+    if (userData.hashedPassword) {
+      userData.hashedPassword = await bcrypt.hash(userData.hashedPassword, 10);
     }
 
     const updatedUser = await this.prisma.user.update({
       where: { email },
-      data: {
-        ...userData,
-        password: userData.password ?? undefined,
-      },
+      data: userData,
     });
 
     return new User(
       updatedUser.id,
       updatedUser.name,
       updatedUser.email,
-      updatedUser.password,
+      updatedUser.hashedPassword,
       updatedUser.isActive,
-      updatedUser.refreshToken,
-      updatedUser.refreshTokenExpired
+      updatedUser.createdAt,
+      updatedUser.updatedAt
     );
   }
 
-  // 🔹 Implementación del nuevo método para asociar usuario con compañías
-  async assignUserToCompanies(
-    userId: string,
-    permissions: { companyId: string; roleId: string }[],
-  ): Promise<void> {
+  async assignUserToCompanies(userId: string, permissions: { companyId: string; roleId: string }[]): Promise<void> {
     await this.prisma.userCompany.createMany({
-      data: permissions.map((permission) => ({
-        userId,
-        companyId: permission.companyId,
-        roleId: permission.roleId,
-      })),
-      skipDuplicates: true, // Evita errores si ya existe la relación
+      data: permissions.map((p) => ({ userId, companyId: p.companyId, roleId: p.roleId })),
+      skipDuplicates: true,
     });
   }
-  async updateUserRole(
-    userId: string,
-    companyId: string,
-    roleId: string,
-  ): Promise<void> {
+
+  async updateUserRole(userId: string, companyId: string, roleId: string): Promise<void> {
     await this.prisma.userCompany.updateMany({
-      where: {
-        userId,
-        companyId,
-      },
-      data: {
-        roleId,
-      },
+      where: { userId, companyId },
+      data: { roleId },
     });
   }
-  async getCompanyByUserId(
-    userId: string,
-  ): Promise<{ companyId: string; companyName: string; logo: string }[]> {
+
+  async getCompanyByUserId(userId: string): Promise<{
+    companyId: string;
+    companyName: string;
+    logo: string | null;
+    primaryColor: string | null;
+    secondaryColor: string | null;
+    tertiaryColor: string | null;
+  }[]> {
     const userCompanies = await this.prisma.userCompany.findMany({
       where: { userId },
       select: {
@@ -144,10 +140,14 @@ export class PrismaUserRepository implements IUserRepository {
           select: {
             id: true,
             name: true,
-            logo: true,
-            primaryColor: true,
-            secondaryColor: true,
-            thirdColor: true,
+            branding: {
+              select: {
+                logo: true,
+                primaryColor: true,
+                secondaryColor: true,
+                tertiaryColor: true,
+              },
+            },
           },
         },
       },
@@ -156,12 +156,13 @@ export class PrismaUserRepository implements IUserRepository {
     return userCompanies.map(({ company }) => ({
       companyId: company.id,
       companyName: company.name,
-      logo: company.logo,
-      primaryColor: company.primaryColor,
-      secondaryColor: company.secondaryColor,
-      thirdColor: company.thirdColor,
+      logo: company.branding?.logo ?? null,
+      primaryColor: company.branding?.primaryColor ?? null,
+      secondaryColor: company.branding?.secondaryColor ?? null,
+      tertiaryColor: company.branding?.tertiaryColor ?? null,
     }));
   }
+
   async getUserPermissions(userId: string): Promise<UserPermissionsEntity[]> {
     try {
       const userPermissions = await this.prisma.user.findUnique({
@@ -171,21 +172,23 @@ export class PrismaUserRepository implements IUserRepository {
           name: true,
           email: true,
           isActive: true,
-          refreshToken: true,
-          refreshTokenExpired: true,
           companies: {
             select: {
               company: {
                 select: {
                   id: true,
                   name: true,
-                  logo: true,
-                  primaryColor: true,
-                  secondaryColor: true,
-                  thirdColor: true,
+                  branding: {
+                    select: {
+                      logo: true,
+                      primaryColor: true,
+                      secondaryColor: true,
+                      tertiaryColor: true,
+                    },
+                  },
                   applications: {
                     select: {
-                      application: { // Relación con el modelo Application
+                      application: {
                         select: {
                           id: true,
                           name: true,
@@ -201,7 +204,7 @@ export class PrismaUserRepository implements IUserRepository {
                 select: {
                   id: true,
                   name: true,
-                  permissions: { // Relación con permisos del rol
+                  permissions: {
                     select: {
                       action: {
                         select: {
@@ -214,7 +217,7 @@ export class PrismaUserRepository implements IUserRepository {
                         select: {
                           id: true,
                           name: true,
-                          resource: { // Relación con el recurso del subrecurso
+                          resource: {
                             select: {
                               id: true,
                               name: true,
@@ -259,27 +262,24 @@ export class PrismaUserRepository implements IUserRepository {
         return {
           companyId: company.id,
           companyName: company.name,
-          primaryColor: company.primaryColor,
-          secondaryColor: company.secondaryColor,
-          thirdColor: company.thirdColor,
-          logo: company.logo,
+          logo: company.branding?.logo ?? null,
+          primaryColor: company.branding?.primaryColor ?? null,
+          secondaryColor: company.branding?.secondaryColor ?? null,
+          tertiaryColor: company.branding?.tertiaryColor ?? null,
           roleId: role.id,
           roleName: role.name,
           applications: company.applications.map((app: any) => ({
-            applicationId: app.aplication.id,
-            applicationName: app.aplication.name,
-            isActive: app.aplication.isActive,
+            applicationId: app.application.id,
+            applicationName: app.application.name,
+            isActive: app.application.isActive,
+            logo: app.application.logo,
             resources: this.groupPermissionsByResource(role.permissions),
           })),
-          
         };
       }),
     };
   }
 
-  /**
-   * Agrupa las acciones por recursos y subrecursos.
-   */
   private groupPermissionsByResource(permissions: any[]): any[] {
     const resourceMap: { [resourceId: string]: any } = {};
 
@@ -289,7 +289,6 @@ export class PrismaUserRepository implements IUserRepository {
       const subresourceId = permission.subresource.id;
       const subresourceName = permission.subresource.name;
 
-      // Si el recurso no existe en el mapa, inicialízalo
       if (!resourceMap[resourceId]) {
         resourceMap[resourceId] = {
           resourceId,
@@ -298,7 +297,6 @@ export class PrismaUserRepository implements IUserRepository {
         };
       }
 
-      // Si el subrecurso no existe en el recurso, inicialízalo
       if (!resourceMap[resourceId].subresources[subresourceId]) {
         resourceMap[resourceId].subresources[subresourceId] = {
           subresourceId,
@@ -312,56 +310,37 @@ export class PrismaUserRepository implements IUserRepository {
       }
     });
 
-    // Convierte el mapa de recursos en un arreglo
     return Object.values(resourceMap).map((resource) => ({
       ...resource,
       subresources: Object.values(resource.subresources),
     }));
   }
+
   async clearRefreshToken(id: string): Promise<void> {
-    await this.prisma.user.update({
-      where: { id: id },
+    await this.prisma.session.updateMany({
+      where: { userId: id },
       data: {
         refreshToken: null,
-        refreshTokenExpired: null,
+        refreshExpiresAt: null,
       },
     });
   }
 
-  async findUserByRefreshToken(refreshToken: string): Promise<Omit<User, 'password'> | null> {
-    const user = await this.prisma.user.findFirst({
-      where: {
-        refreshToken,
-        refreshTokenExpired: {
-          gte: new Date(), // Verifica que el token no esté expirado
-        },
-      },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        isActive: true,
-        createdAt: true,
-        updatedAt: true,
-
-        refreshToken: true,
-        refreshTokenExpired: true,
-      },
+  async findUserByRefreshToken(hashedRefreshToken: string): Promise<User | null> {
+    const session = await this.prisma.session.findFirst({
+      where: { refreshToken: hashedRefreshToken },
+      include: { user: true },
     });
-
-    return user;
+    return session?.user || null;
   }
 
-  async updateRefreshToken(id: string, refreshToken: string, expiry: Date): Promise<void> {
-    await this.prisma.user.update({
-      where: { id: id },
+  async updateRefreshToken(userId: string, refreshToken: string, expiry: Date): Promise<void> {
+    await this.prisma.session.updateMany({
+      where: { userId },
       data: {
         refreshToken,
-        refreshTokenExpired: expiry,
+        refreshExpiresAt: expiry,
       },
     });
   }
-
 }
-
-

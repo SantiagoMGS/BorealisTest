@@ -12,31 +12,37 @@ export class AuthUseCase {
     private readonly jwtService: JwtService,
   ) { }
 
-  async validateUser(email: string, password: string): Promise<any> {
+  async validateUser(email: string, plainPassword: string): Promise<any> {
     try {
-
       const user = await this.loginRepository.findByEmailWithPassword(email);
-      const isPasswordValid = await bcrypt.compare(password, user.password);
+  
+      const isPasswordValid = await bcrypt.compare(plainPassword, user.hashedPassword);
       if (!isPasswordValid) {
         throw new UnauthorizedException('Credenciales inválidas');
       }
-
-      const { password: _, ...result } = user;
-      // Obtener las compañías asociadas al usuario
+  
+      const { hashedPassword: _, ...safeUser } = user;
+  
       const companies = await this.loginRepository.getCompanyByUserId(user.id);
-      return { ...result, companies }
+  
+      return {
+        ...safeUser,
+        companies, // ya vienen en formato { id, name, branding }
+      };
     } catch (error) {
       this.logger.error("🔴 Error: Error en validateUser()", error);
+  
       if (
         error instanceof NotFoundException ||
-        error instanceof UnauthorizedException) {
+        error instanceof UnauthorizedException
+      ) {
         throw error;
       }
-
+  
       throw new UnauthorizedException("Error interno al validar el usuario");
     }
-
   }
+  
   async login(user: any) {
     if (!user || !user.email || !user.id) {
       this.logger.error("🔴 Error: Datos de usuario inválidos en login()", user);

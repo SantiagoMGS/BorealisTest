@@ -6,40 +6,56 @@ import { Company } from '../../entities';
 
 @Injectable()
 export class CreateCompanyUseCase {
-  private readonly logger = new Logger(CreateCompanyDto.name);
+  private readonly logger = new Logger(CreateCompanyUseCase.name);
 
   constructor(
     @Inject('ICompanyRepository') private readonly companyRepository: ICompanyRepository,
-    @Inject('IApplicationRepository') private readonly applicationRepository: IApplicationRepository, // 🔹 Repositorio de aplicaciones
+    @Inject('IApplicationRepository') private readonly applicationRepository: IApplicationRepository,
   ) { }
 
   async execute(companyDto: CreateCompanyDto): Promise<Company> {
-    this.logger.log('Creating new company');
-    try {
-      const existingCompany = await this.companyRepository.findByName(companyDto.name);
-      if (existingCompany) {
-        throw new ConflictException(`La compañía "${companyDto.name}" ya existe.`);
-      }
+    this.logger.log(`Creating new company "${companyDto.name}"`);
 
-      const newCompany = await this.companyRepository.createCompany(
-        new Company('', companyDto.name, companyDto.logo, companyDto.primaryColor, companyDto.secondaryColor, companyDto.thirdColor)
-      );
-
-      // Verificar que todas las aplicaciones existan
-      const applications = await this.applicationRepository.findManyByIds(companyDto.applicationIds);
-      if (applications.length !== companyDto.applicationIds.length) {
-        throw new ConflictException(`Algunas aplicaciones no existen.`);
-      }
-
-      // Asignar aplicaciones a la compañía
-      await this.companyRepository.assignApplicationToCompanies([newCompany.id], companyDto.applicationIds);
-      this.logger.log('Company created successfully');
-      return newCompany;
-
-    } catch (error) {
-      this.logger.error('Failed to create company', (error as Error).stack);
-      throw error;
+    const existingCompany = await this.companyRepository.findByName(companyDto.name);
+    if (existingCompany) {
+      throw new ConflictException(`La compañía "${companyDto.name}" ya existe.`);
     }
+
+    // Crear la compañía
+    const newCompany = await this.companyRepository.createCompany({
+      id: '',
+      name: companyDto.name,
+      isActive: false,
+      isDeleted: false,
+    });
+
+    // Crear el branding usando el objeto anidado
+    const { branding } = companyDto;
+    await this.companyRepository.createCompanyBranding(newCompany.id, {
+      companyId: newCompany.id,
+      logo: branding.logo,
+      primaryColor: branding.primaryColor,
+      secondaryColor: branding.secondaryColor,
+      tertiaryColor: branding.tertiaryColor,
+    });
+
+    // Validar que todas las aplicaciones existan
+    const applications = await this.applicationRepository.findManyByIds(companyDto.applicationIds);
+    if (applications.length !== companyDto.applicationIds.length) {
+      throw new ConflictException('Algunas aplicaciones no existen.');
+    }
+
+    // Asignar aplicaciones
+    await this.companyRepository.assignApplicationToCompanies([newCompany.id], companyDto.applicationIds);
+
+    this.logger.log(`Company "${companyDto.name}" created successfully`);
+
+    // 🔄 Reconsultar con branding
+    const fullCompany = await this.companyRepository.findById(newCompany.id);
+    if (!fullCompany) {
+      throw new ConflictException(`La compañía con ID "${newCompany.id}" no se encontró después de la creación.`);
+    }
+    return fullCompany;
 
   }
 }

@@ -1,6 +1,6 @@
 import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { ICompanyRepository } from '../../repositories/company.repository';
-import { Company } from '@prisma/client';
+import { Company } from '../../entities';
 
 @Injectable()
 export class GetByNameCompanyUseCase {

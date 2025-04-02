@@ -1,6 +1,6 @@
 import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { IResourceRepository } from '../../repositories/resource.repository';
-import { Resource } from '@prisma/client';
+import { Resource } from '../../entities';
 
 @Injectable()
 export class GetByIdResourceUseCase {

@@ -3,12 +3,12 @@ import { UserPermissionsEntity } from "../entities/user-permissions.entity";
 
 export interface IUserRepository {
   createUser(user: User): Promise<User>;
-  findByEmail(email: string): Promise<Omit<User, 'password'> | null>;
+  findByEmail(email: string): Promise<Omit<User, 'hashedPassword'> | null>;
   deleteUser(id: string): Promise<void>;
   findAll(
     page: number,
     limit: number,
-  ): Promise<{ users: Omit<User, 'password'>[]; total: number }>;
+  ): Promise<{ users: Omit<User, 'hashedPassword'>[]; total: number }>;
   update(id: string, userData: Partial<User>): Promise<User>;
   assignUserToCompanies(
     userId: string,
@@ -27,7 +27,7 @@ export interface IUserRepository {
   ): Promise<void>;
   findUserByRefreshToken(
     refreshToken: string
-  ): Promise<Omit<User, 'password'> | null>;
+  ): Promise<Omit<User, 'hashedPassword'> | null>;
 
 
   clearRefreshToken(userId: string): Promise<void>;

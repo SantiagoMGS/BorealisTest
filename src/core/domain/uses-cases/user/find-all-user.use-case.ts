@@ -11,7 +11,7 @@ export class FindAllUsersUseCase {
     @Inject('IUserRepository') private readonly userRepository: IUserRepository,
   ) { }
 
-  async execute(page: number, limit: number): Promise<{ users: Omit<User, 'password'>[]; total: number }> {
+  async execute(page: number, limit: number): Promise<{ users: Omit<User, 'hashedPassword'>[]; total: number }> {
     this.logger.log(`Getting all users with page: ${page}, limit: ${limit}`);
     try {
       return this.userRepository.findAll(page, limit);
