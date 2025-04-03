@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { IActionRepository } from '../../repositories/action.repository';
-import { Action } from '../../entities';
 import { actionInitialData } from 'src/infrastructure/prisma/seed';
+import { Action } from '../../entities';
+import { IActionRepository } from '../../repositories/action.repository';
 
 @Injectable()
 export class ActionSeedUseCase {
@@ -11,18 +11,17 @@ export class ActionSeedUseCase {
 
   async execute(): Promise<Action[]> {
     this.logger.log('Executing action seed');
-
-    try {
-      const actions: Action[] = actionInitialData.map(action =>
-        new Action('', action.name, action.level)
-      );
-
-      await this.actionRepository.createActions(actions);
-      this.logger.log('Action seed executed successfully');
-      return actions;
-    } catch (error) {
-      this.logger.error('Failed to execute action seed', (error as Error).stack);
-      throw error;
-    }
+    const actions = await Promise.all(
+      actionInitialData.map(async (a) => {
+        try {
+          const newAction: Action = { id: '', name: a.name, level: a.level };
+          return await this.actionRepository.createActions([newAction]);
+        } catch (error) {
+          this.logger.error('Failed to execute action seed', (error as Error).stack);
+          throw error;
+        }
+      })
+    )
+    return actions.flat()
   }
 }

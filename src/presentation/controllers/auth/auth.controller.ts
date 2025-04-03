@@ -32,7 +32,7 @@ export class AuthController {
     } = await this.refreshTokenUseCase.refreshAccessToken(refreshToken);
 
     await this.manageSessionUseCase.createSession(
-      userId,
+      userId!,
       newRefreshToken,
       userAgent
     );

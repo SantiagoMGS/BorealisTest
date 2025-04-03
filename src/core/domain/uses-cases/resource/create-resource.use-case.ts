@@ -13,7 +13,11 @@ export class CreateResourceUseCase {
     this.logger.log('Creating new resource');
 
     try {
-      const newResource = new Resource('', resourceDto.name, resourceDto.icon);
+      const newResource: Resource = {
+        id: '', // o undefined si Prisma lo genera
+        name: resourceDto.name,
+        icon: resourceDto.icon,
+      };
       const createdResource = await this.ResourceRepository.createResource(newResource);
       this.logger.log('Resource created successfully');
       return createdResource;

@@ -1,11 +1,9 @@
-export class User {
-  constructor(
-    public id: string,
-    public name: string,
-    public email: string,
-    public hashedPassword: string,
-    public isActive: boolean,
-    public createdAt?: Date,
-    public updatedAt?: Date,
-  ) { }
+export type User = {
+  id?: string,
+  name: string,
+  email: string,
+  hashedPassword: string,
+  isActive: boolean,
+  createdAt?: Date,
+  updatedAt?: Date,
 }

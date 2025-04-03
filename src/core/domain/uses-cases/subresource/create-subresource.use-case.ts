@@ -7,18 +7,26 @@ import { ISubResourceRepository } from '../../repositories/subresource.reposirot
 export class CreateSubResourceUseCase {
   private readonly logger = new Logger(CreateSubResourceUseCase.name);
 
-  constructor(@Inject('ISubResourceRepository') private readonly subResourceRepository: ISubResourceRepository) { }
+  constructor(
+    @Inject('ISubResourceRepository')
+    private readonly subResourceRepository: ISubResourceRepository,
+  ) { }
 
   async execute(subResourceDto: CreateSubResourceDto): Promise<Subresource> {
-    this.logger.log('Creating new resource');
+    this.logger.log('Creating new subresource');
 
     try {
-      const newSubResource = new Subresource('', subResourceDto.name, subResourceDto.resourceId, subResourceDto.icon);
+      const newSubResource: Subresource = {
+        name: subResourceDto.name,
+        icon: subResourceDto.icon,
+        resourceId: subResourceDto.resourceId,
+      };
+
       const createdSubResource = await this.subResourceRepository.createSubResource(newSubResource);
-      this.logger.log('Resource created successfully');
+      this.logger.log('Subresource created successfully');
       return createdSubResource;
     } catch (error) {
-      this.logger.error('Failed to create resource', (error as Error).stack);
+      this.logger.error('Failed to create subresource', (error as Error).stack);
       throw error;
     }
   }

@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { IApplicationRepository } from '../../repositories/application.repository';
-import { Application } from '../../entities';
 import { applicationInitialData } from 'src/infrastructure/prisma/seed';
+import { Application } from '../../entities';
+import { IApplicationRepository } from '../../repositories/application.repository';
 
 @Injectable()
 export class ApplicationSeedUseCase {
@@ -10,14 +10,19 @@ export class ApplicationSeedUseCase {
   constructor(
     @Inject('IApplicationRepository')
     private readonly applicationRepository: IApplicationRepository,
-  ) {}
+  ) { }
 
   async execute(): Promise<Application[]> {
     this.logger.log('Executing application seed');
 
     try {
       const applications: Application[] = applicationInitialData.map(
-        (application) => new Application('', application.name, true, application.logo),
+        (application) => ({
+          id: '',
+          name: application.name,
+          isActive: true,
+          logo: application.logo,
+        }),
       );
 
       await this.applicationRepository.createApplication(applications);

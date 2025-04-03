@@ -1,12 +1,10 @@
 
-export class Resource {
-  constructor(
-    public readonly id: string,
-    public readonly name: string,
-    public readonly icon: string,
-    public readonly createdAt?: Date,
-    public readonly updatedAt?: Date,
-    public readonly createdBy?: string,
-    public readonly updatedBy?: string,
-  ) { }
+export type Resource = {
+  readonly id: string,
+  readonly name: string,
+  readonly icon: string,
+  readonly createdAt?: Date,
+  readonly updatedAt?: Date,
+  readonly createdBy?: string,
+  readonly updatedBy?: string,
 }

@@ -17,7 +17,11 @@ export class PrismaResourceRepository implements IResourceRepository {
         data: { name: resource.name, icon: resource.icon },
       });
 
-      return new Resource(createdResource.id, createdResource.name, createdResource.icon);
+      return {
+        id: createdResource.id,
+        name: createdResource.name,
+        icon: createdResource.icon,
+      };
     } catch (error) {
       throw new ConflictException(`El recurso "${resource.name}" ya existe.`);
     }
@@ -27,7 +31,13 @@ export class PrismaResourceRepository implements IResourceRepository {
     const resource = await this.prisma.resource.findUnique({
       where: { id: resourceId },
     });
-    return resource ? new Resource(resource.id, resource.name, resource.icon) : null;
+    return resource
+      ? {
+        id: resource.id,
+        name: resource.name,
+        icon: resource.icon,
+      }
+      : null;
   }
 
   async deleteResource(id: string): Promise<void> {
@@ -52,7 +62,11 @@ export class PrismaResourceRepository implements IResourceRepository {
     ]);
 
     return {
-      resources: resources.map((r) => new Resource(r.id, r.name, r.icon)),
+      resources: resources.map((r) => ({
+        id: r.id,
+        name: r.name,
+        icon: r.icon,
+      })),
       total,
     };
   }
@@ -70,11 +84,22 @@ export class PrismaResourceRepository implements IResourceRepository {
       data: { name: resourceData.name },
     });
 
-    return new Resource(updatedResource.id, updatedResource.name, updatedResource.icon);
+    return {
+      id: updatedResource.id,
+      name: updatedResource.name,
+      icon: updatedResource.icon,
+    };
   }
 
   async findByName(name: string): Promise<Resource | null> {
     const resource = await this.prisma.resource.findUnique({ where: { name } });
-    return resource ? new Resource(resource.id, resource.name, resource.icon) : null;
+    return resource
+      ? {
+        id: resource.id,
+        name: resource.name,
+        icon: resource.icon,
+      }
+      : null;
+
   }
 }

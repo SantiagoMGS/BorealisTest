@@ -1,9 +1,9 @@
-export class UserPermissionsEntity {
-  id!: string;
-  name!: string;
-  email!: string;
-  isActive!: boolean;
-  companies!: {
+export type UserPermissionsEntity = {
+  id: string;
+  name: string;
+  email: string;
+  isActive: boolean;
+  companies: {
     companyId: string;
     companyName: string;
     isActive: boolean;
@@ -30,4 +30,4 @@ export class UserPermissionsEntity {
     roleId: string;
     roleName: string;
   }[];
-}
+};

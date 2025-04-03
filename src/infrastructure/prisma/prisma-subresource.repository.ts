@@ -9,19 +9,24 @@ export class PrismaSubResourceRepository implements ISubResourceRepository {
 
   async createSubResource(subResource: Subresource): Promise<Subresource> {
     try {
-      console.log('subResource', subResource);
-
       const created = await this.prisma.subresource.create({
         data: {
           name: subResource.name,
-          resourceId: subResource.resourceId!,
           icon: subResource.icon,
+          resourceId: subResource.resourceId!,
         },
       });
 
-      return new Subresource(created.id, created.name, created.resourceId, created.icon);
+      return {
+        id: created.id,
+        name: created.name,
+        icon: created.icon,
+        resourceId: created.resourceId,
+        createdAt: created.createdAt,
+        updatedAt: created.updatedAt,
+      };
     } catch (error) {
-      throw new ConflictException(`El subrecurso "${subResource.name}" ya existe.`);
+      throw new ConflictException(`El subrecurso "${subResource.name}" ya existe o falló.`);
     }
   }
 
@@ -29,7 +34,14 @@ export class PrismaSubResourceRepository implements ISubResourceRepository {
     const subresource = await this.prisma.subresource.findFirst({ where: { name } });
 
     return subresource
-      ? new Subresource(subresource.id, subresource.name, subresource.resourceId, subresource.icon)
+      ? {
+        id: subresource.id,
+        name: subresource.name,
+        icon: subresource.icon,
+        resourceId: subresource.resourceId,
+        createdAt: subresource.createdAt,
+        updatedAt: subresource.updatedAt,
+      }
       : null;
   }
 }

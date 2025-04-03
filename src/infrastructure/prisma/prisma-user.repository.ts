@@ -19,29 +19,29 @@ export class PrismaUserRepository implements IUserRepository {
       },
     });
 
-    return new User(
-      created.id,
-      created.name,
-      created.email,
-      created.hashedPassword,
-      created.isActive,
-      created.createdAt,
-      created.updatedAt
-    );
+    return {
+      id: created.id,
+      name: created.name,
+      email: created.email,
+      hashedPassword: created.hashedPassword,
+      isActive: created.isActive,
+      createdAt: created.createdAt,
+      updatedAt: created.updatedAt,
+    };
   }
 
   async findByEmailWithPassword(email: string): Promise<User | null> {
     const user = await this.prisma.user.findUnique({ where: { email } });
     return user
-      ? new User(
-        user.id,
-        user.name,
-        user.email,
-        user.hashedPassword,
-        user.isActive,
-        user.createdAt,
-        user.updatedAt
-      )
+      ? {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        hashedPassword: user.hashedPassword,
+        isActive: user.isActive,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+      }
       : null;
   }
 
@@ -98,15 +98,15 @@ export class PrismaUserRepository implements IUserRepository {
       data: userData,
     });
 
-    return new User(
-      updatedUser.id,
-      updatedUser.name,
-      updatedUser.email,
-      updatedUser.hashedPassword,
-      updatedUser.isActive,
-      updatedUser.createdAt,
-      updatedUser.updatedAt
-    );
+    return {
+      id: updatedUser.id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      hashedPassword: updatedUser.hashedPassword,
+      isActive: updatedUser.isActive,
+      createdAt: updatedUser.createdAt,
+      updatedAt: updatedUser.updatedAt,
+    };
   }
 
   async assignUserToCompanies(userId: string, permissions: { companyId: string; roleId: string }[]): Promise<void> {

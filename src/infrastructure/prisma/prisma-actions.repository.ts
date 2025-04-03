@@ -1,7 +1,7 @@
 import { ConflictException, Injectable } from '@nestjs/common';
-import { PrismaService } from './prisma.service';
-import { IActionRepository } from 'src/core/domain/repositories/action.repository';
 import { Action } from 'src/core/domain/entities';
+import { IActionRepository } from 'src/core/domain/repositories/action.repository';
+import { PrismaService } from './prisma.service';
 
 @Injectable()
 export class PrismaActionRepository implements IActionRepository {
@@ -22,9 +22,12 @@ export class PrismaActionRepository implements IActionRepository {
           name: { in: actions.map((action) => action.name) },
         },
       });
-      return created.map(
-        (a) => new Action(a.id, a.name, a.level)
-      );
+      return created.map((a) => ({
+        id: a.id,
+        name: a.name,
+        level: a.level,
+      }));
+
     } catch (error) {
       throw new ConflictException('Algunas acciones ya existen.');
     }
@@ -32,6 +35,12 @@ export class PrismaActionRepository implements IActionRepository {
 
   async findByName(name: string): Promise<Action | null> {
     const found = await this.prisma.action.findUnique({ where: { name } });
-    return found ? new Action(found.id, found.name, found.level) : null;
+    return found
+      ? {
+        id: found.id,
+        name: found.name,
+        level: found.level,
+      }
+      : null;
   }
 }

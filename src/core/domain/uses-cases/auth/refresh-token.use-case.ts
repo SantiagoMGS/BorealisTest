@@ -1,10 +1,10 @@
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { IUserRepository } from '../../repositories/user.repository';
 import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
 import * as crypto from 'crypto';
 import { User } from '../../entities/user.entity';
 import { ISessionRepository } from '../../repositories/session.repository';
+import { IUserRepository } from '../../repositories/user.repository';
 
 @Injectable()
 export class RefreshTokenUseCase {
@@ -43,7 +43,7 @@ export class RefreshTokenUseCase {
       accessToken,
       refreshToken,
       refreshTokenExpiresAt: new Date(Date.now() +
-       (this.configService.get<number>('JWT_REFRESH_EXPIRATION') ?? 0) * 1000).toISOString()
+        (this.configService.get<number>('JWT_REFRESH_EXPIRATION') ?? 0) * 1000).toISOString()
     };
   }
 
@@ -68,7 +68,7 @@ export class RefreshTokenUseCase {
 
       const tokens = await this.generateTokens(session.user);
 
-      await this.sessionRepository.updateSession(session.id, {
+      await this.sessionRepository.updateSession(session.id!, {
         token: this.hashToken(tokens.accessToken),
         refreshToken: this.hashToken(tokens.refreshToken),
         expiresAt: new Date(Date.now() + (this.configService.get<number>('JWT_EXPIRATION') ?? 0) * 1000),

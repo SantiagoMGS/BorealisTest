@@ -1,13 +1,11 @@
-export class Application {
-  constructor(
-    public readonly id: string,
-    public readonly name: string,
-    public readonly isActive: boolean,
-    public readonly logo?: string | null,
-    public readonly description?: string,
-    public readonly createdAt?: Date,
-    public readonly updatedAt?: Date,
-    public readonly createdBy?: string,
-    public readonly updatedBy?: string,
-  ) { }
+export type Application = {
+  id: string,
+  name: string,
+  isActive: boolean,
+  logo?: string | null,
+  description?: string,
+  createdAt?: Date,
+  updatedAt?: Date,
+  createdBy?: string,
+  updatedBy?: string,
 }

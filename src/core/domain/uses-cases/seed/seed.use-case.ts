@@ -66,7 +66,12 @@ export class SeedUseCase {
   private async seedApplications(): Promise<void> {
     this.logger.log('📦 Seeding applications');
     const applications: Application[] = applicationInitialData.map(
-      (app) => new Application('', app.name, true, app.logo),
+      (application) => ({
+        id: '',
+        name: application.name,
+        isActive: true,
+        logo: application.logo,
+      }),
     );
     try {
       await this.applicationRepository.createApplication(applications);
@@ -78,9 +83,11 @@ export class SeedUseCase {
   private async seedResources(): Promise<void> {
     this.logger.log('📦 Seeding resources');
 
-    const resources: Resource[] = resourceInitialData.map(
-      (r) => new Resource(r.id, r.name, r.icon),
-    );
+    const resources: Resource[] = resourceInitialData.map((r) => ({
+      id: r.id,
+      name: r.name,
+      icon: r.icon,
+    }));
 
     for (const resource of resources) {
       console.log('resource', resource);
@@ -169,7 +176,12 @@ export class SeedUseCase {
           const resource = await this.resourseRepository.findByName(sub.name);
           if (!resource) throw new Error(`Resource ${sub.name} no encontrado`);
 
-          const newSub = new Subresource('', sub.name, resource.icon, resource.id);
+          const newSub: Subresource = {
+            id: '',
+            name: sub.name,
+            icon: resource.icon,
+            resourceId: resource.id,
+          };
 
           return await this.subresourceRepository.createSubResource(newSub);
         } catch {
@@ -183,19 +195,28 @@ export class SeedUseCase {
 
   private async seedActions(): Promise<void> {
     this.logger.log('📦 Seeding actions');
-    const actions: Action[] = actionInitialData.map(
-      (a) => new Action('', a.name, a.level),
+    await Promise.all(
+      actionInitialData.map(async (a) => {
+        try {
+
+          const newAction: Action = { id: '', name: a.name, level: a.level };
+
+          return await this.actionRepository.createActions([newAction]);
+        } catch {
+          this.logger.warn(`⚠️ Subresource ${a.name} ya existe o falló`);
+          return null;
+        }
+      }),
     );
-    try {
-      await this.actionRepository.createActions(actions);
-    } catch {
-      this.logger.warn('⚠️ Las acciones ya existen o fallaron');
-    }
   }
+
 
   private async seedRoles(subresources: Subresource[]): Promise<void> {
     this.logger.log('📦 Seeding roles');
-    const roles: Role[] = roleInitialData.map((r) => new Role('', r.name));
+    const roles: Role[] = roleInitialData.map((r) => ({
+      id: '',
+      name: r.name,
+    }));
     for (const role of roles) {
       try {
         const createdRole = await this.roleRepository.createRole(role);
@@ -211,8 +232,8 @@ export class SeedUseCase {
     if (!action) throw new Error('Acción "DELETE" no encontrada');
 
     for (const sub of subresources) {
-      await this.rolePermissionRepository.assignPermissions(role.id, [
-        { actionId: action.id, subresourceId: sub.id },
+      await this.rolePermissionRepository.assignPermissions(role.id!, [
+        { actionId: action.id!, subresourceId: sub.id! },
       ]);
     }
   }
@@ -234,10 +255,18 @@ export class SeedUseCase {
     }
 
     const hashed = await bcrypt.hash(user.password, 10);
-    const created = await this.userRepository.createUser(new User('', user.name, user.email, hashed, true));
+    const newUser: User = {
+      id: '',
+      name: user.name,
+      email: user.email,
+      hashedPassword: hashed,
+      isActive: true,
+    };
 
-    await this.userRepository.assignUserToCompanies(created.id, [
-      { companyId: company.id!, roleId: role.id },
+    const created = await this.userRepository.createUser(newUser);
+
+    await this.userRepository.assignUserToCompanies(created.id!, [
+      { companyId: company.id!, roleId: role.id! },
     ]);
   }
 }

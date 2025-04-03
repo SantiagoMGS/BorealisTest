@@ -1,7 +1,7 @@
-import { Inject, Injectable, Logger, ConflictException } from '@nestjs/common';
-import { IRoleRepository } from '../../repositories/role.repository';
+import { ConflictException, Inject, Injectable, Logger } from '@nestjs/common';
 import { CreateRoleDto } from 'src/presentation/controllers/role/dtos/create-role.dto';
 import { Role } from '../../entities/role.entity';
+import { IRoleRepository } from '../../repositories/role.repository';
 
 @Injectable()
 export class CreateRoleUseCase {
@@ -18,7 +18,11 @@ export class CreateRoleUseCase {
         throw new ConflictException(`El rol "${roleDto.name}" ya existe.`);
       }
 
-      const newRole = new Role('', roleDto.name);
+      const newRole: Role = {
+        name: roleDto.name,
+      };
+
+
       const createdRole = await this.roleRepository.createRole(newRole);
       this.logger.log('Role created successfully');
       return createdRole;

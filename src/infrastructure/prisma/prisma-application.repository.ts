@@ -1,7 +1,7 @@
 import { ConflictException, Injectable } from '@nestjs/common';
-import { PrismaService } from './prisma.service';
-import { IApplicationRepository } from 'src/core/domain/repositories/application.repository';
 import { Application } from 'src/core/domain/entities';
+import { IApplicationRepository } from 'src/core/domain/repositories/application.repository';
+import { PrismaService } from './prisma.service';
 
 @Injectable()
 export class PrismaApplicationRepository implements IApplicationRepository {
@@ -23,7 +23,13 @@ export class PrismaApplicationRepository implements IApplicationRepository {
         where: {
           name: { in: applications.map((app) => app.name) },
         },
-      })).map((app) => new Application(app.id, app.name, app.isActive, app.logo));
+      })).map((app) => ({
+        id: app.id,
+        name: app.name,
+        isActive: app.isActive,
+        logo: app.logo,
+      }));
+
 
     } catch (error) {
       throw new ConflictException('Algunas acciones ya existen.');
@@ -35,12 +41,17 @@ export class PrismaApplicationRepository implements IApplicationRepository {
     const found = await this.prisma.application.findUnique({
       where: { id: applicationId },
     });
-  
+
     return found
-      ? new Application(found.id, found.name, found.isActive, found.logo)
+      ? {
+        id: found.id,
+        name: found.name,
+        isActive: found.isActive,
+        logo: found.logo,
+      }
       : null;
   }
-  
+
 
   // 🔹 Implementación del método findManyByIds
   async findManyByIds(applicationIds: string[]): Promise<Application[]> {
@@ -49,19 +60,29 @@ export class PrismaApplicationRepository implements IApplicationRepository {
         id: { in: applicationIds },
       },
     });
-  
-    return apps.map((app) => new Application(app.id, app.name, app.isActive, app.logo));
+
+    return apps.map((app) => ({
+      id: app.id,
+      name: app.name,
+      isActive: app.isActive,
+      logo: app.logo,
+    }));
   }
-  
+
 
   async findByName(name: string): Promise<Application | null> {
     const found = await this.prisma.application.findUnique({
       where: { name },
     });
-  
     return found
-      ? new Application(found.id, found.name, found.isActive, found.logo)
+      ? {
+        id: found.id,
+        name: found.name,
+        isActive: found.isActive,
+        logo: found.logo,
+      }
       : null;
+
   }
-  
+
 }

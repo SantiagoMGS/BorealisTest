@@ -5,7 +5,7 @@ import { PrismaService } from 'src/infrastructure/prisma/prisma.service';
 
 @Injectable()
 export class PrismaRolePermissionRepository implements IRolePermissionRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async assignPermissions(
     roleId: string,
@@ -21,10 +21,14 @@ export class PrismaRolePermissionRepository implements IRolePermissionRepository
     });
 
     const result = await this.prisma.rolePermission.findMany({ where: { roleId } });
+    return result.map((p) => ({
+      roleId: p.roleId,
+      actionId: p.actionId,
+      subresourceId: p.subresourceId,
+      createdAt: p.createdAt,
+      updatedAt: p.updatedAt,
+    }));
 
-    return result.map(
-      (p) => new RolePermission(p.roleId, p.actionId, p.subresourceId, p.createdAt, p.updatedAt)
-    );
   }
 
   async getPermissionsByRole(roleId: string): Promise<RolePermission[]> {
@@ -33,9 +37,14 @@ export class PrismaRolePermissionRepository implements IRolePermissionRepository
       include: { action: true, subresource: true },
     });
 
-    return result.map(
-      (p) => new RolePermission(p.roleId, p.actionId, p.subresourceId, p.createdAt, p.updatedAt)
-    );
+    return result.map((p) => ({
+      roleId: p.roleId,
+      actionId: p.actionId,
+      subresourceId: p.subresourceId,
+      createdAt: p.createdAt,
+      updatedAt: p.updatedAt,
+    }));
+
   }
 
   async removePermission(
@@ -70,7 +79,14 @@ export class PrismaRolePermissionRepository implements IRolePermissionRepository
     });
 
     return p
-      ? new RolePermission(p.roleId, p.actionId, p.subresourceId, p.createdAt, p.updatedAt)
+      ? {
+        roleId: p.roleId,
+        actionId: p.actionId,
+        subresourceId: p.subresourceId,
+        createdAt: p.createdAt,
+        updatedAt: p.updatedAt,
+      }
       : null;
+
   }
 }

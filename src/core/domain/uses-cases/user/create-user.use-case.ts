@@ -6,11 +6,11 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { IUserRepository } from '../../repositories/user.repository';
-import { ICompanyRepository } from '../../repositories/company.repository';
 import { CreateUserDto } from 'src/presentation/controllers/user/dtos/create-user.dto';
-import { IRoleRepository } from '../../repositories/role.repository';
 import { User } from '../../entities';
+import { ICompanyRepository } from '../../repositories/company.repository';
+import { IRoleRepository } from '../../repositories/role.repository';
+import { IUserRepository } from '../../repositories/user.repository';
 
 @Injectable()
 export class CreateUserUseCase {
@@ -21,7 +21,7 @@ export class CreateUserUseCase {
     @Inject('ICompanyRepository')
     private readonly companyRepository: ICompanyRepository,
     @Inject('IRoleRepository') private readonly roleRepository: IRoleRepository,
-  ) {}
+  ) { }
 
   async execute(userDto: CreateUserDto): Promise<User> {
     try {
@@ -34,9 +34,12 @@ export class CreateUserUseCase {
 
       const hashedPassword = await bcrypt.hash(userDto.password, 10);
 
-      const newUser = await this.userRepository.createUser(
-        new User('', userDto.name, userDto.email, hashedPassword, false),
-      );
+      const newUser: User = {
+        name: userDto.name,
+        email: userDto.email,
+        hashedPassword,
+        isActive: false,
+      };
 
       const { permissions } = userDto;
       if (!permissions || permissions.length === 0) {
@@ -63,7 +66,7 @@ export class CreateUserUseCase {
         }
       }
 
-      await this.userRepository.assignUserToCompanies(newUser.id, permissions);
+      await this.userRepository.assignUserToCompanies(newUser.id!, permissions);
 
       this.logger.log('User created successfully');
       return newUser;
