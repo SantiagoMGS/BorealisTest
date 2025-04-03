@@ -1,10 +1,9 @@
-import { NestFactory, Reflector } from '@nestjs/core';
-import { AppModule } from './app.module';
 import { Logger, ValidationPipe } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './infrastructure/ilters/http-exception.filter';
 import { ResponseInterceptor } from './infrastructure/interceptores/response.interceptor';
-import { ConfigService } from '@nestjs/config';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 async function bootstrap() {
   const logger = new Logger('BorealisMain');
@@ -52,7 +51,7 @@ async function bootstrap() {
     SwaggerModule.setup('api/docs', app, document);
 
     // **Iniciar la aplicación**
-    const port = process.env.PORT || 3000;
+    const port = process.env.PORT || 8443;
     await app.listen(port);
 
     logger.log(`🚀 Aplicación iniciada en http://localhost:${port}/api`);
