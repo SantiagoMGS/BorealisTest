@@ -51,7 +51,7 @@ async function bootstrap() {
     SwaggerModule.setup('api/docs', app, document);
 
     // **Iniciar la aplicación**
-    const port = process.env.PORT || 443;
+    const port = process.env.PORT || 3000;
     await app.listen(port);
 
     logger.log(`🚀 Aplicación iniciada en http://localhost:${port}/api`);
