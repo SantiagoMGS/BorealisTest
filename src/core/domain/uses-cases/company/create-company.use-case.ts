@@ -27,7 +27,6 @@ export class CreateCompanyUseCase {
       name: companyDto.name,
       shortName: companyDto.shortName,
       isActive: false,
-      isDeleted: false,
     });
 
     // Crear el branding usando el objeto anidado

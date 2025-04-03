@@ -1,19 +1,19 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { CreateSubResourceDto } from 'src/presentation/controllers/subresource/dtos/create-subresource.dto';
-import { ISubResourceRepository } from '../../repositories/subresource.reposiroty';
 import { Subresource } from '../../entities';
+import { ISubResourceRepository } from '../../repositories/subresource.reposiroty';
 
 @Injectable()
 export class CreateSubResourceUseCase {
   private readonly logger = new Logger(CreateSubResourceUseCase.name);
 
-  constructor(@Inject('ISubResourceRepository') private readonly subResourceRepository: ISubResourceRepository) {}
+  constructor(@Inject('ISubResourceRepository') private readonly subResourceRepository: ISubResourceRepository) { }
 
   async execute(subResourceDto: CreateSubResourceDto): Promise<Subresource> {
     this.logger.log('Creating new resource');
 
     try {
-      const newSubResource = new Subresource('', subResourceDto.name, subResourceDto.resourceId);
+      const newSubResource = new Subresource('', subResourceDto.name, subResourceDto.resourceId, subResourceDto.icon);
       const createdSubResource = await this.subResourceRepository.createSubResource(newSubResource);
       this.logger.log('Resource created successfully');
       return createdSubResource;

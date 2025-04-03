@@ -1,27 +1,33 @@
-interface SeedSubresourse {
-  name: string;
-  resourceName: string;
-}
+import { Subresource } from "src/core/domain/entities";
 
-export const subresourseInitialData: SeedSubresourse[] = [
+
+export const subresourseInitialData: Subresource[] = [
   {
+    id: '',
     name: 'ROLE',
-    resourceName: 'ROLE',
+    icon: 'fa-solid fa-user-shield',
   },
   {
+    id: '',
     name: 'USER',
-    resourceName: 'USER',
+    icon: 'fa-solid fa-user',
   },
   {
+    id: '',
     name: 'COMPANY',
-    resourceName: 'COMPANY',
+    icon: 'fa-solid fa-user',
+
   },
   {
+    id: '',
     name: 'RESOURCE',
-    resourceName: 'RESOURCE',
+    icon: 'fa-solid fa-user',
+
   },
   {
+    id: '',
     name: 'SUBRESOURCE',
-    resourceName: 'SUBRESOURCE',
+    icon: 'fa-solid fa-user',
+
   },
 ];

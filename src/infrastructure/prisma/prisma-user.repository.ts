@@ -1,13 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { IUserRepository } from 'src/core/domain/repositories/user.repository';
-import { PrismaService } from './prisma.service';
 import * as bcrypt from 'bcrypt';
 import { User } from 'src/core/domain/entities';
 import { UserPermissionsEntity } from 'src/core/domain/entities/user-permissions.entity';
+import { IUserRepository } from 'src/core/domain/repositories/user.repository';
+import { PrismaService } from './prisma.service';
 
 @Injectable()
 export class PrismaUserRepository implements IUserRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async createUser(user: User): Promise<User> {
     const created = await this.prisma.user.create({
@@ -34,14 +34,14 @@ export class PrismaUserRepository implements IUserRepository {
     const user = await this.prisma.user.findUnique({ where: { email } });
     return user
       ? new User(
-          user.id,
-          user.name,
-          user.email,
-          user.hashedPassword,
-          user.isActive,
-          user.createdAt,
-          user.updatedAt
-        )
+        user.id,
+        user.name,
+        user.email,
+        user.hashedPassword,
+        user.isActive,
+        user.createdAt,
+        user.updatedAt
+      )
       : null;
   }
 
@@ -55,7 +55,6 @@ export class PrismaUserRepository implements IUserRepository {
         isActive: true,
         createdAt: true,
         updatedAt: true,
-        isDeleted: true,
       },
     });
     return user || null;
@@ -78,7 +77,6 @@ export class PrismaUserRepository implements IUserRepository {
           isActive: true,
           createdAt: true,
           updatedAt: true,
-          isDeleted: true,
         },
       }),
       this.prisma.user.count(),

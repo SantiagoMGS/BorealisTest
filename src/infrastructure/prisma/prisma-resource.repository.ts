@@ -1,22 +1,23 @@
 import {
+  ConflictException,
   Injectable,
   NotFoundException,
-  ConflictException,
 } from '@nestjs/common';
-import { PrismaService } from './prisma.service';
-import { IResourceRepository } from 'src/core/domain/repositories/resource.repository';
 import { Resource } from 'src/core/domain/entities';
+import { IResourceRepository } from 'src/core/domain/repositories/resource.repository';
+import { PrismaService } from './prisma.service';
 
 @Injectable()
 export class PrismaResourceRepository implements IResourceRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async createResource(resource: Resource): Promise<Resource> {
     try {
       const createdResource = await this.prisma.resource.create({
-        data: { name: resource.name },
+        data: { name: resource.name, icon: resource.icon },
       });
-      return new Resource(createdResource.id, createdResource.name);
+
+      return new Resource(createdResource.id, createdResource.name, createdResource.icon);
     } catch (error) {
       throw new ConflictException(`El recurso "${resource.name}" ya existe.`);
     }
@@ -26,7 +27,7 @@ export class PrismaResourceRepository implements IResourceRepository {
     const resource = await this.prisma.resource.findUnique({
       where: { id: resourceId },
     });
-    return resource ? new Resource(resource.id, resource.name) : null;
+    return resource ? new Resource(resource.id, resource.name, resource.icon) : null;
   }
 
   async deleteResource(id: string): Promise<void> {
@@ -45,13 +46,13 @@ export class PrismaResourceRepository implements IResourceRepository {
       this.prisma.resource.findMany({
         skip,
         take: limit,
-        select: { id: true, name: true },
+        select: { id: true, name: true, icon: true },
       }),
       this.prisma.resource.count(),
     ]);
 
     return {
-      resources: resources.map((r) => new Resource(r.id, r.name)),
+      resources: resources.map((r) => new Resource(r.id, r.name, r.icon)),
       total,
     };
   }
@@ -69,11 +70,11 @@ export class PrismaResourceRepository implements IResourceRepository {
       data: { name: resourceData.name },
     });
 
-    return new Resource(updatedResource.id, updatedResource.name);
+    return new Resource(updatedResource.id, updatedResource.name, updatedResource.icon);
   }
 
   async findByName(name: string): Promise<Resource | null> {
     const resource = await this.prisma.resource.findUnique({ where: { name } });
-    return resource ? new Resource(resource.id, resource.name) : null;
+    return resource ? new Resource(resource.id, resource.name, resource.icon) : null;
   }
 }

@@ -1,15 +1,14 @@
 import { ConflictException, Inject, Injectable, Logger } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import {
-  IActionRepository,
-  IApplicationRepository,
-  ICompanyRepository,
-  IResourceRepository,
-  IRolePermissionRepository,
-  IRoleRepository,
-  ISubResourceRepository,
-  IUserRepository,
-} from '../../repositories';
+  actionInitialData,
+  applicationInitialData,
+  companyInitialData,
+  resourceInitialData,
+  roleInitialData,
+  subresourseInitialData,
+  userInitialData,
+} from 'src/infrastructure/prisma/seed';
 import {
   Action,
   Application,
@@ -20,14 +19,15 @@ import {
   User,
 } from '../../entities';
 import {
-  actionInitialData,
-  applicationInitialData,
-  companyInitialData,
-  resourceInitialData,
-  roleInitialData,
-  subresourseInitialData,
-  userInitialData,
-} from 'src/infrastructure/prisma/seed';
+  IActionRepository,
+  IApplicationRepository,
+  ICompanyRepository,
+  IResourceRepository,
+  IRolePermissionRepository,
+  IRoleRepository,
+  ISubResourceRepository,
+  IUserRepository,
+} from '../../repositories';
 
 @Injectable()
 export class SeedUseCase {
@@ -77,10 +77,14 @@ export class SeedUseCase {
 
   private async seedResources(): Promise<void> {
     this.logger.log('📦 Seeding resources');
+
     const resources: Resource[] = resourceInitialData.map(
-      (r) => new Resource('', r.name),
+      (r) => new Resource(r.id, r.name, r.icon),
     );
+
     for (const resource of resources) {
+      console.log('resource', resource);
+
       try {
         await this.resourseRepository.createResource(resource);
       } catch {
@@ -91,7 +95,6 @@ export class SeedUseCase {
 
   private async seedCompanies(): Promise<void> {
     this.logger.log('📦 Seeding companies');
-    console.log('Company Initial Data:', companyInitialData);
 
     for (const seedCompany of companyInitialData) {
       try {
@@ -99,13 +102,11 @@ export class SeedUseCase {
           id: '',
           name: seedCompany.name,
           shortName: seedCompany.shortName,
-          code: null,
           isActive: true,
           createdAt: null,
           updatedAt: null,
           createdBy: null,
           updatedBy: null,
-          isDeleted: false,
           branding: null,
         };
 
@@ -122,7 +123,7 @@ export class SeedUseCase {
         }
         // Crear branding si no existe o está incompleto
         if (seedCompany.branding && (!createdCompany.branding || !createdCompany.branding.logo)) {
-          
+
           await this.companyRepository.createCompanyBranding(createdCompany.id!, {
             companyId: createdCompany.id!,
             logo: seedCompany.branding.logo,
@@ -142,7 +143,6 @@ export class SeedUseCase {
 
   private async assignApplicationsToCompany(company: Company): Promise<void> {
     const application = await this.applicationRepository.findByName('BOREALIS APP');
-    console.log('Application:', application);
 
     if (!application) throw new Error('❌ Aplicación "BOREALIS" no encontrada');
 
@@ -166,10 +166,11 @@ export class SeedUseCase {
     const subresources = await Promise.all(
       subresourseInitialData.map(async (sub) => {
         try {
-          const resource = await this.resourseRepository.findByName(sub.resourceName);
-          if (!resource) throw new Error(`Resource ${sub.resourceName} no encontrado`);
+          const resource = await this.resourseRepository.findByName(sub.name);
+          if (!resource) throw new Error(`Resource ${sub.name} no encontrado`);
 
-          const newSub = new Subresource('', sub.name, resource.id);
+          const newSub = new Subresource('', sub.name, resource.icon, resource.id);
+
           return await this.subresourceRepository.createSubResource(newSub);
         } catch {
           this.logger.warn(`⚠️ Subresource ${sub.name} ya existe o falló`);

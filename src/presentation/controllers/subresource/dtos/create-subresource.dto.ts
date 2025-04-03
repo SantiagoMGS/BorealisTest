@@ -14,4 +14,8 @@ export class CreateSubResourceDto {
   @IsNotEmpty({ message: 'El id del recurso es obligatorio' })
   @IsString({ message: 'El id debe ser un texto' })
   resourceId!: string;
+
+  @IsNotEmpty({ message: 'El icono del recurso es obligatorio' })
+  @IsString({ message: 'El icono debe ser un texto' })
+  icon!: string;
 }

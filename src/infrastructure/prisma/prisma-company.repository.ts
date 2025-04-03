@@ -32,11 +32,9 @@ export class PrismaCompanyRepository implements ICompanyRepository {
       data: {
         name: company.name,
         shortName: company.shortName,
-        code: company.code,
         isActive: company.isActive,
         createdBy: company.createdBy,
         updatedBy: company.updatedBy,
-        isDeleted: company.isDeleted,
       },
     });
 
@@ -105,10 +103,8 @@ export class PrismaCompanyRepository implements ICompanyRepository {
       where: { id },
       data: {
         name: companyData.name,
-        code: companyData.code,
         isActive: companyData.isActive,
         updatedBy: companyData.updatedBy,
-        isDeleted: companyData.isDeleted,
       },
       include: { branding: true },
     });
@@ -143,13 +139,11 @@ export class PrismaCompanyRepository implements ICompanyRepository {
       id: company.id,
       name: company.name,
       shortName: company.shortName,
-      code: company.code,
       isActive: company.isActive,
       createdAt: company.createdAt,
       updatedAt: company.updatedAt,
       createdBy: company.createdBy,
       updatedBy: company.updatedBy,
-      isDeleted: company.isDeleted,
       branding: company.branding
         ? {
           companyId: company.branding.companyId,

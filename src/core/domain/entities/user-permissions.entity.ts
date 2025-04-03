@@ -6,7 +6,6 @@ export class UserPermissionsEntity {
   companies!: {
     companyId: string;
     companyName: string;
-    code?: string;
     isActive: boolean;
     branding?: {
       logo?: string;
@@ -17,7 +16,6 @@ export class UserPermissionsEntity {
     applications: {
       applicationId: string;
       applicationName: string;
-      code?: string;
       isActive: boolean;
       permissions: {
         actionId: string;

@@ -1,19 +1,19 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { IResourceRepository } from '../../repositories/resource.repository';
 import { CreateResourceDto } from 'src/presentation/controllers/resource/dtos/create-resource.dto';
 import { Resource } from '../../entities';
+import { IResourceRepository } from '../../repositories/resource.repository';
 
 @Injectable()
 export class CreateResourceUseCase {
   private readonly logger = new Logger(CreateResourceUseCase.name);
 
-  constructor(@Inject('IResourceRepository') private readonly ResourceRepository: IResourceRepository) {}
+  constructor(@Inject('IResourceRepository') private readonly ResourceRepository: IResourceRepository) { }
 
   async execute(resourceDto: CreateResourceDto): Promise<Resource> {
     this.logger.log('Creating new resource');
 
     try {
-      const newResource = new Resource('', resourceDto.name);
+      const newResource = new Resource('', resourceDto.name, resourceDto.icon);
       const createdResource = await this.ResourceRepository.createResource(newResource);
       this.logger.log('Resource created successfully');
       return createdResource;

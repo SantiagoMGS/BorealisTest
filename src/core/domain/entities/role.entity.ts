@@ -8,6 +8,5 @@ export class Role {
     public readonly updatedAt?: Date,
     public readonly createdBy?: string,
     public readonly updatedBy?: string,
-    public readonly isDeleted: boolean = false,
-  ) {}
+  ) { }
 }

@@ -16,7 +16,6 @@ model User {
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
   sessions       Session[] // Cambiado de 'activeSessions' a 'sessions' para consistencia
-  isDeleted      Boolean       @default(false) // Soft delete
   companies      UserCompany[]
 
   @@index([email])
@@ -51,7 +50,6 @@ model Role {
   updatedAt   DateTime @updatedAt
   createdBy   String?  @db.Uuid // Auditoría
   updatedBy   String?  @db.Uuid // Auditoría
-  isDeleted   Boolean  @default(false) // Soft delete
 
   permissions RolePermission[]
   users       UserCompany[]
@@ -61,14 +59,13 @@ model Role {
 }
 
 model Resource {
-  id          String   @id @default(uuid()) @db.Uuid
-  name        String   @unique
-  description String? // Descripción del recurso
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  createdBy   String?  @db.Uuid // Auditoría
-  updatedBy   String?  @db.Uuid // Auditoría
-  isDeleted   Boolean  @default(false) // Soft delete
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String   @unique
+  icon      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String?  @db.Uuid // Auditoría
+  updatedBy String?  @db.Uuid // Auditoría
 
   subresources Subresource[]
 
@@ -85,7 +82,6 @@ model Action {
   updatedAt   DateTime @updatedAt
   createdBy   String?  @db.Uuid // Auditoría
   updatedBy   String?  @db.Uuid // Auditoría
-  isDeleted   Boolean  @default(false) // Soft delete
 
   permissions RolePermission[]
 
@@ -96,13 +92,11 @@ model Action {
 model Company {
   id        String   @id @default(uuid()) @db.Uuid
   name      String   @unique
-  code      String?  @unique // Código único de la empresa
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   createdBy String?  @db.Uuid // Auditoría
   updatedBy String?  @db.Uuid // Auditoría
-  isDeleted Boolean  @default(false) // Soft delete
   shortName String // Nombre corto de la empresa
 
   branding     CompanyBranding? // Relación uno a uno
@@ -172,15 +166,14 @@ model RolePermission {
 }
 
 model Subresource {
-  id          String   @id @default(uuid()) @db.Uuid
-  name        String
-  resourceId  String   @db.Uuid
-  description String? // Descripción del sub-recurso
-  updatedAt   DateTime @updatedAt
-  createdAt   DateTime @default(now())
-  createdBy   String?  @db.Uuid // Auditoría
-  updatedBy   String?  @db.Uuid // Auditoría
-  isDeleted   Boolean  @default(false) // Soft delete
+  id         String   @id @default(uuid()) @db.Uuid
+  name       String
+  resourceId String   @db.Uuid
+  icon       String   @unique
+  updatedAt  DateTime @updatedAt
+  createdAt  DateTime @default(now())
+  createdBy  String?  @db.Uuid // Auditoría
+  updatedBy  String?  @db.Uuid // Auditoría
 
   resource        Resource         @relation(fields: [resourceId], references: [id], onDelete: Cascade)
   rolePermissions RolePermission[]
@@ -193,7 +186,6 @@ model Subresource {
 model Application {
   id          String   @id @default(uuid()) @db.Uuid
   name        String   @unique
-  code        String?  @unique // Código único de la aplicación
   description String?
   logo        String?
   isActive    Boolean  @default(true)
@@ -201,7 +193,6 @@ model Application {
   updatedAt   DateTime @updatedAt
   createdBy   String?  @db.Uuid // Auditoría
   updatedBy   String?  @db.Uuid // Auditoría
-  isDeleted   Boolean  @default(false) // Soft delete
 
   companies CompanyApplication[]
 
@@ -239,7 +230,6 @@ model Supplier {
   updatedAt    DateTime @updatedAt
   createdBy    String?  @db.Uuid // Auditoría
   updatedBy    String?  @db.Uuid // Auditoría
-  isDeleted    Boolean  @default(false) // Soft delete
 
   companies SupplierCompany[] // Relación muchos a muchos
   batches   Batch[] // Cambiado de 'lotes' a 'batches'
@@ -279,7 +269,6 @@ model Batch {
   updatedAt   DateTime @updatedAt
   createdBy   String?  @db.Uuid // Auditoría
   updatedBy   String?  @db.Uuid // Auditoría
-  isDeleted   Boolean  @default(false) // Soft delete
 
   company   Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
   supplier  Supplier  @relation(fields: [supplierId], references: [id], onDelete: Cascade)
@@ -301,7 +290,6 @@ model BatchType {
   updatedAt   DateTime @updatedAt
   createdBy   String?  @db.Uuid // Auditoría
   updatedBy   String?  @db.Uuid // Auditoría
-  isDeleted   Boolean  @default(false) // Soft delete
 
   batches Batch[]
 
@@ -320,7 +308,6 @@ model Sample {
   updatedAt     DateTime @updatedAt
   createdBy     String?  @db.Uuid // Auditoría
   updatedBy     String?  @db.Uuid // Auditoría
-  isDeleted     Boolean  @default(false) // Soft delete
 
   batch        Batch         @relation(fields: [batchId], references: [id], onDelete: Cascade)
   preparations Preparation[]
@@ -340,7 +327,6 @@ model Preparation {
   updatedAt         DateTime @updatedAt
   createdBy         String?  @db.Uuid // Auditoría
   updatedBy         String?  @db.Uuid // Auditoría
-  isDeleted         Boolean  @default(false) // Soft delete
 
   preparationType PreparationType @relation(fields: [preparationTypeId], references: [id], onDelete: Cascade)
   sample          Sample          @relation(fields: [sampleId], references: [id], onDelete: Cascade)
@@ -359,7 +345,6 @@ model PreparationType {
   updatedAt   DateTime @updatedAt
   createdBy   String?  @db.Uuid // Auditoría
   updatedBy   String?  @db.Uuid // Auditoría
-  isDeleted   Boolean  @default(false) // Soft delete
 
   preparations Preparation[]
 
@@ -379,7 +364,6 @@ model Subsample {
   updatedAt       DateTime @updatedAt
   createdBy       String?  @db.Uuid // Auditoría
   updatedBy       String?  @db.Uuid // Auditoría
-  isDeleted       Boolean  @default(false) // Soft delete
 
   zone          Zone          @relation(fields: [zoneId], references: [id], onDelete: Cascade)
   sample        Sample        @relation(fields: [sampleId], references: [id], onDelete: Cascade)
@@ -400,7 +384,6 @@ model SubsampleType {
   updatedAt   DateTime @updatedAt
   createdBy   String?  @db.Uuid // Auditoría
   updatedBy   String?  @db.Uuid // Auditoría
-  isDeleted   Boolean  @default(false) // Soft delete
 
   subsamples Subsample[]
 
@@ -416,7 +399,6 @@ model Zone {
   updatedAt   DateTime @updatedAt
   createdBy   String?  @db.Uuid // Auditoría
   updatedBy   String?  @db.Uuid // Auditoría
-  isDeleted   Boolean  @default(false) // Soft delete
 
   subzones   Subzone[] // Relación corregida - una zona tiene muchas sub-zonas
   subsamples Subsample[] // Relación directa con subsample
@@ -434,7 +416,6 @@ model Subzone {
   updatedAt   DateTime @updatedAt
   createdBy   String?  @db.Uuid // Auditoría
   updatedBy   String?  @db.Uuid // Auditoría
-  isDeleted   Boolean  @default(false) // Soft delete
 
   zone Zone @relation(fields: [zoneId], references: [id], onDelete: Cascade)
 
@@ -456,7 +437,6 @@ model Result {
   updatedBy   String?   @db.Uuid // Auditoría
   approvedBy  String?   @db.Uuid // Para resultados que requieren aprobación
   approvedAt  DateTime? // Fecha de aprobación
-  isDeleted   Boolean   @default(false) // Soft delete
 
   subsample Subsample @relation(fields: [subsampleId], references: [id], onDelete: Cascade)
   test      Test      @relation(fields: [testId], references: [id], onDelete: Cascade)
@@ -478,7 +458,6 @@ model Test {
   updatedAt   DateTime @updatedAt
   createdBy   String?  @db.Uuid // Auditoría
   updatedBy   String?  @db.Uuid // Auditoría
-  isDeleted   Boolean  @default(false) // Soft delete
 
   results Result[]
 

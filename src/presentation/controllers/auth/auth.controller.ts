@@ -1,12 +1,12 @@
-import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
-import { Controller, Get, UseGuards, Req, HttpStatus, HttpCode, Post, Body, Request, Logger, ConflictException } from '@nestjs/common';
-import { CustomAuthGuard } from 'src/core/domain/uses-cases/auth/guards/custom-auth.guard';
-import { LoginDto } from '../user/dtos/login.dto';
-import { AuthUseCase } from 'src/core/domain/uses-cases/auth/auth.use-case';
+import { Body, Controller, Get, HttpCode, HttpStatus, Logger, Post, Req, Request, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { RefreshTokenUseCase } from 'src/core/domain/uses-cases/auth/refresh-token.use-case';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { AuthUseCase } from 'src/core/domain/uses-cases/auth/auth.use-case';
+import { CustomAuthGuard } from 'src/core/domain/uses-cases/auth/guards/custom-auth.guard';
 import { RefreshTokenGuard } from 'src/core/domain/uses-cases/auth/guards/refresh-token.guard';
 import { ManageSessionUseCase } from 'src/core/domain/uses-cases/auth/manage-session.use-case';
+import { RefreshTokenUseCase } from 'src/core/domain/uses-cases/auth/refresh-token.use-case';
+import { LoginDto } from '../user/dtos/login.dto';
 
 @ApiTags('Autenticación')
 @Controller('auth')
@@ -127,6 +127,7 @@ export class AuthController {
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Credenciales inválidas.' })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Datos de entrada inválidos.' })
   async login(@Body() loginDto: LoginDto, @Req() req) {
+    this.logger.log('🟢 Request recibido en AuthController:', loginDto);
     const user = await this.authUseCase.validateUser(loginDto.email, loginDto.password);
     const loginResponse = await this.authUseCase.login(user);
     const refreshToken = loginResponse.tokens.refresh_token;

@@ -1,5 +1,5 @@
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { Controller, Post, HttpCode, HttpStatus, Logger } from '@nestjs/common';
+import { Controller, HttpCode, HttpStatus, Logger, Post } from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { SeedUseCase } from 'src/core/domain/uses-cases/seed/seed.use-case';
 
 @ApiTags('Seeder')
@@ -7,8 +7,7 @@ import { SeedUseCase } from 'src/core/domain/uses-cases/seed/seed.use-case';
 export class SeedController {
   private logger = new Logger(SeedController.name);
 
-  constructor(private readonly seedUseCase: SeedUseCase) {}
-
+  constructor(private readonly seedUseCase: SeedUseCase) { }
   @Post('execute-seed')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Ejecutar seed de acciones' })
