@@ -215,10 +215,12 @@ export class PrismaUserRepository implements IUserRepository {
                         select: {
                           id: true,
                           name: true,
+                          icon: true,
                           resource: {
                             select: {
                               id: true,
                               name: true,
+                              icon: true,
                             },
                           },
                         },
@@ -284,13 +286,18 @@ export class PrismaUserRepository implements IUserRepository {
     permissions.forEach((permission) => {
       const resourceId = permission.subresource.resource.id;
       const resourceName = permission.subresource.resource.name;
+      const resourceIcon = permission.subresource.icon;
+
       const subresourceId = permission.subresource.id;
       const subresourceName = permission.subresource.name;
+      const subresourceIcon = permission.subresource.icon;
+
 
       if (!resourceMap[resourceId]) {
         resourceMap[resourceId] = {
           resourceId,
           resourceName,
+          resourceIcon,
           subresources: {},
         };
       }
@@ -299,6 +306,7 @@ export class PrismaUserRepository implements IUserRepository {
         resourceMap[resourceId].subresources[subresourceId] = {
           subresourceId,
           subresourceName,
+          subresourceIcon,
           action: {
             actionId: permission.action.id,
             actionName: permission.action.name,
