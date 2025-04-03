@@ -29,4 +29,9 @@ export const resourceInitialData: Resource[] = [
     name: 'SUBRESOURCE',
     icon: 'fa-solid fa-subresource-shield',
   },
+  {
+    id: '',
+    name: 'Gestión de personal',
+    icon: 'fa-solid fa-GH-shield',
+  },
 ];

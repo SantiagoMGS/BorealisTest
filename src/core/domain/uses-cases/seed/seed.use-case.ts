@@ -173,15 +173,18 @@ export class SeedUseCase {
     const subresources = await Promise.all(
       subresourseInitialData.map(async (sub) => {
         try {
-          const resource = await this.resourseRepository.findByName(sub.name);
-          if (!resource) throw new Error(`Resource ${sub.name} no encontrado`);
+
+          const resource = await this.resourseRepository.findByName(sub.resourceName);
+
+          if (!resource) throw new Error(`Resource ${sub.resourceName} no encontrado`);
 
           const newSub: Subresource = {
             id: '',
             name: sub.name,
-            icon: resource.icon,
+            icon: sub.icon,
             resourceId: resource.id,
           };
+          console.log("newSub", newSub);
 
           return await this.subresourceRepository.createSubResource(newSub);
         } catch {
