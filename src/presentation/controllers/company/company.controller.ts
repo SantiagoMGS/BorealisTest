@@ -1,39 +1,38 @@
 import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiParam,
-  ApiQuery,
-  ApiBody,
-} from '@nestjs/swagger';
-import {
   Body,
   Controller,
   Delete,
   Get,
-  NotFoundException,
-  Param,
-  Post,
-  Query,
   HttpCode,
   HttpStatus,
-  Logger,
+  NotFoundException,
+  Param,
   ParseIntPipe,
   ParseUUIDPipe,
-  Put,
-  UseGuards,
+  Patch,
+  Post,
+  Query,
+  UseGuards
 } from '@nestjs/common';
-import { CreateCompanyUseCase } from 'src/core/domain/uses-cases/company/create-company.use-case';
-import { CreateCompanyDto } from './dtos/create-company.dto';
+import { AuthGuard } from '@nestjs/passport';
+import {
+  ApiBody,
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { PermissionGuard } from 'src/core/domain/uses-cases/auth/guards/permission.guard';
 import { AssignApplicationToCompaniesUseCase } from 'src/core/domain/uses-cases/company/assign-application-to-companies.use-case';
+import { CreateCompanyUseCase } from 'src/core/domain/uses-cases/company/create-company.use-case';
 import { DeleteCompanyUseCase } from 'src/core/domain/uses-cases/company/delete-company.use-case';
-import { GetByNameCompanyUseCase } from 'src/core/domain/uses-cases/company/get-by-name-company.use-case';
 import { GetAllCompaniesUseCase } from 'src/core/domain/uses-cases/company/get-all-company.use-case';
 import { GetByIdCompanyUseCase } from 'src/core/domain/uses-cases/company/get-by-id-company.use-case';
+import { GetByNameCompanyUseCase } from 'src/core/domain/uses-cases/company/get-by-name-company.use-case';
 import { UpdateCompanyUseCase } from 'src/core/domain/uses-cases/company/update-company.use-case';
+import { CreateCompanyDto } from './dtos/create-company.dto';
 import { UpdateCompanyDto } from './dtos/update-company.dto';
-import { AuthGuard } from '@nestjs/passport';
-import { PermissionGuard } from 'src/core/domain/uses-cases/auth/guards/permission.guard';
 
 @ApiTags('Compañías')
 @Controller('company')
@@ -47,7 +46,7 @@ export class CompanyController {
     private readonly assignApplicationToCompaniesUseCase: AssignApplicationToCompaniesUseCase,
     private readonly deleteCompanyUseCase: DeleteCompanyUseCase,
     private readonly updateCompanyUseCase: UpdateCompanyUseCase,
-  ) {}
+  ) { }
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -163,7 +162,7 @@ export class CompanyController {
     return company;
   }
 
-  @Put(':id')
+  @Patch(':id')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Actualizar una compañía' })
   @ApiParam({ name: 'id', required: true, description: 'UUID de la compañía' })
@@ -201,6 +200,7 @@ export class CompanyController {
       company: updatedCompany,
     };
   }
+
 
   @Post('assign-applications')
   @HttpCode(HttpStatus.OK)

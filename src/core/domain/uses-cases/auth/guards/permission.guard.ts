@@ -1,11 +1,11 @@
-import { Injectable, CanActivate, ExecutionContext, ForbiddenException, Logger } from '@nestjs/common';
+import { CanActivate, ExecutionContext, ForbiddenException, Injectable, Logger } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { PrismaService } from 'src/infrastructure/prisma/prisma.service';
 
 @Injectable()
 export class PermissionGuard implements CanActivate {
-    private readonly logger = new Logger(PermissionGuard.name);
-  
+  private readonly logger = new Logger(PermissionGuard.name);
+
   constructor(private readonly reflector: Reflector, private readonly prisma: PrismaService) { }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -16,10 +16,10 @@ export class PermissionGuard implements CanActivate {
     const routePath = request.route.path;  // 🔹 Obtiene la ruta actual
     const method = request.method;         // 🔹 Obtiene el método HTTP
 
-     this.logger.log(`🔹 Validando permisos para ${method} en ${routePath}`);
+    this.logger.log(`🔹 Validando permisos para ${method} en ${routePath}`);
 
     if (!user || !user.userId) {
-       this.logger.log("❌ No hay usuario autenticado en la solicitud.");
+      this.logger.log("❌ No hay usuario autenticado en la solicitud.");
       throw new ForbiddenException('No tienes permisos para realizar esta acción');
     }
 
@@ -27,13 +27,13 @@ export class PermissionGuard implements CanActivate {
     const actionMap: Record<string, string> = {
       GET: 'read',
       POST: 'create',
-      PUT: 'update',
+      PATCH: 'update',
       DELETE: 'delete'
     };
 
     const actionName = actionMap[method]; // 🔹 Determina la acción según el método HTTP
     if (!actionName) {
-       this.logger.log(`⚠️ Método HTTP ${method} no tiene una acción asignada.`);
+      this.logger.log(`⚠️ Método HTTP ${method} no tiene una acción asignada.`);
       return false;
     }
 
@@ -50,7 +50,7 @@ export class PermissionGuard implements CanActivate {
 
       throw new ForbiddenException('El usuario no tiene un rol asignado en ninguna empresa.');
     }
-    
+
     // 🔹 Buscar permisos del rol con el recurso y la acción correspondientes
     const rolePermissions = await this.prisma.rolePermission.findMany({
       where: { roleId: userCompany.roleId },
@@ -65,20 +65,20 @@ export class PermissionGuard implements CanActivate {
     const hasPermission = rolePermissions.some(rolePermission => {
       const subresourceMatch = rolePermission.subresource.name.toLowerCase() === subresourceName.toLowerCase();
       const actionLevelMatch = rolePermission.action.level >= PermissionGuard.getActionLevel(actionName);
-    
+
       this.logger.log(`🔹 Comparando subrecurso: ${rolePermission.subresource.name.toLowerCase()} con ${subresourceName.toLowerCase()}`);
       this.logger.log(`🔹 Nivel de acción en BD: ${rolePermission.action.level}, Nivel requerido: ${PermissionGuard.getActionLevel(actionName)}`);
       this.logger.log(`🔹 Subrecurso coincide: ${subresourceMatch}, Nivel suficiente: ${actionLevelMatch}`);
-    
+
       return subresourceMatch && actionLevelMatch;
     });
 
     if (!hasPermission) {
-       this.logger.log(`❌ Permiso denegado para ${actionName} en ${subresourceName}`);
+      this.logger.log(`❌ Permiso denegado para ${actionName} en ${subresourceName}`);
       throw new ForbiddenException('No tienes permisos suficientes');
     }
 
-     this.logger.log(`✅ Permiso concedido para ${actionName} en ${subresourceName}`);
+    this.logger.log(`✅ Permiso concedido para ${actionName} en ${subresourceName}`);
     return true;
   }
 

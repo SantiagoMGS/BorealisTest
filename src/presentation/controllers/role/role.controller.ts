@@ -1,14 +1,14 @@
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery, ApiBody } from '@nestjs/swagger';
-import { Body, Controller, Post, Get, Param, Put, Delete, Query, NotFoundException, HttpCode, HttpStatus, Logger, ParseIntPipe, ParseUUIDPipe, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, NotFoundException, Param, ParseIntPipe, ParseUUIDPipe, Patch, Post, Query, UseGuards } from "@nestjs/common";
+import { AuthGuard } from "@nestjs/passport";
+import { ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { PermissionGuard } from "src/core/domain/uses-cases/auth/guards/permission.guard";
 import { CreateRoleUseCase } from "src/core/domain/uses-cases/role/create-role.user-case";
 import { DeleteRoleUseCase } from "src/core/domain/uses-cases/role/delete-role.use-case";
 import { GetAllRolesUseCase } from "src/core/domain/uses-cases/role/get-all-roles.use-case";
 import { GetRoleByIdUseCase } from "src/core/domain/uses-cases/role/get-role-by-id.use-case";
+import { UpdateRoleUseCase } from "src/core/domain/uses-cases/role/update-role.use-case";
 import { CreateRoleDto } from "./dtos/create-role.dto";
 import { UpdateRoleDto } from "./dtos/update-role.dto";
-import { UpdateRoleUseCase } from "src/core/domain/uses-cases/role/update-role.use-case";
-import { AuthGuard } from "@nestjs/passport";
-import { PermissionGuard } from "src/core/domain/uses-cases/auth/guards/permission.guard";
 
 @ApiTags('Roles')
 @Controller('role')
@@ -59,8 +59,7 @@ export class RoleController {
     if (!role) throw new NotFoundException(`Rol con ID ${id} no encontrado`);
     return role;
   }
-
-  @Put(':id')
+  @Patch(':id')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Actualizar un rol' })
   @ApiParam({ name: 'id', required: true, description: 'UUID del rol' })
@@ -70,11 +69,15 @@ export class RoleController {
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Datos de entrada inválidos.' })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'No autorizado.' })
   @ApiResponse({ status: HttpStatus.FORBIDDEN, description: 'Recurso prohibido.' })
-  async updateRole(@Param('id', ParseUUIDPipe) id: string, @Body() updateRoleDto: UpdateRoleDto) {
+  async updateRole(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updateRoleDto: UpdateRoleDto,
+  ) {
     const role = this.updateRoleUseCase.execute(id, updateRoleDto);
     if (!role) throw new NotFoundException(`Rol con ID ${id} no encontrado`);
     return role;
   }
+
 
   @Delete(':id')
   @HttpCode(HttpStatus.OK)

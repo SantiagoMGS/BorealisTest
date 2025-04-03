@@ -1,26 +1,29 @@
 import {
-  Body, Controller, Delete, Get, NotFoundException, Param,
-  Post, Put, Query, HttpCode, HttpStatus, ParseIntPipe,
-  ParseUUIDPipe, UseGuards,
+  Body, Controller, Delete, Get,
+  HttpCode, HttpStatus,
+  NotFoundException, Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+  Query,
   Request,
-
+  UseGuards
 } from "@nestjs/common";
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery, ApiBody } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
-import { CreateUserUseCase } from "src/core/domain/uses-cases/user/create-user.use-case";
-import { CreateUserDto } from "./dtos/create-user.dto";
-import { FindAllUsersUseCase } from "src/core/domain/uses-cases/user/find-all-user.use-case";
-import { UpdateUserUseCase } from "src/core/domain/uses-cases/user/update-user.use-case";
-import { DeleteUserUseCase } from "src/core/domain/uses-cases/user/delete-user.use-case";
-import { FindUserUseCase } from "src/core/domain/uses-cases/user/find-user.use-case";
-import { UpdateUserDto } from "./dtos/update-user.dto";
-import { PermissionGuard } from "src/core/domain/uses-cases/auth/guards/permission.guard";
-import { Permissions } from "src/core/domain/uses-cases/auth/decorators/permissions.decorator";
-import { UpdateUserCompanyDto } from "./dtos/update-user-company.dto";
-import { UpdateUserCompanyRoleUseCase } from "src/core/domain/uses-cases/user/update-user-company.use-case";
-import { PermissionService } from "src/core/domain/uses-cases/auth/services/permission.service";
+import { ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { GetUserPermissionsUseCase } from "src/core/domain/uses-cases";
-import { UserPermissionsResponseDto } from "./dtos/user-permissions.dto";
+import { Permissions } from "src/core/domain/uses-cases/auth/decorators/permissions.decorator";
+import { PermissionGuard } from "src/core/domain/uses-cases/auth/guards/permission.guard";
+import { PermissionService } from "src/core/domain/uses-cases/auth/services/permission.service";
+import { CreateUserUseCase } from "src/core/domain/uses-cases/user/create-user.use-case";
+import { DeleteUserUseCase } from "src/core/domain/uses-cases/user/delete-user.use-case";
+import { FindAllUsersUseCase } from "src/core/domain/uses-cases/user/find-all-user.use-case";
+import { FindUserUseCase } from "src/core/domain/uses-cases/user/find-user.use-case";
+import { UpdateUserCompanyRoleUseCase } from "src/core/domain/uses-cases/user/update-user-company.use-case";
+import { UpdateUserUseCase } from "src/core/domain/uses-cases/user/update-user.use-case";
+import { CreateUserDto } from "./dtos/create-user.dto";
+import { UpdateUserCompanyDto } from "./dtos/update-user-company.dto";
+import { UpdateUserDto } from "./dtos/update-user.dto";
 
 @ApiTags('Users')
 @Controller('user')
@@ -54,7 +57,7 @@ export class UserController {
   async getUserPermissions(@Request() req) {
 
     return await this.getUserPermissionsUseCase.execute(req.user.userId);
-  } 
+  }
   // Solo los usuarios con permiso para LEER usuarios pueden acceder
   @Get()
   @HttpCode(HttpStatus.OK)
@@ -89,8 +92,7 @@ export class UserController {
     if (!user) throw new NotFoundException(`Usuario con email ${email} no encontrado`);
     return user;
   }
-
-  @Put('update-role')
+  @Patch('update-role')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Actualizar el rol de un usuario en una compañía' })
   @ApiBody({ type: UpdateUserCompanyDto })
@@ -106,8 +108,7 @@ export class UserController {
     await this.updateUserCompanyRoleUseCase.execute(userId, companyId, roleId);
   }
 
-  // Solo los usuarios con permiso para ACTUALIZAR usuarios pueden acceder
-  @Put(':email')
+  @Patch(':email')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Actualizar datos de un usuario' })
   @ApiParam({ name: 'email', required: true, description: 'Email del usuario' })
@@ -122,6 +123,7 @@ export class UserController {
     Permissions(permission);
     return this.updateUserUseCase.execute(email, updateUserDto);
   }
+
 
   // Solo los usuarios con permiso para ELIMINAR usuarios pueden acceder
   @Delete(':email')

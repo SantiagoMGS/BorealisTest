@@ -1,18 +1,18 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Put, Query, HttpCode, HttpStatus, Logger, ParseIntPipe, ParseUUIDPipe, UseGuards } from "@nestjs/common";
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery, ApiBody } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, NotFoundException, Param, ParseIntPipe, ParseUUIDPipe, Patch, Post, Query, UseGuards } from "@nestjs/common";
+import { AuthGuard } from "@nestjs/passport";
+import { ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { PermissionGuard } from "src/core/domain/uses-cases/auth/guards/permission.guard";
 import { CreateResourceUseCase } from "src/core/domain/uses-cases/resource/create-resource.use-case";
-import { CreateResourceDto } from "./dtos/create-resource.dto";
-import { UpdateResourceDto } from "./dtos/update-resource.dto";
 import { DeleteResourceUseCase } from "src/core/domain/uses-cases/resource/delete-resource.use-case";
-import { UpdateResourceUseCase } from "src/core/domain/uses-cases/resource/update-resource.use-case";
 import { GetAllResourcesUseCase } from "src/core/domain/uses-cases/resource/get-all-resorce.use-case";
 import { GetByIdResourceUseCase } from "src/core/domain/uses-cases/resource/get-resoure.use-case";
-import { AuthGuard } from "@nestjs/passport";
-import { PermissionGuard } from "src/core/domain/uses-cases/auth/guards/permission.guard";
+import { UpdateResourceUseCase } from "src/core/domain/uses-cases/resource/update-resource.use-case";
+import { CreateResourceDto } from "./dtos/create-resource.dto";
+import { UpdateResourceDto } from "./dtos/update-resource.dto";
 
 @ApiTags('Resources')
 @Controller('resource')
-@UseGuards(AuthGuard('internal'), PermissionGuard) 
+@UseGuards(AuthGuard('internal'), PermissionGuard)
 export class ResourceController {
   constructor(
     private readonly createResourceUseCase: CreateResourceUseCase,
@@ -20,7 +20,7 @@ export class ResourceController {
     private readonly deleteResourceUseCase: DeleteResourceUseCase,
     private readonly findByIdResourceUseCase: GetByIdResourceUseCase,
     private readonly findAllResourcesUseCase: GetAllResourcesUseCase,
-  ) {}
+  ) { }
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -59,8 +59,7 @@ export class ResourceController {
     if (!resource) throw new NotFoundException(`Recurso con ID ${id} no encontrado`);
     return resource;
   }
-
-  @Put(':id')
+  @Patch(':id')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Actualizar un recurso' })
   @ApiParam({ name: 'id', required: true, description: 'UUID del recurso' })
@@ -70,9 +69,13 @@ export class ResourceController {
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Datos de entrada inválidos.' })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'No autorizado.' })
   @ApiResponse({ status: HttpStatus.FORBIDDEN, description: 'Acceso prohibido al recurso.' })
-  async updateResource(@Param('id', ParseUUIDPipe) id: string, @Body() updateResourceDto: UpdateResourceDto) {
+  async updateResource(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updateResourceDto: UpdateResourceDto,
+  ) {
     return this.updateResourceUseCase.execute(id, updateResourceDto);
   }
+
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
