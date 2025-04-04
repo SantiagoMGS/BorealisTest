@@ -9,6 +9,104 @@ import { PrismaService } from './prisma.service';
 export class PrismaUserRepository implements IUserRepository {
   constructor(private readonly prisma: PrismaService) { }
 
+  // Función para mapear un usuario de la base de datos a la entidad User
+
+  private mapToUserEntity(user: any): User {
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      hashedPassword: user.hashedPassword,
+      isActive: user.isActive,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
+  }
+
+  // Función para mapear permisos de usuario
+  private transformUserPermissions(userPermissions: any): UserPermissionsEntity {
+    if (!userPermissions || !userPermissions.companies) {
+      return {
+        id: '',
+        name: '',
+        email: '',
+        isActive: false,
+        companies: [],
+      };
+    }
+
+    return {
+      id: userPermissions.id,
+      name: userPermissions.name,
+      email: userPermissions.email,
+      isActive: userPermissions.isActive,
+      companies: userPermissions.companies.map((companyData: any) => {
+        const company = companyData.company;
+        const role = companyData.role;
+        return {
+          id: company.id,
+          name: company.name,
+          logo: company.branding?.logo ?? null,
+          primaryColor: company.branding?.primaryColor ?? null,
+          secondaryColor: company.branding?.secondaryColor ?? null,
+          tertiaryColor: company.branding?.tertiaryColor ?? null,
+          roleId: role.id,
+          roleName: role.name,
+          applications: company.applications.map((app: any) => ({
+            id: app.application.id,
+            name: app.application.name,
+            isActive: app.application.isActive,
+            logo: app.application.logo,
+            resources: this.groupPermissionsByResource(role.permissions),
+          })),
+        };
+      }),
+    };
+  }
+
+  // Función para agrupar permisos por recurso
+  private groupPermissionsByResource(permissions: any[]): any[] {
+    const resourceMap: { [id: string]: any } = {};
+
+    permissions.forEach((permission) => {
+      const id = permission.subresource.resource.id;
+      const name = permission.subresource.resource.name;
+      const icon = permission.subresource.resource.icon;
+      const subRId = permission.subresource.id;
+      const subRName = permission.subresource.name;
+      const subRIcon = permission.subresource.icon;
+
+      if (!resourceMap[id]) {
+        resourceMap[id] = {
+          id,
+          name,
+          icon,
+          subresources: {},
+        };
+      }
+
+      if (!resourceMap[id].subresources[subRId]) {
+        resourceMap[id].subresources[subRId] = {
+          id: subRId,
+          name: subRName,
+          icon: subRIcon,
+          actions: [],
+        };
+      }
+
+      resourceMap[id].subresources[subRId].actions.push({
+        id: permission.action.id,
+        name: permission.action.name,
+        level: permission.action.level,
+      });
+    });
+
+    return Object.values(resourceMap).map((resource) => ({
+      ...resource,
+      subresources: Object.values(resource.subresources),
+    }));
+  }
+
   async createUser(user: User): Promise<User> {
     const created = await this.prisma.user.create({
       data: {
@@ -19,30 +117,12 @@ export class PrismaUserRepository implements IUserRepository {
       },
     });
 
-    return {
-      id: created.id,
-      name: created.name,
-      email: created.email,
-      hashedPassword: created.hashedPassword,
-      isActive: created.isActive,
-      createdAt: created.createdAt,
-      updatedAt: created.updatedAt,
-    };
+    return this.mapToUserEntity(created);
   }
 
   async findByEmailWithPassword(email: string): Promise<User | null> {
     const user = await this.prisma.user.findUnique({ where: { email } });
-    return user
-      ? {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        hashedPassword: user.hashedPassword,
-        isActive: user.isActive,
-        createdAt: user.createdAt,
-        updatedAt: user.updatedAt,
-      }
-      : null;
+    return user ? this.mapToUserEntity(user) : null;
   }
 
   async findByEmail(email: string): Promise<Omit<User, 'hashedPassword'> | null> {
@@ -86,8 +166,7 @@ export class PrismaUserRepository implements IUserRepository {
 
   async update(email: string, userData: Partial<User>): Promise<User> {
     const existingUser = await this.findByEmailWithPassword(email);
-    if (!existingUser)
-      throw new NotFoundException(`Usuario con email ${email} no encontrado`);
+    if (!existingUser) throw new NotFoundException(`Usuario con email ${email} no encontrado`);
 
     if (userData.hashedPassword) {
       userData.hashedPassword = await bcrypt.hash(userData.hashedPassword, 10);
@@ -98,15 +177,7 @@ export class PrismaUserRepository implements IUserRepository {
       data: userData,
     });
 
-    return {
-      id: updatedUser.id,
-      name: updatedUser.name,
-      email: updatedUser.email,
-      hashedPassword: updatedUser.hashedPassword,
-      isActive: updatedUser.isActive,
-      createdAt: updatedUser.createdAt,
-      updatedAt: updatedUser.updatedAt,
-    };
+    return this.mapToUserEntity(updatedUser);
   }
 
   async assignUserToCompanies(userId: string, permissions: { companyId: string; roleId: string }[]): Promise<void> {
@@ -238,88 +309,6 @@ export class PrismaUserRepository implements IUserRepository {
     } catch (error) {
       throw new Error('Error fetching user permissions');
     }
-  }
-
-  private transformUserPermissions(userPermissions): UserPermissionsEntity {
-    if (!userPermissions || !userPermissions.companies) {
-      return {
-        id: '',
-        name: '',
-        email: '',
-        isActive: false,
-        companies: [],
-      };
-    }
-
-    return {
-      id: userPermissions.id,
-      name: userPermissions.name,
-      email: userPermissions.email,
-      isActive: userPermissions.isActive,
-      companies: userPermissions.companies.map((companyData: any) => {
-        const company = companyData.company;
-        const role = companyData.role;
-        return {
-          id: company.id,
-          name: company.name,
-          logo: company.branding?.logo ?? null,
-          primaryColor: company.branding?.primaryColor ?? null,
-          secondaryColor: company.branding?.secondaryColor ?? null,
-          tertiaryColor: company.branding?.tertiaryColor ?? null,
-          roleId: role.id,
-          roleName: role.name,
-          applications: company.applications.map((app: any) => ({
-            id: app.application.id,
-            name: app.application.name,
-            isActive: app.application.isActive,
-            logo: app.application.logo,
-            resources: this.groupPermissionsByResource(role.permissions),
-          })),
-        };
-      }),
-    };
-  }
-
-  private groupPermissionsByResource(permissions: any[]): any[] {
-    const resourceMap: { [id: string]: any } = {};
-
-    permissions.forEach((permission) => {
-      const id = permission.subresource.resource.id;
-      const name = permission.subresource.resource.name;
-      const icon = permission.subresource.icon;
-
-      const subRId = permission.subresource.id;
-      const subRName = permission.subresource.name;
-      const subRIcon = permission.subresource.icon;
-
-
-      if (!resourceMap[id]) {
-        resourceMap[id] = {
-          id,
-          name,
-          icon,
-          subresources: {},
-        };
-      }
-
-      if (!resourceMap[id].subresources[subRId]) {
-        resourceMap[id].subresources[subRId] = {
-          subRId,
-          subRName,
-          subRIcon,
-          action: {
-            id: permission.action.id,
-            name: permission.action.name,
-            level: permission.action.level,
-          },
-        };
-      }
-    });
-
-    return Object.values(resourceMap).map((resource) => ({
-      ...resource,
-      subresources: Object.values(resource.subresources),
-    }));
   }
 
   async clearRefreshToken(id: string): Promise<void> {
