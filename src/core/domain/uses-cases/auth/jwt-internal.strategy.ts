@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { ConfigService } from '@nestjs/config';
 import { PrismaService } from 'src/infrastructure/prisma/prisma.service';
 
 @Injectable()
@@ -15,21 +15,25 @@ export class JwtInternalStrategy extends PassportStrategy(Strategy, 'internal') 
   }
 
   async validate(payload: any) {
-    if (!payload) {
-      throw new UnauthorizedException('Token inválido');
+    // Validar el payload
+    if (!payload || !payload.sub || !payload.email) {
+      throw new UnauthorizedException('Token inválido o incompleto');
     }
 
+    // Buscar al usuario en la base de datos
     const user = await this.prisma.user.findUnique({
       where: { id: payload.sub },
-      include: {
+      select: {
+        id: true,
+        email: true,
         companies: {
-          include: {
+          select: {
             role: {
-              include: {
+              select: {
                 permissions: {
-                  include: {
-                    subresource: true,
-                    action: true, // ✅ OBTENER EL `level` DESDE `Action`
+                  select: {
+                    subresource: { select: { name: true } },
+                    action: { select: { name: true, level: true } },
                   },
                 },
               },
@@ -39,18 +43,26 @@ export class JwtInternalStrategy extends PassportStrategy(Strategy, 'internal') 
       },
     });
 
-    if (!user) throw new UnauthorizedException('Usuario no encontrado');
+    // Verificar si el usuario existe
+    if (!user) {
+      console.error(`Usuario no encontrado para el ID: ${payload.sub}`);
+      throw new UnauthorizedException('Usuario no encontrado');
+    }
 
-    // Extraer permisos con `level`
-    const permissions = user.companies.flatMap(uc =>
-      uc.role.permissions.map(p => ({
+    // Extraer permisos
+    const permissions = user.companies.flatMap((uc) =>
+      uc.role.permissions.map((p) => ({
         resource: p.subresource.name,
         action: p.action.name,
-        level: p.action.level,  // ✅ Incluir `level`
+        level: p.action.level,
       }))
     );
 
-    return { userId: user.id, email: user.email, permissions };
+    // Devolver el usuario validado
+    return {
+      id: user.id,
+      email: user.email,
+      permissions,
+    };
   }
-
 }

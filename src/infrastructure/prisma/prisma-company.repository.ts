@@ -65,13 +65,11 @@ export class PrismaCompanyRepository implements ICompanyRepository {
           ...branding,
         },
       });
-      console.log("temp", temp);
 
       const full = await this.prisma.company.findUnique({
         where: { id: companyId },
         include: { branding: true },
       });
-      console.log("full", full);
 
       return this.mapToCompanyEntity(full);
     } catch (error) {

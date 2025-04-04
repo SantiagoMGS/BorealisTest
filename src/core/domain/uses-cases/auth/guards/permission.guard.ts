@@ -17,8 +17,7 @@ export class PermissionGuard implements CanActivate {
     const method = request.method;         // 🔹 Obtiene el método HTTP
 
     this.logger.log(`🔹 Validando permisos para ${method} en ${routePath}`);
-
-    if (!user || !user.userId) {
+    if (!user || !user.id) {
       this.logger.log("❌ No hay usuario autenticado en la solicitud.");
       throw new ForbiddenException('No tienes permisos para realizar esta acción');
     }

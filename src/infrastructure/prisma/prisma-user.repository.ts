@@ -25,86 +25,96 @@ export class PrismaUserRepository implements IUserRepository {
 
   // Función para mapear permisos de usuario
   private transformUserPermissions(userPermissions: any): UserPermissionsEntity {
-    if (!userPermissions || !userPermissions.companies) {
+    try {
+      if (!userPermissions || !userPermissions.companies) {
+        return {
+          id: '',
+          name: '',
+          email: '',
+          isActive: false,
+          companies: [],
+        };
+      }
+
       return {
-        id: '',
-        name: '',
-        email: '',
-        isActive: false,
-        companies: [],
+        id: userPermissions.id,
+        name: userPermissions.name,
+        email: userPermissions.email,
+        isActive: userPermissions.isActive,
+        companies: userPermissions.companies.map((companyData: any) => {
+          const company = companyData.company;
+          const role = companyData.role;
+          return {
+            id: company.id,
+            name: company.name,
+            logo: company.branding?.logo ?? null,
+            primaryColor: company.branding?.primaryColor ?? null,
+            secondaryColor: company.branding?.secondaryColor ?? null,
+            tertiaryColor: company.branding?.tertiaryColor ?? null,
+            roleId: role.id,
+            roleName: role.name,
+            applications: company.applications.map((app: any) => ({
+              id: app.application.id,
+              name: app.application.name,
+              isActive: app.application.isActive,
+              logo: app.application.logo,
+              resources: this.groupPermissionsByResource(role.permissions),
+            })),
+          };
+        }),
       };
+    } catch (error) {
+      throw new NotFoundException('Error al transformar los permisos del usuario');
     }
 
-    return {
-      id: userPermissions.id,
-      name: userPermissions.name,
-      email: userPermissions.email,
-      isActive: userPermissions.isActive,
-      companies: userPermissions.companies.map((companyData: any) => {
-        const company = companyData.company;
-        const role = companyData.role;
-        return {
-          id: company.id,
-          name: company.name,
-          logo: company.branding?.logo ?? null,
-          primaryColor: company.branding?.primaryColor ?? null,
-          secondaryColor: company.branding?.secondaryColor ?? null,
-          tertiaryColor: company.branding?.tertiaryColor ?? null,
-          roleId: role.id,
-          roleName: role.name,
-          applications: company.applications.map((app: any) => ({
-            id: app.application.id,
-            name: app.application.name,
-            isActive: app.application.isActive,
-            logo: app.application.logo,
-            resources: this.groupPermissionsByResource(role.permissions),
-          })),
-        };
-      }),
-    };
   }
 
   // Función para agrupar permisos por recurso
   private groupPermissionsByResource(permissions: any[]): any[] {
-    const resourceMap: { [id: string]: any } = {};
+    try {
+      const resourceMap: { [id: string]: any } = {};
 
-    permissions.forEach((permission) => {
-      const id = permission.subresource.resource.id;
-      const name = permission.subresource.resource.name;
-      const icon = permission.subresource.resource.icon;
-      const subRId = permission.subresource.id;
-      const subRName = permission.subresource.name;
-      const subRIcon = permission.subresource.icon;
+      permissions.forEach((permission) => {
+        const id = permission.subresource.resource.id;
+        const name = permission.subresource.resource.name;
+        const icon = permission.subresource.resource.icon;
+        const subRId = permission.subresource.id;
+        const subRName = permission.subresource.name;
+        const subRIcon = permission.subresource.icon;
 
-      if (!resourceMap[id]) {
-        resourceMap[id] = {
-          id,
-          name,
-          icon,
-          subresources: {},
-        };
-      }
+        if (!resourceMap[id]) {
+          resourceMap[id] = {
+            id,
+            name,
+            icon,
+            subresources: {},
+          };
+        }
 
-      if (!resourceMap[id].subresources[subRId]) {
-        resourceMap[id].subresources[subRId] = {
-          id: subRId,
-          name: subRName,
-          icon: subRIcon,
-          actions: [],
-        };
-      }
+        if (!resourceMap[id].subresources[subRId]) {
+          resourceMap[id].subresources[subRId] = {
+            id: subRId,
+            name: subRName,
+            icon: subRIcon,
+            actions: [],
+          };
+        }
 
-      resourceMap[id].subresources[subRId].actions.push({
-        id: permission.action.id,
-        name: permission.action.name,
-        level: permission.action.level,
+        resourceMap[id].subresources[subRId].actions.push({
+          id: permission.action.id,
+          name: permission.action.name,
+          level: permission.action.level,
+        });
       });
-    });
 
-    return Object.values(resourceMap).map((resource) => ({
-      ...resource,
-      subresources: Object.values(resource.subresources),
-    }));
+      return Object.values(resourceMap).map((resource) => ({
+        ...resource,
+        subresources: Object.values(resource.subresources),
+      }));
+    } catch (error) {
+      throw new NotFoundException('Error al agrupar permisos por recurso');
+
+    }
   }
 
   async createUser(user: User): Promise<User> {

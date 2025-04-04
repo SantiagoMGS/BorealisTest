@@ -16,7 +16,12 @@ export class AuthUseCase {
     try {
       const user = await this.loginRepository.findByEmailWithPassword(email);
 
+      if (!user) {
+        throw new UnauthorizedException('Usuario no encontrado');
+      }
+
       const isPasswordValid = await bcrypt.compare(plainPassword, user.hashedPassword);
+
       if (!isPasswordValid) {
         throw new UnauthorizedException('Credenciales inválidas');
       }

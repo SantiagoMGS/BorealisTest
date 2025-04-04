@@ -5,9 +5,9 @@ import { IUserRepository } from '../../repositories';
 
 @Injectable()
 export class GetUserPermissionsUseCase {
-  constructor(@Inject('IUserRepository') private readonly userRepository: IUserRepository) {}
+  constructor(@Inject('IUserRepository') private readonly userRepository: IUserRepository) { }
 
-  async execute(userId: string): Promise<UserPermissionsEntity[]> {
-    return this.userRepository.getUserPermissions(userId);
+  async execute(id: string): Promise<UserPermissionsEntity[]> {
+    return this.userRepository.getUserPermissions(id);
   }
 }

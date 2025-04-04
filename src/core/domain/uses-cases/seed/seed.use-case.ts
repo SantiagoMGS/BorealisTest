@@ -90,7 +90,6 @@ export class SeedUseCase {
     }));
 
     for (const resource of resources) {
-      console.log('resource', resource);
 
       try {
         await this.resourseRepository.createResource(resource);
@@ -184,7 +183,6 @@ export class SeedUseCase {
             icon: sub.icon,
             resourceId: resource.id,
           };
-          console.log("newSub", newSub);
 
           return await this.subresourceRepository.createSubResource(newSub);
         } catch {
