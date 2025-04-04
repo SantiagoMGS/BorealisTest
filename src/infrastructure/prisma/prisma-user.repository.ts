@@ -124,8 +124,8 @@ export class PrismaUserRepository implements IUserRepository {
   }
 
   async getCompanyByUserId(userId: string): Promise<{
-    companyId: string;
-    companyName: string;
+    id: string;
+    name: string;
     logo: string | null;
     primaryColor: string | null;
     secondaryColor: string | null;
@@ -152,8 +152,8 @@ export class PrismaUserRepository implements IUserRepository {
     });
 
     return userCompanies.map(({ company }) => ({
-      companyId: company.id,
-      companyName: company.name,
+      id: company.id,
+      name: company.name,
       logo: company.branding?.logo ?? null,
       primaryColor: company.branding?.primaryColor ?? null,
       secondaryColor: company.branding?.secondaryColor ?? null,
@@ -260,8 +260,8 @@ export class PrismaUserRepository implements IUserRepository {
         const company = companyData.company;
         const role = companyData.role;
         return {
-          companyId: company.id,
-          companyName: company.name,
+          id: company.id,
+          name: company.name,
           logo: company.branding?.logo ?? null,
           primaryColor: company.branding?.primaryColor ?? null,
           secondaryColor: company.branding?.secondaryColor ?? null,
@@ -269,8 +269,8 @@ export class PrismaUserRepository implements IUserRepository {
           roleId: role.id,
           roleName: role.name,
           applications: company.applications.map((app: any) => ({
-            applicationId: app.application.id,
-            applicationName: app.application.name,
+            id: app.application.id,
+            name: app.application.name,
             isActive: app.application.isActive,
             logo: app.application.logo,
             resources: this.groupPermissionsByResource(role.permissions),
@@ -281,36 +281,36 @@ export class PrismaUserRepository implements IUserRepository {
   }
 
   private groupPermissionsByResource(permissions: any[]): any[] {
-    const resourceMap: { [resourceId: string]: any } = {};
+    const resourceMap: { [id: string]: any } = {};
 
     permissions.forEach((permission) => {
-      const resourceId = permission.subresource.resource.id;
-      const resourceName = permission.subresource.resource.name;
-      const resourceIcon = permission.subresource.icon;
+      const id = permission.subresource.resource.id;
+      const name = permission.subresource.resource.name;
+      const icon = permission.subresource.icon;
 
-      const subresourceId = permission.subresource.id;
-      const subresourceName = permission.subresource.name;
-      const subresourceIcon = permission.subresource.icon;
+      const subRId = permission.subresource.id;
+      const subRName = permission.subresource.name;
+      const subRIcon = permission.subresource.icon;
 
 
-      if (!resourceMap[resourceId]) {
-        resourceMap[resourceId] = {
-          resourceId,
-          resourceName,
-          resourceIcon,
+      if (!resourceMap[id]) {
+        resourceMap[id] = {
+          id,
+          name,
+          icon,
           subresources: {},
         };
       }
 
-      if (!resourceMap[resourceId].subresources[subresourceId]) {
-        resourceMap[resourceId].subresources[subresourceId] = {
-          subresourceId,
-          subresourceName,
-          subresourceIcon,
+      if (!resourceMap[id].subresources[subRId]) {
+        resourceMap[id].subresources[subRId] = {
+          subRId,
+          subRName,
+          subRIcon,
           action: {
-            actionId: permission.action.id,
-            actionName: permission.action.name,
-            actionLevel: permission.action.level,
+            id: permission.action.id,
+            name: permission.action.name,
+            level: permission.action.level,
           },
         };
       }
