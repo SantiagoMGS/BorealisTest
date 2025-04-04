@@ -8,6 +8,6 @@ services:
     ports:
       - 5432:5432
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=RGNJI_90
+      - POSTGRES_PASSWORD=#Mis6&#9sLA7
       - POSTGRES_DB=borealis_auth_dev_db
