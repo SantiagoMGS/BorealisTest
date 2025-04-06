@@ -34,15 +34,21 @@ export class SeedUseCase {
   private readonly logger = new Logger(SeedUseCase.name);
 
   constructor(
-    @Inject('IActionRepository') private readonly actionRepository: IActionRepository,
-    @Inject('ICompanyRepository') private readonly companyRepository: ICompanyRepository,
-    @Inject('IApplicationRepository') private readonly applicationRepository: IApplicationRepository,
+    @Inject('IActionRepository')
+    private readonly actionRepository: IActionRepository,
+    @Inject('ICompanyRepository')
+    private readonly companyRepository: ICompanyRepository,
+    @Inject('IApplicationRepository')
+    private readonly applicationRepository: IApplicationRepository,
     @Inject('IRoleRepository') private readonly roleRepository: IRoleRepository,
-    @Inject('IRolePermissionRepository') private readonly rolePermissionRepository: IRolePermissionRepository,
-    @Inject('IResourceRepository') private readonly resourseRepository: IResourceRepository,
-    @Inject('ISubResourceRepository') private readonly subresourceRepository: ISubResourceRepository,
+    @Inject('IRolePermissionRepository')
+    private readonly rolePermissionRepository: IRolePermissionRepository,
+    @Inject('IResourceRepository')
+    private readonly resourseRepository: IResourceRepository,
+    @Inject('ISubResourceRepository')
+    private readonly subresourceRepository: ISubResourceRepository,
     @Inject('IUserRepository') private readonly userRepository: IUserRepository,
-  ) { }
+  ) {}
 
   async execute(): Promise<string> {
     this.logger.log('🚀 Ejecutando proceso de seed...');
@@ -58,7 +64,10 @@ export class SeedUseCase {
       this.logger.log('✅ Seed ejecutado exitosamente');
       return 'Seed ejecutado exitosamente';
     } catch (error) {
-      this.logger.error('❌ Fallo en el proceso de seed', error instanceof Error ? error.stack : 'Unknown error');
+      this.logger.error(
+        '❌ Fallo en el proceso de seed',
+        error instanceof Error ? error.stack : 'Unknown error',
+      );
       throw error;
     }
   }
@@ -90,7 +99,6 @@ export class SeedUseCase {
     }));
 
     for (const resource of resources) {
-
       try {
         await this.resourseRepository.createResource(resource);
       } catch {
@@ -119,63 +127,83 @@ export class SeedUseCase {
         let createdCompany: Company;
 
         try {
-          createdCompany = await this.companyRepository.createCompany(newCompany);
+          createdCompany =
+            await this.companyRepository.createCompany(newCompany);
           this.logger.log(`✅ Compañía ${createdCompany.name} creada`);
         } catch {
           this.logger.warn(`⚠️ Compañía ${seedCompany.name} ya existe`);
-          const foundCompany = await this.companyRepository.findByName(seedCompany.name);
+          const foundCompany = await this.companyRepository.findByName(
+            seedCompany.name,
+          );
           if (!foundCompany) continue;
           createdCompany = foundCompany;
         }
         // Crear branding si no existe o está incompleto
-        if (seedCompany.branding && (!createdCompany.branding || !createdCompany.branding.logo)) {
-
-          await this.companyRepository.createCompanyBranding(createdCompany.id!, {
-            companyId: createdCompany.id!,
-            logo: seedCompany.branding.logo,
-            primaryColor: seedCompany.branding.primaryColor,
-            secondaryColor: seedCompany.branding.secondaryColor,
-            tertiaryColor: seedCompany.branding.tertiaryColor,
-          });
+        if (
+          seedCompany.branding &&
+          (!createdCompany.branding || !createdCompany.branding.logo)
+        ) {
+          await this.companyRepository.createCompanyBranding(
+            createdCompany.id!,
+            {
+              companyId: createdCompany.id!,
+              logo: seedCompany.branding.logo,
+              primaryColor: seedCompany.branding.primaryColor,
+              secondaryColor: seedCompany.branding.secondaryColor,
+              tertiaryColor: seedCompany.branding.tertiaryColor,
+            },
+          );
           this.logger.log(`🎨 Branding creado para ${createdCompany.name}`);
         }
 
         await this.assignApplicationsToCompany(createdCompany);
       } catch (error) {
-        this.logger.warn(`⚠️ Compañía ${seedCompany.name} ya existe o falló su creación`);
+        this.logger.warn(
+          `⚠️ Compañía ${seedCompany.name} ya existe o falló su creación`,
+        );
       }
     }
   }
 
   private async assignApplicationsToCompany(company: Company): Promise<void> {
-    const application = await this.applicationRepository.findByName('BOREALIS APP');
+    const application =
+      await this.applicationRepository.findByName('BOREALIS APP');
 
     if (!application) throw new Error('❌ Aplicación "BOREALIS" no encontrada');
 
-    const alreadyAssigned = await this.companyRepository.isApplicationAssignedToCompany(
-      company.id!,
-      application.id,
-    );
+    const alreadyAssigned =
+      await this.companyRepository.isApplicationAssignedToCompany(
+        company.id!,
+        application.id,
+      );
 
     if (alreadyAssigned) {
-      this.logger.log(`ℹ️ Aplicación "${application.name}" ya está asignada a la compañía "${company.name}"`);
+      this.logger.log(
+        `ℹ️ Aplicación "${application.name}" ya está asignada a la compañía "${company.name}"`,
+      );
       return;
     }
 
-    await this.companyRepository.assignApplicationToCompanies([company.id!], [application.id]);
-    this.logger.log(`✅ Aplicación "${application.name}" asignada a la compañía "${company.name}"`);
+    await this.companyRepository.assignApplicationToCompanies(
+      [company.id!],
+      [application.id],
+    );
+    this.logger.log(
+      `✅ Aplicación "${application.name}" asignada a la compañía "${company.name}"`,
+    );
   }
-
 
   private async seedSubResources(): Promise<Subresource[]> {
     this.logger.log('📦 Seeding subresources');
     const subresources = await Promise.all(
       subresourseInitialData.map(async (sub) => {
         try {
+          const resource = await this.resourseRepository.findByName(
+            sub.resourceName,
+          );
 
-          const resource = await this.resourseRepository.findByName(sub.resourceName);
-
-          if (!resource) throw new Error(`Resource ${sub.resourceName} no encontrado`);
+          if (!resource)
+            throw new Error(`Resource ${sub.resourceName} no encontrado`);
 
           const newSub: Subresource = {
             id: '',
@@ -199,7 +227,6 @@ export class SeedUseCase {
     await Promise.all(
       actionInitialData.map(async (a) => {
         try {
-
           const newAction: Action = { id: '', name: a.name, level: a.level };
 
           return await this.actionRepository.createActions([newAction]);
@@ -210,7 +237,6 @@ export class SeedUseCase {
       }),
     );
   }
-
 
   private async seedRoles(subresources: Subresource[]): Promise<void> {
     this.logger.log('📦 Seeding roles');
@@ -228,7 +254,10 @@ export class SeedUseCase {
     }
   }
 
-  private async assignPermissionsToRole(role: Role, subresources: Subresource[]): Promise<void> {
+  private async assignPermissionsToRole(
+    role: Role,
+    subresources: Subresource[],
+  ): Promise<void> {
     const action = await this.actionRepository.findByName('DELETE');
     if (!action) throw new Error('Acción "DELETE" no encontrada');
 
@@ -244,7 +273,8 @@ export class SeedUseCase {
     const user = userInitialData;
 
     const company = await this.companyRepository.findByName(user.companyName);
-    if (!company) throw new ConflictException(`Compañía ${user.companyName} no encontrada`);
+    if (!company)
+      throw new ConflictException(`Compañía ${user.companyName} no encontrada`);
 
     const role = await this.roleRepository.findByName(user.role);
     if (!role) throw new ConflictException(`Rol ${user.role} no encontrado`);

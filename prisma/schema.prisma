@@ -11,11 +11,11 @@ model User {
   id             String        @id @default(uuid()) @db.Uuid
   name           String
   email          String        @unique
-  hashedPassword String // Cambiado de 'password' a 'hashedPassword' por seguridad
+  hashedPassword String
   isActive       Boolean       @default(false)
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
-  sessions       Session[] // Cambiado de 'activeSessions' a 'sessions' para consistencia
+  sessions       Session[]
   companies      UserCompany[]
 
   @@index([email])
@@ -92,12 +92,12 @@ model Action {
 model Company {
   id        String   @id @default(uuid()) @db.Uuid
   name      String   @unique
+  shortName String   @unique
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   createdBy String?  @db.Uuid // Auditoría
   updatedBy String?  @db.Uuid // Auditoría
-  shortName String // Nombre corto de la empresa
 
   branding     CompanyBranding? // Relación uno a uno
   users        UserCompany[]

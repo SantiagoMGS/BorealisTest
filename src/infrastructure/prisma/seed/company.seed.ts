@@ -1,4 +1,4 @@
-import { Company } from "src/core/domain/entities";
+import { Company } from 'src/core/domain/entities';
 
 export const companyInitialData: Company[] = [
   {
@@ -11,7 +11,5 @@ export const companyInitialData: Company[] = [
       secondaryColor: '#000000',
       tertiaryColor: '#1487447',
     },
-
-
   },
 ];
