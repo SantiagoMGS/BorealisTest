@@ -1,93 +1,83 @@
+// prisma/seed/seed-companies.ts (versión mejorada)
 import { Prisma, PrismaClient } from '@prisma/client';
-import { companyInitialData } from '../data/';
+import { companyInitialData } from '../data/companies.data';
 import { batchTransaction } from '../utils/transaction.helper';
 
 /**
- * Tipo que representa un cliente Prisma dentro de una transacción
- * Omite los métodos que no están disponibles dentro de una transacción
- */
-type TransactionClient = Omit<
-  PrismaClient,
-  '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'
->;
-
-/**
- * Función para sembrar datos iniciales de compañías
- * @param prisma Instancia del cliente Prisma
+ * Siembra los datos iniciales de compañías en la base de datos
+ * Incluye validaciones y manejo seguro de relaciones anidadas
+ *
+ * @param prisma Instancia de PrismaClient configurada
  * @returns Array de compañías creadas/actualizadas
  */
 export async function seedCompanies(prisma: PrismaClient) {
   console.log('🔄 Iniciando seed de compañías...');
 
-  const results = await batchTransaction(
+  return batchTransaction(
     prisma,
     companyInitialData,
-    async (tx: TransactionClient, companyData, index) => {
-      // Verificamos si la compañía ya existe
-      const existingCompany = await tx.company.findUnique({
-        where: { name: companyData.name },
-        include: { branding: true },
-      });
-
-      // Extraemos los datos de branding de forma segura usando type guards
-      const hasBranding =
-        companyData.branding !== undefined &&
-        companyData.branding !== null &&
-        typeof companyData.branding === 'object';
-
-      const brandingCreateData =
-        hasBranding &&
-        'create' in companyData.branding! &&
-        companyData.branding.create
-          ? companyData.branding.create
-          : null;
-
-      if (existingCompany) {
-        // Si la compañía existe, la actualizamos
-        const updateData: Prisma.CompanyUpdateInput = {
-          shortName: companyData.shortName,
-          isActive: companyData.isActive ?? existingCompany.isActive,
-        };
-
-        // Solo incluimos la actualización de branding si tenemos datos para ello
-        if (brandingCreateData) {
-          if (existingCompany.branding) {
-            // Si ya existe un branding, lo actualizamos
-            updateData.branding = {
-              update: brandingCreateData,
-            };
-          } else {
-            // Si no existe un branding, lo creamos
-            updateData.branding = {
-              create: brandingCreateData,
-            };
-          }
+    async (tx, companyData) => {
+      try {
+        // Validamos que los datos de entrada tengan la estructura esperada
+        if (!companyData.name || !companyData.shortName) {
+          throw new Error(
+            'Datos de compañía incompletos: se requiere name y shortName',
+          );
         }
 
-        const result = await tx.company.update({
-          where: { id: existingCompany.id },
-          data: updateData,
-          include: { branding: true }, // Incluimos branding en la respuesta
+        // Extraemos los datos de branding de forma segura
+        const brandingData =
+          companyData.branding && 'create' in companyData.branding
+            ? companyData.branding.create
+            : null;
+
+        // Verificamos si la compañía ya existe
+        const existingCompany = await tx.company.findUnique({
+          where: { name: companyData.name },
+          include: { branding: true },
         });
 
-        return result;
-      } else {
-        // Si la compañía no existe, la creamos
-        const result = await tx.company.create({
-          data: companyData,
-          include: { branding: true }, // Incluimos branding en la respuesta
-        });
+        if (existingCompany) {
+          // Preparamos los datos de actualización
+          const updateData: Prisma.CompanyUpdateInput = {
+            shortName: companyData.shortName,
+          };
 
-        return result;
+          // Solo incluimos la actualización de branding si tenemos datos para ello
+          if (brandingData) {
+            updateData.branding = existingCompany.branding
+              ? { update: brandingData }
+              : { create: brandingData };
+          }
+
+          // Actualizamos la compañía existente
+          return tx.company.update({
+            where: { id: existingCompany.id },
+            data: updateData,
+            include: { branding: true },
+          });
+        } else {
+          // Creamos una nueva compañía
+          return tx.company.create({
+            data: companyData,
+            include: { branding: true },
+          });
+        }
+      } catch (error) {
+        console.error(`Error procesando compañía ${companyData.name}:`, error);
+        throw error; // Aseguramos que la transacción se revierta
       }
     },
-    // Opciones de la transacción
     {
-      timeout: 10000,
-      isolationLevel: 'Serializable',
+      isolationLevel: 'ReadCommitted',
+      timeout: 15000, // 15 segundos, más tiempo para operaciones complejas
     },
-  );
-
-  console.log(`🟢 ${results.length} compañías procesadas correctamente`);
-  return results;
+  )
+    .then((results) => {
+      return results;
+    })
+    .catch((error) => {
+      console.error('❌ Error durante el seed de compañías:', error);
+      throw error; // Re-lanzamos el error para manejo superior
+    });
 }
