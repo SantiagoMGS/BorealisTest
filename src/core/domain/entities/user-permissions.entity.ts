@@ -17,6 +17,7 @@ export type UserPermissionsEntity = {
     applications: {
       applicationId: string;
       applicationName: string;
+      path: string;
       isActive: boolean;
       permissions: {
         actionId: string;

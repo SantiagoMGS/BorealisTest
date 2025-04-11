@@ -59,6 +59,7 @@ export class PrismaUserRepository implements IUserRepository {
               name: app.application.name,
               isActive: app.application.isActive,
               logo: app.application.logo,
+              path: app.application.path,
               resources: this.groupPermissionsByResource(role.permissions),
             })),
           };
@@ -79,15 +80,18 @@ export class PrismaUserRepository implements IUserRepository {
         const id = permission.subresource.resource.id;
         const name = permission.subresource.resource.name;
         const icon = permission.subresource.resource.icon;
+        const path = permission.subresource.resource.path;
         const subRId = permission.subresource.id;
         const subRName = permission.subresource.name;
         const subRIcon = permission.subresource.icon;
+        const subRPath = permission.subresource.path;
 
         if (!resourceMap[id]) {
           resourceMap[id] = {
             id,
             name,
             icon,
+            path,
             subresources: {},
           };
         }
@@ -97,6 +101,7 @@ export class PrismaUserRepository implements IUserRepository {
             id: subRId,
             name: subRName,
             icon: subRIcon,
+            path: subRPath,
             actions: [],
           };
         }
@@ -277,6 +282,7 @@ export class PrismaUserRepository implements IUserRepository {
                           name: true,
                           isActive: true,
                           logo: true,
+                          path: true,
                         },
                       },
                     },
@@ -301,11 +307,13 @@ export class PrismaUserRepository implements IUserRepository {
                           id: true,
                           name: true,
                           icon: true,
+                          path: true,
                           resource: {
                             select: {
                               id: true,
                               name: true,
                               icon: true,
+                              path: true,
                             },
                           },
                         },
