@@ -95,3 +95,59 @@ export async function batchTransaction<T, R>(
     options,
   );
 }
+
+/**
+ * Ejecuta operaciones de batch dentro de una transacción sin revertirla completamente en caso de error
+ * Útil para procesar arrays de datos donde algunos elementos pueden fallar sin impactar a los demás
+ *
+ * @param prisma Cliente Prisma 
+ * @param items Array de items a procesar
+ * @param processFn Función para procesar cada item
+ * @param options Opciones de la transacción
+ * @returns Array de resultados exitosos
+ */
+export async function batchTransactionTolerant<T, R>(
+  prisma: PrismaClient,
+  items: T[],
+  processFn: (
+    tx: Omit<
+      PrismaClient,
+      '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'
+    >,
+    item: T,
+    index: number,
+  ) => Promise<R>,
+  options?: PrismaTransactionOptions,
+): Promise<R[]> {
+  return executeTransaction(
+    prisma,
+    async (tx) => {
+      const results: R[] = [];
+      const errors: { index: number; error: any }[] = [];
+
+      for (let i = 0; i < items.length; i++) {
+        try {
+          const result = await processFn(tx, items[i], i);
+          results.push(result);
+          console.log(
+            `✅ Item ${i + 1}/${items.length} procesado correctamente`,
+          );
+        } catch (error) {
+          console.error(
+            `❌ Error procesando item ${i + 1}/${items.length}:`,
+            error,
+          );
+          errors.push({ index: i, error });
+          // Continuamos con el siguiente item en lugar de lanzar el error
+        }
+      }
+
+      if (errors.length > 0) {
+        console.warn(`⚠️ Se encontraron ${errors.length} errores pero se procesaron ${results.length} items correctamente.`);
+      }
+
+      return results;
+    },
+    options,
+  );
+}

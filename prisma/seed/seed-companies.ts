@@ -1,11 +1,12 @@
 // prisma/seed/seed-companies.ts (versión mejorada)
 import { Prisma, PrismaClient } from '@prisma/client';
 import { companyInitialData } from '../data/companies.data';
-import { batchTransaction } from '../utils/transaction.helper';
+import { batchTransactionTolerant } from '../utils/transaction.helper';
 
 /**
  * Siembra los datos iniciales de compañías en la base de datos
  * Incluye validaciones y manejo seguro de relaciones anidadas
+ * Permite continuar cuando un item falla (no revierte toda la transacción)
  *
  * @param prisma Instancia de PrismaClient configurada
  * @returns Array de compañías creadas/actualizadas
@@ -13,16 +14,28 @@ import { batchTransaction } from '../utils/transaction.helper';
 export async function seedCompanies(prisma: PrismaClient) {
   console.log('🔄 Iniciando seed de compañías...');
 
-  return batchTransaction(
-    prisma,
-    companyInitialData,
-    async (tx, companyData) => {
-      try {
+  try {
+    // Usamos la función batchTransactionTolerant para procesar los datos
+    // Esta función permite continuar cuando un item falla sin revertir todo
+    const results = await batchTransactionTolerant(
+      prisma,
+      companyInitialData,
+      async (tx, companyData, index) => {
         // Validamos que los datos de entrada tengan la estructura esperada
         if (!companyData.name || !companyData.shortName) {
-          throw new Error(
-            'Datos de compañía incompletos: se requiere name y shortName',
-          );
+          throw new Error(`Datos de compañía incompletos: se requiere name y shortName`);
+        }
+
+        // Verificamos si ya existe una compañía con el mismo shortName (diferente a la actual)
+        const existingShortName = await tx.company.findFirst({
+          where: { 
+            shortName: companyData.shortName,
+            name: { not: companyData.name } // Excluimos la propia compañía
+          },
+        });
+
+        if (existingShortName) {
+          throw new Error(`El shortName "${companyData.shortName}" ya está asignado a la compañía "${existingShortName.name}"`);
         }
 
         // Extraemos los datos de branding de forma segura
@@ -51,33 +64,28 @@ export async function seedCompanies(prisma: PrismaClient) {
           }
 
           // Actualizamos la compañía existente
-          return tx.company.update({
+          return await tx.company.update({
             where: { id: existingCompany.id },
             data: updateData,
             include: { branding: true },
           });
         } else {
           // Creamos una nueva compañía
-          return tx.company.create({
+          return await tx.company.create({
             data: companyData,
             include: { branding: true },
           });
         }
-      } catch (error) {
-        console.error(`Error procesando compañía ${companyData.name}:`, error);
-        throw error; // Aseguramos que la transacción se revierta
+      },
+      {
+        isolationLevel: 'ReadCommitted',
+        timeout: 15000,
       }
-    },
-    {
-      isolationLevel: 'ReadCommitted',
-      timeout: 15000, // 15 segundos, más tiempo para operaciones complejas
-    },
-  )
-    .then((results) => {
-      return results;
-    })
-    .catch((error) => {
-      console.error('❌ Error durante el seed de compañías:', error);
-      throw error; // Re-lanzamos el error para manejo superior
-    });
+    );
+
+    return results;
+  } catch (error) {
+    console.error('❌ Error al procesar las compañías:', error);
+    return [];
+  }
 }
