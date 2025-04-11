@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 import { AuthModule } from './presentation/auth.module';
 @Module({
   imports: [
@@ -10,9 +10,9 @@ import { AuthModule } from './presentation/auth.module';
       isGlobal: true
     }),
     PassportModule.register({ defaultStrategy: 'jwt' }), // 👈 Asegura que Passport está activo
-    AuthModule, 
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

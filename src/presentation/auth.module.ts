@@ -1,87 +1,87 @@
 import { Module } from '@nestjs/common';
 
 // **Infrastructure Services**
-import { PrismaService } from 'src/infrastructure/prisma/prisma.service';
 import {
-  PrismaUserRepository,
-  PrismaRoleRepository,
-  PrismaResourceRepository,
-  PrismaCompanyRepository,
   PrismaActionRepository,
-  PrismaRolePermissionRepository,
   PrismaApplicationRepository,
-  PrismaSubResourceRepository,
+  PrismaCompanyRepository,
   PrismaLoginRepository,
+  PrismaResourceRepository,
+  PrismaRolePermissionRepository,
+  PrismaRoleRepository,
+  PrismaSubResourceRepository,
+  PrismaUserRepository,
 } from 'src/infrastructure/prisma';
+import { PrismaService } from 'src/infrastructure/prisma/prisma.service';
 
 // **Authentication & Security**
+import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
 import { JwtAzureStrategy } from 'src/core/domain/uses-cases/auth/jwt-azure.strategy';
 import { JwtInternalStrategy } from 'src/core/domain/uses-cases/auth/jwt-internal.strategy';
-import { PassportModule } from '@nestjs/passport';
-import { JwtModule } from '@nestjs/jwt';
 
 // **Controllers**
 import {
+  ActionController,
+  ApplicationController,
   AuthController,
   CompanyController,
   ResourceController,
   RoleController,
-  UserController,
-  ActionController,
   RolePermissionController,
-  ApplicationController,
   SeedController,
   SubResourceController,
+  UserController,
   WebhookController
 } from './controllers';
 
 // **Use Cases **
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { PermissionService } from 'src/core/domain/uses-cases/auth/services/permission.service';
 import {
-  // **User Use Cases**
-  CreateUserUseCase,
-  FindAllUsersUseCase,
-  UpdateUserUseCase,
-  DeleteUserUseCase,
-  FindUserUseCase,
-  UpdateUserCompanyRoleUseCase,
-  // **Role Use Cases**
-  CreateRoleUseCase,
-  GetAllRolesUseCase,
-  GetRoleByIdUseCase,
-  UpdateRoleUseCase,
-  DeleteRoleUseCase,
-  // **Role Permission Use Cases**
-  GetPermissionsByRoleUseCase,
-  RemovePermissionUseCase,
-  CheckPermissionUseCase,
-  AssignPermissionsUseCase,
-  // **Resource Use Cases**
-  CreateResourceUseCase,
-  UpdateResourceUseCase,
-  DeleteResourceUseCase,
-  GetByIdResourceUseCase,
-  GetAllResourcesUseCase,
-  // **Company Use Cases**
-  CreateCompanyUseCase,
-  GetByIdCompanyUseCase,
-  GetByNameCompanyUseCase,
-  GetAllCompaniesUseCase,
-  AssignApplicationToCompaniesUseCase,
-  DeleteCompanyUseCase,
-  UpdateCompanyUseCase,
   // **Other Use Cases**
   ActionSeedUseCase,
   ApplicationSeedUseCase,
+  AssignApplicationToCompaniesUseCase,
+  AssignPermissionsUseCase,
   AuthUseCase,
+  CheckPermissionUseCase,
+  // **Company Use Cases**
+  CreateCompanyUseCase,
+  // **Resource Use Cases**
+  CreateResourceUseCase,
+  // **Role Use Cases**
+  CreateRoleUseCase,
   CreateSubResourceUseCase,
-  SeedUseCase,
+  // **User Use Cases**
+  CreateUserUseCase,
+  DeleteCompanyUseCase,
+  DeleteResourceUseCase,
+  DeleteRoleUseCase,
+  DeleteUserUseCase,
+  FindAllUsersUseCase,
+  FindUserUseCase,
+  GetAllCompaniesUseCase,
+  GetAllResourcesUseCase,
+  GetAllRolesUseCase,
+  GetByIdCompanyUseCase,
+  GetByIdResourceUseCase,
+  GetByNameCompanyUseCase,
+  // **Role Permission Use Cases**
+  GetPermissionsByRoleUseCase,
+  GetRoleByIdUseCase,
   GetUserPermissionsUseCase,
   ManageSessionUseCase,
+  RemovePermissionUseCase,
+  SeedUseCase,
+  UpdateCompanyUseCase,
+  UpdateResourceUseCase,
+  UpdateRoleUseCase,
+  UpdateUserCompanyRoleUseCase,
+  UpdateUserUseCase,
 } from 'src/core/domain/uses-cases';
-import { RefreshTokenUseCase } from 'src/core/domain/uses-cases/auth/refresh-token.use-case';
 import { RefreshTokenStrategy } from 'src/core/domain/uses-cases/auth/refresh-token.strategy';
+import { RefreshTokenUseCase } from 'src/core/domain/uses-cases/auth/refresh-token.use-case';
+import { PermissionService } from 'src/core/domain/uses-cases/auth/services/permission.service';
 import { PrismaSessionRepository } from 'src/infrastructure/prisma/prisma-session.repository';
 
 @Module({
@@ -195,7 +195,7 @@ import { PrismaSessionRepository } from 'src/infrastructure/prisma/prisma-sessio
     ApplicationSeedUseCase,
     AuthUseCase,
     SeedUseCase,
-    
+
   ],
   imports: [
     ConfigModule.forRoot(),
@@ -264,4 +264,4 @@ import { PrismaSessionRepository } from 'src/infrastructure/prisma/prisma-sessio
     RefreshTokenUseCase
   ],
 })
-export class AuthModule {}
+export class AuthModule { }
