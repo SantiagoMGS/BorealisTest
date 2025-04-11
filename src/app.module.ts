@@ -3,14 +3,16 @@ import { ConfigModule } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+
 import { AuthModule } from './presentation/auth.module';
+import { CoreModule } from './presentation/core.module';
+
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true
-    }),
-    PassportModule.register({ defaultStrategy: 'jwt' }), // 👈 Asegura que Passport está activo
+    ConfigModule.forRoot({ isGlobal: true }),
+    PassportModule.register({ defaultStrategy: 'jwt' }),
     AuthModule,
+    CoreModule,
   ],
   controllers: [AppController],
   providers: [AppService],
