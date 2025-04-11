@@ -14,6 +14,7 @@ export class PrismaSubResourceRepository implements ISubResourceRepository {
           name: subResource.name,
           icon: subResource.icon,
           resourceId: subResource.resourceId!,
+          path: subResource.path,
         },
       });
 
@@ -21,6 +22,7 @@ export class PrismaSubResourceRepository implements ISubResourceRepository {
         id: created.id,
         name: created.name,
         icon: created.icon,
+        path: created.path,
         resourceId: created.resourceId,
         createdAt: created.createdAt,
         updatedAt: created.updatedAt,
@@ -38,6 +40,7 @@ export class PrismaSubResourceRepository implements ISubResourceRepository {
         id: subresource.id,
         name: subresource.name,
         icon: subresource.icon,
+        path: subresource.path,
         resourceId: subresource.resourceId,
         createdAt: subresource.createdAt,
         updatedAt: subresource.updatedAt,

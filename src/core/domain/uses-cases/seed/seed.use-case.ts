@@ -48,7 +48,7 @@ export class SeedUseCase {
     @Inject('ISubResourceRepository')
     private readonly subresourceRepository: ISubResourceRepository,
     @Inject('IUserRepository') private readonly userRepository: IUserRepository,
-  ) {}
+  ) { }
 
   async execute(): Promise<string> {
     this.logger.log('🚀 Ejecutando proceso de seed...');
@@ -80,6 +80,7 @@ export class SeedUseCase {
         name: application.name,
         isActive: true,
         logo: application.logo,
+        path: application.path,
       }),
     );
     try {
@@ -96,6 +97,7 @@ export class SeedUseCase {
       id: r.id,
       name: r.name,
       icon: r.icon,
+      path: r.path,
     }));
 
     for (const resource of resources) {
@@ -210,6 +212,7 @@ export class SeedUseCase {
             name: sub.name,
             icon: sub.icon,
             resourceId: resource.id,
+            path: sub.path,
           };
 
           return await this.subresourceRepository.createSubResource(newSub);

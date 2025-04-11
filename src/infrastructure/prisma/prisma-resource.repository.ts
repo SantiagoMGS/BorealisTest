@@ -14,13 +14,14 @@ export class PrismaResourceRepository implements IResourceRepository {
   async createResource(resource: Resource): Promise<Resource> {
     try {
       const createdResource = await this.prisma.resource.create({
-        data: { name: resource.name, icon: resource.icon },
+        data: { name: resource.name, icon: resource.icon, path: resource.path },
       });
 
       return {
         id: createdResource.id,
         name: createdResource.name,
         icon: createdResource.icon,
+        path: createdResource.path,
       };
     } catch (error) {
       throw new ConflictException(`El recurso "${resource.name}" ya existe.`);
@@ -36,6 +37,7 @@ export class PrismaResourceRepository implements IResourceRepository {
         id: resource.id,
         name: resource.name,
         icon: resource.icon,
+        path: resource.path,
       }
       : null;
   }
@@ -56,7 +58,7 @@ export class PrismaResourceRepository implements IResourceRepository {
       this.prisma.resource.findMany({
         skip,
         take: limit,
-        select: { id: true, name: true, icon: true },
+        select: { id: true, name: true, icon: true, path: true },
       }),
       this.prisma.resource.count(),
     ]);
@@ -66,6 +68,7 @@ export class PrismaResourceRepository implements IResourceRepository {
         id: r.id,
         name: r.name,
         icon: r.icon,
+        path: r.path,
       })),
       total,
     };
@@ -88,6 +91,7 @@ export class PrismaResourceRepository implements IResourceRepository {
       id: updatedResource.id,
       name: updatedResource.name,
       icon: updatedResource.icon,
+      path: updatedResource.path,
     };
   }
 
@@ -98,6 +102,7 @@ export class PrismaResourceRepository implements IResourceRepository {
         id: resource.id,
         name: resource.name,
         icon: resource.icon,
+        path: resource.path,
       }
       : null;
 

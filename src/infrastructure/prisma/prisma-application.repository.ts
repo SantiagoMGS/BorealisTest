@@ -14,6 +14,7 @@ export class PrismaApplicationRepository implements IApplicationRepository {
           name: app.name,
           isActive: app.isActive,
           logo: app.logo ?? '',
+          path: app.path
 
         })),
         skipDuplicates: true,
@@ -28,6 +29,7 @@ export class PrismaApplicationRepository implements IApplicationRepository {
         name: app.name,
         isActive: app.isActive,
         logo: app.logo,
+        path: app.path,
       }));
 
 
@@ -48,6 +50,7 @@ export class PrismaApplicationRepository implements IApplicationRepository {
         name: found.name,
         isActive: found.isActive,
         logo: found.logo,
+        path: found.path,
       }
       : null;
   }
@@ -66,6 +69,7 @@ export class PrismaApplicationRepository implements IApplicationRepository {
       name: app.name,
       isActive: app.isActive,
       logo: app.logo,
+      path: app.path,
     }));
   }
 
@@ -80,6 +84,7 @@ export class PrismaApplicationRepository implements IApplicationRepository {
         name: found.name,
         isActive: found.isActive,
         logo: found.logo,
+        path: found.path,
       }
       : null;
 

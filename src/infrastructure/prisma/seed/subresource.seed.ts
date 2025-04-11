@@ -5,20 +5,23 @@ export const subresourseInitialData = [
     id: '',
     name: 'ROLE',
     icon: 'fa-solid fa-user-shield',
-    resourceName: "ROLE"
+    resourceName: "ROLE",
+    path: '/role',
   },
   {
     id: '',
     name: 'USER',
     icon: 'fa-solid fa-user',
-    resourceName: "USER"
+    resourceName: "USER",
+    path: '/user',
 
   },
   {
     id: '',
     name: 'COMPANY',
     icon: 'fa-solid fa-company',
-    resourceName: "COMPANY"
+    resourceName: "COMPANY",
+    path: '/company',
 
 
   },
@@ -26,7 +29,8 @@ export const subresourseInitialData = [
     id: '',
     name: 'RESOURCE',
     icon: 'fa-solid fa-resource',
-    resourceName: "RESOURCE"
+    resourceName: "RESOURCE",
+    path: '/resource',
 
 
   },
@@ -34,16 +38,15 @@ export const subresourseInitialData = [
     id: '',
     name: 'SUBRESOURCE',
     icon: 'fa-solid fa-subresource',
-    resourceName: "SUBRESOURCE"
-
-
+    resourceName: "SUBRESOURCE",
+    path: '/subresource',
   },
   {
     id: '',
     name: 'Registro de Personal',
     icon: 'fa-solid fa-personal',
-    resourceName: "Gestión de personal"
-
+    resourceName: "Gestión de personal",
+    path: '/personal',
 
   },
   {
@@ -51,6 +54,7 @@ export const subresourseInitialData = [
     name: 'Contratación y vinculación',
     icon: 'fa-solid fa-CV',
     resourceName: "Gestión de personal",
+    path: '/hiring',
 
 
   },
@@ -59,6 +63,7 @@ export const subresourseInitialData = [
     name: 'Historia Laboral',
     icon: 'fa-solid fa-HL',
     resourceName: "Gestión de personal",
+    path: '/work-history',
 
 
   },

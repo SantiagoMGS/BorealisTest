@@ -7,6 +7,7 @@ export type UserPermissionsEntity = {
     companyId: string;
     companyName: string;
     isActive: boolean;
+    shotName: string;
     branding?: {
       logo?: string;
       primaryColor?: string;

@@ -22,6 +22,7 @@ export class ApplicationSeedUseCase {
           name: application.name,
           isActive: true,
           logo: application.logo,
+          path: application.path,
         }),
       );
 

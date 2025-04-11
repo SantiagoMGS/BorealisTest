@@ -47,6 +47,7 @@ export class PrismaUserRepository implements IUserRepository {
           return {
             id: company.id,
             name: company.name,
+            shortName: company.shortName,
             logo: company.branding?.logo ?? null,
             primaryColor: company.branding?.primaryColor ?? null,
             secondaryColor: company.branding?.secondaryColor ?? null,
@@ -219,6 +220,7 @@ export class PrismaUserRepository implements IUserRepository {
           select: {
             id: true,
             name: true,
+            shortName: true,
             branding: {
               select: {
                 logo: true,
@@ -244,6 +246,7 @@ export class PrismaUserRepository implements IUserRepository {
 
   async getUserPermissions(userId: string): Promise<UserPermissionsEntity[]> {
     try {
+
       const userPermissions = await this.prisma.user.findUnique({
         where: { id: userId },
         select: {
@@ -257,6 +260,7 @@ export class PrismaUserRepository implements IUserRepository {
                 select: {
                   id: true,
                   name: true,
+                  shortName: true,
                   branding: {
                     select: {
                       logo: true,

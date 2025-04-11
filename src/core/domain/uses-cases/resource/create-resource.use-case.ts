@@ -17,6 +17,7 @@ export class CreateResourceUseCase {
         id: '', // o undefined si Prisma lo genera
         name: resourceDto.name,
         icon: resourceDto.icon,
+        path: resourceDto.path,
       };
       const createdResource = await this.ResourceRepository.createResource(newResource);
       this.logger.log('Resource created successfully');

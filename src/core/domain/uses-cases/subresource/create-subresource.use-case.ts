@@ -20,6 +20,7 @@ export class CreateSubResourceUseCase {
         name: subResourceDto.name,
         icon: subResourceDto.icon,
         resourceId: subResourceDto.resourceId,
+        path: subResourceDto.path,
       };
 
       const createdSubResource = await this.subResourceRepository.createSubResource(newSubResource);
