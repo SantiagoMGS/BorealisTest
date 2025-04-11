@@ -1,5 +1,6 @@
+import { ApiStandardResponses } from '@app/presentation/decorator/api-standard-response.decorator';
 import { Controller, HttpCode, HttpStatus, Logger, Post } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SeedUseCase } from 'src/core/domain/uses-cases/seed/seed.use-case';
 
 @ApiTags('Seeder')
@@ -8,24 +9,13 @@ export class SeedController {
   private logger = new Logger(SeedController.name);
 
   constructor(private readonly seedUseCase: SeedUseCase) { }
+
   @Post('execute-seed')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Ejecutar seed de acciones' })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: 'Seed de acciones ejecutado exitosamente.',
-  })
-  @ApiResponse({
-    status: HttpStatus.INTERNAL_SERVER_ERROR,
-    description: 'Error al ejecutar el seed de acciones.',
-  })
-  @ApiResponse({
-    status: HttpStatus.UNAUTHORIZED,
-    description: 'No autorizado.',
-  })
-  @ApiResponse({
-    status: HttpStatus.FORBIDDEN,
-    description: 'Recurso prohibido.',
+  @ApiOperation({ summary: 'Ejecutar seed completo del sistema' })
+  @ApiStandardResponses({
+    ok: 'Seed ejecutado exitosamente.',
+    badRequest: false, // no se espera un 400
   })
   async executeSeed() {
     try {

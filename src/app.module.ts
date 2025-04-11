@@ -1,8 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 
 import { AuthModule } from './presentation/auth.module';
 import { CoreModule } from './presentation/core.module';
@@ -14,7 +12,6 @@ import { CoreModule } from './presentation/core.module';
     AuthModule,
     CoreModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+
 })
 export class AppModule { }

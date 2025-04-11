@@ -1,29 +1,29 @@
+import { ApiStandardResponses } from "@app/presentation/decorator/api-standard-response.decorator";
 import {
   Body, Controller, Delete, Get,
-  HttpCode, HttpStatus,
-  NotFoundException, Param,
-  ParseIntPipe,
-  Patch,
-  Post,
-  Query,
-  Request,
-  UseGuards
+  HttpCode, HttpStatus, NotFoundException,
+  Param, ParseIntPipe, Patch, Post,
+  Query, Request, UseGuards
 } from "@nestjs/common";
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { GetUserPermissionsUseCase } from "src/core/domain/uses-cases";
-import { Permissions } from "src/core/domain/uses-cases/auth/decorators/permissions.decorator";
-import { PermissionGuard } from "src/core/domain/uses-cases/auth/guards/permission.guard";
-import { PermissionService } from "src/core/domain/uses-cases/auth/services/permission.service";
-import { CreateUserUseCase } from "src/core/domain/uses-cases/user/create-user.use-case";
-import { DeleteUserUseCase } from "src/core/domain/uses-cases/user/delete-user.use-case";
-import { FindAllUsersUseCase } from "src/core/domain/uses-cases/user/find-all-user.use-case";
-import { FindUserUseCase } from "src/core/domain/uses-cases/user/find-user.use-case";
-import { UpdateUserCompanyRoleUseCase } from "src/core/domain/uses-cases/user/update-user-company.use-case";
-import { UpdateUserUseCase } from "src/core/domain/uses-cases/user/update-user.use-case";
+import {
+  ApiBody,
+  ApiOperation,
+  ApiParam, ApiQuery,
+  ApiTags
+} from '@nestjs/swagger';
+import {
+  CreateUserUseCase, DeleteUserUseCase, FindAllUsersUseCase, FindUserUseCase,
+  GetUserPermissionsUseCase,
+  UpdateUserCompanyRoleUseCase,
+  UpdateUserUseCase
+} from 'src/core/domain/uses-cases';
+import { PermissionGuard } from 'src/core/domain/uses-cases/auth/guards/permission.guard';
+import { PermissionService } from 'src/core/domain/uses-cases/auth/services/permission.service';
 import { CreateUserDto } from "./dtos/create-user.dto";
 import { UpdateUserCompanyDto } from "./dtos/update-user-company.dto";
 import { UpdateUserDto } from "./dtos/update-user.dto";
+
 
 @ApiTags('Users')
 @Controller('user')
@@ -37,108 +37,100 @@ export class UserController {
     private readonly deleteUserUseCase: DeleteUserUseCase,
     private readonly updateUserCompanyRoleUseCase: UpdateUserCompanyRoleUseCase,
     private readonly getUserPermissionsUseCase: GetUserPermissionsUseCase,
-    private readonly permissionService: PermissionService,  // 🔹 Inyección del servicio de permisos
+    private readonly permissionService: PermissionService,
   ) { }
 
-  // Solo los usuarios con permiso para CREAR usuarios pueden acceder
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Crear un nuevo usuario' })
   @ApiBody({ type: CreateUserDto })
-  @ApiResponse({ status: HttpStatus.CREATED, description: 'El usuario ha sido creado exitosamente.' })
-  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Datos de entrada inválidos.' })
-  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'No autorizado.' })
-  @ApiResponse({ status: HttpStatus.FORBIDDEN, description: 'Acceso prohibido al recurso.' })
-  async createUser(@Body() createUserDto: CreateUserDto) {
-    return this.createUserUseCase.execute(createUserDto);
+  @ApiStandardResponses({ created: true, badRequest: true })
+  async createUser(@Body() dto: CreateUserDto) {
+    return this.createUserUseCase.execute(dto);
   }
 
   @Get('permissions-user')
+  @ApiOperation({ summary: 'Obtener permisos del usuario autenticado' })
+  @ApiStandardResponses({ ok: 'Permisos del usuario autenticado.' })
   async getUserPermissions(@Request() req) {
-    return await this.getUserPermissionsUseCase.execute(req.user.id);
-
+    return this.getUserPermissionsUseCase.execute(req.user.id);
   }
-  // Solo los usuarios con permiso para LEER usuarios pueden acceder
+
   @Get()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Obtener todos los usuarios con paginación' })
-  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Número de página, por defecto es 1' })
-  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Número de elementos por página, por defecto es 10' })
-  @ApiResponse({ status: HttpStatus.OK, description: 'Lista de usuarios.' })
-  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'No autorizado.' })
-  @ApiResponse({ status: HttpStatus.FORBIDDEN, description: 'Acceso prohibido al recurso.' })
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiStandardResponses({ ok: 'Lista de usuarios.' })
   async getAllUsers(
     @Query('page', ParseIntPipe) page = 1,
     @Query('limit', ParseIntPipe) limit = 10
   ) {
     const permission = await this.permissionService.getPermissions('user', 'read');
-    Permissions(permission);
+    // Permissions(permission) // No aplicable como función, depende de implementación real
     return this.findAllUsersUseCase.execute(page, limit);
   }
 
-  // Solo los usuarios con permiso para LEER un usuario específico pueden acceder
   @Get(':email')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Obtener un usuario por email' })
-  @ApiParam({ name: 'email', required: true, description: 'Email del usuario' })
-  @ApiResponse({ status: HttpStatus.OK, description: 'Detalles del usuario.' })
-  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Usuario no encontrado.' })
-  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'No autorizado.' })
-  @ApiResponse({ status: HttpStatus.FORBIDDEN, description: 'Acceso prohibido al recurso.' })
+  @ApiParam({ name: 'email', description: 'Email del usuario' })
+  @ApiStandardResponses({ ok: 'Detalles del usuario.', notFound: 'Usuario no encontrado.' })
   async getUserByEmail(@Param('email') email: string) {
     const permission = await this.permissionService.getPermissions('user', 'read');
-    Permissions(permission);
+    // Permissions(permission)
     const user = await this.findUserByEmailUseCase.execute(email);
     if (!user) throw new NotFoundException(`Usuario con email ${email} no encontrado`);
     return user;
   }
+
   @Patch('update-role')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Actualizar el rol de un usuario en una compañía' })
   @ApiBody({ type: UpdateUserCompanyDto })
-  @ApiResponse({ status: HttpStatus.OK, description: 'El rol del usuario ha sido actualizado exitosamente.' })
-  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Datos de entrada inválidos.' })
-  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Usuario, compañía o rol no encontrado.' })
-  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'No autorizado.' })
-  @ApiResponse({ status: HttpStatus.FORBIDDEN, description: 'Acceso prohibido al recurso.' })
-  async updateUserRole(@Body() updateUserRoleDto: UpdateUserCompanyDto): Promise<void> {
+  @ApiStandardResponses({
+    ok: 'Rol de usuario actualizado.',
+    badRequest: true,
+    notFound: 'Usuario o compañía o rol no encontrado.'
+  })
+  async updateUserRole(@Body() dto: UpdateUserCompanyDto): Promise<void> {
     const permission = await this.permissionService.getPermissions('user', 'update');
-    Permissions(permission);
-    const { userId, companyId, roleId } = updateUserRoleDto;
+    // Permissions(permission)
+    const { userId, companyId, roleId } = dto;
     await this.updateUserCompanyRoleUseCase.execute(userId, companyId, roleId);
   }
 
   @Patch(':email')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Actualizar datos de un usuario' })
-  @ApiParam({ name: 'email', required: true, description: 'Email del usuario' })
+  @ApiParam({ name: 'email', description: 'Email del usuario' })
   @ApiBody({ type: UpdateUserDto })
-  @ApiResponse({ status: HttpStatus.OK, description: 'El usuario ha sido actualizado exitosamente.' })
-  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Usuario no encontrado.' })
-  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Datos de entrada inválidos.' })
-  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'No autorizado.' })
-  @ApiResponse({ status: HttpStatus.FORBIDDEN, description: 'Acceso prohibido al recurso.' })
-  async updateUser(@Param('email') email: string, @Body() updateUserDto: UpdateUserDto) {
+  @ApiStandardResponses({
+    ok: 'Usuario actualizado exitosamente.',
+    badRequest: true,
+    notFound: 'Usuario no encontrado.'
+  })
+  async updateUser(
+    @Param('email') email: string,
+    @Body() dto: UpdateUserDto
+  ) {
     const permission = await this.permissionService.getPermissions('user', 'update');
-    Permissions(permission);
-    return this.updateUserUseCase.execute(email, updateUserDto);
+    // Permissions(permission)
+    return this.updateUserUseCase.execute(email, dto);
   }
 
-
-  // Solo los usuarios con permiso para ELIMINAR usuarios pueden acceder
   @Delete(':email')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Eliminar un usuario' })
-  @ApiParam({ name: 'email', required: true, description: 'Email del usuario' })
-  @ApiResponse({ status: HttpStatus.OK, description: 'El usuario ha sido eliminado exitosamente.' })
-  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Usuario no encontrado.' })
-  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'No autorizado.' })
-  @ApiResponse({ status: HttpStatus.FORBIDDEN, description: 'Acceso prohibido al recurso.' })
+  @ApiParam({ name: 'email', description: 'Email del usuario' })
+  @ApiStandardResponses({
+    ok: 'Usuario eliminado exitosamente.',
+    notFound: 'Usuario no encontrado.'
+  })
   async deleteUser(@Param('email') email: string) {
     const permission = await this.permissionService.getPermissions('user', 'delete');
-    Permissions(permission);
+    // Permissions(permission)
     await this.deleteUserUseCase.execute(email);
     return { message: `Usuario con email ${email} eliminado correctamente.` };
   }
-
 }

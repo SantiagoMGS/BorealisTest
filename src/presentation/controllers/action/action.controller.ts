@@ -1,23 +1,22 @@
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { Controller, Post, HttpCode, HttpStatus, Logger } from "@nestjs/common";
-import { ActionSeedUseCase } from "src/core/domain/uses-cases/action/action-seed.use-case";
+import { ApiStandardResponses } from '@app/presentation/decorator/api-standard-response.decorator';
+import { Controller, HttpCode, HttpStatus, Logger, Post } from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ActionSeedUseCase } from 'src/core/domain/uses-cases/action/action-seed.use-case';
 
 @ApiTags('Acciones')
 @Controller('action')
 export class ActionController {
   private logger = new Logger(ActionController.name);
-  
-  constructor(
-    private readonly actionSeedUseCase: ActionSeedUseCase
-  ) { }
+
+  constructor(private readonly actionSeedUseCase: ActionSeedUseCase) { }
 
   @Post('execute-action-seed')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Ejecutar seed de acciones' })
-  @ApiResponse({ status: HttpStatus.OK, description: 'Seed de acciones ejecutado exitosamente.' })
-  @ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: 'Error al ejecutar el seed de acciones.' })
-  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'No autorizado.' })
-  @ApiResponse({ status: HttpStatus.FORBIDDEN, description: 'Recurso prohibido.' })
+  @ApiStandardResponses({
+    ok: 'Seed de acciones ejecutado exitosamente.',
+    badRequest: false,
+  })
   async executeActionSeed() {
     try {
       await this.actionSeedUseCase.execute();
