@@ -3,7 +3,7 @@ import { Prisma } from '@prisma/client';
 export const companyInitialData: Prisma.CompanyCreateInput[] = [
   {
     name: 'QUINTANA',
-    shortName: 'MM',
+    shortName: 'QU',
     branding: {
       // Para relaciones anidadas, usamos 'create' en lugar de asignar directamente
       create: {
