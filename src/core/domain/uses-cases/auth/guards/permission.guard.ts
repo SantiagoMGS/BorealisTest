@@ -1,5 +1,6 @@
 import { CanActivate, ExecutionContext, ForbiddenException, Injectable, Logger } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { SUBRESOURCE_KEY } from 'src/core/domain/uses-cases/auth/decorators/permissions.decorator';
 import { PrismaService } from 'src/infrastructure/prisma/prisma.service';
 
 @Injectable()
@@ -36,7 +37,18 @@ export class PermissionGuard implements CanActivate {
       return false;
     }
 
-    const subresourceName = PermissionGuard.extractSubresourceName(routePath);
+    // 🔹 Primero verificar si existe un subrecurso definido mediante el decorador
+    const explicitSubresource = this.reflector.get<string>(
+      SUBRESOURCE_KEY,
+      context.getHandler()
+    ) || this.reflector.get<string>(
+      SUBRESOURCE_KEY,
+      context.getClass()
+    );
+
+    // Si hay un subrecurso definido explícitamente en el decorador, usarlo
+    // De lo contrario, extraerlo de la ruta
+    const subresourceName = explicitSubresource || PermissionGuard.extractSubresourceName(routePath);
     this.logger.log(`🔹 Subrecurso detectado: ${subresourceName}`);
 
     // 🔹 Obtener el rol del usuario en la empresa
@@ -46,7 +58,6 @@ export class PermissionGuard implements CanActivate {
     });
 
     if (!userCompany) {
-
       throw new ForbiddenException('El usuario no tiene un rol asignado en ninguna empresa.');
     }
 
@@ -58,7 +69,6 @@ export class PermissionGuard implements CanActivate {
         action: true,
       },
     });
-
 
     // 🔹 Validar si el usuario tiene el permiso necesario con el nivel adecuado
     const hasPermission = rolePermissions.some(rolePermission => {
@@ -91,14 +101,26 @@ export class PermissionGuard implements CanActivate {
   }
 
   private static extractSubresourceName(routePath: string): string {
-    const parts = routePath.split('/').filter(part => part !== 'api' && part !== '');
+    const parts = routePath.split('/').filter(part => part !== 'api' && part !== '' && !part.includes(':'));
 
-    // Si el recurso principal es 'user', busca el subrecurso
-    if (parts[0] === 'user' && parts.length > 1) {
-      return parts[0]; // Retorna el segundo segmento como subrecurso
+    // Si no hay partes después de filtrar, devolver 'unknown'
+    if (parts.length === 0) return 'unknown';
+
+    // Si solo hay una parte, es el recurso principal
+    if (parts.length === 1) return parts[0];
+
+    // Si tiene formato 'resource/subresource', retornar el subrecurso
+    if (parts.length >= 2) {
+      // Casos específicos para rutas anidadas
+      if (parts[0] === 'role' && parts[1] === 'role-permission') {
+        return 'role-permission';
+      }
+      // Para otros controladores con rutas anidadas, se puede agregar lógica similar
+      
+      // Por defecto, usar el primer segmento como nombre del subrecurso
+      return parts[0];
     }
 
-    // Si no hay subrecurso, retorna 'user' como recurso principal o 'unknown'
     return parts[0] || 'unknown';
   }
 

@@ -179,6 +179,7 @@ model RolePermission {
   subresource Subresource @relation(fields: [subresourceId], references: [id], onDelete: Cascade)
 
   @@id([roleId, actionId, subresourceId])
+  @@unique([roleId, subresourceId])
   @@index([roleId])
   @@index([subresourceId])
   @@map("role_permissions")

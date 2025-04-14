@@ -30,6 +30,7 @@ import {
   GetByIdResourceUseCase,
   UpdateResourceUseCase,
 } from 'src/core/domain/uses-cases';
+import { RequireSubresource } from 'src/core/domain/uses-cases/auth/decorators/permissions.decorator';
 import { PermissionGuard } from 'src/core/domain/uses-cases/auth/guards/permission.guard';
 import { CreateResourceDto } from './dtos/create-resource.dto';
 import { UpdateResourceDto } from './dtos/update-resource.dto';
@@ -37,6 +38,7 @@ import { UpdateResourceDto } from './dtos/update-resource.dto';
 @ApiTags('Resources')
 @Controller('resource')
 @UseGuards(AuthGuard('internal'), PermissionGuard)
+@RequireSubresource('resource')
 export class ResourceController {
   constructor(
     private readonly createResourceUseCase: CreateResourceUseCase,
