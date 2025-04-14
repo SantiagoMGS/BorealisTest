@@ -7,6 +7,23 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
+/* Modelos para la autenticación y usuarios
+  Incluye:
+  - User: Usuario del sistema
+  - Session: Sesión del usuario
+  - Role: Rol del usuario
+  - Resource: Recurso del sistema
+  - Action: Acción del sistema
+  - Company: Compañía del sistema
+  - UserCompany: Relación entre usuario y compañía
+  - RolePermission: Relación entre rol y recurso
+  - Subresource: Subrecurso del sistema
+  - Application: Aplicación del sistema
+  - CompanyApplication: Relación entre compañía y aplicación
+  - Supplier: Proveedor del sistema
+  - SupplierCompany: Relación entre proveedor y compañía
+*/
 model User {
   id             String        @id @default(uuid()) @db.Uuid
   name           String
@@ -219,6 +236,23 @@ model CompanyApplication {
   @@index([applicationId])
   @@map("company_applications")
 }
+
+/* Modelos para la gestión de proveedores y lotes
+  Incluye:
+  - Supplier: Proveedor
+  - SupplierCompany: Relación entre proveedor y compañía
+  - Batch: Lote
+  - BatchType: Tipo de lote
+  - Sample: Muestra
+  - Preparation: Preparación de la muestra
+  - PreparationType: Tipo de preparación de la muestra
+  - Subsample: Submuestra
+  - SubsampleType: Tipo de submuestra
+  - Zone: Zona
+  - Subzone: Subzona
+  - Result: Resultados de los analisis
+  - Test: Diferentes analisis que se pueden realizar
+*/
 
 model Supplier {
   id           String   @id @default(uuid()) @db.Uuid

@@ -1,6 +1,18 @@
 // prisma/seed.ts
 import { PrismaClient } from '@prisma/client';
-import { seedActions, seedApplications, seedCompanies } from './seed/';
+import {
+  seedActions,
+  seedApplicationResources,
+  seedApplications,
+  seedCompanies,
+  seedCompanyApplications,
+  seedResources,
+  seedRolePermissions,
+  seedRoles,
+  seedSubresources,
+  seedUserCompanies,
+  seedUsers
+} from './seed/';
 
 // Determinar el nivel de verbosidad desde los argumentos o variables de entorno
 const verboseLogging =
@@ -24,13 +36,25 @@ const prisma = new PrismaClient({
  */
 async function main() {
   try {
-    console.log('🚀 Iniciando proceso de seed...');
+    console.log('🌱 Iniciando proceso de seed...');
 
     // Ejecutamos seeds en orden secuencial para respetar dependencias
-    //await seedRoles(prisma);
+    // 1. Primero las entidades base
+    await seedRoles(prisma);
     await seedCompanies(prisma);
     await seedApplications(prisma);
     await seedActions(prisma);
+    await seedResources(prisma);
+    
+    // 2. Luego las entidades dependientes
+    await seedSubresources(prisma);
+    await seedUsers(prisma);
+    
+    // 3. Finalmente las relaciones
+    await seedUserCompanies(prisma);
+    await seedRolePermissions(prisma);
+    await seedCompanyApplications(prisma);
+    await seedApplicationResources(prisma);
 
     console.log('✅ Proceso de seed completado con éxito');
   } catch (error) {
