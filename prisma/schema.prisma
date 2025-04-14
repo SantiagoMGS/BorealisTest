@@ -68,6 +68,7 @@ model Resource {
   updatedBy String?  @db.Uuid // Auditoría
 
   subresources Subresource[]
+  applications ApplicationResource[] // Nueva relación con aplicaciones
 
   @@index([name])
   @@map("resources")
@@ -195,6 +196,7 @@ model Application {
   updatedBy   String?  @db.Uuid // Auditoría
 
   companies CompanyApplication[]
+  resources ApplicationResource[] // Nueva relación con recursos
 
   @@index([name])
   @@map("applications")
@@ -464,4 +466,23 @@ model Test {
   @@index([name])
   @@index([category])
   @@map("tests")
+}
+
+// Nueva tabla pivote para la relación entre Application y Resource
+model ApplicationResource {
+  applicationId String   @db.Uuid
+  resourceId    String   @db.Uuid
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  createdBy     String?  @db.Uuid // Auditoría
+  updatedBy     String?  @db.Uuid // Auditoría
+
+  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  resource    Resource    @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+
+  @@id([applicationId, resourceId])
+  @@index([applicationId])
+  @@index([resourceId])
+  @@map("application_resources")
 }
