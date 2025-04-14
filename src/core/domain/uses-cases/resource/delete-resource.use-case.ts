@@ -14,7 +14,7 @@ export class DeleteResourceUseCase {
       const existingResource = await this.resourceRepository.findById(id);
       if (!existingResource) throw new NotFoundException(`Recurso con ID ${id} no encontrado`);
 
-      await this.resourceRepository.deleteResource(id);
+      await this.resourceRepository.delete(id);
     } catch (error) {
       this.logger.error(`Failed to delete resource ID: ${id}`, (error as Error).stack);
       throw error;

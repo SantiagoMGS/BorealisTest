@@ -1,6 +1,6 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { IUserRepository } from '../../repositories/user.repository';
 import { User } from '../../entities';
+import { IUserRepository } from '../../repositories/user.repository';
 
 
 @Injectable()
@@ -14,7 +14,14 @@ export class FindAllUsersUseCase {
   async execute(page: number, limit: number): Promise<{ users: Omit<User, 'hashedPassword'>[]; total: number }> {
     this.logger.log(`Getting all users with page: ${page}, limit: ${limit}`);
     try {
-      return this.userRepository.findAll(page, limit);
+      const result = await this.userRepository.findAll(page, limit);
+      return {
+        users: result.data.map(user => {
+          const { hashedPassword, ...rest } = user;
+          return rest;
+        }),
+        total: result.total,
+      };
 
     } catch (error) {
       this.logger.error('Failed to get all users', (error as Error).stack);

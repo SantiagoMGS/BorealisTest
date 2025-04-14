@@ -11,7 +11,8 @@ import { PrismaService } from './prisma.service';
 export class PrismaResourceRepository implements IResourceRepository {
   constructor(private readonly prisma: PrismaService) { }
 
-  async createResource(resource: Resource): Promise<Resource> {
+  async create(resource: Resource): Promise<Resource> {
+
     try {
       const createdResource = await this.prisma.resource.create({
         data: { name: resource.name, icon: resource.icon, path: resource.path },
@@ -42,39 +43,34 @@ export class PrismaResourceRepository implements IResourceRepository {
       : null;
   }
 
-  async deleteResource(id: string): Promise<void> {
+  async delete(id: string): Promise<void> {
     const resource = await this.findById(id);
     if (!resource) throw new NotFoundException('Recurso no encontrado');
     await this.prisma.resource.delete({ where: { id } });
   }
 
-  async findAll(
-    page: number,
-    limit: number,
-  ): Promise<{ resources: Resource[]; total: number }> {
+  async findAll(page = 1, limit = 10): Promise<{ data: Resource[]; total: number }> {
     const skip = (page - 1) * limit;
-
     const [resources, total] = await Promise.all([
-      this.prisma.resource.findMany({
-        skip,
-        take: limit,
-        select: { id: true, name: true, icon: true, path: true },
-      }),
+      this.prisma.resource.findMany({ skip, take: limit }),
       this.prisma.resource.count(),
     ]);
-
     return {
-      resources: resources.map((r) => ({
-        id: r.id,
-        name: r.name,
-        icon: r.icon,
-        path: r.path,
+      data: resources.map(resource => ({
+        id: resource.id,
+        name: resource.name,
+        icon: resource.icon,
+        path: resource.path,
+        createdAt: resource.createdAt,
+        updatedAt: resource.updatedAt,
+        createdBy: resource.createdBy ?? undefined,
+        updatedBy: resource.updatedBy ?? undefined,
       })),
       total,
     };
   }
 
-  async updateResource(
+  async update(
     id: string,
     resourceData: Partial<Resource>,
   ): Promise<Resource> {

@@ -26,7 +26,9 @@ export class ApplicationSeedUseCase {
         }),
       );
 
-      await this.applicationRepository.createApplication(applications);
+      for (const application of applications) {
+        await this.applicationRepository.create(application);
+      }
       this.logger.log('Application seed executed successfully');
       return applications;
     } catch (error) {

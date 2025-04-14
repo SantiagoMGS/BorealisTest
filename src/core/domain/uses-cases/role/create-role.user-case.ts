@@ -23,7 +23,7 @@ export class CreateRoleUseCase {
       };
 
 
-      const createdRole = await this.roleRepository.createRole(newRole);
+      const createdRole = await this.roleRepository.create(newRole);
       this.logger.log('Role created successfully');
       return createdRole;
     } catch (error) {

@@ -23,7 +23,7 @@ export class CreateSubResourceUseCase {
         path: subResourceDto.path,
       };
 
-      const createdSubResource = await this.subResourceRepository.createSubResource(newSubResource);
+      const createdSubResource = await this.subResourceRepository.create(newSubResource);
       this.logger.log('Subresource created successfully');
       return createdSubResource;
     } catch (error) {

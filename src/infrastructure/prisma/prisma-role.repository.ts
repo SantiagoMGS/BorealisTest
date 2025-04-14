@@ -7,76 +7,40 @@ import { PrismaService } from './prisma.service';
 export class PrismaRoleRepository implements IRoleRepository {
   constructor(private readonly prisma: PrismaService) { }
 
-  async createRole(role: Role): Promise<Role> {
-    const createdRole = await this.prisma.role.create({
-      data: { name: role.name },
-    });
+  async create(data: Role): Promise<Role> {
 
-    return {
-      id: createdRole.id,
-      name: createdRole.name,
-    };
+    const created = await this.prisma.role.create({ data: { name: data.name } });
+    return { id: created.id, name: created.name };
   }
 
   async findById(id: string): Promise<Role | null> {
-    const role = await this.prisma.role.findUnique({ where: { id } });
-
-    return role
-      ? {
-        id: role.id,
-        name: role.name,
-      }
-      : null;
+    const found = await this.prisma.role.findUnique({ where: { id } });
+    return found ? { id: found.id, name: found.name } : null;
   }
 
-  async findByName(name: string): Promise<Role | null> {
-    const role = await this.prisma.role.findUnique({ where: { name } });
-
-    return role
-      ? {
-        id: role.id,
-        name: role.name,
-      }
-      : null;
-  }
-
-  async findAll(page: number, limit: number): Promise<{ roles: Role[]; total: number }> {
+  async findAll(page: number, limit: number): Promise<{ data: Role[]; total: number }> {
     const skip = (page - 1) * limit;
-
     const [roles, total] = await Promise.all([
-      this.prisma.role.findMany({
-        skip,
-        take: limit,
-        select: { id: true, name: true },
-      }),
+      this.prisma.role.findMany({ skip, take: limit }),
       this.prisma.role.count(),
     ]);
-
     return {
-      roles: roles.map((r) => ({
-        id: r.id,
-        name: r.name,
-      })),
+      data: roles.map((r) => ({ id: r.id, name: r.name })),
       total,
     };
   }
 
-  async updateRole(id: string, roleData: Partial<Role>): Promise<Role> {
-    const updatedRole = await this.prisma.role.update({
-      where: { id },
-      data: {
-        name: roleData.name,
-      },
-    });
-
-    return {
-      id: updatedRole.id,
-      name: updatedRole.name,
-    };
+  async update(id: string, data: Partial<Role>): Promise<Role> {
+    const updated = await this.prisma.role.update({ where: { id }, data });
+    return { id: updated.id, name: updated.name };
   }
 
-  async deleteRole(id: string): Promise<string> {
+  async delete(id: string): Promise<void> {
     await this.prisma.role.delete({ where: { id } });
-    return 'Role deleted successfully';
+  }
+
+  async findByName(name: string): Promise<Role | null> {
+    const found = await this.prisma.role.findUnique({ where: { name } });
+    return found ? { id: found.id, name: found.name } : null;
   }
 }

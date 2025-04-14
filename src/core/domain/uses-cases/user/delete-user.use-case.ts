@@ -20,7 +20,7 @@ export class DeleteUserUseCase {
     try {
       const existingUser = await this.userRepository.findByEmail(email);
       if (!existingUser) throw new NotFoundException('Usuario no encontrado');
-      await this.userRepository.deleteUser(email);
+      await this.userRepository.delete(email);
       this.logger.log(`User email: ${email} deleted successfully`);
     } catch (error) {
       this.logger.error(`Failed to delete user email: ${email}`, (error as Error).stack);

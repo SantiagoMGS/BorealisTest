@@ -8,9 +8,192 @@ import { PrismaService } from './prisma.service';
 @Injectable()
 export class PrismaUserRepository implements IUserRepository {
   constructor(private readonly prisma: PrismaService) { }
+  async create(user: User): Promise<User> {
+
+    const created = await this.prisma.user.create({
+      data: {
+        name: user.name,
+        email: user.email,
+        hashedPassword: user.hashedPassword,
+        isActive: user.isActive,
+      },
+    });
+
+    return this.mapToUserEntity(created);
+  }
+
+  async findById(id: string): Promise<User | null> {
+    return await this.prisma.user.findUnique({ where: { id } });
+  }
+  async findAll(page: number, limit: number): Promise<{ data: User[]; total: number }> {
+    const skip = (page - 1) * limit;
+    const [users, total] = await Promise.all([
+      this.prisma.user.findMany({ skip, take: limit }),
+      this.prisma.user.count(),
+    ]);
+    return { data: users, total };
+  }
+
+  async update(email: string, userData: Partial<User>): Promise<User> {
+    const existingUser = await this.findByEmailWithPassword(email);
+    if (!existingUser) throw new NotFoundException(`Usuario con email ${email} no encontrado`);
+
+    if (userData.hashedPassword) {
+      userData.hashedPassword = await bcrypt.hash(userData.hashedPassword, 10);
+    }
+
+    const updatedUser = await this.prisma.user.update({
+      where: { email },
+      data: userData,
+    });
+
+    return this.mapToUserEntity(updatedUser);
+  }
+
+
+  async delete(email: string): Promise<void> {
+    await this.prisma.user.delete({ where: { email } });
+  }
+  async findByEmail(email: string): Promise<Omit<User, 'hashedPassword'> | null> {
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        isActive: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+    return user || null;
+  }
+  async assignUserToCompanies(userId: string, permissions: { companyId: string; roleId: string }[]): Promise<void> {
+    await this.prisma.userCompany.createMany({
+      data: permissions.map((p) => ({ userId, companyId: p.companyId, roleId: p.roleId })),
+      skipDuplicates: true,
+    });
+  }
+
+  async updateUserRole(userId: string, companyId: string, roleId: string): Promise<void> {
+    await this.prisma.userCompany.updateMany({
+      where: { userId, companyId },
+      data: { roleId },
+    });
+  }
+
+  async getUserPermissions(userId: string): Promise<UserPermissionsEntity[]> {
+    try {
+
+      const userPermissions = await this.prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          isActive: true,
+          companies: {
+            select: {
+              company: {
+                select: {
+                  id: true,
+                  name: true,
+                  shortName: true,
+                  branding: {
+                    select: {
+                      logo: true,
+                      primaryColor: true,
+                      secondaryColor: true,
+                      tertiaryColor: true,
+                    },
+                  },
+                  applications: {
+                    select: {
+                      application: {
+                        select: {
+                          id: true,
+                          name: true,
+                          isActive: true,
+                          logo: true,
+                          path: true,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              role: {
+                select: {
+                  id: true,
+                  name: true,
+                  permissions: {
+                    select: {
+                      action: {
+                        select: {
+                          id: true,
+                          name: true,
+                          level: true,
+                        },
+                      },
+                      subresource: {
+                        select: {
+                          id: true,
+                          name: true,
+                          icon: true,
+                          path: true,
+                          resource: {
+                            select: {
+                              id: true,
+                              name: true,
+                              icon: true,
+                              path: true,
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+
+      return [this.transformUserPermissions(userPermissions)];
+    } catch (error) {
+      throw new Error('Error fetching user permissions');
+    }
+  }
+
+  async updateRefreshToken(userId: string, refreshToken: string, expiry: Date): Promise<void> {
+    await this.prisma.session.updateMany({
+      where: { userId },
+      data: {
+        refreshToken,
+        refreshExpiresAt: expiry,
+      },
+    });
+  }
+
+  async findUserByRefreshToken(hashedRefreshToken: string): Promise<User | null> {
+    const session = await this.prisma.session.findFirst({
+      where: { refreshToken: hashedRefreshToken },
+      include: { user: true },
+    });
+    return session?.user || null;
+  }
+  async clearRefreshToken(id: string): Promise<void> {
+    await this.prisma.session.updateMany({
+      where: { userId: id },
+      data: {
+        refreshToken: null,
+        refreshExpiresAt: null,
+      },
+    });
+  }
 
   // Función para mapear un usuario de la base de datos a la entidad User
-
   private mapToUserEntity(user: any): User {
     return {
       id: user.id,
@@ -123,91 +306,9 @@ export class PrismaUserRepository implements IUserRepository {
     }
   }
 
-  async createUser(user: User): Promise<User> {
-    const created = await this.prisma.user.create({
-      data: {
-        name: user.name,
-        email: user.email,
-        hashedPassword: user.hashedPassword,
-        isActive: user.isActive,
-      },
-    });
-
-    return this.mapToUserEntity(created);
-  }
-
   async findByEmailWithPassword(email: string): Promise<User | null> {
     const user = await this.prisma.user.findUnique({ where: { email } });
     return user ? this.mapToUserEntity(user) : null;
-  }
-
-  async findByEmail(email: string): Promise<Omit<User, 'hashedPassword'> | null> {
-    const user = await this.prisma.user.findUnique({
-      where: { email },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        isActive: true,
-        createdAt: true,
-        updatedAt: true,
-      },
-    });
-    return user || null;
-  }
-
-  async deleteUser(email: string): Promise<void> {
-    await this.prisma.user.delete({ where: { email } });
-  }
-
-  async findAll(page: number, limit: number): Promise<{ users: Omit<User, 'hashedPassword'>[]; total: number }> {
-    const skip = (page - 1) * limit;
-    const [users, total] = await Promise.all([
-      this.prisma.user.findMany({
-        skip,
-        take: limit,
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          isActive: true,
-          createdAt: true,
-          updatedAt: true,
-        },
-      }),
-      this.prisma.user.count(),
-    ]);
-    return { users, total };
-  }
-
-  async update(email: string, userData: Partial<User>): Promise<User> {
-    const existingUser = await this.findByEmailWithPassword(email);
-    if (!existingUser) throw new NotFoundException(`Usuario con email ${email} no encontrado`);
-
-    if (userData.hashedPassword) {
-      userData.hashedPassword = await bcrypt.hash(userData.hashedPassword, 10);
-    }
-
-    const updatedUser = await this.prisma.user.update({
-      where: { email },
-      data: userData,
-    });
-
-    return this.mapToUserEntity(updatedUser);
-  }
-
-  async assignUserToCompanies(userId: string, permissions: { companyId: string; roleId: string }[]): Promise<void> {
-    await this.prisma.userCompany.createMany({
-      data: permissions.map((p) => ({ userId, companyId: p.companyId, roleId: p.roleId })),
-      skipDuplicates: true,
-    });
-  }
-
-  async updateUserRole(userId: string, companyId: string, roleId: string): Promise<void> {
-    await this.prisma.userCompany.updateMany({
-      where: { userId, companyId },
-      data: { roleId },
-    });
   }
 
   async getCompanyByUserId(userId: string): Promise<{
@@ -249,115 +350,6 @@ export class PrismaUserRepository implements IUserRepository {
     }));
   }
 
-  async getUserPermissions(userId: string): Promise<UserPermissionsEntity[]> {
-    try {
 
-      const userPermissions = await this.prisma.user.findUnique({
-        where: { id: userId },
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          isActive: true,
-          companies: {
-            select: {
-              company: {
-                select: {
-                  id: true,
-                  name: true,
-                  shortName: true,
-                  branding: {
-                    select: {
-                      logo: true,
-                      primaryColor: true,
-                      secondaryColor: true,
-                      tertiaryColor: true,
-                    },
-                  },
-                  applications: {
-                    select: {
-                      application: {
-                        select: {
-                          id: true,
-                          name: true,
-                          isActive: true,
-                          logo: true,
-                          path: true,
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-              role: {
-                select: {
-                  id: true,
-                  name: true,
-                  permissions: {
-                    select: {
-                      action: {
-                        select: {
-                          id: true,
-                          name: true,
-                          level: true,
-                        },
-                      },
-                      subresource: {
-                        select: {
-                          id: true,
-                          name: true,
-                          icon: true,
-                          path: true,
-                          resource: {
-                            select: {
-                              id: true,
-                              name: true,
-                              icon: true,
-                              path: true,
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      });
 
-      return [this.transformUserPermissions(userPermissions)];
-    } catch (error) {
-      throw new Error('Error fetching user permissions');
-    }
-  }
-
-  async clearRefreshToken(id: string): Promise<void> {
-    await this.prisma.session.updateMany({
-      where: { userId: id },
-      data: {
-        refreshToken: null,
-        refreshExpiresAt: null,
-      },
-    });
-  }
-
-  async findUserByRefreshToken(hashedRefreshToken: string): Promise<User | null> {
-    const session = await this.prisma.session.findFirst({
-      where: { refreshToken: hashedRefreshToken },
-      include: { user: true },
-    });
-    return session?.user || null;
-  }
-
-  async updateRefreshToken(userId: string, refreshToken: string, expiry: Date): Promise<void> {
-    await this.prisma.session.updateMany({
-      where: { userId },
-      data: {
-        refreshToken,
-        refreshExpiresAt: expiry,
-      },
-    });
-  }
 }

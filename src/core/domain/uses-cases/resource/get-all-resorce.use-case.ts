@@ -1,6 +1,6 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { IResourceRepository } from '../../repositories/resource.repository';
 import { Resource } from '../../entities';
+import { IResourceRepository } from '../../repositories/resource.repository';
 
 @Injectable()
 export class GetAllResourcesUseCase {
@@ -16,7 +16,11 @@ export class GetAllResourcesUseCase {
       if (!(page ?? limit)) {
         throw new Error('Page and limit must be defined');
       }
-      return this.resourceRepository.findAll(page, limit);
+      const result = await this.resourceRepository.findAll(page, limit);
+      return {
+        resources: result.data.map(({ createdAt, updatedAt, ...rest }) => rest),
+        total: result.total,
+      };
     } catch (error) {
       this.logger.error('Failed to get all resource', (error as Error).stack);
       throw error;

@@ -10,6 +10,8 @@ export class CreateResourceUseCase {
   constructor(@Inject('IResourceRepository') private readonly ResourceRepository: IResourceRepository) { }
 
   async execute(resourceDto: CreateResourceDto): Promise<Resource> {
+    console.log('llegaaaaa', resourceDto);
+
     this.logger.log('Creating new resource');
 
     try {
@@ -19,7 +21,7 @@ export class CreateResourceUseCase {
         icon: resourceDto.icon,
         path: resourceDto.path,
       };
-      const createdResource = await this.ResourceRepository.createResource(newResource);
+      const createdResource = await this.ResourceRepository.create(newResource);
       this.logger.log('Resource created successfully');
       return createdResource;
     } catch (error) {

@@ -1,6 +1,6 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { ICompanyRepository } from '../../repositories/company.repository';
 import { Company } from '../../entities';
+import { ICompanyRepository } from '../../repositories/company.repository';
 
 @Injectable()
 export class GetAllCompaniesUseCase {
@@ -14,7 +14,8 @@ export class GetAllCompaniesUseCase {
     this.logger.log(`Getting all companies with page: ${page}, limit: ${limit}`);
 
     try {
-      return this.companyRepository.findAll(page, limit);
+      const result = await this.companyRepository.findAll(page, limit);
+      return { companies: result.data, total: result.total };
     } catch (error) {
       this.logger.error('Failed to get all companys', (error as Error).stack);
       throw error;

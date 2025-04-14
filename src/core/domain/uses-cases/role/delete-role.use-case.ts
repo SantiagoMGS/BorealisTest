@@ -1,11 +1,11 @@
-import { Inject, Injectable, NotFoundException, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { IRoleRepository } from 'src/core/domain/repositories/role.repository';
 
 @Injectable()
 export class DeleteRoleUseCase {
   private readonly logger = new Logger(DeleteRoleUseCase.name);
 
-  constructor(@Inject('IRoleRepository') private readonly roleRepository: IRoleRepository) {}
+  constructor(@Inject('IRoleRepository') private readonly roleRepository: IRoleRepository) { }
 
   /**
    * Deletes a role by its ID.
@@ -19,7 +19,7 @@ export class DeleteRoleUseCase {
       const existingRole = await this.roleRepository.findById(id);
       if (!existingRole) throw new NotFoundException(`Rol con ID ${id} no encontrado`);
 
-      const deleteRole = await this.roleRepository.deleteRole(id);
+      const deleteRole = await this.roleRepository.delete(id);
       this.logger.log(`Role ID: ${id} deleted successfully`);
       // Role ID: ${id} deleted successfully
     } catch (error) {

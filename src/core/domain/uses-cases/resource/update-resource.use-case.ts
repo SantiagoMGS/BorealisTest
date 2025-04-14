@@ -1,6 +1,6 @@
 import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { IResourceRepository } from '../../repositories/resource.repository';
 import { Resource } from '../../entities';
+import { IResourceRepository } from '../../repositories/resource.repository';
 
 @Injectable()
 export class UpdateResourceUseCase {
@@ -15,7 +15,7 @@ export class UpdateResourceUseCase {
     try {
       const existingResource = await this.resourceRepository.findById(id);
       if (!existingResource) throw new NotFoundException(`Recurso con ID ${id} no encontrado`);
-      return this.resourceRepository.updateResource(id, resourceData);
+      return this.resourceRepository.update(id, resourceData);
     } catch (error) {
       this.logger.error(`Failed to update user ID: ${id}`, (error as Error).stack);
       throw error;

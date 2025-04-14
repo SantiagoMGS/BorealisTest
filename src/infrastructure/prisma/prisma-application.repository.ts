@@ -7,37 +7,47 @@ import { PrismaService } from './prisma.service';
 export class PrismaApplicationRepository implements IApplicationRepository {
   constructor(private readonly prisma: PrismaService) { }
 
-  async createApplication(applications: Application[]): Promise<Application[]> {
+  async create(data: Application): Promise<Application> {
     try {
-      await this.prisma.application.createMany({
-        data: applications.map((app) => ({
-          name: app.name,
-          isActive: app.isActive,
-          logo: app.logo ?? '',
-          path: app.path
 
-        })),
-        skipDuplicates: true,
+      const created = await this.prisma.application.create({
+        data: {
+          name: data.name,
+          isActive: data.isActive,
+          logo: data.logo ?? '',
+          path: data.path,
+        },
       });
 
-      return (await this.prisma.application.findMany({
-        where: {
-          name: { in: applications.map((app) => app.name) },
-        },
-      })).map((app) => ({
-        id: app.id,
-        name: app.name,
-        isActive: app.isActive,
-        logo: app.logo,
-        path: app.path,
-      }));
-
-
+      return {
+        id: created.id,
+        name: created.name,
+        isActive: created.isActive,
+        logo: created.logo,
+        path: created.path,
+      };
     } catch (error) {
-      throw new ConflictException('Algunas acciones ya existen.');
+      throw new ConflictException('La aplicación ya existe.');
     }
   }
+  async update(id: string, data: Partial<Application>): Promise<Application> {
+    const updated = await this.prisma.application.update({
+      where: { id },
+      data,
+    });
 
+    return {
+      id: updated.id,
+      name: updated.name,
+      isActive: updated.isActive,
+      logo: updated.logo,
+      path: updated.path,
+    };
+  }
+
+  async delete(id: string): Promise<void> {
+    await this.prisma.application.delete({ where: { id } });
+  }
   // 🔹 Implementación del método findById
   async findById(applicationId: string): Promise<Application | null> {
     const found = await this.prisma.application.findUnique({
@@ -54,7 +64,24 @@ export class PrismaApplicationRepository implements IApplicationRepository {
       }
       : null;
   }
+  async findAll(page = 1, limit = 10): Promise<{ data: Application[]; total: number }> {
+    const skip = (page - 1) * limit;
+    const [apps, total] = await Promise.all([
+      this.prisma.application.findMany({ skip, take: limit }),
+      this.prisma.application.count(),
+    ]);
 
+    return {
+      data: apps.map((app) => ({
+        id: app.id,
+        name: app.name,
+        isActive: app.isActive,
+        logo: app.logo,
+        path: app.path,
+      })),
+      total,
+    };
+  }
 
   // 🔹 Implementación del método findManyByIds
   async findManyByIds(applicationIds: string[]): Promise<Application[]> {

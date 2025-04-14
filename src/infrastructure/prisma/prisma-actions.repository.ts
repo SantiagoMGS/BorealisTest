@@ -7,30 +7,41 @@ import { PrismaService } from './prisma.service';
 export class PrismaActionRepository implements IActionRepository {
   constructor(private readonly prisma: PrismaService) { }
 
-  async createActions(actions: Action[]): Promise<Action[]> {
+  async create(action: Action): Promise<Action> {
     try {
-      await this.prisma.action.createMany({
-        data: actions.map((action) => ({
+
+      const created = await this.prisma.action.create({
+        data: {
           name: action.name,
           level: action.level,
-        })),
-        skipDuplicates: true, // ✅ Evita errores si la acción ya existe
-      });
-
-      const created = await this.prisma.action.findMany({
-        where: {
-          name: { in: actions.map((action) => action.name) },
         },
       });
-      return created.map((a) => ({
-        id: a.id,
-        name: a.name,
-        level: a.level,
-      }));
 
+      return {
+        id: created.id,
+        name: created.name,
+        level: created.level,
+      };
     } catch (error) {
-      throw new ConflictException('Algunas acciones ya existen.');
+      throw new ConflictException(`La acción "${action.name}" ya existe.`);
     }
+  }
+
+  async update(id: string, data: Partial<Action>): Promise<Action> {
+    const updated = await this.prisma.action.update({
+      where: { id },
+      data,
+    });
+
+    return {
+      id: updated.id,
+      name: updated.name,
+      level: updated.level,
+    };
+  }
+
+  async delete(id: string): Promise<void> {
+    await this.prisma.action.delete({ where: { id } });
   }
 
   async findByName(name: string): Promise<Action | null> {

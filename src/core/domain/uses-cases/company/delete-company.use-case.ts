@@ -15,7 +15,7 @@ export class DeleteCompanyUseCase {
       const existingCompany = await this.companyRepository.findById(id);
       if (!existingCompany) throw new NotFoundException(`Compañía con ID ${id} no encontrada`);
 
-      await this.companyRepository.deleteCompany(id);
+      await this.companyRepository.delete(id);
       this.logger.log(`Company ID: ${id} deleted successfully`);
     } catch (error) {
       this.logger.error(`Failed to delete company ID: ${id}`, (error as Error).stack);
