@@ -42,11 +42,13 @@ export async function seedRolePermissions(prisma: PrismaClient) {
       if (rolePermission.roleName === 'SUPERADMIN') {
         for (const subresource of subresources) {
           for (const action of actions) {
-            rolePermissions.push({
-              roleId,
-              actionId: action.id,
-              subresourceId: subresource.id,
-            });
+            if (action.name === 'DELETE') {
+              rolePermissions.push({
+                roleId,
+                actionId: action.id,
+                subresourceId: subresource.id,
+              });
+            }
           }
         }
       } else {

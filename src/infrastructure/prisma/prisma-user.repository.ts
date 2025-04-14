@@ -84,6 +84,7 @@ export class PrismaUserRepository implements IUserRepository {
 
   async getUserPermissions(userId: string): Promise<UserPermissionsEntity[]> {
     try {
+      console.log('Fetching user permissions for userId:', userId);
 
       const userPermissions = await this.prisma.user.findUnique({
         where: { id: userId },

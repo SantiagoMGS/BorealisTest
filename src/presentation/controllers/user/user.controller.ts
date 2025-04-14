@@ -25,9 +25,10 @@ import { UpdateUserCompanyDto } from "./dtos/update-user-company.dto";
 import { UpdateUserDto } from "./dtos/update-user.dto";
 
 
+
 @ApiTags('Users')
 @Controller('user')
-@UseGuards(AuthGuard('internal'), PermissionGuard)
+@UseGuards(AuthGuard('internal'))
 export class UserController {
   constructor(
     private readonly createUserUseCase: CreateUserUseCase,
@@ -45,6 +46,7 @@ export class UserController {
   @ApiOperation({ summary: 'Crear un nuevo usuario' })
   @ApiBody({ type: CreateUserDto })
   @ApiStandardResponses({ created: true, badRequest: true })
+  @UseGuards(PermissionGuard)
   async createUser(@Body() dto: CreateUserDto) {
     return this.createUserUseCase.execute(dto);
   }
@@ -62,6 +64,8 @@ export class UserController {
   @ApiQuery({ name: 'page', required: false, type: Number })
   @ApiQuery({ name: 'limit', required: false, type: Number })
   @ApiStandardResponses({ ok: 'Lista de usuarios.' })
+  @UseGuards(PermissionGuard)
+
   async getAllUsers(
     @Query('page', ParseIntPipe) page = 1,
     @Query('limit', ParseIntPipe) limit = 10
@@ -76,6 +80,8 @@ export class UserController {
   @ApiOperation({ summary: 'Obtener un usuario por email' })
   @ApiParam({ name: 'email', description: 'Email del usuario' })
   @ApiStandardResponses({ ok: 'Detalles del usuario.', notFound: 'Usuario no encontrado.' })
+  @UseGuards(PermissionGuard)
+
   async getUserByEmail(@Param('email') email: string) {
     const permission = await this.permissionService.getPermissions('user', 'read');
     // Permissions(permission)
@@ -93,6 +99,8 @@ export class UserController {
     badRequest: true,
     notFound: 'Usuario o compañía o rol no encontrado.'
   })
+  @UseGuards(PermissionGuard)
+
   async updateUserRole(@Body() dto: UpdateUserCompanyDto): Promise<void> {
     const permission = await this.permissionService.getPermissions('user', 'update');
     // Permissions(permission)
@@ -110,6 +118,8 @@ export class UserController {
     badRequest: true,
     notFound: 'Usuario no encontrado.'
   })
+  @UseGuards(PermissionGuard)
+
   async updateUser(
     @Param('email') email: string,
     @Body() dto: UpdateUserDto
@@ -127,6 +137,8 @@ export class UserController {
     ok: 'Usuario eliminado exitosamente.',
     notFound: 'Usuario no encontrado.'
   })
+  @UseGuards(PermissionGuard)
+
   async deleteUser(@Param('email') email: string) {
     const permission = await this.permissionService.getPermissions('user', 'delete');
     // Permissions(permission)

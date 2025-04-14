@@ -10,4 +10,4 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=borealis_auth_dev_db
+      - POSTGRES_DB=borealis_dev_db
