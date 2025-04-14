@@ -32,7 +32,7 @@ export class AuthUseCase {
 
       return {
         ...safeUser,
-        companies, // ya vienen en formato { id, name, branding }
+        companies,
       };
     } catch (error) {
       this.logger.error("🔴 Error: Error en validateUser()", error);

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { User } from 'src/core/domain/entities';
 import { ILoginRepository } from 'src/core/domain/repositories/login.repository';
 import { PrismaService } from './prisma.service';
@@ -22,7 +22,7 @@ export class PrismaLoginRepository implements ILoginRepository {
     });
 
     if (!user) {
-      throw new NotFoundException(`User with email ${email} not found`);
+      throw new UnauthorizedException(`User with email ${email} not found`);
     }
 
     return {
@@ -50,7 +50,7 @@ export class PrismaLoginRepository implements ILoginRepository {
     });
 
     if (!user) {
-      throw new NotFoundException(`User with email ${email} not found`);
+      throw new UnauthorizedException(`User with email ${email} not found`);
     }
 
     return {
