@@ -67,6 +67,7 @@ export class PrismaLoginRepository implements ILoginRepository {
     {
       id: string;
       name: string;
+      shortName: string;
       branding: {
         logo: string | null;
         primaryColor: string | null;
@@ -82,6 +83,7 @@ export class PrismaLoginRepository implements ILoginRepository {
           select: {
             id: true,
             name: true,
+            shortName: true,
             branding: {
               select: {
                 logo: true,
@@ -98,6 +100,7 @@ export class PrismaLoginRepository implements ILoginRepository {
     return results.map((item) => ({
       id: item.company.id,
       name: item.company.name,
+      shortName: item.company.shortName,
       branding: item.company.branding,
     }));
   }

@@ -9,7 +9,14 @@ import { PrismaService } from './prisma.service';
 export class PrismaUserRepository implements IUserRepository {
   constructor(private readonly prisma: PrismaService) { }
   async create(user: User): Promise<User> {
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email: user.email },
+    });
 
+    if (existingUser) {
+      // Si el usuario ya existe, devolver el usuario existente
+      return this.mapToUserEntity(existingUser);
+    }
     const created = await this.prisma.user.create({
       data: {
         name: user.name,

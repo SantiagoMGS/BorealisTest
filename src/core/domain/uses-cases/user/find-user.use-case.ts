@@ -1,6 +1,6 @@
-import { Inject, Injectable, ForbiddenException, Logger } from '@nestjs/common';
-import { IUserRepository } from '../../repositories/user.repository';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { User } from '@prisma/client';
+import { IUserRepository } from '../../repositories/user.repository';
 import { UpdateUserUseCase } from './update-user.use-case';
 
 @Injectable()
@@ -9,17 +9,25 @@ export class FindUserUseCase {
   constructor(@Inject('IUserRepository') private readonly userRepository: IUserRepository,) {
 
   }
-  async execute(email: string): Promise<User | null> {
-
+  async execute(email: string): Promise<Omit<User, 'hashedPassword'> | null> {
     try {
-
       this.logger.log(`Finding user by email: ${email}`);
 
       const existingUser = await this.userRepository.findByEmail(email);
-      if (existingUser) {
-        throw new ForbiddenException('El email ya está en uso');
+      if (!existingUser) {
+        this.logger.log(`User with email ${email} not found.`);
+        return null;
       }
-      return existingUser;
+
+      this.logger.log(`User with email ${email} found.`);
+      return {
+        id: existingUser.id || '',
+        name: existingUser.name,
+        email: existingUser.email,
+        isActive: existingUser.isActive,
+        createdAt: existingUser.createdAt || new Date(),
+        updatedAt: existingUser.updatedAt || new Date(),
+      }; // Exclude hashedPassword
     } catch (error) {
       this.logger.error(`Failed to find user by email: ${email}`, (error as Error).stack);
       throw error;
