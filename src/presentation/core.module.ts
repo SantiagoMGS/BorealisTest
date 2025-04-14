@@ -2,13 +2,10 @@ import { Module } from '@nestjs/common';
 
 // **Controllers**
 import {
-  ActionController,
-  ApplicationController,
   CompanyController,
   ResourceController,
   RoleController,
   RolePermissionController,
-  SeedController,
   SubResourceController,
   UserController,
   WebhookController,
@@ -16,9 +13,6 @@ import {
 
 // **Use Cases**
 import {
-  // Seeds
-  ActionSeedUseCase,
-  ApplicationSeedUseCase,
   AssignApplicationToCompaniesUseCase,
   AssignPermissionsUseCase,
   CheckPermissionUseCase,
@@ -49,7 +43,6 @@ import {
   GetRoleByIdUseCase,
   GetUserPermissionsUseCase,
   RemovePermissionUseCase,
-  SeedUseCase,
   UpdateCompanyUseCase,
   UpdateResourceUseCase,
   UpdateRoleUseCase,
@@ -78,10 +71,7 @@ import { PrismaService } from 'src/infrastructure/prisma/prisma.service';
     RoleController,
     UserController,
     WebhookController,
-    ActionController,
     RolePermissionController,
-    ApplicationController,
-    SeedController,
     SubResourceController,
   ],
   providers: [
@@ -156,9 +146,6 @@ import { PrismaService } from 'src/infrastructure/prisma/prisma.service';
     UpdateCompanyUseCase,
 
     CreateSubResourceUseCase,
-    ActionSeedUseCase,
-    ApplicationSeedUseCase,
-    SeedUseCase,
   ],
   exports: [
     // Repositories
@@ -199,9 +186,6 @@ import { PrismaService } from 'src/infrastructure/prisma/prisma.service';
     UpdateCompanyUseCase,
 
     CreateSubResourceUseCase,
-    ActionSeedUseCase,
-    ApplicationSeedUseCase,
-    SeedUseCase,
   ],
 })
 export class CoreModule { }
