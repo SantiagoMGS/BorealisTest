@@ -48,7 +48,7 @@ export class SeedUseCase {
     @Inject('ISubResourceRepository')
     private readonly subresourceRepository: ISubResourceRepository,
     @Inject('IUserRepository') private readonly userRepository: IUserRepository,
-  ) {}
+  ) { }
 
   async execute(): Promise<string> {
     this.logger.log('🚀 Ejecutando proceso de seed...');
@@ -80,10 +80,14 @@ export class SeedUseCase {
         name: application.name,
         isActive: true,
         logo: application.logo,
+        path: application.path,
       }),
     );
+
     try {
-      await this.applicationRepository.createApplication(applications);
+      for (const application of applications) {
+        await this.applicationRepository.create(application);
+      }
     } catch {
       this.logger.warn('⚠️ Las aplicaciones ya existen o fallaron al crearse');
     }
@@ -96,11 +100,12 @@ export class SeedUseCase {
       id: r.id,
       name: r.name,
       icon: r.icon,
+      path: r.path,
     }));
 
     for (const resource of resources) {
       try {
-        await this.resourseRepository.createResource(resource);
+        await this.resourseRepository.create(resource);
       } catch {
         this.logger.warn(`⚠️ El recurso ${resource.name} ya existe o falló`);
       }
@@ -128,7 +133,7 @@ export class SeedUseCase {
 
         try {
           createdCompany =
-            await this.companyRepository.createCompany(newCompany);
+            await this.companyRepository.create(newCompany);
           this.logger.log(`✅ Compañía ${createdCompany.name} creada`);
         } catch {
           this.logger.warn(`⚠️ Compañía ${seedCompany.name} ya existe`);
@@ -210,9 +215,10 @@ export class SeedUseCase {
             name: sub.name,
             icon: sub.icon,
             resourceId: resource.id,
+            path: sub.path,
           };
 
-          return await this.subresourceRepository.createSubResource(newSub);
+          return await this.subresourceRepository.create(newSub);
         } catch {
           this.logger.warn(`⚠️ Subresource ${sub.name} ya existe o falló`);
           return null;
@@ -229,7 +235,7 @@ export class SeedUseCase {
         try {
           const newAction: Action = { id: '', name: a.name, level: a.level };
 
-          return await this.actionRepository.createActions([newAction]);
+          return await this.actionRepository.create(newAction);
         } catch {
           this.logger.warn(`⚠️ Subresource ${a.name} ya existe o falló`);
           return null;
@@ -246,7 +252,7 @@ export class SeedUseCase {
     }));
     for (const role of roles) {
       try {
-        const createdRole = await this.roleRepository.createRole(role);
+        const createdRole = await this.roleRepository.create(role);
         await this.assignPermissionsToRole(createdRole, subresources);
       } catch {
         this.logger.warn(`⚠️ Rol ${role.name} ya existe o falló`);
@@ -294,7 +300,7 @@ export class SeedUseCase {
       isActive: true,
     };
 
-    const created = await this.userRepository.createUser(newUser);
+    const created = await this.userRepository.create(newUser);
 
     await this.userRepository.assignUserToCompanies(created.id!, [
       { companyId: company.id!, roleId: role.id! },

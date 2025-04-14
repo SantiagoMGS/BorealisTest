@@ -22,7 +22,7 @@ export class CreateCompanyUseCase {
     }
 
     // Crear la compañía
-    const newCompany = await this.companyRepository.createCompany({
+    const newCompany = await this.companyRepository.create({
       id: '',
       name: companyDto.name,
       shortName: companyDto.shortName,

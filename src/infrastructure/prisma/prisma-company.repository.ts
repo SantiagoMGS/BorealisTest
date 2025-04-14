@@ -7,27 +7,8 @@ import { PrismaService } from './prisma.service';
 @Injectable()
 export class PrismaCompanyRepository implements ICompanyRepository {
   constructor(private readonly prisma: PrismaService) { }
+  async create(company: Company): Promise<Company> {
 
-  async findById(id: string): Promise<Company | null> {
-    const company = await this.prisma.company.findUnique({
-      where: { id },
-      include: {
-        branding: true,
-        applications: { include: { application: true } },
-      },
-    });
-    return company ? this.mapToCompanyEntity(company) : null;
-  }
-
-  async findManyByIds(ids: string[]): Promise<Company[]> {
-    const companies = await this.prisma.company.findMany({
-      where: { id: { in: ids } },
-      include: { branding: true },
-    });
-    return companies.map(this.mapToCompanyEntity);
-  }
-
-  async createCompany(company: Company): Promise<Company> {
     const created = await this.prisma.company.create({
       data: {
         name: company.name,
@@ -45,6 +26,66 @@ export class PrismaCompanyRepository implements ICompanyRepository {
 
 
     return this.mapToCompanyEntity(full);
+  }
+
+  async update(id: string, companyData: Partial<Company>): Promise<Company> {
+    const updated = await this.prisma.company.update({
+      where: { id },
+      data: {
+        name: companyData.name,
+        isActive: companyData.isActive,
+        updatedBy: companyData.updatedBy,
+      },
+      include: { branding: true },
+    });
+    return this.mapToCompanyEntity(updated);
+  }
+
+  async delete(id: string): Promise<void> {
+    await this.prisma.company.delete({ where: { id } });
+  }
+
+  async findById(id: string): Promise<Company | null> {
+    const company = await this.prisma.company.findUnique({
+      where: { id },
+      include: {
+        branding: true,
+        applications: { include: { application: true } },
+      },
+    });
+    return company ? this.mapToCompanyEntity(company) : null;
+  }
+
+  async findAll(page = 1, limit = 10): Promise<{ data: Company[]; total: number }> {
+    const [companies, total] = await Promise.all([
+      this.prisma.company.findMany({
+        skip: (page - 1) * limit,
+        take: limit,
+        include: { branding: true },
+      }),
+      this.prisma.company.count(),
+    ]);
+
+    return {
+      data: companies.map(this.mapToCompanyEntity),
+      total,
+    };
+  }
+
+  async findManyByIds(ids: string[]): Promise<Company[]> {
+    const companies = await this.prisma.company.findMany({
+      where: { id: { in: ids } },
+      include: { branding: true },
+    });
+    return companies.map(this.mapToCompanyEntity);
+  }
+
+  async findByName(name: string): Promise<Company | null> {
+    const company = await this.prisma.company.findUnique({
+      where: { name },
+      include: { branding: true },
+    });
+    return company ? this.mapToCompanyEntity(company) : null;
   }
   async isApplicationAssignedToCompany(companyId: string, applicationId: string): Promise<boolean> {
     const result = await this.prisma.companyApplication.findFirst({
@@ -84,46 +125,6 @@ export class PrismaCompanyRepository implements ICompanyRepository {
     });
   }
 
-  async deleteCompany(id: string): Promise<void> {
-    await this.prisma.company.delete({ where: { id } });
-  }
-
-  async findByName(name: string): Promise<Company | null> {
-    const company = await this.prisma.company.findUnique({
-      where: { name },
-      include: { branding: true },
-    });
-    return company ? this.mapToCompanyEntity(company) : null;
-  }
-
-  async updateCompany(id: string, companyData: Partial<Company>): Promise<Company> {
-    const updated = await this.prisma.company.update({
-      where: { id },
-      data: {
-        name: companyData.name,
-        isActive: companyData.isActive,
-        updatedBy: companyData.updatedBy,
-      },
-      include: { branding: true },
-    });
-    return this.mapToCompanyEntity(updated);
-  }
-
-  async findAll(page: number, limit: number): Promise<{ companies: Company[]; total: number }> {
-    const [companies, total] = await Promise.all([
-      this.prisma.company.findMany({
-        skip: (page - 1) * limit,
-        take: limit,
-        include: { branding: true },
-      }),
-      this.prisma.company.count(),
-    ]);
-
-    return {
-      companies: companies.map(this.mapToCompanyEntity),
-      total,
-    };
-  }
 
   async assignApplicationToCompanies(companyIds: string[], applicationIds: string[]): Promise<void> {
     const data = companyIds.flatMap(companyId =>

@@ -1,7 +1,6 @@
 import { Subresource } from "../entities";
+import { IWriteOnlyRepository } from "./common/write-only.repository";
 
-export interface ISubResourceRepository {
-  createSubResource(subResource: Subresource): Promise<Subresource>;
+export interface ISubResourceRepository extends IWriteOnlyRepository<Subresource> {
   findByName(name: string): Promise<Subresource | null>;
- 
 }

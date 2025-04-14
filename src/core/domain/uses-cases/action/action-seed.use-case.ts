@@ -15,7 +15,7 @@ export class ActionSeedUseCase {
       actionInitialData.map(async (a) => {
         try {
           const newAction: Action = { id: '', name: a.name, level: a.level };
-          return await this.actionRepository.createActions([newAction]);
+          return await this.actionRepository.create(newAction);
         } catch (error) {
           this.logger.error('Failed to execute action seed', (error as Error).stack);
           throw error;

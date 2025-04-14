@@ -1,4 +1,4 @@
-import { User } from "../entities";
+import { User } from '../entities/user.entity';
 
 export interface ILoginRepository {
   findByEmail(email: string): Promise<Omit<User, 'hashedPassword' | 'refreshToken' | 'refreshTokenExpired'>>;
