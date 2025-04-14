@@ -31,25 +31,25 @@ export async function seedUserCompanies(prisma: PrismaClient) {
     const userCompanyRelations = [
       // Admin en QUINTANA como SUPERADMIN
       {
-        userEmail: 'admin@borealis-security.com',
+        userEmail: 'admin@borealis.com',
         companyName: 'QUINTANA',
         roleName: 'SUPERADMIN',
       },
       // Admin en MONA MINAS como ADMIN
       {
-        userEmail: 'admin@borealis-security.com',
+        userEmail: 'admin@borealis.com',
         companyName: 'MONA MINAS',
         roleName: 'ADMIN',
       },
       // Técnico en QUINTANA como TECNICO
       {
-        userEmail: 'tecnico@borealis-security.com',
+        userEmail: 'tecnico@borealis.com',
         companyName: 'QUINTANA',
         roleName: 'TECNICO',
       },
       // Auxiliar en COLOMBIAN MINT como AUXILIAR
       {
-        userEmail: 'auxiliar@borealis-security.com',
+        userEmail: 'auxiliar@borealis.com',
         companyName: 'COLOMBIAN MINT',
         roleName: 'AUXILIAR',
       },

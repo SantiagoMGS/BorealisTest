@@ -15,14 +15,32 @@ export async function seedSubresources(prisma: PrismaClient) {
     const resources = await prisma.resource.findMany();
     const resourceMap = new Map(resources.map(r => [r.name, r.id]));
 
+    // Mapa de asignaciones especiales para casos que no se detectan automáticamente
+    const specialResourceMappings = {
+      'Branding': 'Compañías',
+      'Indicadores': 'Dashboard',
+      'Reportes': 'Dashboard',
+      'Permisos': 'Roles',
+      'Resultados': 'Muestras',
+      'Asignación de roles': 'Roles',
+      'Asignación de aplicaciones': 'Aplicaciones'
+    };
+
     // Completamos los datos de subrecursos con los IDs de recursos
     const subresourcesWithResourceIds = subresourceInitialData.map(subresource => {
-      // Extraemos el nombre del recurso del nombre del subrecurso
-      // Por ejemplo, "Gestión de usuarios" pertenece al recurso "Usuarios"
+      // Primero verificamos si existe una asignación especial
+      if (specialResourceMappings[subresource.name]) {
+        const resourceName = specialResourceMappings[subresource.name];
+        const resourceId = resourceMap.get(resourceName);
+        
+        if (resourceId) {
+          return { ...subresource, resourceId };
+        }
+      }
+      
+      // Si no hay asignación especial, seguimos con la lógica original
       const resourceName = resources.find(resource => 
-        subresource.name.toLowerCase().includes(resource.name.toLowerCase()) || 
-        (subresource.name === 'Permisos' && resource.name === 'Roles') || // Caso especial
-        (subresource.name === 'Resultados' && resource.name === 'Muestras') // Caso especial
+        subresource.name.toLowerCase().includes(resource.name.toLowerCase())
       )?.name;
 
       if (!resourceName || !resourceMap.has(resourceName)) {
@@ -62,16 +80,13 @@ export async function seedSubresources(prisma: PrismaClient) {
             where: { id: existingSubresource.id },
             data: {
               icon: subresourceData.icon,
+              path: subresourceData.path
             },
           });
         } else {
           // Creamos un nuevo subrecurso
           return tx.subresource.create({
-            data: {
-              name: subresourceData.name,
-              resourceId: subresourceData.resourceId,
-              icon: subresourceData.icon,
-            },
+            data: subresourceData
           });
         }
       },

@@ -34,14 +34,13 @@ export const applicationInitialData: Prisma.ApplicationCreateInput[] = [
     logo: 'https://www.borealis.com/wp-content/uploads/2023/01/borealis-Logo-Black.png',
     description:
       'BOREALIS APP permite realizar las configuraciones de maestros de la aplicación AurumSuite. Facilita la gestión de datos maestros, configuraciones y personalizaciones de la plataforma Borealis, mejorando la eficiencia y adaptabilidad del sistema a las necesidades específicas de cada usuario.',
-    path: 'borealis-app',
+    path: '/borealis-app',
   },
   {
     name: 'GESTIÓN HUMANA',
     logo: 'https://www.borealis.com/wp-content/uploads/2023/01/gh-Logo-Black.png',
     description:
       'GESTIÓN HUMANA es una aplicación que permite gestionar eficientemente los recursos humanos de una organización. Facilita la administración de nómina, seguimiento de asistencia, gestión de talento y desarrollo organizacional, mejorando la productividad y satisfacción del personal.',
-    path: 'gestion-humana',
+    path: '/gestion-humana',
   },
-
 ];
