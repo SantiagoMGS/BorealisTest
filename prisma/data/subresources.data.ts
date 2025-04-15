@@ -41,4 +41,27 @@ export const subresourceInitialData: SubresourceWithResourceName[] = [
     icon: 'fire-hot',
     path: '/copelation',
   },
+
+  // Subrecursos para ADMINISTRACIÓN
+  {
+    name: 'Usuarios',
+    resourceId: '',
+    resourceName: 'Usuarios',
+    icon: 'user',
+    path: '/users',
+  },
+  {
+    name: 'Roles',
+    resourceId: '',
+    resourceName: 'Roles',
+    icon: 'shield-check',
+    path: '/roles',
+  },
+  {
+    name: 'Proveedores',
+    resourceId: '',
+    resourceName: 'Proveedores',
+    icon: 'truck',
+    path: '/providers',
+  },
 ]; 

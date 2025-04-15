@@ -5,6 +5,7 @@ export interface ResourceWithApplicationName extends Prisma.ResourceCreateInput 
 }
 
 export const resourceInitialData: ResourceWithApplicationName[] = [
+  // Recursos para LIMS
   {
     name: 'Recepción',
     icon: 'user-group',
@@ -22,5 +23,24 @@ export const resourceInitialData: ResourceWithApplicationName[] = [
     icon: 'shield-check',
     path: '/results',
     applicationName: 'LIMS',
-  }
+  },
+  // Recursos para ADMINISTRACIÓN
+  {
+    name: 'Usuarios',
+    icon: 'user',
+    path: '/users',
+    applicationName: 'ADMINISTRACIÓN',
+  },
+  {
+    name: 'Roles',
+    icon: 'shield-check',
+    path: '/roles',
+    applicationName: 'ADMINISTRACIÓN',
+  },
+  {
+    name: 'Proveedores',
+    icon: 'truck',
+    path: '/providers',
+    applicationName: 'ADMINISTRACIÓN',
+  },
 ]; 
