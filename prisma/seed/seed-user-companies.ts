@@ -23,24 +23,22 @@ export async function seedUserCompanies(prisma: PrismaClient) {
     const roles = await prisma.role.findMany();
 
     // Mapeamos nombres a IDs para facilitar la búsqueda
-    const userMap = new Map(users.map(u => [u.email, u.id]));
-    const companyMap = new Map(companies.map(c => [c.name, c.id]));
-    const roleMap = new Map(roles.map(r => [r.name, r.id]));
+    const userMap = new Map(users.map((u) => [u.email, u.id]));
+    const companyMap = new Map(companies.map((c) => [c.name, c.id]));
+    const roleMap = new Map(roles.map((r) => [r.name, r.id]));
+
+    // Obtener el ID del usuario admin y del rol SUPERADMIN
+    const adminUserId = userMap.get('admin@borealis.com');
+    const superadminRoleId = roleMap.get('SUPERADMIN');
+
+    if (!adminUserId || !superadminRoleId) {
+      console.warn(
+        '⚠️ No se encontró el usuario admin@borealis.com o el rol SUPERADMIN',
+      );
+    }
 
     // Relaciones a crear
     const userCompanyRelations = [
-      // Admin en QUINTANA como SUPERADMIN
-      {
-        userEmail: 'admin@borealis.com',
-        companyName: 'QUINTANA',
-        roleName: 'SUPERADMIN',
-      },
-      // Admin en MONA MINAS como ADMIN
-      {
-        userEmail: 'admin@borealis.com',
-        companyName: 'MONA MINAS',
-        roleName: 'ADMIN',
-      },
       // Técnico en QUINTANA como TECNICO
       {
         userEmail: 'tecnico@borealis.com',
@@ -57,14 +55,32 @@ export async function seedUserCompanies(prisma: PrismaClient) {
 
     // Transformamos a relaciones con IDs
     const userCompanyData: UserCompanyRelation[] = [];
-    
+
+    // Primero agregamos el admin como SUPERADMIN en todas las compañías
+    if (adminUserId && superadminRoleId) {
+      for (const company of companies) {
+        userCompanyData.push({
+          userId: adminUserId,
+          companyId: company.id,
+          roleId: superadminRoleId,
+          isActive: true,
+        });
+        console.log(
+          `✅ Asignando admin@borealis.com como SUPERADMIN en compañía: ${company.name}`,
+        );
+      }
+    }
+
+    // Luego agregamos el resto de relaciones específicas
     for (const relation of userCompanyRelations) {
       const userId = userMap.get(relation.userEmail);
       const companyId = companyMap.get(relation.companyName);
       const roleId = roleMap.get(relation.roleName);
 
       if (!userId || !companyId || !roleId) {
-        console.warn(`⚠️ No se pudo mapear la relación: ${relation.userEmail} - ${relation.companyName} - ${relation.roleName}`);
+        console.warn(
+          `⚠️ No se pudo mapear la relación: ${relation.userEmail} - ${relation.companyName} - ${relation.roleName}`,
+        );
         continue;
       }
 
@@ -115,10 +131,10 @@ export async function seedUserCompanies(prisma: PrismaClient) {
       },
       {
         isolationLevel: 'ReadCommitted',
-      }
+      },
     );
   } catch (error) {
     console.error('❌ Error en el seed de relaciones usuario-compañía:', error);
     return [];
   }
-} 
+}

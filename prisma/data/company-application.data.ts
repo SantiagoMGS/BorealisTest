@@ -1,4 +1,3 @@
-
 // Esta estructura será completada en el seed ya que requiere IDs existentes
 export const companyApplicationInitialData: Array<{
   companyName: string;
@@ -6,14 +5,14 @@ export const companyApplicationInitialData: Array<{
 }> = [
   {
     companyName: 'QUINTANA',
-    applicationNames: ['LIMS'],
+    applicationNames: ['LIMS', 'ADMINISTRACIÓN'],
   },
   {
     companyName: 'MONA MINAS',
-    applicationNames: ['LIMS'],
+    applicationNames: ['LIMS', 'ADMINISTRACIÓN'],
   },
   {
     companyName: 'COLOMBIAN MINT',
-    applicationNames: ['LIMS'],
+    applicationNames: ['LIMS', 'ADMINISTRACIÓN'],
   },
-]; 
+];

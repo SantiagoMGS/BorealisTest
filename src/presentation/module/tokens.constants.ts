@@ -10,4 +10,4 @@ export const TOKENS = {
   SUBRESOURCE_REPOSITORY: 'ISubResourceRepository',
   SESSION_REPOSITORY: 'ISessionRepository',
   LOGIN_REPOSITORY: 'ILoginRepository',
-}; 
+};

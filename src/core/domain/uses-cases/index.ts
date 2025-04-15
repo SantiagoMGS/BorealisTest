@@ -27,7 +27,7 @@ export { CreateUserUseCase } from './user/create-user.use-case';
 export { DeleteUserUseCase } from './user/delete-user.use-case';
 export { FindAllUsersUseCase } from './user/find-all-user.use-case';
 export { FindUserUseCase } from './user/find-user.use-case';
+export { GetUserPermissionsByCompanyUseCase } from './user/get-user-permissions-by-company.use-case';
 export { GetUserPermissionsUseCase } from './user/get-user-permissions.use-case';
 export { UpdateUserCompanyRoleUseCase } from './user/update-user-company.use-case';
 export { UpdateUserUseCase } from './user/update-user.use-case';
-

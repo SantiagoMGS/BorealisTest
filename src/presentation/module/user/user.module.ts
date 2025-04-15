@@ -4,6 +4,7 @@ import {
   DeleteUserUseCase,
   FindAllUsersUseCase,
   FindUserUseCase,
+  GetUserPermissionsByCompanyUseCase,
   GetUserPermissionsUseCase,
   UpdateUserCompanyRoleUseCase,
   UpdateUserUseCase,
@@ -22,6 +23,7 @@ import { RepositoryModule } from '../repository.module';
     FindUserUseCase,
     UpdateUserCompanyRoleUseCase,
     GetUserPermissionsUseCase,
+    GetUserPermissionsByCompanyUseCase,
   ],
   exports: [
     CreateUserUseCase,
@@ -31,6 +33,7 @@ import { RepositoryModule } from '../repository.module';
     FindUserUseCase,
     UpdateUserCompanyRoleUseCase,
     GetUserPermissionsUseCase,
+    GetUserPermissionsByCompanyUseCase,
   ],
 })
-export class UserModule {} 
+export class UserModule {}

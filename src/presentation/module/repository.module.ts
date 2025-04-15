@@ -12,7 +12,6 @@ import {
 import { PrismaService } from 'src/infrastructure/prisma/prisma.service';
 import { TOKENS } from './tokens.constants';
 
-
 @Module({
   providers: [
     PrismaService,
@@ -61,4 +60,4 @@ import { TOKENS } from './tokens.constants';
     TOKENS.SUBRESOURCE_REPOSITORY,
   ],
 })
-export class RepositoryModule {} 
+export class RepositoryModule {}

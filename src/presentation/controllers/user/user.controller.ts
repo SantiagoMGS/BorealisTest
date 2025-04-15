@@ -1,28 +1,43 @@
-import { ApiStandardResponses } from "@app/presentation/decorator/api-standard-response.decorator";
+import { ApiStandardResponses } from '@app/presentation/decorator/api-standard-response.decorator';
 import {
-  Body, Controller, Delete, Get,
-  HttpCode, HttpStatus, NotFoundException,
-  Param, ParseIntPipe, Patch, Post,
-  Query, Request, UseGuards
-} from "@nestjs/common";
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  NotFoundException,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+  Query,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import {
   ApiBody,
   ApiOperation,
-  ApiParam, ApiQuery,
-  ApiTags
+  ApiParam,
+  ApiQuery,
+  ApiTags,
 } from '@nestjs/swagger';
 import {
-  CreateUserUseCase, DeleteUserUseCase, FindAllUsersUseCase, FindUserUseCase,
+  CreateUserUseCase,
+  DeleteUserUseCase,
+  FindAllUsersUseCase,
+  FindUserUseCase,
+  GetUserPermissionsByCompanyUseCase,
   GetUserPermissionsUseCase,
   UpdateUserCompanyRoleUseCase,
-  UpdateUserUseCase
+  UpdateUserUseCase,
 } from 'src/core/domain/uses-cases';
 import { RequireSubresource } from 'src/core/domain/uses-cases/auth/decorators/permissions.decorator';
 import { PermissionGuard } from 'src/core/domain/uses-cases/auth/guards/permission.guard';
-import { CreateUserDto } from "./dtos/create-user.dto";
-import { UpdateUserCompanyDto } from "./dtos/update-user-company.dto";
-import { UpdateUserDto } from "./dtos/update-user.dto";
+import { CreateUserDto } from './dtos/create-user.dto';
+import { UpdateUserCompanyDto } from './dtos/update-user-company.dto';
+import { UpdateUserDto } from './dtos/update-user.dto';
 
 @ApiTags('Users')
 @Controller('user')
@@ -37,7 +52,8 @@ export class UserController {
     private readonly deleteUserUseCase: DeleteUserUseCase,
     private readonly updateUserCompanyRoleUseCase: UpdateUserCompanyRoleUseCase,
     private readonly getUserPermissionsUseCase: GetUserPermissionsUseCase,
-  ) { }
+    private readonly getUserPermissionsByCompanyUseCase: GetUserPermissionsByCompanyUseCase,
+  ) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -56,6 +72,26 @@ export class UserController {
     return this.getUserPermissionsUseCase.execute(req.user.id);
   }
 
+  @Get('permissions-by-company/:companyId')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Obtener permisos del usuario en una compañía específica',
+  })
+  @ApiParam({ name: 'companyId', description: 'ID de la compañía' })
+  @ApiStandardResponses({
+    ok: 'Permisos del usuario en la compañía especificada.',
+    notFound: 'Usuario sin permisos en la compañía especificada.',
+  })
+  async getUserPermissionsByCompany(
+    @Param('companyId') companyId: string,
+    @Request() req,
+  ) {
+    return this.getUserPermissionsByCompanyUseCase.execute(
+      req.user.id,
+      companyId,
+    );
+  }
+
   @Get()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Obtener todos los usuarios con paginación' })
@@ -65,7 +101,7 @@ export class UserController {
   @UseGuards(PermissionGuard)
   async getAllUsers(
     @Query('page', ParseIntPipe) page = 1,
-    @Query('limit', ParseIntPipe) limit = 10
+    @Query('limit', ParseIntPipe) limit = 10,
   ) {
     return this.findAllUsersUseCase.execute(page, limit);
   }
@@ -74,11 +110,15 @@ export class UserController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Obtener un usuario por email' })
   @ApiParam({ name: 'email', description: 'Email del usuario' })
-  @ApiStandardResponses({ ok: 'Detalles del usuario.', notFound: 'Usuario no encontrado.' })
+  @ApiStandardResponses({
+    ok: 'Detalles del usuario.',
+    notFound: 'Usuario no encontrado.',
+  })
   @UseGuards(PermissionGuard)
   async getUserByEmail(@Param('email') email: string) {
     const user = await this.findUserByEmailUseCase.execute(email);
-    if (!user) throw new NotFoundException(`Usuario con email ${email} no encontrado`);
+    if (!user)
+      throw new NotFoundException(`Usuario con email ${email} no encontrado`);
     return user;
   }
 
@@ -90,15 +130,19 @@ export class UserController {
   @ApiStandardResponses({
     ok: 'Relación usuario-compañía actualizada exitosamente.',
     badRequest: true,
-    notFound: 'Usuario o compañía no encontrados.'
+    notFound: 'Usuario o compañía no encontrados.',
   })
   @RequireSubresource('Asignación de roles')
   @UseGuards(PermissionGuard)
   async updateUserCompanyRole(
     @Param('id') id: string,
-    @Body() dto: UpdateUserCompanyDto
+    @Body() dto: UpdateUserCompanyDto,
   ) {
-    return this.updateUserCompanyRoleUseCase.execute(id, dto.companyId, dto.roleId);
+    return this.updateUserCompanyRoleUseCase.execute(
+      id,
+      dto.companyId,
+      dto.roleId,
+    );
   }
 
   @Patch(':email')
@@ -109,13 +153,10 @@ export class UserController {
   @ApiStandardResponses({
     ok: 'Usuario actualizado exitosamente.',
     badRequest: true,
-    notFound: 'Usuario no encontrado.'
+    notFound: 'Usuario no encontrado.',
   })
   @UseGuards(PermissionGuard)
-  async updateUser(
-    @Param('email') email: string,
-    @Body() dto: UpdateUserDto
-  ) {
+  async updateUser(@Param('email') email: string, @Body() dto: UpdateUserDto) {
     return this.updateUserUseCase.execute(email, dto);
   }
 

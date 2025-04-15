@@ -13,6 +13,6 @@ export const applicationInitialData: Prisma.ApplicationCreateInput[] = [
     logo: 'https://www.borealis.com/wp-content/uploads/2023/01/planta-Logo-Black.png',
     description:
       'ADMINISTRACIÓN es una aplicación diseñada para optimizar la gestión y operación de plantas de beneficio. Proporciona herramientas para el monitoreo en tiempo real, la planificación de mantenimiento y la gestión de recursos, mejorando la eficiencia y reduciendo costos operativos.',
-    path: 'planta',
+    path: 'admin',
   },
 ];
