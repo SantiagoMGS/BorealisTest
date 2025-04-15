@@ -35,4 +35,4 @@ export async function seedResources(prisma: PrismaClient) {
       isolationLevel: 'ReadCommitted',
     },
   );
-} 
+}
