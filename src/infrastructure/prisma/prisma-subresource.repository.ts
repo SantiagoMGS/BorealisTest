@@ -1,6 +1,6 @@
+import { ISubResourceRepository } from '@app/core/domain/repositories/subresource.repository';
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { Subresource } from 'src/core/domain/entities';
-import { ISubResourceRepository } from 'src/core/domain/repositories/subresource.reposiroty';
 import { PrismaService } from './prisma.service';
 
 @Injectable()
