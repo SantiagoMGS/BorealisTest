@@ -1,12 +1,15 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { User } from '@prisma/client';
+import { TOKENS } from '../../../../presentation/module/tokens.constants';
 import { IUserRepository } from '../../repositories/user.repository';
 import { UpdateUserUseCase } from './update-user.use-case';
 
 @Injectable()
 export class FindUserUseCase {
   private readonly logger = new Logger(UpdateUserUseCase.name)
-  constructor(@Inject('IUserRepository') private readonly userRepository: IUserRepository,) {
+  constructor(
+    @Inject(TOKENS.USER_REPOSITORY) private readonly userRepository: IUserRepository,
+  ) {
 
   }
   async execute(email: string): Promise<Omit<User, 'hashedPassword'> | null> {

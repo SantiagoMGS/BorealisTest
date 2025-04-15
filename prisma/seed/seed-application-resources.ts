@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { applicationResourceInitialData } from '../data/';
+import { resourceInitialData } from '../data/resources.data';
 
 type ApplicationResourceRelation = {
   applicationId: string;
@@ -20,34 +20,46 @@ export async function seedApplicationResources(prisma: PrismaClient) {
     const applications = await prisma.application.findMany();
     const resources = await prisma.resource.findMany();
 
+    console.log('Aplicaciones encontradas:', applications.map(a => a.name));
+    console.log('Recursos encontrados:', resources.map(r => r.name));
+
     // Mapeamos nombres a IDs para facilitar la búsqueda
     const applicationMap = new Map(applications.map(a => [a.name, a.id]));
     const resourceMap = new Map(resources.map(r => [r.name, r.id]));
 
-    // Recopilamos todas las relaciones a crear
+    // Recopilamos todas las relaciones a crear usando el campo applicationName
     const applicationResources: ApplicationResourceRelation[] = [];
 
-    for (const appResource of applicationResourceInitialData) {
-      const applicationId = applicationMap.get(appResource.applicationName);
-      if (!applicationId) {
-        console.warn(`⚠️ No se encontró la aplicación: ${appResource.applicationName}`);
+    // Para cada recurso, buscamos la aplicación por su applicationName
+    for (const resource of resourceInitialData) {
+      const { name: resourceName, applicationName } = resource;
+      
+      const resourceId = resourceMap.get(resourceName);
+      if (!resourceId) {
+        console.warn(`⚠️ No se encontró el recurso: ${resourceName}`);
         continue;
       }
 
-      for (const resourceName of appResource.resourceNames) {
-        const resourceId = resourceMap.get(resourceName);
-        if (!resourceId) {
-          console.warn(`⚠️ No se encontró el recurso: ${resourceName}`);
-          continue;
-        }
-
-        applicationResources.push({
-          applicationId,
-          resourceId,
-          isActive: true,
-        });
+      const applicationId = applicationMap.get(applicationName);
+      if (!applicationId) {
+        console.warn(`⚠️ No se encontró la aplicación: ${applicationName}`);
+        console.warn('Aplicaciones disponibles:', Array.from(applicationMap.keys()).join(', '));
+        continue;
       }
+
+      applicationResources.push({
+        applicationId,
+        resourceId,
+        isActive: true,
+      });
     }
+
+    if (applicationResources.length === 0) {
+      console.warn('⚠️ No se encontraron relaciones entre aplicaciones y recursos para crear.');
+      return [];
+    }
+
+    console.log(`Creando ${applicationResources.length} relaciones entre aplicaciones y recursos.`);
 
     // Procesamos cada relación una por una para evitar problemas con transacciones
     const results: ApplicationResourceRelation[] = [];

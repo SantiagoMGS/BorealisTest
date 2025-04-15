@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { subresourceInitialData } from '../data/';
+import { subresourceInitialData } from '../data/subresources.data';
 import { batchTransactionTolerant } from '../utils/transaction.helper';
 
 /**
@@ -13,46 +13,28 @@ export async function seedSubresources(prisma: PrismaClient) {
   try {
     // Primero obtenemos todos los recursos para mapear nombres a IDs
     const resources = await prisma.resource.findMany();
+    console.log('Recursos encontrados:', resources.map(r => r.name));
+    
     const resourceMap = new Map(resources.map(r => [r.name, r.id]));
 
-    // Mapa de asignaciones especiales para casos que no se detectan automáticamente
-    const specialResourceMappings = {
-      'Branding': 'Compañías',
-      'Indicadores': 'Dashboard',
-      'Reportes': 'Dashboard',
-      'Permisos': 'Roles',
-      'Resultados': 'Muestras',
-      'Asignación de roles': 'Roles',
-      'Asignación de aplicaciones': 'Aplicaciones'
-    };
-
-    // Completamos los datos de subrecursos con los IDs de recursos
+    // Completamos los datos de subrecursos con los IDs de recursos usando el campo resourceName
     const subresourcesWithResourceIds = subresourceInitialData.map(subresource => {
-      // Primero verificamos si existe una asignación especial
-      if (specialResourceMappings[subresource.name]) {
-        const resourceName = specialResourceMappings[subresource.name];
-        const resourceId = resourceMap.get(resourceName);
-        
-        if (resourceId) {
-          return { ...subresource, resourceId };
-        }
-      }
+      const { resourceName, ...subresourceData } = subresource;
       
-      // Si no hay asignación especial, seguimos con la lógica original
-      const resourceName = resources.find(resource => 
-        subresource.name.toLowerCase().includes(resource.name.toLowerCase())
-      )?.name;
-
-      if (!resourceName || !resourceMap.has(resourceName)) {
-        console.warn(`⚠️ No se encontró un recurso para el subrecurso "${subresource.name}"`);
+      // Buscamos el ID del recurso por nombre
+      const resourceId = resourceMap.get(resourceName);
+      
+      if (!resourceId) {
+        console.warn(`⚠️ No se encontró un recurso con nombre "${resourceName}" para el subrecurso "${subresource.name}"`);
+        console.warn('Recursos disponibles:', Array.from(resourceMap.keys()).join(', '));
         // Usamos un ID por defecto para que no falle
-        const defaultResourceId = resourceMap.get('Dashboard') || '';
-        return { ...subresource, resourceId: defaultResourceId };
+        const firstResourceId = resources.length > 0 ? resources[0].id : '';
+        return { ...subresourceData, resourceId: firstResourceId };
       }
 
       return { 
-        ...subresource,
-        resourceId: resourceMap.get(resourceName) || '' // Aseguramos que no sea undefined
+        ...subresourceData,
+        resourceId 
       };
     });
 

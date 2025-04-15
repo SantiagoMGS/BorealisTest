@@ -1,4 +1,3 @@
-
 // Esta estructura será completada en el seed ya que requiere IDs existentes
 export const rolePermissionInitialData: {
   roleName: string;
@@ -17,61 +16,42 @@ export const rolePermissionInitialData: {
     {
       roleName: 'ADMIN',
       permissions: [
-        // Gestión de usuarios
-        { subresourceName: 'Gestión de usuarios', actionName: 'DELETE' },
-
-        // Permisos
-        { subresourceName: 'Permisos', actionName: 'UPDATE' },
-
-        // Gestión de compañías
-        { subresourceName: 'Gestión de compañías', actionName: 'UPDATE' },
-
-        // Branding
-        { subresourceName: 'Branding', actionName: 'UPDATE' },
-
-        // Gestión de aplicaciones
-        { subresourceName: 'Gestión de aplicaciones', actionName: 'READ' },
-
-        // Dashboard
-        { subresourceName: 'Indicadores', actionName: 'READ' },
-        { subresourceName: 'Reportes', actionName: 'READ' },
+        // Nivel máximo de permisos (DELETE incluye CREATE, READ, UPDATE)
+        { subresourceName: 'Recepción', actionName: 'DELETE' },
+        { subresourceName: 'Gestión', actionName: 'DELETE' },
+        { subresourceName: 'Niton', actionName: 'DELETE' },
+        { subresourceName: 'Absorción atómica', actionName: 'DELETE' },
+        { subresourceName: 'Copelación', actionName: 'DELETE' },
       ],
     },
     {
       roleName: 'TECNICO',
       permissions: [
-        // Gestión de muestras
-        { subresourceName: 'Gestión de muestras', actionName: 'DELETE' },
-
-        // Resultados
-        { subresourceName: 'Resultados', actionName: 'DELETE' },
-
-        // Gestión de lotes
-        { subresourceName: 'Gestión de lotes', actionName: 'READ' },
-
-        // Dashboard
-        { subresourceName: 'Indicadores', actionName: 'READ' },
+        // Nivel máximo de permisos (DELETE incluye CREATE, READ, UPDATE)
+        { subresourceName: 'Recepción', actionName: 'DELETE' },
+        { subresourceName: 'Niton', actionName: 'DELETE' },
+        { subresourceName: 'Absorción atómica', actionName: 'DELETE' },
+        { subresourceName: 'Copelación', actionName: 'DELETE' },
       ],
     },
     {
       roleName: 'AUXILIAR',
       permissions: [
-        // Gestión de muestras (solo lectura)
-        { subresourceName: 'Gestión de muestras', actionName: 'READ' },
-
-        // Resultados (solo lectura)
-        { subresourceName: 'Resultados', actionName: 'READ' },
-
-        // Gestión de lotes (solo lectura)
-        { subresourceName: 'Gestión de lotes', actionName: 'READ' },
+        // Acceso de solo lectura
+        { subresourceName: 'Recepción', actionName: 'READ' },
+        { subresourceName: 'Niton', actionName: 'READ' },
+        { subresourceName: 'Absorción atómica', actionName: 'READ' },
+        { subresourceName: 'Copelación', actionName: 'READ' },
       ],
     },
     {
       roleName: 'PROVEEDOR',
       permissions: [
-        // Solo acceso a sus propios lotes
-        { subresourceName: 'Gestión de lotes', actionName: 'READ' },
-        { subresourceName: 'Resultados', actionName: 'READ' },
+        // Acceso de solo lectura
+        { subresourceName: 'Recepción', actionName: 'READ' },
+        { subresourceName: 'Niton', actionName: 'READ' },
+        { subresourceName: 'Absorción atómica', actionName: 'READ' },
+        { subresourceName: 'Copelación', actionName: 'READ' },
       ],
     },
   ]; 

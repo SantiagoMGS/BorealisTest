@@ -1,44 +1,26 @@
 import { Prisma } from '@prisma/client';
 
-export const resourceInitialData: Prisma.ResourceCreateInput[] = [
+export interface ResourceWithApplicationName extends Prisma.ResourceCreateInput {
+  applicationName: string;
+}
+
+export const resourceInitialData: ResourceWithApplicationName[] = [
   {
-    name: 'Usuarios',
+    name: 'Recepción',
     icon: 'user-group',
-    path: '/usuarios',
+    path: '/reception',
+    applicationName: 'LIMS',
   },
   {
-    name: 'Compañías',
+    name: 'Gestión',
     icon: 'building',
-    path: '/companias',
+    path: '/management',
+    applicationName: 'LIMS',
   },
   {
-    name: 'Roles',
+    name: 'Resultados',
     icon: 'shield-check',
-    path: '/roles',
-  },
-  {
-    name: 'Proveedores',
-    icon: 'truck',
-    path: '/proveedores',
-  },
-  {
-    name: 'Lotes',
-    icon: 'cube',
-    path: '/lotes',
-  },
-  {
-    name: 'Muestras',
-    icon: 'beaker',
-    path: '/muestras',
-  },
-  {
-    name: 'Aplicaciones',
-    icon: 'app-store',
-    path: '/aplicaciones',
-  },
-  {
-    name: 'Dashboard',
-    icon: 'chart-pie',
-    path: '/dashboard',
-  },
+    path: '/results',
+    applicationName: 'LIMS',
+  }
 ]; 

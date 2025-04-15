@@ -6,14 +6,14 @@ export const companyApplicationInitialData: Array<{
 }> = [
   {
     companyName: 'QUINTANA',
-    applicationNames: ['LIMS', 'PLANTA', 'BOREALIS APP', 'GESTIÓN HUMANA'],
+    applicationNames: ['LIMS'],
   },
   {
     companyName: 'MONA MINAS',
-    applicationNames: ['LIMS', 'MINA', 'BOREALIS APP'],
+    applicationNames: ['LIMS'],
   },
   {
     companyName: 'COLOMBIAN MINT',
-    applicationNames: ['LIMS', 'CI', 'BOREALIS APP'],
+    applicationNames: ['LIMS'],
   },
 ]; 

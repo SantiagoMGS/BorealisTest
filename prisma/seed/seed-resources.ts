@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { resourceInitialData } from '../data/';
+import { resourceInitialData } from '../data/resources.data';
 import { batchTransaction } from '../utils/transaction.helper';
 
 /**
@@ -19,12 +19,16 @@ export async function seedResources(prisma: PrismaClient) {
         throw new Error('El nombre del recurso es requerido');
       }
 
+      // Extraemos applicationName del objeto para que no se envíe a Prisma
+      const { applicationName, ...resourceDataToSave } = resourceData;
+
       return tx.resource.upsert({
         where: { name: resourceData.name },
         update: {
           icon: resourceData.icon,
+          path: resourceData.path,
         },
-        create: resourceData,
+        create: resourceDataToSave,
       });
     },
     {

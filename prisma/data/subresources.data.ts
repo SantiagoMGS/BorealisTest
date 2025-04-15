@@ -1,103 +1,44 @@
 import { Prisma } from '@prisma/client';
 
-export const subresourceInitialData: Prisma.SubresourceCreateManyInput[] = [
-  // Subrecursos para Usuarios
+export interface SubresourceWithResourceName extends Prisma.SubresourceCreateManyInput {
+  resourceName: string;
+}
+
+export const subresourceInitialData: SubresourceWithResourceName[] = [
+  // Subrecursos para LIMS
   {
-    name: 'Gestión de usuarios',
-    resourceId: '', // Se completará en el seed
-    icon: 'user',
-    path: '/gestion-usuarios',
-  },
-  {
-    name: 'Permisos',
-    resourceId: '', // Se completará en el seed
-    icon: 'key',
-    path: '/permisos',
-  },
-  
-  // Subrecursos para Compañías
-  {
-    name: 'Gestión de compañías',
-    resourceId: '', // Se completará en el seed
-    icon: 'building-office',
-    path: '/gestion-companias',
-  },
-  {
-    name: 'Branding',
-    resourceId: '', // Se completará en el seed
-    icon: 'paint-brush',
-    path: '/branding',
-  },
-  
-  // Subrecursos para Roles
-  {
-    name: 'Gestión de roles',
-    resourceId: '', // Se completará en el seed
-    icon: 'shield',
-    path: '/gestion-roles',
-  },
-  {
-    name: 'Asignación de roles',
-    resourceId: '', // Se completará en el seed
-    icon: 'user-plus',
-    path: '/asignacion-roles',
-  },
-  
-  // Subrecursos para Proveedores
-  {
-    name: 'Gestión de proveedores',
-    resourceId: '', // Se completará en el seed
-    icon: 'truck-container',
-    path: '/gestion-proveedores',
-  },
-  
-  // Subrecursos para Lotes
-  {
-    name: 'Gestión de lotes',
-    resourceId: '', // Se completará en el seed
-    icon: 'cube-transparent',
-    path: '/gestion-lotes',
-  },
-  
-  // Subrecursos para Muestras
-  {
-    name: 'Gestión de muestras',
-    resourceId: '', // Se completará en el seed
-    icon: 'flask',
+    name: 'Recepción',
+    resourceId: '',
+    resourceName: 'Recepción',
+    icon: 'flask-sample',
     path: '/gestion-muestras',
   },
   {
-    name: 'Resultados',
-    resourceId: '', // Se completará en el seed
-    icon: 'clipboard-document-check',
-    path: '/resultados',
-  },
-  
-  // Subrecursos para Aplicaciones
-  {
-    name: 'Gestión de aplicaciones',
-    resourceId: '', // Se completará en el seed
-    icon: 'cog',
-    path: '/gestion-aplicaciones',
+    name: 'Gestión',
+    resourceId: '',
+    resourceName: 'Gestión',
+    icon: 'clipboard-list',
+    path: '/permisos',
   },
   {
-    name: 'Asignación de aplicaciones',
-    resourceId: '', // Se completará en el seed
-    icon: 'puzzle-piece',
-    path: '/asignacion-aplicaciones',
-  },
-  
-  // Subrecursos para Dashboard
-  {
-    name: 'Indicadores',
-    resourceId: '', // Se completará en el seed
-    icon: 'chart-bar',
-    path: '/indicadores',
+    name: 'Niton',
+    resourceId: '',
+    resourceName: 'Resultados',
+    icon: 'device-niton',
+    path: '/niton',
   },
   {
-    name: 'Reportes',
-    resourceId: '', // Se completará en el seed
-    icon: 'document-report',
-    path: '/reportes',
+    name: 'Absorción atómica',
+    resourceId: '',
+    resourceName: 'Resultados',
+    icon: 'atom',
+    path: '/absorbance',
+  },
+  {
+    name: 'Copelación',
+    resourceId: '',
+    resourceName: 'Resultados',
+    icon: 'fire-hot',
+    path: '/copelation',
   },
 ]; 

@@ -21,8 +21,14 @@ import { PrismaLoginRepository } from 'src/infrastructure/prisma';
 import { PrismaSessionRepository } from 'src/infrastructure/prisma/prisma-session.repository';
 import { PrismaService } from 'src/infrastructure/prisma/prisma.service';
 
-import { CoreModule } from './core.module';
+import { RepositoryModule } from './module/repository.module';
+import { TOKENS } from './module/tokens.constants';
+import { UserModule } from './module/user/user.module';
 
+/**
+ * Módulo de autenticación que maneja la funcionalidad relacionada con login,
+ * autenticación y autorización.
+ */
 @Module({
   controllers: [AuthController],
   providers: [
@@ -35,11 +41,11 @@ import { CoreModule } from './core.module';
     RefreshTokenUseCase,
     AuthUseCase,
     {
-      provide: 'ILoginRepository',
+      provide: TOKENS.LOGIN_REPOSITORY,
       useClass: PrismaLoginRepository,
     },
     {
-      provide: 'ISessionRepository',
+      provide: TOKENS.SESSION_REPOSITORY,
       useClass: PrismaSessionRepository,
     },
   ],
@@ -54,7 +60,8 @@ import { CoreModule } from './core.module';
         signOptions: { expiresIn: '1h' },
       }),
     }),
-    CoreModule, // 👈 Para acceder a IUserRepository
+    RepositoryModule,
+    UserModule,
   ],
   exports: [
     PassportModule,
@@ -67,4 +74,4 @@ import { CoreModule } from './core.module';
     AuthUseCase,
   ],
 })
-export class AuthModule { }
+export class AuthModule {}
