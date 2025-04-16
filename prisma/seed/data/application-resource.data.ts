@@ -9,6 +9,6 @@ export const applicationResourceInitialData: Array<{
   },
   {
     applicationName: 'ADMINISTRACIÓN',
-    resourceNames: ['Usuarios', 'Compañías', 'Aplicacione', 'Proveedores'],
+    resourceNames: ['Usuarios', 'Compañías', 'Aplicaciones', 'Proveedores'],
   },
 ];

@@ -3,55 +3,95 @@ export const rolePermissionInitialData: {
   roleName: string;
   permissions: Array<{
     subresourceName: string;
+    resourceName: string;
     actionName: string;
   }>;
 }[] = [
   {
-    roleName: 'SUPERADMIN',
-    permissions: [
-      // Darle todos los permisos sobre todos los subrecursos
-      // Se generará dinámicamente en el seed
-    ],
-  },
-  {
     roleName: 'ADMIN',
     permissions: [
-      // Nivel máximo de permisos (DELETE incluye CREATE, READ, UPDATE)
-      { subresourceName: 'Recepción', actionName: 'DELETE' },
-      { subresourceName: 'Gestión', actionName: 'DELETE' },
-      { subresourceName: 'Niton', actionName: 'DELETE' },
-      { subresourceName: 'Absorción atómica', actionName: 'DELETE' },
-      { subresourceName: 'Copelación', actionName: 'DELETE' },
+      // Nivel máximo de permisos (DELETE incluye CREATE, READ, UPDATE) para todas las subrecursos
     ],
   },
   {
-    roleName: 'TECNICO',
+    roleName: 'JEFE LABORATORIO',
     permissions: [
-      // Nivel máximo de permisos (DELETE incluye CREATE, READ, UPDATE)
-      { subresourceName: 'Recepción', actionName: 'DELETE' },
-      { subresourceName: 'Niton', actionName: 'DELETE' },
-      { subresourceName: 'Absorción atómica', actionName: 'DELETE' },
-      { subresourceName: 'Copelación', actionName: 'DELETE' },
+      {
+        subresourceName: 'Recepción',
+        resourceName: 'Recepción',
+        actionName: 'UPDATE',
+      },
+      {
+        subresourceName: 'Gestión',
+        resourceName: 'Gestión',
+        actionName: 'UPDATE',
+      },
+      {
+        subresourceName: 'Niton',
+        resourceName: 'Resultados',
+        actionName: 'UPDATE',
+      },
+      {
+        subresourceName: 'Absorción atómica',
+        resourceName: 'Resultados',
+        actionName: 'UPDATE',
+      },
+      {
+        subresourceName: 'Copelación',
+        resourceName: 'Resultados',
+        actionName: 'UPDATE',
+      },
+      {
+        subresourceName: 'Absorción atómica',
+        resourceName: 'Análisis',
+        actionName: 'UPDATE',
+      },
+      {
+        subresourceName: 'Niton',
+        resourceName: 'Análisis',
+        actionName: 'UPDATE',
+      },
+      {
+        subresourceName: 'Compañías',
+        resourceName: 'Compañías',
+        actionName: 'UPDATE',
+      },
+      {
+        subresourceName: 'Aplicaciones',
+        resourceName: 'Aplicaciones',
+        actionName: 'UPDATE',
+      },
+      {
+        subresourceName: 'Proveedores',
+        resourceName: 'Proveedores',
+        actionName: 'UPDATE',
+      },
+      {
+        subresourceName: 'Usuarios',
+        resourceName: 'Usuarios',
+        actionName: 'UPDATE',
+      },
     ],
   },
   {
-    roleName: 'AUXILIAR',
+    roleName: 'AUXILIAR LABORATORIO',
     permissions: [
-      // Acceso de solo lectura
-      { subresourceName: 'Recepción', actionName: 'READ' },
-      { subresourceName: 'Niton', actionName: 'READ' },
-      { subresourceName: 'Absorción atómica', actionName: 'READ' },
-      { subresourceName: 'Copelación', actionName: 'READ' },
-    ],
-  },
-  {
-    roleName: 'PROVEEDOR',
-    permissions: [
-      // Acceso de solo lectura
-      { subresourceName: 'Recepción', actionName: 'READ' },
-      { subresourceName: 'Niton', actionName: 'READ' },
-      { subresourceName: 'Absorción atómica', actionName: 'READ' },
-      { subresourceName: 'Copelación', actionName: 'READ' },
+      // Acceso de solo create a Recepción y Análisis
+      {
+        subresourceName: 'Recepción',
+        resourceName: 'Recepción',
+        actionName: 'CREATE',
+      },
+      {
+        subresourceName: 'Absorción atómica',
+        resourceName: 'Análisis',
+        actionName: 'CREATE',
+      },
+      {
+        subresourceName: 'Niton',
+        resourceName: 'Análisis',
+        actionName: 'CREATE',
+      },
     ],
   },
 ];

@@ -17,12 +17,6 @@ export const seedResources = async (prisma: PrismaClient) => {
       return;
     }
 
-    // Obtener todas las aplicaciones para relacionarlas después
-    const applications = await prisma.application.findMany();
-    const applicationsMap = new Map(
-      applications.map((app) => [app.name, app.id]),
-    );
-
     // Crear recursos desde los datos iniciales
     const results = await Promise.all(
       resourceInitialData.map(async (resourceData) => {
@@ -35,31 +29,10 @@ export const seedResources = async (prisma: PrismaClient) => {
             data: resourceCreateData,
           });
 
-          // Buscar la aplicación relacionada por nombre
-          const applicationId = applicationsMap.get(applicationName);
-
-          // Si existe la aplicación, crear la relación
-          if (applicationId) {
-            await prisma.applicationResource.create({
-              data: {
-                applicationId,
-                resourceId: resource.id,
-                isActive: true,
-              },
-            });
-            return {
-              success: true,
-              resource,
-              applicationName,
-              relationCreated: true,
-            };
-          }
-
           return {
             success: true,
             resource,
             applicationName,
-            relationCreated: false,
           };
         } catch (error: any) {
           logger.error(
@@ -80,7 +53,6 @@ export const seedResources = async (prisma: PrismaClient) => {
       success: true;
       resource: any;
       applicationName: string;
-      relationCreated: boolean;
     }>;
 
     const failedResources = results.filter((r) => !r.success) as Array<{
@@ -115,9 +87,6 @@ export const seedResources = async (prisma: PrismaClient) => {
           `Recurso creado: ${result.resource.name} (${result.resource.path})`,
         );
         logger.log(`  - Aplicación: ${result.applicationName}`);
-        logger.log(
-          `  - Relación creada: ${result.relationCreated ? 'Sí' : 'No'}`,
-        );
       }
     });
 

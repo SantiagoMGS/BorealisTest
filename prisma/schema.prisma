@@ -8,21 +8,19 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
-/* Modelos para la autenticación y usuarios
-  Incluye:
-  - User: Usuario del sistema
-  - Session: Sesión del usuario
-  - Role: Rol del usuario
-  - Resource: Recurso del sistema
-  - Action: Acción del sistema
-  - Company: Compañía del sistema
-  - UserCompany: Relación entre usuario y compañía
-  - RolePermission: Relación entre rol y recurso
-  - Subresource: Subrecurso del sistema
-  - Application: Aplicación del sistema
-  - CompanyApplication: Relación entre compañía y aplicación
-*/
+/// Modelos para la autenticación y usuarios
+///   Incluye:
+///   - User: Usuario del sistema
+///   - Session: Sesión del usuario
+///   - Role: Rol del usuario
+///   - Resource: Recurso del sistema
+///   - Action: Acción del sistema
+///   - Company: Compañía del sistema
+///   - UserCompany: Relación entre usuario y compañía
+///   - RolePermission: Relación entre rol y recurso
+///   - Subresource: Subrecurso del sistema
+///   - Application: Aplicación del sistema
+///   - CompanyApplication: Relación entre compañía y aplicación
 model User {
   id             String        @id @default(uuid()) @db.Uuid
   name           String
@@ -31,29 +29,25 @@ model User {
   isActive       Boolean       @default(true)
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
-
-  // Relaciones inversas
-  sessions Session[]
-  companies UserCompany[]
+  sessions       Session[]
+  companies      UserCompany[]
 
   @@index([email])
-  @@map("users") // Nombre de tabla en plural para convención
+  @@map("users")
 }
-
 
 model Session {
   id               String    @id @default(uuid()) @db.Uuid
   userId           String    @db.Uuid
   token            String    @unique
-  refreshToken     String? // Movido aquí desde User
-  expiresAt        DateTime // Fecha de expiración del token
-  refreshExpiresAt DateTime? // Expiración del refresh token
-  device           String? // Información del dispositivo
-  ipAddress        String? // IP desde donde se creó la sesión
+  refreshToken     String?
+  expiresAt        DateTime
+  refreshExpiresAt DateTime?
+  device           String?
+  ipAddress        String?
   lastActive       DateTime  @default(now())
   createdAt        DateTime  @default(now())
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([token])
@@ -61,14 +55,14 @@ model Session {
 }
 
 model Role {
-  id          String   @id @default(uuid()) @db.Uuid
-  name        String   @unique
+  id          String           @id @default(uuid()) @db.Uuid
+  name        String           @unique
   description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  createdBy   String?  @db.Uuid 
-  updatedBy   String?  @db.Uuid 
-
+  isSystem    Boolean          @default(false) // Añadir temporalmente
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  createdBy   String?          @db.Uuid
+  updatedBy   String?          @db.Uuid
   permissions RolePermission[]
   users       UserCompany[]
 
@@ -77,32 +71,30 @@ model Role {
 }
 
 model Resource {
-  id        String   @id @default(uuid()) @db.Uuid
-  name      String   @unique
-  icon      String   
-  path      String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  createdBy String?  @db.Uuid 
-  updatedBy String?  @db.Uuid 
-
-  subresources Subresource[]
+  id           String                @id @default(uuid()) @db.Uuid
+  name         String                @unique
+  icon         String
+  path         String                @unique
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @updatedAt
+  createdBy    String?               @db.Uuid
+  updatedBy    String?               @db.Uuid
   applications ApplicationResource[]
+  subresources Subresource[]
 
   @@index([name])
   @@map("resources")
 }
 
 model Action {
-  id          String   @id @default(uuid()) @db.Uuid
-  name        String   @unique
+  id          String           @id @default(uuid()) @db.Uuid
+  name        String           @unique
   level       Int
   description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  createdBy   String?  @db.Uuid 
-  updatedBy   String?  @db.Uuid 
-
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  createdBy   String?          @db.Uuid
+  updatedBy   String?          @db.Uuid
   permissions RolePermission[]
 
   @@index([name])
@@ -110,18 +102,17 @@ model Action {
 }
 
 model Company {
-  id        String   @id @default(uuid()) @db.Uuid
-  name      String   @unique
-  shortName String   @unique
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  createdBy String?  @db.Uuid 
-  updatedBy String?  @db.Uuid 
-  
+  id           String               @id @default(uuid()) @db.Uuid
+  name         String               @unique
+  shortName    String               @unique
+  isActive     Boolean              @default(true)
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+  createdBy    String?              @db.Uuid
+  updatedBy    String?              @db.Uuid
+  applications CompanyApplication[]
   branding     CompanyBranding?
   users        UserCompany[]
-  applications CompanyApplication[]
 
   @@index([name])
   @@map("companies")
@@ -135,10 +126,9 @@ model CompanyBranding {
   tertiaryColor  String?  @db.VarChar(25)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
-  createdBy      String?  @db.Uuid 
-  updatedBy      String?  @db.Uuid 
-
-  company Company @relation(fields: [companyId], references: [id])
+  createdBy      String?  @db.Uuid
+  updatedBy      String?  @db.Uuid
+  company        Company  @relation(fields: [companyId], references: [id])
 
   @@map("company_brandings")
 }
@@ -150,12 +140,11 @@ model UserCompany {
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  createdBy String?  @db.Uuid 
-  updatedBy String?  @db.Uuid 
-
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  role    Role    @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  createdBy String?  @db.Uuid
+  updatedBy String?  @db.Uuid
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  role      Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, companyId, roleId])
   @@unique([userId, companyId])
@@ -165,17 +154,16 @@ model UserCompany {
 }
 
 model RolePermission {
-  roleId        String   @db.Uuid
-  actionId      String   @db.Uuid
-  subresourceId String   @db.Uuid
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  createdBy     String?  @db.Uuid 
-  updatedBy     String?  @db.Uuid 
-
-  role        Role        @relation(fields: [roleId], references: [id], onDelete: Cascade)
-  action      Action      @relation(fields: [actionId], references: [id], onDelete: Cascade)
-  subresource Subresource @relation(fields: [subresourceId], references: [id], onDelete: Cascade)
+  roleId        String      @db.Uuid
+  actionId      String      @db.Uuid
+  subresourceId String      @db.Uuid
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  createdBy     String?     @db.Uuid
+  updatedBy     String?     @db.Uuid
+  action        Action      @relation(fields: [actionId], references: [id], onDelete: Cascade)
+  role          Role        @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  subresource   Subresource @relation(fields: [subresourceId], references: [id], onDelete: Cascade)
 
   @@id([roleId, actionId, subresourceId])
   @@unique([roleId, subresourceId])
@@ -185,18 +173,17 @@ model RolePermission {
 }
 
 model Subresource {
-  id         String   @id @default(uuid()) @db.Uuid
-  name       String
-  resourceId String   @db.Uuid
-  icon       String   
-  path       String   @unique
-  updatedAt  DateTime @updatedAt
-  createdAt  DateTime @default(now())
-  createdBy  String?  @db.Uuid 
-  updatedBy  String?  @db.Uuid 
-
-  resource        Resource         @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  id              String           @id @default(uuid()) @db.Uuid
+  name            String
+  resourceId      String           @db.Uuid
+  icon            String
+  path            String           @unique
+  updatedAt       DateTime         @updatedAt
+  createdAt       DateTime         @default(now())
+  createdBy       String?          @db.Uuid
+  updatedBy       String?          @db.Uuid
   rolePermissions RolePermission[]
+  resource        Resource         @relation(fields: [resourceId], references: [id], onDelete: Cascade)
 
   @@unique([name, resourceId])
   @@index([resourceId])
@@ -204,35 +191,33 @@ model Subresource {
 }
 
 model Application {
-  id          String   @id @default(uuid()) @db.Uuid
-  name        String   @unique
+  id          String                @id @default(uuid()) @db.Uuid
+  name        String                @unique
   description String?
-  path        String   @unique
+  path        String                @unique
   logo        String?
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  createdBy   String?  @db.Uuid 
-  updatedBy   String?  @db.Uuid 
-
-  companies CompanyApplication[]
-  resources ApplicationResource[] // Nueva relación con recursos
+  isActive    Boolean               @default(true)
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
+  createdBy   String?               @db.Uuid
+  updatedBy   String?               @db.Uuid
+  resources   ApplicationResource[]
+  companies   CompanyApplication[]
 
   @@index([name])
   @@map("applications")
 }
 
 model ApplicationResource {
-  applicationId String   @db.Uuid
-  resourceId    String   @db.Uuid
-  isActive      Boolean  @default(true)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  createdBy     String?  @db.Uuid 
-  updatedBy     String?  @db.Uuid 
-
-  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
-  resource    Resource    @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  applicationId String      @db.Uuid
+  resourceId    String      @db.Uuid
+  isActive      Boolean     @default(true)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  createdBy     String?     @db.Uuid
+  updatedBy     String?     @db.Uuid
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  resource      Resource    @relation(fields: [resourceId], references: [id], onDelete: Cascade)
 
   @@id([applicationId, resourceId])
   @@unique([applicationId, resourceId])
@@ -241,18 +226,16 @@ model ApplicationResource {
   @@map("application_resources")
 }
 
-
 model CompanyApplication {
-  companyId     String   @db.Uuid
-  applicationId String   @db.Uuid
-  isActive      Boolean  @default(true)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  createdBy     String?  @db.Uuid 
-  updatedBy     String?  @db.Uuid 
-
-  company     Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  companyId     String      @db.Uuid
+  applicationId String      @db.Uuid
+  isActive      Boolean     @default(true)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  createdBy     String?     @db.Uuid
+  updatedBy     String?     @db.Uuid
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  company       Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   @@id([companyId, applicationId])
   @@unique([companyId, applicationId])

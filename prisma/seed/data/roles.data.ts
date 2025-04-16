@@ -2,28 +2,16 @@ import { Prisma } from '@prisma/client';
 
 export const roleInitialData: Prisma.RoleCreateInput[] = [
   {
-    name: 'SUPERADMIN',
-    description: 'Rol con acceso completo a todas las funcionalidades',
-    isSystem: true,
-  },
-  {
     name: 'ADMIN',
-    description: 'Administrador con acceso a gestión de usuarios y configuraciones',
-    isSystem: true,
+    description: 'Administrador con acceso completo al sistema',
   },
   {
-    name: 'TECNICO',
-    description: 'Técnico de laboratorio con acceso a gestión de muestras y resultados',
-    isSystem: false,
+    name: 'JEFE LABORATORIO',
+    description:
+      'Responsable de supervisar todas las operaciones del laboratorio',
   },
   {
-    name: 'AUXILIAR',
-    description: 'Auxiliar con acceso limitado a consulta de información',
-    isSystem: false,
+    name: 'AUXILIAR LABORATORIO',
+    description: 'Personal de apoyo en las operaciones básicas del laboratorio',
   },
-  {
-    name: 'PROVEEDOR',
-    description: 'Proveedor externo con acceso a consulta de sus lotes y resultados',
-    isSystem: false,
-  },
-]; 
+];

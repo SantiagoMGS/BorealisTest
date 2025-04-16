@@ -26,14 +26,14 @@ export const subresourceInitialData: SubresourceWithResourceName[] = [
     resourceId: '',
     resourceName: 'Resultados',
     icon: 'device-niton',
-    path: '/niton',
+    path: '/niton-results',
   },
   {
     name: 'Absorción atómica',
     resourceId: '',
     resourceName: 'Resultados',
     icon: 'atom',
-    path: '/absorbance',
+    path: '/absorbance-results',
   },
   {
     name: 'Copelación',
@@ -47,14 +47,14 @@ export const subresourceInitialData: SubresourceWithResourceName[] = [
     resourceId: '',
     resourceName: 'Análisis',
     icon: 'shield-check',
-    path: '/analysis',
+    path: '/niton-analysis',
   },
   {
     name: 'Absorción atómica',
     resourceId: '',
     resourceName: 'Análisis',
     icon: 'shield-check',
-    path: '/analysis',
+    path: '/absorbance-analysis',
   },
 
   // Subrecursos para ADMINISTRACIÓN
