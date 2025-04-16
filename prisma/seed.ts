@@ -1,5 +1,11 @@
 import { PrismaClient } from '@prisma/client';
 import { seedUsers } from './seed/seed-users';
+import { seedCompanies } from './seed/seed-company';
+import { seedApplications } from './seed/seed-application';
+import { seedResources } from './seed/seed-resources';
+import { seedSubresources } from './seed/seed-subresources';
+import { seedApplicationResources } from './seed/seed-application-resources';
+import { seedCompanyApplications } from './seed/seed-company-applications';
 import { Logger } from '@nestjs/common';
 
 // Inicializar cliente Prisma
@@ -12,7 +18,13 @@ async function main() {
     logger.log('🌱 Iniciando proceso de sembrado de datos...');
 
     // Ejecutar semillas en orden
-    await seedUsers(prisma);
+    await seedApplications(prisma); // Primero las aplicaciones
+    await seedCompanies(prisma); // Después las compañías
+    await seedCompanyApplications(prisma); // Relaciones entre compañías y aplicaciones
+    await seedUsers(prisma); // Luego los usuarios
+    await seedResources(prisma); // Después los recursos
+    await seedSubresources(prisma); // Subrecursos que dependen de recursos
+    await seedApplicationResources(prisma); // Finalmente recursos de aplicaciones
 
     logger.log('✅ ¡Proceso de sembrado completado con éxito!');
   } catch (error: any) {

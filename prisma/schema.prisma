@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../generated/prisma"
@@ -28,8 +22,6 @@ datasource db {
   - Subresource: Subrecurso del sistema
   - Application: Aplicación del sistema
   - CompanyApplication: Relación entre compañía y aplicación
-  - Supplier: Proveedor del sistema
-  - SupplierCompany: Relación entre proveedor y compañía
 */
 model User {
   id             String        @id @default(uuid()) @db.Uuid
@@ -40,6 +32,231 @@ model User {
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
 
+  // Relaciones inversas
+  sessions Session[]
+  companies UserCompany[]
+
   @@index([email])
   @@map("users") // Nombre de tabla en plural para convención
+}
+
+
+model Session {
+  id               String    @id @default(uuid()) @db.Uuid
+  userId           String    @db.Uuid
+  token            String    @unique
+  refreshToken     String? // Movido aquí desde User
+  expiresAt        DateTime // Fecha de expiración del token
+  refreshExpiresAt DateTime? // Expiración del refresh token
+  device           String? // Información del dispositivo
+  ipAddress        String? // IP desde donde se creó la sesión
+  lastActive       DateTime  @default(now())
+  createdAt        DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+  @@map("sessions")
+}
+
+model Role {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdBy   String?  @db.Uuid 
+  updatedBy   String?  @db.Uuid 
+
+  permissions RolePermission[]
+  users       UserCompany[]
+
+  @@index([name])
+  @@map("roles")
+}
+
+model Resource {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String   @unique
+  icon      String   
+  path      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String?  @db.Uuid 
+  updatedBy String?  @db.Uuid 
+
+  subresources Subresource[]
+  applications ApplicationResource[]
+
+  @@index([name])
+  @@map("resources")
+}
+
+model Action {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String   @unique
+  level       Int
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdBy   String?  @db.Uuid 
+  updatedBy   String?  @db.Uuid 
+
+  permissions RolePermission[]
+
+  @@index([name])
+  @@map("actions")
+}
+
+model Company {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String   @unique
+  shortName String   @unique
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String?  @db.Uuid 
+  updatedBy String?  @db.Uuid 
+  
+  branding     CompanyBranding?
+  users        UserCompany[]
+  applications CompanyApplication[]
+
+  @@index([name])
+  @@map("companies")
+}
+
+model CompanyBranding {
+  companyId      String   @id @db.Uuid
+  logo           String?
+  primaryColor   String?  @db.VarChar(25)
+  secondaryColor String?  @db.VarChar(25)
+  tertiaryColor  String?  @db.VarChar(25)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  createdBy      String?  @db.Uuid 
+  updatedBy      String?  @db.Uuid 
+
+  company Company @relation(fields: [companyId], references: [id])
+
+  @@map("company_brandings")
+}
+
+model UserCompany {
+  userId    String   @db.Uuid
+  companyId String   @db.Uuid
+  roleId    String   @db.Uuid
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String?  @db.Uuid 
+  updatedBy String?  @db.Uuid 
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  role    Role    @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([userId, companyId, roleId])
+  @@unique([userId, companyId])
+  @@index([userId])
+  @@index([companyId])
+  @@map("user_companies")
+}
+
+model RolePermission {
+  roleId        String   @db.Uuid
+  actionId      String   @db.Uuid
+  subresourceId String   @db.Uuid
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  createdBy     String?  @db.Uuid 
+  updatedBy     String?  @db.Uuid 
+
+  role        Role        @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  action      Action      @relation(fields: [actionId], references: [id], onDelete: Cascade)
+  subresource Subresource @relation(fields: [subresourceId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, actionId, subresourceId])
+  @@unique([roleId, subresourceId])
+  @@index([roleId])
+  @@index([subresourceId])
+  @@map("role_permissions")
+}
+
+model Subresource {
+  id         String   @id @default(uuid()) @db.Uuid
+  name       String
+  resourceId String   @db.Uuid
+  icon       String   
+  path       String   @unique
+  updatedAt  DateTime @updatedAt
+  createdAt  DateTime @default(now())
+  createdBy  String?  @db.Uuid 
+  updatedBy  String?  @db.Uuid 
+
+  resource        Resource         @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  rolePermissions RolePermission[]
+
+  @@unique([name, resourceId])
+  @@index([resourceId])
+  @@map("subresources")
+}
+
+model Application {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String   @unique
+  description String?
+  path        String   @unique
+  logo        String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdBy   String?  @db.Uuid 
+  updatedBy   String?  @db.Uuid 
+
+  companies CompanyApplication[]
+  resources ApplicationResource[] // Nueva relación con recursos
+
+  @@index([name])
+  @@map("applications")
+}
+
+model ApplicationResource {
+  applicationId String   @db.Uuid
+  resourceId    String   @db.Uuid
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  createdBy     String?  @db.Uuid 
+  updatedBy     String?  @db.Uuid 
+
+  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  resource    Resource    @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+
+  @@id([applicationId, resourceId])
+  @@unique([applicationId, resourceId])
+  @@index([applicationId])
+  @@index([resourceId])
+  @@map("application_resources")
+}
+
+
+model CompanyApplication {
+  companyId     String   @db.Uuid
+  applicationId String   @db.Uuid
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  createdBy     String?  @db.Uuid 
+  updatedBy     String?  @db.Uuid 
+
+  company     Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@id([companyId, applicationId])
+  @@unique([companyId, applicationId])
+  @@index([companyId])
+  @@index([applicationId])
+  @@map("company_applications")
 }
