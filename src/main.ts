@@ -5,15 +5,28 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 import { HttpExceptionFilter } from '@core/filters/http-exception.filter';
 import { ResponseInterceptor } from '@core/interceptores/response.interceptor';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import {
+  FastifyAdapter,
+  NestFastifyApplication,
+} from '@nestjs/platform-fastify';
+import { Reflector } from '@nestjs/core';
 
 async function bootstrap() {
   const logger = new Logger('BorealisMain');
   try {
-    const app = await NestFactory.create(AppModule);
+    // **Configuración de Fastify**
+    const fastifyAdapter = new FastifyAdapter();
 
-    // **Configuraciones globales**
-    app.useGlobalFilters(new HttpExceptionFilter());
-    app.useGlobalInterceptors(new ResponseInterceptor());
+    fastifyAdapter
+      .getInstance()
+      .addHook('onSend', (request, reply, payload, done) => {
+        done(null, payload);
+      });
+
+    const app = await NestFactory.create<NestFastifyApplication>(
+      AppModule,
+      fastifyAdapter,
+    );
 
     app.useGlobalPipes(
       new ValidationPipe({
@@ -22,6 +35,10 @@ async function bootstrap() {
         transform: true, // 🔹 Convierte automáticamente los datos de entrada al tipo esperado (útil para DTOs)
       }),
     );
+
+    const reflector = new Reflector();
+    app.useGlobalFilters(new HttpExceptionFilter(reflector));
+    app.useGlobalInterceptors(new ResponseInterceptor(reflector));
 
     // **Habilitar CORS**
     app.enableCors({

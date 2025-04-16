@@ -17,9 +17,6 @@ export class AuthLoginDataSourceService {
       });
 
       if (!user) {
-        this.logger.warn(
-          `Intento de inicio de sesión con email inexistente: ${loginData.email}`,
-        );
         throw new UnauthorizedException(AUTH_MESSAGE.CREDENTIALS_INCORRECT);
       }
 
@@ -30,9 +27,6 @@ export class AuthLoginDataSourceService {
       );
 
       if (!isPasswordValid) {
-        this.logger.warn(
-          `Contraseña incorrecta para el usuario: ${loginData.email}`,
-        );
         throw new UnauthorizedException(AUTH_MESSAGE.CREDENTIALS_INCORRECT);
       }
 

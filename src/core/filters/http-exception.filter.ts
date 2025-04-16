@@ -1,4 +1,4 @@
-import { ApiResponse } from '@shared/models/api-response.dto';
+// filters/http-exception.filter.ts
 import {
   ExceptionFilter,
   Catch,
@@ -6,34 +6,45 @@ import {
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
-import { Response } from 'express';
+import { FastifyReply } from 'fastify';
+import { Reflector } from '@nestjs/core';
+import {
+  CUSTOM_RESPONSE_METADATA,
+  CustomResponseOptions,
+} from '../decorators/custom-response.decorator';
 
-@Catch()
+@Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter {
-  catch(exception: any, host: ArgumentsHost) {
+  constructor(private reflector: Reflector) {}
+
+  catch(exception: HttpException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
-    const response = ctx.getResponse<Response>();
-    const request = ctx.getRequest<Request>();
+    const reply = ctx.getResponse<FastifyReply>();
+    const request = ctx.getRequest();
+    const status = exception.getStatus();
+    const exceptionResponse = exception.getResponse();
 
-    let status = HttpStatus.INTERNAL_SERVER_ERROR;
-    let message = 'Error interno del servidor';
+    // Intentar obtener el mensaje personalizado del decorador
+    // En un filtro global es más difícil acceder al handler específico,
+    // por lo que usaremos mensajes por defecto
+    let errorMessage =
+      typeof exceptionResponse === 'object' && 'message' in exceptionResponse
+        ? exceptionResponse['message']
+        : exception.message;
 
-    if (exception instanceof HttpException) {
-      status = exception.getStatus();
-      const errorResponse = exception.getResponse();
-      message =
-        typeof errorResponse === 'string'
-          ? errorResponse
-          : ((errorResponse as any)?.message ?? exception.message);
-    }
+    const errorResponse = {
+      success: false,
+      statusCode: status,
+      timestamp: new Date().toISOString(),
+      path: request.url,
+      message: errorMessage,
+      error:
+        typeof exceptionResponse === 'object' && 'error' in exceptionResponse
+          ? exceptionResponse['error']
+          : HttpStatus[status],
+      data: null,
+    };
 
-    const errorResponse = new ApiResponse(
-      'error',
-      status,
-      message,
-      undefined,
-      request.url,
-    );
-    response.status(status).json(errorResponse);
+    reply.status(status).send(errorResponse);
   }
 }
