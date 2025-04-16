@@ -10,6 +10,7 @@ import { seedCompanyApplications } from './seed/seed-company-applications';
 import { Logger } from '@nestjs/common';
 import { seedRoles } from './seed/seed-roles';
 import { seedRolePermissions } from './seed/seed-role-permissions';
+import { seedUserCompanies } from './seed/seed-user-companies';
 
 // Inicializar cliente Prisma
 const prisma = new PrismaClient();
@@ -26,6 +27,7 @@ async function main() {
     await seedCompanyApplications(prisma); // Relaciones entre compañías y aplicaciones
     await seedUsers(prisma); // Luego los usuarios
     await seedRoles(prisma); // Roles
+    await seedUserCompanies(prisma); // Relaciones entre usuarios, compañías y roles
     await seedActions(prisma); // Acciones para permisos
     await seedResources(prisma); // Después los recursos
     await seedSubresources(prisma); // Subrecursos que dependen de recursos

@@ -1,33 +1,54 @@
 import { Prisma } from '@prisma/client';
 
-// Este objeto será completado en el seed, ya que necesita IDs existentes
-export const userCompanyInitialData: Partial<Prisma.UserCompanyCreateManyInput>[] = [
+/**
+ * Datos iniciales para relaciones entre usuarios y compañías
+ *
+ * Esta estructura será completada con IDs en el seed
+ * - El usuario admin (email: admin@borealis.com) tendrá rol ADMIN en todas las compañías
+ * - El usuario técnico tendrá rol AUXILIAR LABORATORIO en QUINTANA
+ * - El usuario auxiliar tendrá rol AUXILIAR LABORATORIO en MONA MINAS
+ * - El usuario jefe laboratorio tendrá rol JEFE LABORATORIO en COLOMBIAN MINT
+ */
+export const userCompanyInitialData: Array<{
+  userEmail: string;
+  companyName: string;
+  roleName: string;
+}> = [
+  // Admin en todas las compañías con rol ADMIN
   {
-    // Admin en QUINTANA como SUPERADMIN
-    userId: '', // Se completará en el seed
-    companyId: '', // Se completará en el seed
-    roleId: '', // Se completará en el seed
-    isActive: true,
+    userEmail: 'admin@borealis.com',
+    companyName: 'QUINTANA',
+    roleName: 'ADMIN',
   },
   {
-    // Admin en MONA MINAS como ADMIN
-    userId: '', // Se completará en el seed
-    companyId: '', // Se completará en el seed
-    roleId: '', // Se completará en el seed
-    isActive: true,
+    userEmail: 'admin@borealis.com',
+    companyName: 'MONA MINAS',
+    roleName: 'ADMIN',
   },
   {
-    // Técnico en QUINTANA como TECNICO
-    userId: '', // Se completará en el seed
-    companyId: '', // Se completará en el seed
-    roleId: '', // Se completará en el seed
-    isActive: true,
+    userEmail: 'admin@borealis.com',
+    companyName: 'COLOMBIAN MINT',
+    roleName: 'ADMIN',
   },
+
+  // Técnico en QUINTANA con rol AUXILIAR LABORATORIO
   {
-    // Auxiliar en COLOMBIAN MINT como AUXILIAR
-    userId: '', // Se completará en el seed
-    companyId: '', // Se completará en el seed
-    roleId: '', // Se completará en el seed
-    isActive: true,
+    userEmail: 'tecnico@borealis.com',
+    companyName: 'QUINTANA',
+    roleName: 'AUXILIAR LABORATORIO',
   },
-]; 
+
+  // Auxiliar en MONA MINAS con rol AUXILIAR LABORATORIO
+  {
+    userEmail: 'auxiliar@borealis.com',
+    companyName: 'MONA MINAS',
+    roleName: 'AUXILIAR LABORATORIO',
+  },
+
+  // Jefe de laboratorio en COLOMBIAN MINT con rol JEFE LABORATORIO
+  {
+    userEmail: 'jefelaboratorio@borealis.com',
+    companyName: 'COLOMBIAN MINT',
+    roleName: 'JEFE LABORATORIO',
+  },
+];
