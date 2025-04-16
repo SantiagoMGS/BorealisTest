@@ -12,11 +12,9 @@ export class AuthLoginDataSourceService {
 
   async login(loginData: IAuthLoginEntity): Promise<any> {
     try {
-      console.log('En AuthLoginDataSourceService.login');
       const user = await this.prisma.user.findUnique({
         where: { email: loginData.email },
       });
-      console.log('Usuario encontrado:', user ? 'Sí' : 'No');
 
       if (!user) {
         this.logger.warn(

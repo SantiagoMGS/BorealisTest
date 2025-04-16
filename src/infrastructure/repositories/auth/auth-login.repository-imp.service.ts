@@ -9,7 +9,6 @@ export class AuthLoginRepositoryImpService implements AuthLoginRepository {
     private readonly authLoginDataSourceService: AuthLoginDataSourceService,
   ) {}
   async login(loginDto: LoginDto): Promise<any> {
-    console.log('En AuthLoginRepositoryImpService.login');
     const user = await this.authLoginDataSourceService.login(loginDto);
     return user;
   }
