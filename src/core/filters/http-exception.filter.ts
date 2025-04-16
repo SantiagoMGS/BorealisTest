@@ -29,6 +29,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     const errorResponse = new ApiResponse(
       'error',
+      status,
       message,
       undefined,
       request.url,
