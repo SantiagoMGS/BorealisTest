@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { userCompanyInitialData } from './data/user-company.data';
+import { userCompanyInitialData } from './data';
 import { Logger } from '@nestjs/common';
 
 export const seedUserCompanies = async (prisma: PrismaClient) => {

@@ -1,16 +1,18 @@
 import { PrismaClient } from '@prisma/client';
-import { seedUsers } from './seed/seed-users';
-import { seedCompanies } from './seed/seed-company';
-import { seedApplications } from './seed/seed-application';
-import { seedResources } from './seed/seed-resources';
-import { seedSubresources } from './seed/seed-subresources';
-import { seedActions } from './seed/seed-actions';
-import { seedApplicationResources } from './seed/seed-application-resources';
-import { seedCompanyApplications } from './seed/seed-company-applications';
 import { Logger } from '@nestjs/common';
-import { seedRoles } from './seed/seed-roles';
-import { seedRolePermissions } from './seed/seed-role-permissions';
-import { seedUserCompanies } from './seed/seed-user-companies';
+import {
+  seedUsers,
+  seedCompanies,
+  seedApplications,
+  seedResources,
+  seedSubresources,
+  seedActions,
+  seedApplicationResources,
+  seedCompanyApplications,
+  seedRoles,
+  seedRolePermissions,
+  seedUserCompanies,
+} from './seed/index';
 
 // Inicializar cliente Prisma
 const prisma = new PrismaClient();

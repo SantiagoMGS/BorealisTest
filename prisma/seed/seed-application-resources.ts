@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { applicationResourceInitialData } from './data/application-resource.data';
+import { applicationResourceInitialData } from './data/';
 import { Logger } from '@nestjs/common';
 
 export const seedApplicationResources = async (prisma: PrismaClient) => {

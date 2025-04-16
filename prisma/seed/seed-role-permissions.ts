@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { rolePermissionInitialData } from './data/role-permission.data';
+import { rolePermissionInitialData } from './data/';
 import { Logger } from '@nestjs/common';
 
 export const seedRolePermissions = async (prisma: PrismaClient) => {
