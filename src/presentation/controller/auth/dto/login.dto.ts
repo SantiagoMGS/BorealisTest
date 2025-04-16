@@ -1,6 +1,7 @@
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { IAuthLoginEntity } from '@domain/entities/auth-login.entity';
 
-export class LoginDto {
+export class LoginDto implements IAuthLoginEntity {
   @IsEmail({}, { message: 'El email no es válido' })
   @IsNotEmpty({ message: 'El email es obligatorio' })
   email!: string;

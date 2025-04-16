@@ -8,8 +8,8 @@ import {
   Logger,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBody } from '@nestjs/swagger';
-import { LoginDto } from './dtos/login.dto';
-import { AuthLoginUseCase } from 'src/domain/use-cases/auth/auth-login.user-case';
+import { AuthLoginUseCase } from '@domain/use-cases/auth/auth-login.user-case';
+import { LoginDto } from './dto/login.dto';
 
 @ApiTags('Autenticación')
 @Controller('auth')
@@ -17,6 +17,7 @@ export class AuthController {
   private logger = new Logger(AuthController.name);
 
   constructor(private readonly authLoginUseCase: AuthLoginUseCase) {}
+
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Autenticar usuario' })
@@ -24,8 +25,8 @@ export class AuthController {
     type: LoginDto,
     description: 'Credenciales del usuario para autenticación.',
   })
-  async login(@Body() loginDto: LoginDto, @Req() req) {
+  async login(@Body() loginDto: LoginDto, @Req() req: Request) {
     const user = await this.authLoginUseCase.execute(loginDto);
-    return;
+    return user;
   }
 }

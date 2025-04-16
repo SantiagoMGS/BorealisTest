@@ -7,8 +7,13 @@ interface EnvVars {
   JWT_REFRESH_EXPIRATION: string;
   JWT_EXPIRATION: string;
   JWT_SECRET: string;
-  DATABASE_URL: string;
   MAX_ACTIVE_SESSIONS: number;
+  DATABASE_URL: string;
+  DB_NAME: string;
+  DB_USER: string;
+  DB_PASSWORD: string;
+  DB_HOST: string;
+  DB_PORT: number;
 }
 
 const envVarsSchema = joi
@@ -19,6 +24,11 @@ const envVarsSchema = joi
     JWT_EXPIRATION: joi.string().required(),
     JWT_SECRET: joi.string().required(),
     DATABASE_URL: joi.string().required(),
+    DB_NAME: joi.string().required(),
+    DB_USER: joi.string().required(),
+    DB_PASSWORD: joi.string().required(),
+    DB_HOST: joi.string().required(),
+    DB_PORT: joi.number().required(),
     MAX_ACTIVE_SESSIONS: joi.number().required(),
   })
   .unknown(true);
@@ -36,5 +46,10 @@ export const envs = {
   jwtExpiration: envVars.JWT_EXPIRATION,
   jwtSecret: envVars.JWT_SECRET,
   databaseUrl: envVars.DATABASE_URL,
+  dbName: envVars.DB_NAME,
+  dbUser: envVars.DB_USER,
+  dbPassword: envVars.DB_PASSWORD,
+  dbHost: envVars.DB_HOST,
+  dbPort: envVars.DB_PORT,
   maxActiveSessions: envVars.MAX_ACTIVE_SESSIONS,
 };

@@ -1,6 +1,6 @@
-import { LoginDto } from '@presentation/controller/auth/dtos/login.dto';
+import { IAuthLoginEntity } from '@domain/entities/auth-login.entity';
 import { ILogin } from '@shared/interfaces/login.interface';
 
 export abstract class AuthLoginRepository implements ILogin {
-  abstract login(loginDto: LoginDto): Promise<any>;
+  abstract login(loginData: IAuthLoginEntity): Promise<any>;
 }

@@ -1,7 +1,12 @@
-import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
+import {
+  CallHandler,
+  ExecutionContext,
+  Injectable,
+  NestInterceptor,
+} from '@nestjs/common';
+import { ApiResponse } from '@shared/models/api-response.dto';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { ApiResponse } from 'src/presentation/dtos/api-response.dto';
 
 @Injectable()
 export class ResponseInterceptor<T> implements NestInterceptor<T, any> {
@@ -9,8 +14,13 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, any> {
     const httpContext = context.switchToHttp();
     const request = httpContext.getRequest();
 
-    return next.handle().pipe(
-      map((data) => new ApiResponse('success', 'Operación exitosa', data, request.url)),
-    );
+    return next
+      .handle()
+      .pipe(
+        map(
+          (data) =>
+            new ApiResponse('success', 'Operación exitosa', data, request.url),
+        ),
+      );
   }
 }
