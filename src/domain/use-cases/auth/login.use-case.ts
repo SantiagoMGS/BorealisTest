@@ -1,13 +1,13 @@
-import { IAuthLoginEntity } from '@domain/entities/auth-login.entity';
+import { ILoginEntity } from '@domain/entities/login.entity';
 import { Injectable } from '@nestjs/common';
-import { AuthLoginRepository } from 'src/domain/repositories/auth/auth-login.repository';
+import { LoginRepository } from '@domain/repositories/auth/login.repository';
 
 @Injectable()
 export class LoginUseCase {
-  constructor(private readonly authLoginRepository: AuthLoginRepository) {}
+  constructor(private readonly loginRepository: LoginRepository) {}
 
-  async execute(loginData: IAuthLoginEntity): Promise<any> {
-    const user = await this.authLoginRepository.login(loginData);
+  async execute(loginData: ILoginEntity): Promise<any> {
+    const user = await this.loginRepository.login(loginData);
     return user;
   }
 }

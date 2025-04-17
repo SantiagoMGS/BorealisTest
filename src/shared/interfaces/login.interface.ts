@@ -1,5 +1,5 @@
-import { IAuthLoginEntity } from '@domain/entities/auth-login.entity';
+import { ILoginEntity } from '@domain/entities/login.entity';
 
 export interface ILogin {
-  login(loginData: IAuthLoginEntity): Promise<any>;
+  login(loginData: ILoginEntity): Promise<any>;
 }

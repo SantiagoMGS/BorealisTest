@@ -2,7 +2,7 @@ import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '@core/prisma/prisma.service';
 import { AUTH_MESSAGE } from '@shared/constants/auth-message';
 import * as bcrypt from 'bcrypt';
-import { IAuthLoginEntity } from '@domain/entities/auth-login.entity';
+import { ILoginEntity } from '@domain/entities/login.entity';
 
 @Injectable()
 export class AuthLoginDataSourceService {
@@ -10,7 +10,7 @@ export class AuthLoginDataSourceService {
 
   constructor(private readonly prisma: PrismaService) {}
 
-  async login(loginData: IAuthLoginEntity): Promise<any> {
+  async login(loginData: ILoginEntity): Promise<any> {
     try {
       const user = await this.prisma.user.findUnique({
         where: { email: loginData.email },

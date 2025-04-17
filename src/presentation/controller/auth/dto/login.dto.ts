@@ -1,8 +1,8 @@
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
-import { IAuthLoginEntity } from '@domain/entities/auth-login.entity';
+import { ILoginEntity } from '@domain/entities/login.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class LoginDto implements IAuthLoginEntity {
+export class LoginDto implements ILoginEntity {
   @ApiProperty({
     description: 'Correo electrónico del usuario',
     example: 'usuario@example.com',
