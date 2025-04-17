@@ -12,8 +12,11 @@ export class LoginDataSourceService {
 
   async login(loginData: ILoginEntity): Promise<any> {
     try {
-      const user = await this.prisma.user.findUnique({
-        where: { email: loginData.email },
+      const user = await this.prisma.user.findFirst({
+        where: {
+          email: loginData.email,
+          isActive: true,
+        },
       });
 
       if (!user) {
