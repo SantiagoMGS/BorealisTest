@@ -5,8 +5,8 @@ import * as bcrypt from 'bcrypt';
 import { ILoginEntity } from '@domain/entities/login.entity';
 
 @Injectable()
-export class AuthLoginDataSourceService {
-  private readonly logger = new Logger(AuthLoginDataSourceService.name);
+export class LoginDataSourceService {
+  private readonly logger = new Logger(LoginDataSourceService.name);
 
   constructor(private readonly prisma: PrismaService) {}
 

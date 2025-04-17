@@ -1,6 +1,5 @@
 import { ILoginEntity } from '@domain/entities/login.entity';
-import { ILogin } from '@shared/interfaces/login.interface';
 
-export abstract class LoginRepository implements ILogin {
+export abstract class LoginRepository {
   abstract login(loginData: ILoginEntity): Promise<any>;
 }
