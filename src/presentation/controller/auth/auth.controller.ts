@@ -5,13 +5,18 @@ import {
   HttpStatus,
   Body,
   Req,
-  Logger,
   UseInterceptors,
-  ForbiddenException,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBody } from '@nestjs/swagger';
-import { AuthLoginUseCase } from '@domain/use-cases/auth/auth-login.user-case';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBody,
+  ApiOkResponse,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
+import { LoginUseCase } from '@domain/use-cases/auth/login.use-case';
 import { LoginDto } from './dto/login.dto';
+import { LoginResponseDto, ErrorResponseDto } from './dto/login-response.dto';
 import { ResponseInterceptor } from '@core/interceptores/response.interceptor';
 import { CustomResponse } from '@core/decorators/custom-response.decorator';
 
@@ -19,9 +24,7 @@ import { CustomResponse } from '@core/decorators/custom-response.decorator';
 @Controller('auth')
 @UseInterceptors(ResponseInterceptor)
 export class AuthController {
-  private logger = new Logger(AuthController.name);
-
-  constructor(private readonly authLoginUseCase: AuthLoginUseCase) {}
+  constructor(private readonly loginUseCase: LoginUseCase) {}
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
@@ -30,10 +33,18 @@ export class AuthController {
     type: LoginDto,
     description: 'Credenciales del usuario para autenticación.',
   })
+  @ApiOkResponse({
+    description: 'Usuario autenticado correctamente',
+    type: LoginResponseDto,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Credenciales incorrectas',
+    type: ErrorResponseDto,
+  })
   @CustomResponse({
     successMessage: 'Usuario autenticado correctamente',
   })
-  async login(@Body() loginDto: LoginDto, @Req() req: Request) {
-    return await this.authLoginUseCase.execute(loginDto);
+  async login(@Body() loginDto: LoginDto) {
+    return await this.loginUseCase.execute(loginDto);
   }
 }

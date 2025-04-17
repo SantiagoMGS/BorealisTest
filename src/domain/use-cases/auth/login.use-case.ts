@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { AuthLoginRepository } from 'src/domain/repositories/auth/auth-login.repository';
 
 @Injectable()
-export class AuthLoginUseCase {
+export class LoginUseCase {
   constructor(private readonly authLoginRepository: AuthLoginRepository) {}
 
   async execute(loginData: IAuthLoginEntity): Promise<any> {
