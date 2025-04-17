@@ -17,7 +17,7 @@ export const rolePermissionInitialData: {
     roleName: 'JEFE LABORATORIO',
     permissions: [
       {
-        subresourceName: 'Recepción',
+        subresourceName: 'Recepción Muestras',
         resourceName: 'Recepción',
         actionName: 'UPDATE',
       },
@@ -78,7 +78,7 @@ export const rolePermissionInitialData: {
     permissions: [
       // Acceso de solo create a Recepción y Análisis
       {
-        subresourceName: 'Recepción',
+        subresourceName: 'Recepción Muestras',
         resourceName: 'Recepción',
         actionName: 'CREATE',
       },

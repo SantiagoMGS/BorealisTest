@@ -8,16 +8,16 @@ export interface SubresourceWithResourceName
 export const subresourceInitialData: SubresourceWithResourceName[] = [
   // Subrecursos para LIMS
   {
-    name: 'Recepción',
+    name: 'Recepción Doré',
     resourceId: '',
-    resourceName: 'Recepción Doré',
+    resourceName: 'Recepción',
     icon: 'flask-sample',
     path: '/recepcion-dore',
   },
   {
-    name: 'Recepción',
+    name: 'Recepción Muestras',
     resourceId: '',
-    resourceName: 'Recepción Muestras',
+    resourceName: 'Recepción',
     icon: 'flask-sample',
     path: '/recepcion-muestras',
   },
