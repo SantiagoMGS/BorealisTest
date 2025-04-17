@@ -10,9 +10,16 @@ export const subresourceInitialData: SubresourceWithResourceName[] = [
   {
     name: 'Recepción',
     resourceId: '',
-    resourceName: 'Recepción',
+    resourceName: 'Recepción Doré',
     icon: 'flask-sample',
-    path: '/gestion-muestras',
+    path: '/recepcion-dore',
+  },
+  {
+    name: 'Recepción',
+    resourceId: '',
+    resourceName: 'Recepción Muestras',
+    icon: 'flask-sample',
+    path: '/recepcion-muestras',
   },
   {
     name: 'Gestión',
