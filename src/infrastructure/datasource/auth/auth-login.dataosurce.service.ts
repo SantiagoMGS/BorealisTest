@@ -12,11 +12,8 @@ export class LoginDataSourceService {
 
   async login(loginData: ILoginEntity): Promise<any> {
     try {
-      const user = await this.prisma.user.findFirst({
-        where: {
-          email: loginData.email,
-          isActive: true,
-        },
+      const user = await this.prisma.user.findUnique({
+        where: { email: loginData.email },
       });
 
       if (!user) {
@@ -31,6 +28,10 @@ export class LoginDataSourceService {
 
       if (!isPasswordValid) {
         throw new UnauthorizedException(AUTH_MESSAGE.CREDENTIALS_INCORRECT);
+      }
+
+      if (!user.isActive) {
+        throw new UnauthorizedException(AUTH_MESSAGE.USER_NOT_ACTIVE);
       }
 
       // Omitir la contraseña en la respuesta
