@@ -14,6 +14,20 @@ export class LoginDataSourceService {
     try {
       const user = await this.prisma.user.findUnique({
         where: { email: loginData.email },
+        include: {
+          companies: {
+            where: {
+              isActive: true,
+            },
+            include: {
+              company: {
+                include: {
+                  branding: true,
+                },
+              },
+            },
+          },
+        },
       });
 
       if (!user) {
@@ -34,10 +48,45 @@ export class LoginDataSourceService {
         throw new UnauthorizedException(AUTH_MESSAGE.USER_NOT_ACTIVE);
       }
 
-      // Omitir la contraseña en la respuesta
-      const { hashedPassword, ...userWithoutPassword } = user;
+      // Formatear respuesta
+      const {
+        hashedPassword,
+        isActive,
+        createdAt,
+        updatedAt,
+        name,
+        email,
+        ...userData
+      } = user;
 
-      return userWithoutPassword;
+      // Formatear las compañías
+      const formattedCompanies = user.companies.map((uc) => {
+        const { company, ...ucData } = uc;
+        const { branding } = company;
+
+        // Extraer solo los datos de branding necesarios
+        const formattedBranding = branding
+          ? {
+              logo: branding.logo,
+              primaryColor: branding.primaryColor,
+              secondaryColor: branding.secondaryColor,
+              tertiaryColor: branding.tertiaryColor,
+            }
+          : null;
+
+        return {
+          id: company.id,
+          name: company.name,
+          shortName: company.shortName,
+          role: ucData.roleId,
+          branding: formattedBranding,
+        };
+      });
+
+      return {
+        ...userData,
+        companies: formattedCompanies,
+      };
     } catch (error: any) {
       this.logger.error(`Error en login: ${error.message}`, error.stack);
       throw error;
