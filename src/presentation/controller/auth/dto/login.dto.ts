@@ -1,5 +1,5 @@
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
-import { ILoginEntity } from '@domain/entities/login.entity';
+import { ILoginEntity } from '@domain/entities/auth/login.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class LoginDto implements ILoginEntity {

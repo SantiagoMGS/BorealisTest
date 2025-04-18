@@ -2,13 +2,14 @@ import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '@core/prisma/prisma.service';
 import { AUTH_MESSAGE } from '@shared/constants/auth-message';
 import * as bcrypt from 'bcrypt';
-import { ILoginEntity } from '@domain/entities/login.entity';
+import { ILoginEntity } from '@domain/entities/auth/login.entity';
 
 @Injectable()
 export class LoginDataSourceService {
   private readonly logger = new Logger(LoginDataSourceService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService,
+  ) { }
 
   async login(loginData: ILoginEntity): Promise<any> {
     try {
@@ -33,6 +34,7 @@ export class LoginDataSourceService {
       if (!user) {
         throw new UnauthorizedException(AUTH_MESSAGE.CREDENTIALS_INCORRECT);
       }
+
 
       // Comparar contraseña con bcrypt
       const isPasswordValid = await bcrypt.compare(
@@ -67,11 +69,11 @@ export class LoginDataSourceService {
         // Extraer solo los datos de branding necesarios
         const formattedBranding = branding
           ? {
-              logo: branding.logo,
-              primaryColor: branding.primaryColor,
-              secondaryColor: branding.secondaryColor,
-              tertiaryColor: branding.tertiaryColor,
-            }
+            logo: branding.logo,
+            primaryColor: branding.primaryColor,
+            secondaryColor: branding.secondaryColor,
+            tertiaryColor: branding.tertiaryColor,
+          }
           : null;
 
         return {
