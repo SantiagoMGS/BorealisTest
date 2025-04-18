@@ -1,11 +1,11 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { Request } from 'express';
-import { AuthSessionManagementUseCase } from './auth-session-management.use-case';
+import { SessionManagementUseCase } from './session-management.use-case';
 
 @Injectable()
 export class LogoutUseCase {
   constructor(
-    private readonly authSessionManagementUseCase: AuthSessionManagementUseCase,
+    private readonly sessionManagementUseCase: SessionManagementUseCase,
   ) {}
 
   async execute(req: Request): Promise<boolean> {
@@ -21,7 +21,7 @@ export class LogoutUseCase {
     }
 
     // Invalidar la sesión usando el servicio de gestión de sesiones
-    await this.authSessionManagementUseCase.invalidateSession(token);
+    await this.sessionManagementUseCase.invalidateSession(token);
 
     return true;
   }

@@ -9,7 +9,7 @@ import { LoginRepository, SessionRepository } from '@domain/repositories/auth';
 import {
   LoginUseCase,
   LogoutUseCase,
-  AuthSessionManagementUseCase,
+  SessionManagementUseCase,
 } from '@domain/use-cases/auth';
 import { envs } from '@core/config';
 import { JwtStrategy } from '@infrastructure/strategies/jwt.strategy';
@@ -31,7 +31,7 @@ import { LoginRepositoryImplService } from '@infrastructure/repositories/auth/lo
   controllers: [AuthController],
   providers: [
     // Casos de uso
-    AuthSessionManagementUseCase,
+    SessionManagementUseCase,
     LoginUseCase,
     LogoutUseCase,
 
@@ -51,6 +51,6 @@ import { LoginRepositoryImplService } from '@infrastructure/repositories/auth/lo
 
     JwtStrategy,
   ],
-  exports: [JwtStrategy, PassportModule, AuthSessionManagementUseCase], // Exportar si otros módulos lo necesitan
+  exports: [JwtStrategy, PassportModule, SessionManagementUseCase], // Exportar si otros módulos lo necesitan
 })
 export class AuthModule {}

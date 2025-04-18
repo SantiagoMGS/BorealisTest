@@ -1,12 +1,11 @@
 import { ISessionEntity } from '@domain/entities/auth';
 import { SessionRepository } from '@domain/repositories/auth';
 
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { Request } from 'express';
 
 @Injectable()
-export class AuthSessionManagementUseCase {
+export class SessionManagementUseCase {
   constructor(
     private readonly sessionRepository: SessionRepository,
     private readonly jwtService: JwtService,
