@@ -32,12 +32,21 @@ import { LoginRepositoryImplService } from '@infrastructure/repositories/auth/lo
   providers: [
     // Casos de uso
     SessionManagementUseCase,
-    LoginUseCase,
+    {
+      provide: LoginUseCase,
+      useFactory: (
+        loginRepository: LoginRepository,
+        sessionRepository: SessionRepository,
+      ) => {
+        return new LoginUseCase(loginRepository, sessionRepository);
+      },
+      inject: [LoginRepository, SessionRepository],
+    },
     LogoutUseCase,
 
     // Servicios de infraestructura
     LoginDataSourceService,
-    AuthSessionDataSourceService, // Añadir este servicio aquí
+    AuthSessionDataSourceService,
 
     // Repositorios
     {
@@ -51,6 +60,6 @@ import { LoginRepositoryImplService } from '@infrastructure/repositories/auth/lo
 
     JwtStrategy,
   ],
-  exports: [JwtStrategy, PassportModule, SessionManagementUseCase], // Exportar si otros módulos lo necesitan
+  exports: [JwtStrategy, PassportModule, SessionManagementUseCase],
 })
 export class AuthModule {}

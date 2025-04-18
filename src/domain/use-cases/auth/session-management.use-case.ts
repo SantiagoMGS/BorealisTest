@@ -11,6 +11,8 @@ export class SessionManagementUseCase {
     private readonly jwtService: JwtService,
   ) {}
 
+  // Este método ya no se usará en el flujo de login
+  // pero lo mantenemos para compatibilidad con otras partes del código
   async createSession(
     userId: string,
     device?: string,
