@@ -3,8 +3,7 @@ import {
   Get,
   UseGuards,
   Param,
-  NotFoundException,
-  ForbiddenException,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { CurrentUser } from '@core/decorators/current-user.decorator';
 import { JwtAuthGuard } from '@infrastructure/guards/jwt-auth.guard';
@@ -47,6 +46,7 @@ export class UserController {
     description: 'Permisos del usuario para la compañía',
     type: PermissionsByCompanyResponseDto,
   })
+  @ApiResponse({ status: 400, description: 'ID de compañía inválido' })
   @ApiResponse({ status: 403, description: 'No tiene acceso a esta compañía' })
   @ApiResponse({ status: 404, description: 'Compañía no encontrada' })
   @CustomResponse({
@@ -54,24 +54,19 @@ export class UserController {
   })
   async getPermissionsByCompany(
     @CurrentUser() user: any,
-    @Param('companyId') companyId: string,
+    @Param(
+      'companyId',
+      new ParseUUIDPipe({
+        version: '4',
+        errorHttpStatusCode: 400,
+      }),
+    )
+    companyId: string,
   ): Promise<PermissionsByCompanyResponseDto> {
-    try {
-      const permissions = await this.getPermissionsByCompanyUseCase.execute(
-        user.id,
-        companyId,
-      );
-      return permissions as PermissionsByCompanyResponseDto;
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        if (error.message === 'La compañía no existe') {
-          throw new NotFoundException('La compañía no existe');
-        }
-        if (error.message === 'El usuario no pertenece a esta compañía') {
-          throw new ForbiddenException('No tienes acceso a esta compañía');
-        }
-      }
-      throw error;
-    }
+    const permissions = await this.getPermissionsByCompanyUseCase.execute(
+      user.id,
+      companyId,
+    );
+    return permissions as PermissionsByCompanyResponseDto;
   }
 }

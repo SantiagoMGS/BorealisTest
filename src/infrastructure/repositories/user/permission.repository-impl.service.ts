@@ -13,23 +13,15 @@ export class PermissionRepositoryImpl implements PermissionRepository {
     userId: string,
     companyId: string,
   ): Promise<IPermissionsByCompanyResponse> {
+    // Obtener información de la compañía
+    const company =
+      await this.permissionDataSource.getCompanyWithBranding(companyId);
+
     // Verificar que el usuario pertenece a la compañía
     const userCompany = await this.permissionDataSource.getUserCompany(
       userId,
       companyId,
     );
-
-    if (!userCompany) {
-      throw new Error('El usuario no pertenece a esta compañía');
-    }
-
-    // Obtener información de la compañía
-    const company =
-      await this.permissionDataSource.getCompanyWithBranding(companyId);
-
-    if (!company) {
-      throw new Error('La compañía no existe');
-    }
 
     // Obtener aplicaciones de la compañía
     const companyApplications =
@@ -37,7 +29,7 @@ export class PermissionRepositoryImpl implements PermissionRepository {
 
     // Obtener los permisos del rol del usuario
     const rolePermissions = await this.permissionDataSource.getRolePermissions(
-      userCompany.roleId,
+      userCompany!.roleId,
     );
 
     // Obtener los recursos de las aplicaciones
@@ -107,15 +99,15 @@ export class PermissionRepositoryImpl implements PermissionRepository {
 
     return {
       company: {
-        id: company.id,
-        name: company.name,
-        shortName: company.shortName,
-        branding: company.branding
+        id: company!.id,
+        name: company!.name,
+        shortName: company!.shortName,
+        branding: company!.branding
           ? {
-              logo: company.branding.logo,
-              primaryColor: company.branding.primaryColor,
-              secondaryColor: company.branding.secondaryColor,
-              tertiaryColor: company.branding.tertiaryColor,
+              logo: company!.branding.logo,
+              primaryColor: company!.branding.primaryColor,
+              secondaryColor: company!.branding.secondaryColor,
+              tertiaryColor: company!.branding.tertiaryColor,
             }
           : null,
       },

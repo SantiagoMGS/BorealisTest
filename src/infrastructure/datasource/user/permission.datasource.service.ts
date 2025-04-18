@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@core/prisma/prisma.service';
 
 @Injectable()
@@ -6,7 +6,7 @@ export class PermissionDataSourceService {
   constructor(private readonly prisma: PrismaService) {}
 
   async getUserCompany(userId: string, companyId: string) {
-    return this.prisma.userCompany.findUnique({
+    const userCompany = await this.prisma.userCompany.findUnique({
       where: {
         userId_companyId: {
           userId,
@@ -17,15 +17,29 @@ export class PermissionDataSourceService {
         role: true,
       },
     });
+
+    if (!userCompany) {
+      throw new NotFoundException('El usuario no pertenece a esta compañía');
+    }
+
+    return userCompany;
   }
 
   async getCompanyWithBranding(companyId: string) {
-    return this.prisma.company.findUnique({
+    const company = await this.prisma.company.findUnique({
       where: { id: companyId },
       include: {
         branding: true,
       },
     });
+
+    if (!company) {
+      throw new NotFoundException(
+        'No se encontró una compañía con el ID proporcionado"',
+      );
+    }
+
+    return company;
   }
 
   async getCompanyApplications(companyId: string) {
