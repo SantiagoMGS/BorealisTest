@@ -1,7 +1,7 @@
-import { LoginDto } from '../dto';
+import { LoginDto } from '../dtos';
 import { ILoginEntity } from '@domain/entities/auth';
 import { ILoginResponse } from '@domain/interfaces/auth';
-import { LoginResponseDto } from '../dto';
+import { LoginResponseDto } from '../dtos';
 
 export class LoginMapper {
   static toEntity(dto: LoginDto): ILoginEntity {

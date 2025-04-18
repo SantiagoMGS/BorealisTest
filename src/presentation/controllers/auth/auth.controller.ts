@@ -17,8 +17,8 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { LoginUseCase, LogoutUseCase } from '@domain/use-cases/auth';
-import { LoginDto } from './dto';
-import { LoginResponseDto, ErrorResponseDto } from './dto';
+import { LoginDto } from './dtos';
+import { LoginResponseDto, ErrorResponseDto } from './dtos';
 import { ResponseInterceptor } from '@core/interceptores/response.interceptor';
 import { CustomResponse } from '@core/decorators/custom-response.decorator';
 import { Request } from 'express';
