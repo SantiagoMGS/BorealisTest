@@ -25,8 +25,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException('Usuario no válido');
     }
 
+    if (!user.isActive) {
+      throw new UnauthorizedException('Usuario inactivo');
+    }
+
     // Retornar el usuario que se inyectará en el Request
-    const { hashedPassword, ...result } = user;
-    return result;
+    const { hashedPassword, ...safeUser } = user;
+    return {
+      ...safeUser,
+    };
   }
 }

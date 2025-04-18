@@ -6,6 +6,8 @@ import {
   Body,
   Req,
   UseInterceptors,
+  UseGuards,
+  Get,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -20,6 +22,8 @@ import { LoginResponseDto, ErrorResponseDto } from './dto/login-response.dto';
 import { ResponseInterceptor } from '@core/interceptores/response.interceptor';
 import { CustomResponse } from '@core/decorators/custom-response.decorator';
 import { ILoginResponse } from '@domain/interfaces/auth/login-response.interface';
+import { JwtAuthGuard } from '@infrastructure/guards/jwt-auth.guard';
+import { CurrentUser } from '@core/decorators/current-user.decorator';
 
 @ApiTags('Autenticación')
 @Controller('auth')
