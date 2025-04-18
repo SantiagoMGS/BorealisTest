@@ -2,7 +2,6 @@ import { ILoginEntity } from '@domain/entities/auth';
 import { ILoginResponse } from '@domain/interfaces/auth';
 import { Injectable } from '@nestjs/common';
 import { LoginRepository } from '@domain/repositories/auth';
-import { SessionManagementUseCase } from './session-management.use-case';
 import { Request } from 'express';
 import { SessionRepository } from '@domain/repositories/auth';
 import { ISessionEntity } from '@domain/entities/auth';
