@@ -22,7 +22,7 @@ export class LoginRepositoryImplService implements LoginRepository {
       // Aquí se puede agregar más información al token
     };
 
-    // Generar tokens usando el servicio especializado
+    // Generar tokens usando el servicio de token
     const tokens = this.tokenPort.generateTokens(payload);
 
     // Retornar usuario con tokens
