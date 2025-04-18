@@ -3,6 +3,7 @@ import { PrismaService } from '@core/prisma/prisma.service';
 import { AUTH_MESSAGE } from '@shared/constants/auth-message';
 import * as bcrypt from 'bcrypt';
 import { ILoginEntity } from '@domain/entities/login.entity';
+import { ICompanyResponse } from '@domain/interfaces/auth/login-response.interface';
 
 @Injectable()
 export class LoginDataSourceService {
@@ -10,7 +11,9 @@ export class LoginDataSourceService {
 
   constructor(private readonly prisma: PrismaService) {}
 
-  async login(loginData: ILoginEntity): Promise<any> {
+  async login(
+    loginData: ILoginEntity,
+  ): Promise<{ id: string; companies: ICompanyResponse[] }> {
     try {
       const user = await this.prisma.user.findUnique({
         where: { email: loginData.email },

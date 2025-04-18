@@ -19,6 +19,7 @@ import { LoginDto } from './dto/login.dto';
 import { LoginResponseDto, ErrorResponseDto } from './dto/login-response.dto';
 import { ResponseInterceptor } from '@core/interceptores/response.interceptor';
 import { CustomResponse } from '@core/decorators/custom-response.decorator';
+import { ILoginResponse } from '@domain/interfaces/auth/login-response.interface';
 
 @ApiTags('Autenticación')
 @Controller('auth')
@@ -44,7 +45,7 @@ export class AuthController {
   @CustomResponse({
     successMessage: 'Usuario autenticado correctamente',
   })
-  async login(@Body() loginDto: LoginDto) {
+  async login(@Body() loginDto: LoginDto): Promise<ILoginResponse> {
     return await this.loginUseCase.execute(loginDto);
   }
 }

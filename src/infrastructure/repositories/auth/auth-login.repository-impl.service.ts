@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { LoginRepository } from '@domain/repositories/auth/login.repository';
 import { LoginDataSourceService } from '@infrastructure/datasource/auth/auth-login.dataosurce.service';
 import { ILoginEntity } from '@domain/entities/login.entity';
+import { ILoginResponse } from '@domain/interfaces/auth/login-response.interface';
 import { envs } from '@core/config';
 
 @Injectable()
@@ -12,11 +13,10 @@ export class LoginRepositoryImplService implements LoginRepository {
     private readonly jwtService: JwtService,
   ) {}
 
-  async login(loginData: ILoginEntity): Promise<any> {
+  async login(loginData: ILoginEntity): Promise<ILoginResponse> {
     // Obtener los datos del usuario autenticado
     const user = await this.loginDataSourceService.login(loginData);
 
-    console.log(user.email);
     // Generar payload para el JWT
     const payload = {
       sub: user.id,
