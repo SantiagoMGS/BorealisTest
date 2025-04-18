@@ -9,7 +9,7 @@ import { LoginRepositoryImplService } from '@infrastructure/repositories/auth/au
 import { LoginRepository } from '@domain/repositories/auth/login.repository';
 import { LoginUseCase } from '@domain/use-cases/auth/login.use-case';
 import { envs } from '@core/config';
-import { JwtStrategy } from '@infrastructure/strategies/jwt.service';
+import { JwtStrategy } from '@infrastructure/strategies/jwt.strategy';
 
 @Module({
   imports: [

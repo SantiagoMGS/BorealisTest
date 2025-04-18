@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { LoginRepository } from '@domain/repositories/auth/login.repository';
 import { LoginDataSourceService } from '@infrastructure/datasource/auth/auth-login.dataosurce.service';
 import { ILoginEntity } from '@domain/entities/login.entity';
+import { envs } from '@core/config';
 
 @Injectable()
 export class LoginRepositoryImplService implements LoginRepository {
@@ -15,20 +16,29 @@ export class LoginRepositoryImplService implements LoginRepository {
     // Obtener los datos del usuario autenticado
     const user = await this.loginDataSourceService.login(loginData);
 
+    console.log(user.email);
     // Generar payload para el JWT
     const payload = {
       sub: user.id,
-      email: user.email,
-      // Puedes añadir más datos como roles si es necesario
+      // Aquí se puede agregar más información al token
     };
 
-    // Firmar el token
+    // Firmar el access token
     const accessToken = this.jwtService.sign(payload);
 
-    // Retornar usuario con token
+    // Firmar el refresh token con diferente expiración
+    const refreshToken = this.jwtService.sign(payload, {
+      secret: envs.jwtRefreshSecret,
+      expiresIn: envs.jwtRefreshExpiration,
+    });
+
+    // Retornar usuario con tokens
     return {
       ...user,
-      tokens: { acces_token: accessToken },
+      tokens: {
+        access_token: accessToken,
+        refresh_token: refreshToken,
+      },
     };
   }
 }
