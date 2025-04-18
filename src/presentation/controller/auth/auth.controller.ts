@@ -6,6 +6,7 @@ import {
   Body,
   UseInterceptors,
   Req,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -13,20 +14,25 @@ import {
   ApiBody,
   ApiOkResponse,
   ApiUnauthorizedResponse,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
-import { LoginUseCase } from '@domain/use-cases/auth/login.use-case';
-import { LoginDto } from './dto/login.dto';
-import { LoginResponseDto, ErrorResponseDto } from './dto/login-response.dto';
+import { LoginUseCase, LogoutUseCase } from '@domain/use-cases/auth';
+import { LoginDto } from './dto';
+import { LoginResponseDto, ErrorResponseDto } from './dto';
 import { ResponseInterceptor } from '@core/interceptores/response.interceptor';
 import { CustomResponse } from '@core/decorators/custom-response.decorator';
-import { ILoginResponse } from '@domain/interfaces/auth/login-response.interface';
+import { ILoginResponse } from '@domain/interfaces/auth';
 import { Request } from 'express';
+import { JwtAuthGuard } from '@infrastructure/guards/jwt-auth.guard';
 
 @ApiTags('Autenticación')
 @Controller('auth')
 @UseInterceptors(ResponseInterceptor)
 export class AuthController {
-  constructor(private readonly loginUseCase: LoginUseCase) {}
+  constructor(
+    private readonly loginUseCase: LoginUseCase,
+    private readonly logoutUseCase: LogoutUseCase,
+  ) {}
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
@@ -51,5 +57,21 @@ export class AuthController {
     @Req() req: Request,
   ): Promise<ILoginResponse> {
     return await this.loginUseCase.execute(loginDto, req);
+  }
+
+  @Post('logout')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Cerrar sesión' })
+  @ApiBearerAuth()
+  @ApiOkResponse({
+    description: 'Sesión cerrada correctamente',
+  })
+  @CustomResponse({
+    successMessage: 'Sesión cerrada correctamente',
+  })
+  async logout(@Req() req: Request): Promise<{ success: boolean }> {
+    const success = await this.logoutUseCase.execute(req);
+    return { success };
   }
 }
