@@ -1,4 +1,4 @@
-import { ILoginEntity } from '@domain/entities/login.entity';
+import { ILoginEntity } from '@domain/entities/auth/login.entity';
 import { ILoginResponse } from '@domain/interfaces/auth/login-response.interface';
 
 export abstract class LoginRepository {
