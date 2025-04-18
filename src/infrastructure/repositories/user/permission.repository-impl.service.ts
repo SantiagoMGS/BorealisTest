@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PermissionRepository } from '@domain/repositories/user/permission.repository';
 import { PermissionDataSourceService } from '@infrastructure/datasource/user/permission.datasource.service';
 import { IPermissionsByCompanyResponse } from '@domain/interfaces/user/permission-response.interface';
@@ -13,109 +13,126 @@ export class PermissionRepositoryImpl implements PermissionRepository {
     userId: string,
     companyId: string,
   ): Promise<IPermissionsByCompanyResponse> {
-    // Obtener información de la compañía
-    const company =
-      await this.permissionDataSource.getCompanyWithBranding(companyId);
+    try {
+      // Obtener información de la compañía
+      const company =
+        await this.permissionDataSource.getCompanyWithBranding(companyId);
 
-    // Verificar que el usuario pertenece a la compañía
-    const userCompany = await this.permissionDataSource.getUserCompany(
-      userId,
-      companyId,
-    );
-
-    // Obtener aplicaciones de la compañía
-    const companyApplications =
-      await this.permissionDataSource.getCompanyApplications(companyId);
-
-    // Obtener los permisos del rol del usuario
-    const rolePermissions = await this.permissionDataSource.getRolePermissions(
-      userCompany!.roleId,
-    );
-
-    // Obtener los recursos de las aplicaciones
-    const applicationResources =
-      await this.permissionDataSource.getApplicationResources(
-        companyApplications.map((ca) => ca.applicationId),
+      // Verificar que el usuario pertenece a la compañía para obtener información del rol
+      const userCompany = await this.permissionDataSource.getUserCompany(
+        userId,
+        companyId,
       );
 
-    // Estructurar la respuesta
-    const applications = companyApplications
-      .map((companyApp) => {
-        const app = companyApp.application;
-        const appResources = applicationResources.filter(
-          (ar) => ar.applicationId === app.id,
+      // Obtener permisos utilizando la función almacenada en PostgreSQL
+      const permissionsData =
+        await this.permissionDataSource.getUserPermissionsByCompany(
+          userId,
+          companyId,
         );
 
-        const resources = appResources
-          .map((appResource) => {
-            const resource = appResource.resource;
-
-            // Obtener subrecursos con permisos para este recurso
-            const subresourcesWithPermissions = resource.subresources
-              .map((subresource) => {
-                const permissions = rolePermissions.filter(
-                  (rp) => rp.subresource.id === subresource.id,
-                );
-
-                // Si no hay permisos para este subrecurso, retornar null
-                if (permissions.length === 0) return null;
-
-                // Tomar solo el primer permiso (acción)
-                const firstPermission = permissions[0];
-
-                return {
-                  id: subresource.id,
-                  name: subresource.name,
-                  icon: subresource.icon,
-                  path: subresource.path,
-                  action: {
-                    id: firstPermission.action.id,
-                    name: firstPermission.action.name,
-                    level: firstPermission.action.level,
-                  },
-                };
-              })
-              .filter((subresource) => subresource !== null);
-
-            return {
-              id: resource.id,
-              name: resource.name,
-              icon: resource.icon,
-              path: resource.path,
-              subresources: subresourcesWithPermissions,
-            };
-          })
-          .filter((resource) => resource.subresources.length > 0);
-
+      // Si no hay datos de permisos o el array está vacío, retornar estructura básica
+      if (!permissionsData || (permissionsData as any[]).length === 0) {
         return {
-          id: app.id,
-          name: app.name,
-          path: app.path,
-          isActive: app.isActive,
-          resources,
+          company: {
+            id: company.id,
+            name: company.name,
+            shortName: company.shortName,
+            branding: company.branding
+              ? {
+                  logo: company.branding.logo,
+                  primaryColor: company.branding.primaryColor,
+                  secondaryColor: company.branding.secondaryColor,
+                  tertiaryColor: company.branding.tertiaryColor,
+                }
+              : null,
+          },
+          role: {
+            id: userCompany.roleId,
+            name: userCompany.role.name,
+          },
+          applications: [],
         };
-      })
-      .filter((app) => app.resources.length > 0);
+      }
 
-    return {
-      company: {
-        id: company!.id,
-        name: company!.name,
-        shortName: company!.shortName,
-        branding: company!.branding
-          ? {
-              logo: company!.branding.logo,
-              primaryColor: company!.branding.primaryColor,
-              secondaryColor: company!.branding.secondaryColor,
-              tertiaryColor: company!.branding.tertiaryColor,
-            }
-          : null,
-      },
-      role: {
-        id: userCompany!.roleId,
-        name: userCompany!.role.name,
-      },
-      applications,
-    };
+      // Procesar los datos para formar la estructura deseada
+      const applicationsMap = new Map();
+      const resourcesMap = new Map();
+
+      // Organizar los datos en una estructura jerárquica
+      for (const row of permissionsData as any[]) {
+        // Procesar aplicación
+        if (!applicationsMap.has(row.applicationId)) {
+          applicationsMap.set(row.applicationId, {
+            id: row.applicationId,
+            name: row.applicationName,
+            path: row.applicationPath,
+            isActive: row.applicationIsActive,
+            resources: [],
+          });
+        }
+        const application = applicationsMap.get(row.applicationId);
+
+        // Procesar recurso
+        const resourceKey = `${row.applicationId}-${row.resourceId}`;
+        if (!resourcesMap.has(resourceKey)) {
+          const resource = {
+            id: row.resourceId,
+            name: row.resourceName,
+            icon: row.resourceIcon,
+            path: row.resourcePath,
+            subresources: [],
+          };
+          resourcesMap.set(resourceKey, resource);
+          application.resources.push(resource);
+        }
+        const resource = resourcesMap.get(resourceKey);
+
+        // Procesar subrecurso con acción
+        const existingSubresource = resource.subresources.find(
+          (sr: any) => sr.id === row.subresourceId,
+        );
+
+        if (!existingSubresource) {
+          resource.subresources.push({
+            id: row.subresourceId,
+            name: row.subresourceName,
+            icon: row.subresourceIcon,
+            path: row.subresourcePath,
+            action: {
+              id: row.actionId,
+              name: row.actionName,
+              level: row.actionLevel,
+            },
+          });
+        }
+      }
+
+      // Convertir los Maps a arrays para la respuesta final
+      const applications = Array.from(applicationsMap.values());
+
+      return {
+        company: {
+          id: company.id,
+          name: company.name,
+          shortName: company.shortName,
+          branding: company.branding
+            ? {
+                logo: company.branding.logo,
+                primaryColor: company.branding.primaryColor,
+                secondaryColor: company.branding.secondaryColor,
+                tertiaryColor: company.branding.tertiaryColor,
+              }
+            : null,
+        },
+        role: {
+          id: userCompany.roleId,
+          name: userCompany.role.name,
+        },
+        applications,
+      };
+    } catch (error) {
+      throw error;
+    }
   }
 }
