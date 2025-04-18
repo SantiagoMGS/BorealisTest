@@ -3,6 +3,7 @@ import { ILoginResponse } from '@domain/interfaces/auth/login-response.interface
 import { Injectable } from '@nestjs/common';
 import { LoginRepository } from '@domain/repositories/auth/login.repository';
 import { AuthSessionManagementUseCase } from './auth-session-management.use-case';
+import { Request } from 'express';
 
 @Injectable()
 export class LoginUseCase {
@@ -11,10 +12,13 @@ export class LoginUseCase {
     private readonly authSessionManagementUseCase: AuthSessionManagementUseCase,
   ) {}
 
-  async execute(loginData: ILoginEntity, req?: Request): Promise<any> {
+  async execute(
+    loginData: ILoginEntity,
+    req?: Request,
+  ): Promise<ILoginResponse> {
     const user = await this.loginRepository.login(loginData);
 
-    const deviceInfo = req?.headers?.get('user-agent');
+    const deviceInfo = req?.headers['user-agent'];
     // Crear sesión única e invalidar las anteriores
     const tokens = await this.authSessionManagementUseCase.createSession(
       user.id,

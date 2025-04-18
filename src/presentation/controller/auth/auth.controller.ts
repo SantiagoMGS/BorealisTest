@@ -4,10 +4,8 @@ import {
   HttpCode,
   HttpStatus,
   Body,
-  Req,
   UseInterceptors,
-  UseGuards,
-  Get,
+  Req,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -22,8 +20,7 @@ import { LoginResponseDto, ErrorResponseDto } from './dto/login-response.dto';
 import { ResponseInterceptor } from '@core/interceptores/response.interceptor';
 import { CustomResponse } from '@core/decorators/custom-response.decorator';
 import { ILoginResponse } from '@domain/interfaces/auth/login-response.interface';
-import { JwtAuthGuard } from '@infrastructure/guards/jwt-auth.guard';
-import { CurrentUser } from '@core/decorators/current-user.decorator';
+import { Request } from 'express';
 
 @ApiTags('Autenticación')
 @Controller('auth')
@@ -49,7 +46,10 @@ export class AuthController {
   @CustomResponse({
     successMessage: 'Usuario autenticado correctamente',
   })
-  async login(@Body() loginDto: LoginDto): Promise<ILoginResponse> {
-    return await this.loginUseCase.execute(loginDto);
+  async login(
+    @Body() loginDto: LoginDto,
+    @Req() req: Request,
+  ): Promise<ILoginResponse> {
+    return await this.loginUseCase.execute(loginDto, req);
   }
 }
