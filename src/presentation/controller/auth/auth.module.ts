@@ -8,12 +8,12 @@ import { AuthController } from './auth.controller';
 import { LoginRepository } from '@domain/repositories/auth/login.repository';
 import { LoginUseCase } from '@domain/use-cases/auth/login.use-case';
 import { envs } from '@core/config';
-import { JwtStrategy } from '@infrastructure/strategies/jwt.service';
+import { JwtStrategy } from '@infrastructure/strategies/jwt.strategy';
+import { AuthSessionManagementUseCase } from '@domain/use-cases/auth/auth-session-management.use-case';
+import { AuthSessionDataSourceService } from '@infrastructure/datasource/auth/auth-session.datasource.service';
+import { LoginRepositoryImplService } from '@infrastructure/repositories/auth/auth-login.repository-impl.service';
 import { AuthSessionRepository } from '@domain/repositories/auth/auth-session.repository';
 import { AuthSessionRepositoryImpl } from '@infrastructure/repositories/auth/auth-session.repository-imp.service';
-import { AuthSessionManagementUseCase } from '@domain/use-cases/auth/auth-session-management.use-case';
-import { LoginRepositoryImplService } from '@infrastructure/repositories/auth/auth-login.repository-impl.service';
-import { AuthSessionDataSourceService } from '@infrastructure/datasource/auth/auth-session.datasource.service';
 
 @Module({
   imports: [
