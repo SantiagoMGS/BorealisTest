@@ -30,9 +30,6 @@ export class PermissionDataSourceService {
       },
     });
 
-    console.log('userCompany');
-    console.log(userCompany);
-
     if (!userCompany) {
       throw new NotFoundException('El usuario no pertenece a esta compañía');
     }
