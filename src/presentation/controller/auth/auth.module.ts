@@ -2,13 +2,10 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 
-import { LoginDataSourceService } from '@infrastructure/datasource/auth/auth-login.dataosurce.service';
+import { LoginDataSourceService } from '@infrastructure/datasource/auth/login.datasource.service';
 import { PrismaModule } from '@core/prisma/prisma.module';
 import { AuthController } from './auth.controller';
-import {
-  LoginRepository,
-  AuthSessionRepository,
-} from '@domain/repositories/auth';
+import { LoginRepository, SessionRepository } from '@domain/repositories/auth';
 import {
   LoginUseCase,
   LogoutUseCase,
@@ -16,9 +13,9 @@ import {
 } from '@domain/use-cases/auth';
 import { envs } from '@core/config';
 import { JwtStrategy } from '@infrastructure/strategies/jwt.strategy';
-import { AuthSessionDataSourceService } from '@infrastructure/datasource/auth/auth-session.datasource.service';
-import { LoginRepositoryImplService } from '@infrastructure/repositories/auth/auth-login.repository-impl.service';
-import { AuthSessionRepositoryImpl } from '@infrastructure/repositories/auth/auth-session.repository-imp.service';
+import { AuthSessionDataSourceService } from '@infrastructure/datasource/auth/session.datasource.service';
+import { SessionRepositoryImpl } from '@infrastructure/repositories/auth/session.repository-impl.service';
+import { LoginRepositoryImplService } from '@infrastructure/repositories/auth/login.repository-impl.service';
 
 @Module({
   imports: [
@@ -48,8 +45,8 @@ import { AuthSessionRepositoryImpl } from '@infrastructure/repositories/auth/aut
       useClass: LoginRepositoryImplService,
     },
     {
-      provide: AuthSessionRepository,
-      useClass: AuthSessionRepositoryImpl,
+      provide: SessionRepository,
+      useClass: SessionRepositoryImpl,
     },
 
     JwtStrategy,

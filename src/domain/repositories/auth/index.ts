@@ -1,2 +1,2 @@
 export * from './login.repository';
-export * from './auth-session.repository';
+export * from './session.repository';

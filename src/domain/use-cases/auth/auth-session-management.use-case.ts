@@ -1,5 +1,5 @@
 import { ISessionEntity } from '@domain/entities/auth';
-import { AuthSessionRepository } from '@domain/repositories/auth';
+import { SessionRepository } from '@domain/repositories/auth';
 
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -8,7 +8,7 @@ import { Request } from 'express';
 @Injectable()
 export class AuthSessionManagementUseCase {
   constructor(
-    private readonly authSessionRepository: AuthSessionRepository,
+    private readonly sessionRepository: SessionRepository,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -17,7 +17,7 @@ export class AuthSessionManagementUseCase {
     device?: string,
     ipAddress?: string,
   ): Promise<{ token: string; refreshToken: string }> {
-    await this.authSessionRepository.invalidateUserSessions(userId);
+    await this.sessionRepository.invalidateUserSessions(userId);
 
     const payload = { sub: userId };
     const token = this.jwtService.sign(payload, { expiresIn: '1h' });
@@ -40,7 +40,7 @@ export class AuthSessionManagementUseCase {
       lastActive: new Date(),
     };
 
-    await this.authSessionRepository.createSession(sessionData);
+    await this.sessionRepository.createSession(sessionData);
 
     return { token, refreshToken };
   }
@@ -49,10 +49,10 @@ export class AuthSessionManagementUseCase {
     try {
       const payload = this.jwtService.verify(token);
 
-      const isValid = await this.authSessionRepository.validateSession(token);
+      const isValid = await this.sessionRepository.validateSession(token);
 
       if (isValid) {
-        await this.authSessionRepository.updateLastActive(token);
+        await this.sessionRepository.updateLastActive(token);
       }
 
       return isValid;
@@ -62,7 +62,7 @@ export class AuthSessionManagementUseCase {
   }
 
   async invalidateSession(token: string): Promise<void> {
-    return this.authSessionRepository.invalidateSession(token);
+    return this.sessionRepository.invalidateSession(token);
   }
 
   async refreshToken(
@@ -73,7 +73,7 @@ export class AuthSessionManagementUseCase {
       const userId = payload.sub;
 
       const session =
-        await this.authSessionRepository.getActiveSessionByUserId(userId);
+        await this.sessionRepository.getActiveSessionByUserId(userId);
 
       if (!session || session.refreshToken !== refreshToken) {
         return null;
