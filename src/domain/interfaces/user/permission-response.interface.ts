@@ -35,6 +35,11 @@ export interface ICompanyBrandingResponse {
   tertiaryColor?: string | null;
 }
 
+export interface IRoleResponse {
+  id: string;
+  name: string;
+}
+
 export interface IPermissionsByCompanyResponse {
   company: {
     id: string;
@@ -42,5 +47,6 @@ export interface IPermissionsByCompanyResponse {
     shortName?: string;
     branding: ICompanyBrandingResponse | null;
   };
+  role: IRoleResponse;
   applications: IApplicationResponse[];
 }

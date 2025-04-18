@@ -111,6 +111,10 @@ export class PermissionRepositoryImpl implements PermissionRepository {
             }
           : null,
       },
+      role: {
+        id: userCompany!.roleId,
+        name: userCompany!.role.name,
+      },
       applications,
     };
   }

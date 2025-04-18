@@ -14,7 +14,12 @@ export class PermissionDataSourceService {
         },
       },
       include: {
-        role: true,
+        role: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
       },
     });
 

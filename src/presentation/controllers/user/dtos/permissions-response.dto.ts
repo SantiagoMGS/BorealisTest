@@ -6,6 +6,7 @@ import {
   IPermissionsByCompanyResponse,
   IResourceResponse,
   ISubresourceResponse,
+  IRoleResponse,
 } from '@domain/interfaces/user/permission-response.interface';
 
 export class ActionResponseDto implements IActionResponse {
@@ -181,6 +182,20 @@ export class CompanyInfoDto {
   branding!: CompanyBrandingResponseDto | null;
 }
 
+export class RoleResponseDto implements IRoleResponse {
+  @ApiProperty({
+    description: 'ID del rol',
+    example: '12345678-1234-1234-1234-123456789012',
+  })
+  id!: string;
+
+  @ApiProperty({
+    description: 'Nombre del rol',
+    example: 'Administrador',
+  })
+  name!: string;
+}
+
 export class PermissionsByCompanyResponseDto
   implements IPermissionsByCompanyResponse
 {
@@ -189,6 +204,12 @@ export class PermissionsByCompanyResponseDto
     type: CompanyInfoDto,
   })
   company!: CompanyInfoDto;
+
+  @ApiProperty({
+    description: 'Rol del usuario en la compañía',
+    type: RoleResponseDto,
+  })
+  role!: RoleResponseDto;
 
   @ApiProperty({
     description: 'Aplicaciones disponibles para el usuario en la compañía',
