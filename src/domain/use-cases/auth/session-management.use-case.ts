@@ -1,14 +1,13 @@
 import { ISessionEntity } from '@domain/entities/auth';
 import { SessionRepository } from '@domain/repositories/auth';
-
 import { Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
+import { ITokenPort, TokenPayload } from '@domain/ports/auth/token.port';
 
 @Injectable()
 export class SessionManagementUseCase {
   constructor(
     private readonly sessionRepository: SessionRepository,
-    private readonly jwtService: JwtService,
+    private readonly tokenPort: ITokenPort,
   ) {}
 
   // Este método ya no se usará en el flujo de login
@@ -20,9 +19,8 @@ export class SessionManagementUseCase {
   ): Promise<{ token: string; refreshToken: string }> {
     await this.sessionRepository.invalidateUserSessions(userId);
 
-    const payload = { sub: userId };
-    const token = this.jwtService.sign(payload, { expiresIn: '1h' });
-    const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
+    const payload: TokenPayload = { sub: userId };
+    const tokens = this.tokenPort.generateTokens(payload);
 
     const expiresAt = new Date();
     expiresAt.setHours(expiresAt.getHours() + 1);
@@ -32,8 +30,8 @@ export class SessionManagementUseCase {
 
     const sessionData: ISessionEntity = {
       userId,
-      token,
-      refreshToken,
+      token: tokens.access_token,
+      refreshToken: tokens.refresh_token,
       expiresAt,
       refreshExpiresAt,
       device,
@@ -43,12 +41,15 @@ export class SessionManagementUseCase {
 
     await this.sessionRepository.createSession(sessionData);
 
-    return { token, refreshToken };
+    return {
+      token: tokens.access_token,
+      refreshToken: tokens.refresh_token,
+    };
   }
 
   async validateSession(token: string): Promise<boolean> {
     try {
-      const payload = this.jwtService.verify(token);
+      const payload = this.tokenPort.verifyToken(token);
 
       const isValid = await this.sessionRepository.validateSession(token);
 
@@ -70,7 +71,7 @@ export class SessionManagementUseCase {
     refreshToken: string,
   ): Promise<{ token: string; refreshToken: string } | null> {
     try {
-      const payload = this.jwtService.verify(refreshToken);
+      const payload = this.tokenPort.verifyToken(refreshToken);
       const userId = payload.sub;
 
       const session =

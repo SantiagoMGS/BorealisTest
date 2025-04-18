@@ -21,9 +21,9 @@ import { LoginDto } from './dto';
 import { LoginResponseDto, ErrorResponseDto } from './dto';
 import { ResponseInterceptor } from '@core/interceptores/response.interceptor';
 import { CustomResponse } from '@core/decorators/custom-response.decorator';
-import { ILoginResponse } from '@domain/interfaces/auth';
 import { Request } from 'express';
 import { JwtAuthGuard } from '@infrastructure/guards/jwt-auth.guard';
+import { LoginMapper } from './mappers/login.mapper';
 
 @ApiTags('Autenticación')
 @Controller('auth')
@@ -55,8 +55,15 @@ export class AuthController {
   async login(
     @Body() loginDto: LoginDto,
     @Req() req: Request,
-  ): Promise<ILoginResponse> {
-    return await this.loginUseCase.execute(loginDto, req);
+  ): Promise<LoginResponseDto> {
+    // Convertir DTO a entidad de dominio
+    const loginEntity = LoginMapper.toEntity(loginDto);
+
+    // Ejecutar caso de uso
+    const result = await this.loginUseCase.execute(loginEntity, req);
+
+    // Convertir resultado a DTO de respuesta
+    return LoginMapper.toResponseDto(result);
   }
 
   @Post('logout')
