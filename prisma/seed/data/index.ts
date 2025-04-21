@@ -9,3 +9,4 @@ export { roleInitialData } from './roles.data';
 export { subresourceInitialData } from './subresources.data';
 export { userCompanyInitialData } from './user-company.data';
 export { userInitialData } from './users.data';
+export { supplierInitialData } from './suppliers.data';

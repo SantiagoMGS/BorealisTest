@@ -249,10 +249,10 @@ model CompanyApplication {
 
 enum DocumentType {
   NIT
-  NIT_EXTERIOR
-  PASAPORTE
-  CEDULA_DE_CIUDADANIA
-  CEDULA_DE_EXTRANJERIA
+  NIT_EXT
+  PAS
+  CC
+  CE
 }
 
 model Supplier {

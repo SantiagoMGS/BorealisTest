@@ -12,6 +12,7 @@ import {
   seedRoles,
   seedRolePermissions,
   seedUserCompanies,
+  seedSuppliers,
 } from './seed/index';
 
 // Inicializar cliente Prisma
@@ -24,6 +25,7 @@ async function main() {
     logger.log('🌱 Iniciando proceso de sembrado de datos...');
 
     // Ejecutar semillas en orden
+    // Semillas para configurar el sistema
     await seedApplications(prisma); // Primero las aplicaciones
     await seedCompanies(prisma); // Después las compañías
     await seedCompanyApplications(prisma); // Relaciones entre compañías y aplicaciones
@@ -35,6 +37,9 @@ async function main() {
     await seedSubresources(prisma); // Subrecursos que dependen de recursos
     await seedApplicationResources(prisma); // Finalmente recursos de aplicaciones
     await seedRolePermissions(prisma); // Permisos de roles (debe ejecutarse al final)
+
+    // Semillas para configurar laboratorio
+    await seedSuppliers(prisma); // Proveedores
 
     logger.log('✅ ¡Proceso de sembrado completado con éxito!');
   } catch (error: any) {
