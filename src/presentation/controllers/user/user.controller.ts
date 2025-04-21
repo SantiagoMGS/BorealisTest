@@ -67,6 +67,6 @@ export class UserController {
       user.id,
       companyId,
     );
-    return permissions as PermissionsByCompanyResponseDto;
+    return permissions;
   }
 }
