@@ -1,27 +1,28 @@
-import { CustomResponse } from '@core/decorators/custom-response.decorator';
-import { ResponseInterceptor } from '@core/interceptores/response.interceptor';
-import { LoginUseCase, LogoutUseCase } from '@domain/use-cases/auth';
-import { JwtAuthGuard } from '@infrastructure/guards/jwt-auth.guard';
 import {
-  Body,
   Controller,
+  Post,
   HttpCode,
   HttpStatus,
-  Post,
+  Body,
+  UseInterceptors,
   Req,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
 import {
-  ApiBearerAuth,
+  ApiTags,
+  ApiOperation,
   ApiBody,
   ApiOkResponse,
-  ApiOperation,
-  ApiTags,
   ApiUnauthorizedResponse,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
+import { LoginUseCase, LogoutUseCase } from '@domain/use-cases/auth';
+import { LoginDto } from './dtos';
+import { LoginResponseDto, ErrorResponseDto } from './dtos';
+import { ResponseInterceptor } from '@core/interceptores/response.interceptor';
+import { CustomResponse } from '@core/decorators/custom-response.decorator';
 import { Request } from 'express';
-import { ErrorResponseDto, LoginDto, LoginResponseDto } from './dtos';
+import { JwtAuthGuard } from '@infrastructure/guards/jwt-auth.guard';
 import { LoginMapper } from './mappers/login.mapper';
 
 @ApiTags('Autenticación')
@@ -31,7 +32,7 @@ export class AuthController {
   constructor(
     private readonly loginUseCase: LoginUseCase,
     private readonly logoutUseCase: LogoutUseCase,
-  ) { }
+  ) {}
 
   @Post('login')
   @HttpCode(HttpStatus.OK)

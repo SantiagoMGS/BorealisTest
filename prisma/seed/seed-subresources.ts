@@ -1,6 +1,6 @@
-import { Logger } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import { subresourceInitialData } from './data/';
+import { Logger } from '@nestjs/common';
 
 export const seedSubresources = async (prisma: PrismaClient) => {
   const logger = new Logger('SeedSubresources');

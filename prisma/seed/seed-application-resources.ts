@@ -1,6 +1,6 @@
-import { Logger } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import { applicationResourceInitialData } from './data/';
+import { Logger } from '@nestjs/common';
 
 export const seedApplicationResources = async (prisma: PrismaClient) => {
   const logger = new Logger('SeedApplicationResources');

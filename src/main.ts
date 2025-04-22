@@ -1,14 +1,15 @@
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
 import { envs } from '@core/config';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { HttpExceptionFilter } from '@core/filters/http-exception.filter';
 import { ResponseInterceptor } from '@core/interceptores/response.interceptor';
-import { Logger, ValidationPipe } from '@nestjs/common';
-import { NestFactory, Reflector } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { AppModule } from './app.module';
+import { Reflector } from '@nestjs/core';
 
 async function bootstrap() {
   const logger = new Logger('BorealisMain');

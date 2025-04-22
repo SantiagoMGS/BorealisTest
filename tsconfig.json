@@ -19,21 +19,11 @@
     "noFallthroughCasesInSwitch": false,
     "strict": true,
     "paths": {
-      "@shared/*": [
-        "src/shared/*"
-      ],
-      "@domain/*": [
-        "src/domain/*"
-      ],
-      "@infrastructure/*": [
-        "src/infrastructure/*"
-      ],
-      "@presentation/*": [
-        "src/presentation/*"
-      ],
-      "@core/*": [
-        "src/core/*"
-      ]
+      "@shared/*": ["src/shared/*"],
+      "@domain/*": ["src/domain/*"],
+      "@infrastructure/*": ["src/infrastructure/*"],
+      "@presentation/*": ["src/presentation/*"],
+      "@core/*": ["src/core/*"]
     }
   }
 }
