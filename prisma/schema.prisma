@@ -270,6 +270,7 @@ model Supplier {
 
   @@index([documentNumber])
   @@index([name])
+  @@unique([documentNumber])
   @@unique([documentNumber, name])
   @@map("suppliers")
 }
