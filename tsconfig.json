@@ -14,13 +14,26 @@
     "skipLibCheck": true,
     "strictNullChecks": true,
     "forceConsistentCasingInFileNames": true,
-    "noImplicitAny": false,
-    "strictBindCallApply": false,
+    "noImplicitAny": true,
+    "strictBindCallApply": true,
     "noFallthroughCasesInSwitch": false,
     "strict": true,
     "paths": {
-      "@prisma/*": ["prisma/*"],
-      "@app/*": ["src/*"]
+      "@shared/*": [
+        "src/shared/*"
+      ],
+      "@domain/*": [
+        "src/domain/*"
+      ],
+      "@infrastructure/*": [
+        "src/infrastructure/*"
+      ],
+      "@presentation/*": [
+        "src/presentation/*"
+      ],
+      "@core/*": [
+        "src/core/*"
+      ]
     }
   }
 }

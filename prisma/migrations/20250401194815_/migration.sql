@@ -1,4 +1,0 @@
--- AlterTable
-ALTER TABLE "company_brandings" ALTER COLUMN "primaryColor" SET DATA TYPE VARCHAR(25),
-ALTER COLUMN "secondaryColor" SET DATA TYPE VARCHAR(25),
-ALTER COLUMN "tertiaryColor" SET DATA TYPE VARCHAR(25);

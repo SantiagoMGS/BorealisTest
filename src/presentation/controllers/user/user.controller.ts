@@ -1,173 +1,72 @@
-import { ApiStandardResponses } from '@app/presentation/decorator/api-standard-response.decorator';
+import { CurrentUser } from '@core/decorators/current-user.decorator';
+import { CustomResponse } from '@core/decorators/custom-response.decorator';
+import { GetPermissionsByCompanyUseCase } from '@domain/use-cases/user/get-permissions-by-company.use-case';
+import { JwtAuthGuard } from '@infrastructure/guards/jwt-auth.guard';
 import {
-  Body,
   Controller,
-  Delete,
   Get,
-  HttpCode,
-  HttpStatus,
-  NotFoundException,
   Param,
-  ParseIntPipe,
-  Patch,
-  Post,
-  Query,
-  Request,
+  ParseUUIDPipe,
   UseGuards,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import {
-  ApiBody,
-  ApiOperation,
-  ApiParam,
-  ApiQuery,
-  ApiTags,
-} from '@nestjs/swagger';
-import {
-  CreateUserUseCase,
-  DeleteUserUseCase,
-  FindAllUsersUseCase,
-  FindUserUseCase,
-  GetUserPermissionsByCompanyUseCase,
-  GetUserPermissionsUseCase,
-  UpdateUserCompanyRoleUseCase,
-  UpdateUserUseCase,
-} from 'src/core/domain/uses-cases';
-import { RequireSubresource } from 'src/core/domain/uses-cases/auth/decorators/permissions.decorator';
-import { PermissionGuard } from 'src/core/domain/uses-cases/auth/guards/permission.guard';
-import { CreateUserDto } from './dtos/create-user.dto';
-import { UpdateUserCompanyDto } from './dtos/update-user-company.dto';
-import { UpdateUserDto } from './dtos/update-user.dto';
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { PermissionsByCompanyResponseDto } from './dtos/permissions-response.dto';
 
-@ApiTags('Users')
+@ApiTags('Usuarios')
 @Controller('user')
-@UseGuards(AuthGuard('internal'))
-@RequireSubresource('Gestión de usuarios')
 export class UserController {
   constructor(
-    private readonly createUserUseCase: CreateUserUseCase,
-    private readonly findAllUsersUseCase: FindAllUsersUseCase,
-    private readonly findUserByEmailUseCase: FindUserUseCase,
-    private readonly updateUserUseCase: UpdateUserUseCase,
-    private readonly deleteUserUseCase: DeleteUserUseCase,
-    private readonly updateUserCompanyRoleUseCase: UpdateUserCompanyRoleUseCase,
-    private readonly getUserPermissionsUseCase: GetUserPermissionsUseCase,
-    private readonly getUserPermissionsByCompanyUseCase: GetUserPermissionsByCompanyUseCase,
-  ) {}
+    private readonly getPermissionsByCompanyUseCase: GetPermissionsByCompanyUseCase,
+  ) { }
 
-  @Post()
-  @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Crear un nuevo usuario' })
-  @ApiBody({ type: CreateUserDto })
-  @ApiStandardResponses({ created: true, badRequest: true })
-  @UseGuards(PermissionGuard)
-  async createUser(@Body() dto: CreateUserDto, @Request() req) {
-    return this.createUserUseCase.execute(dto, req.user.id);
-  }
-
-  @Get('permissions-user')
-  @ApiOperation({ summary: 'Obtener permisos del usuario autenticado' })
-  @ApiStandardResponses({ ok: 'Permisos del usuario autenticado.' })
-  async getUserPermissions(@Request() req) {
-    return this.getUserPermissionsUseCase.execute(req.user.id);
-  }
-
-  @Get('permissions-by-company/:companyId')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({
-    summary: 'Obtener permisos del usuario en una compañía específica',
+  @Get('profile')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Obtener perfil del usuario actual' })
+  @ApiResponse({ status: 200, description: 'Perfil del usuario' })
+  @CustomResponse({
+    successMessage: 'Perfil del usuario obtenido correctamente',
   })
-  @ApiParam({ name: 'companyId', description: 'ID de la compañía' })
-  @ApiStandardResponses({
-    ok: 'Permisos del usuario en la compañía especificada.',
-    notFound: 'Usuario sin permisos en la compañía especificada.',
-  })
-  async getUserPermissionsByCompany(
-    @Param('companyId') companyId: string,
-    @Request() req,
-  ) {
-    return this.getUserPermissionsByCompanyUseCase.execute(
-      req.user.id,
-      companyId,
-    );
-  }
-
-  @Get()
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Obtener todos los usuarios con paginación' })
-  @ApiQuery({ name: 'page', required: false, type: Number })
-  @ApiQuery({ name: 'limit', required: false, type: Number })
-  @ApiStandardResponses({ ok: 'Lista de usuarios.' })
-  @UseGuards(PermissionGuard)
-  async getAllUsers(
-    @Query('page', ParseIntPipe) page = 1,
-    @Query('limit', ParseIntPipe) limit = 10,
-  ) {
-    return this.findAllUsersUseCase.execute(page, limit);
-  }
-
-  @Get(':email')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Obtener un usuario por email' })
-  @ApiParam({ name: 'email', description: 'Email del usuario' })
-  @ApiStandardResponses({
-    ok: 'Detalles del usuario.',
-    notFound: 'Usuario no encontrado.',
-  })
-  @UseGuards(PermissionGuard)
-  async getUserByEmail(@Param('email') email: string) {
-    const user = await this.findUserByEmailUseCase.execute(email);
-    if (!user)
-      throw new NotFoundException(`Usuario con email ${email} no encontrado`);
+  async obtainProfile(@CurrentUser() user: any) {
     return user;
   }
 
-  @Patch('company/:id')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Actualizar el rol de un usuario en una compañía' })
-  @ApiParam({ name: 'id', description: 'ID del usuario' })
-  @ApiBody({ type: UpdateUserCompanyDto })
-  @ApiStandardResponses({
-    ok: 'Relación usuario-compañía actualizada exitosamente.',
-    badRequest: true,
-    notFound: 'Usuario o compañía no encontrados.',
+  @Get('permissions/:companyId')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: 'Obtener permisos del usuario para una compañía específica',
   })
-  @RequireSubresource('Asignación de roles')
-  @UseGuards(PermissionGuard)
-  async updateUserCompanyRole(
-    @Param('id') id: string,
-    @Body() dto: UpdateUserCompanyDto,
-  ) {
-    return this.updateUserCompanyRoleUseCase.execute(
-      id,
-      dto.companyId,
-      dto.roleId,
+  @ApiParam({
+    name: 'companyId',
+    description: 'ID de la compañía',
+    type: 'string',
+    format: 'uuid',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Permisos del usuario para la compañía',
+    type: PermissionsByCompanyResponseDto,
+  })
+  @ApiResponse({ status: 400, description: 'ID de compañía inválido' })
+  @ApiResponse({ status: 403, description: 'No tiene acceso a esta compañía' })
+  @ApiResponse({ status: 404, description: 'Compañía no encontrada' })
+  @CustomResponse({
+    successMessage: 'Permisos obtenidos correctamente',
+  })
+  async getPermissionsByCompany(
+    @CurrentUser() user: any,
+    @Param(
+      'companyId',
+      new ParseUUIDPipe({
+        version: '4',
+        errorHttpStatusCode: 400,
+      }),
+    )
+    companyId: string,
+  ): Promise<PermissionsByCompanyResponseDto> {
+    const permissions = await this.getPermissionsByCompanyUseCase.execute(
+      user.id,
+      companyId,
     );
-  }
-
-  @Patch(':email')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Actualizar datos de un usuario' })
-  @ApiParam({ name: 'email', description: 'Email del usuario' })
-  @ApiBody({ type: UpdateUserDto })
-  @ApiStandardResponses({
-    ok: 'Usuario actualizado exitosamente.',
-    badRequest: true,
-    notFound: 'Usuario no encontrado.',
-  })
-  @UseGuards(PermissionGuard)
-  async updateUser(@Param('email') email: string, @Body() dto: UpdateUserDto) {
-    return this.updateUserUseCase.execute(email, dto);
-  }
-
-  @Delete(':email')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Eliminar un usuario' })
-  @ApiParam({ name: 'email', description: 'Email del usuario' })
-  @ApiStandardResponses({ notFound: 'Usuario no encontrado.' })
-  @UseGuards(PermissionGuard)
-  async deleteUser(@Param('email') email: string) {
-    await this.deleteUserUseCase.execute(email);
-    return { message: `Usuario con email ${email} eliminado correctamente.` };
+    return permissions;
   }
 }

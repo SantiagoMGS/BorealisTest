@@ -1,83 +1,127 @@
+import { Logger } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
-import { subresourceInitialData } from '../data/subresources.data';
-import { batchTransactionTolerant } from '../utils/transaction.helper';
+import { subresourceInitialData } from './data/';
 
-/**
- * Siembra los datos iniciales de subrecursos en la base de datos
- * @param prisma Instancia de PrismaClient configurada
- * @returns Array de subrecursos creados/actualizados
- */
-export async function seedSubresources(prisma: PrismaClient) {
-  console.log('🔄 Iniciando seed de subrecursos...');
-
+export const seedSubresources = async (prisma: PrismaClient) => {
+  const logger = new Logger('SeedSubresources');
   try {
-    // Primero obtenemos todos los recursos para mapear nombres a IDs
+    logger.log('Iniciando sembrado de subrecursos...');
+
+    // Verificar si ya existen subrecursos para evitar duplicados
+    const subresourceCount = await prisma.subresource.count();
+
+    if (subresourceCount > 0) {
+      logger.log(
+        `Ya existen ${subresourceCount} subrecursos en la base de datos. Omitiendo sembrado.`,
+      );
+      return;
+    }
+
+    // Obtener todos los recursos para asociarlos
     const resources = await prisma.resource.findMany();
-    console.log('Recursos encontrados:', resources.map(r => r.name));
-    
-    const resourceMap = new Map(resources.map(r => [r.name, r.id]));
+    const resourcesMap = new Map(resources.map((res) => [res.name, res.id]));
 
-    // Completamos los datos de subrecursos con los IDs de recursos usando el campo resourceName
-    const subresourcesWithResourceIds = subresourceInitialData.map(subresource => {
-      const { resourceName, ...subresourceData } = subresource;
-      
-      // Buscamos el ID del recurso por nombre
-      const resourceId = resourceMap.get(resourceName);
-      
-      if (!resourceId) {
-        console.warn(`⚠️ No se encontró un recurso con nombre "${resourceName}" para el subrecurso "${subresource.name}"`);
-        console.warn('Recursos disponibles:', Array.from(resourceMap.keys()).join(', '));
-        // Usamos un ID por defecto para que no falle
-        const firstResourceId = resources.length > 0 ? resources[0].id : '';
-        return { ...subresourceData, resourceId: firstResourceId };
-      }
+    // Crear subrecursos desde los datos iniciales
+    const results = await Promise.all(
+      subresourceInitialData.map(async (subresourceData) => {
+        // Obtener el ID del recurso padre por nombre
+        const resourceId = resourcesMap.get(subresourceData.resourceName);
 
-      return { 
-        ...subresourceData,
-        resourceId 
-      };
+        if (!resourceId) {
+          logger.error(
+            `No se encontró el recurso padre: ${subresourceData.resourceName}`,
+          );
+          return {
+            success: false,
+            name: subresourceData.name,
+            resourceName: subresourceData.resourceName,
+            reason: 'parent_not_found',
+          };
+        }
+
+        try {
+          // Extraer el nombre del recurso y agregar el ID real
+          const { resourceName, ...createData } = subresourceData;
+          createData.resourceId = resourceId;
+
+          // Crear el subrecurso
+          const subresource = await prisma.subresource.create({
+            data: createData,
+          });
+
+          return {
+            success: true,
+            subresource,
+            resourceName,
+          };
+        } catch (error: any) {
+          logger.error(
+            `Error al crear subrecurso ${subresourceData.name} para ${subresourceData.resourceName}: ${error.message}`,
+          );
+          return {
+            success: false,
+            error,
+            name: subresourceData.name,
+            resourceName: subresourceData.resourceName,
+            reason: 'error',
+          };
+        }
+      }),
+    );
+
+    // Contar resultados
+    const successfulSubresources = results.filter((r) => r.success) as Array<{
+      success: true;
+      subresource: any;
+      resourceName: string;
+    }>;
+
+    const failedSubresources = results.filter((r) => !r.success) as Array<{
+      success: false;
+      name: string;
+      resourceName: string;
+      reason: string;
+      error?: any;
+    }>;
+
+    logger.log(
+      `Se han creado ${successfulSubresources.length} subrecursos con éxito.`,
+    );
+
+    if (failedSubresources.length > 0) {
+      logger.warn(
+        `No se pudieron crear ${failedSubresources.length} subrecursos.`,
+      );
+      failedSubresources.forEach((result) => {
+        logger.warn(
+          `- Falló al crear: ${result.name} (${result.resourceName}) - Razón: ${result.reason}`,
+        );
+      });
+    }
+
+    // Agrupar subrecursos por recurso padre
+    const subresourcesByResource = new Map<string, number>();
+
+    successfulSubresources.forEach((result) => {
+      const resourceName = result.resourceName;
+      subresourcesByResource.set(
+        resourceName,
+        (subresourcesByResource.get(resourceName) || 0) + 1,
+      );
+
+      logger.log(
+        `Subrecurso creado: ${result.subresource.name} (${result.subresource.path})`,
+      );
+      logger.log(`  - Recurso padre: ${resourceName}`);
     });
 
-    // Usamos batchTransactionTolerant para continuar incluso si algunos fallan
-    return batchTransactionTolerant(
-      prisma,
-      subresourcesWithResourceIds,
-      async (tx, subresourceData) => {
-        // Verificamos que el resourceId esté definido
-        if (!subresourceData.resourceId) {
-          throw new Error(`El ID del recurso para "${subresourceData.name}" es inválido`);
-        }
-
-        // Verificamos si ya existe
-        const existingSubresource = await tx.subresource.findFirst({
-          where: {
-            name: subresourceData.name,
-            resourceId: subresourceData.resourceId,
-          },
-        });
-
-        if (existingSubresource) {
-          // Actualizamos el subrecurso existente
-          return tx.subresource.update({
-            where: { id: existingSubresource.id },
-            data: {
-              icon: subresourceData.icon,
-              path: subresourceData.path
-            },
-          });
-        } else {
-          // Creamos un nuevo subrecurso
-          return tx.subresource.create({
-            data: subresourceData
-          });
-        }
-      },
-      {
-        isolationLevel: 'ReadCommitted',
-      }
-    );
-  } catch (error) {
-    console.error('❌ Error en el seed de subrecursos:', error);
-    return [];
+    // Resumen por recurso
+    logger.log('Resumen de subrecursos creados por recurso:');
+    subresourcesByResource.forEach((count, resourceName) => {
+      logger.log(`  - ${resourceName}: ${count} subrecursos`);
+    });
+  } catch (error: any) {
+    logger.error(`Error general al sembrar subrecursos: ${error.message}`);
+    throw error;
   }
-} 
+};

@@ -1,96 +1,101 @@
+import { Logger } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
-import { companyApplicationInitialData } from '../data/';
-import { batchTransactionTolerant } from '../utils/transaction.helper';
+import { companyApplicationInitialData } from './data/';
 
-type CompanyApplicationRelation = {
-  companyId: string;
-  applicationId: string;
-  isActive: boolean;
-};
-
-/**
- * Siembra los datos iniciales de relaciones entre compañías y aplicaciones
- * @param prisma Instancia de PrismaClient configurada
- * @returns Array de relaciones creadas/actualizadas
- */
-export async function seedCompanyApplications(prisma: PrismaClient) {
-  console.log('🔄 Iniciando seed de relaciones compañía-aplicación...');
-
+export const seedCompanyApplications = async (prisma: PrismaClient) => {
+  const logger = new Logger('SeedCompanyApplications');
   try {
-    // Obtenemos las compañías y aplicaciones existentes
+    logger.log('Iniciando sembrado de relaciones compañía-aplicación...');
+
+    // Verificar si ya existen relaciones para evitar duplicados
+    const relationCount = await prisma.companyApplication.count();
+
+    if (relationCount > 0) {
+      logger.log(
+        `Ya existen ${relationCount} relaciones compañía-aplicación en la base de datos. Omitiendo sembrado.`,
+      );
+      return;
+    }
+
+    // Obtener todas las compañías y aplicaciones para relacionarlas
     const companies = await prisma.company.findMany();
     const applications = await prisma.application.findMany();
 
-    // Mapeamos nombres a IDs para facilitar la búsqueda
-    const companyMap = new Map(companies.map(c => [c.name, c.id]));
-    const applicationMap = new Map(applications.map(a => [a.name, a.id]));
+    const companiesMap = new Map(companies.map((comp) => [comp.name, comp.id]));
+    const applicationsMap = new Map(
+      applications.map((app) => [app.name, app.id]),
+    );
 
-    // Recopilamos todas las relaciones a crear
-    const companyApplications: CompanyApplicationRelation[] = [];
+    // Crear relaciones desde los datos iniciales
+    for (const companyAppData of companyApplicationInitialData) {
+      const companyId = companiesMap.get(companyAppData.companyName);
 
-    for (const companyApp of companyApplicationInitialData) {
-      const companyId = companyMap.get(companyApp.companyName);
       if (!companyId) {
-        console.warn(`⚠️ No se encontró la compañía: ${companyApp.companyName}`);
+        logger.error(
+          `No se encontró la compañía: ${companyAppData.companyName}`,
+        );
         continue;
       }
 
-      for (const appName of companyApp.applicationNames) {
-        const applicationId = applicationMap.get(appName);
-        if (!applicationId) {
-          console.warn(`⚠️ No se encontró la aplicación: ${appName}`);
-          continue;
-        }
+      logger.log(`Procesando aplicaciones para: ${companyAppData.companyName}`);
 
-        companyApplications.push({
-          companyId,
-          applicationId,
-          isActive: true,
-        });
+      const results = await Promise.all(
+        companyAppData.applicationNames.map(async (appName) => {
+          try {
+            const applicationId = applicationsMap.get(appName);
+
+            if (!applicationId) {
+              logger.warn(`No se encontró la aplicación: ${appName}`);
+              return { success: false, appName, reason: 'not_found' };
+            }
+
+            // Crear la relación
+            await prisma.companyApplication.create({
+              data: {
+                companyId,
+                applicationId,
+                isActive: true,
+              },
+            });
+
+            return { success: true, appName };
+          } catch (error: any) {
+            logger.error(
+              `Error al crear relación para ${appName}: ${error.message}`,
+            );
+            return { success: false, appName, error, reason: 'error' };
+          }
+        }),
+      );
+
+      // Mostrar resultados para esta compañía
+      const successCount = results.filter((r) => r.success).length;
+      const failCount = results.filter((r) => !r.success).length;
+
+      logger.log(
+        `  ✓ ${successCount} aplicaciones vinculadas a ${companyAppData.companyName}`,
+      );
+      if (failCount > 0) {
+        logger.warn(`  ✗ ${failCount} aplicaciones fallaron al vincularse`);
+        results
+          .filter((r) => !r.success)
+          .forEach((r) =>
+            logger.warn(
+              `    - ${r.appName} (${r.reason === 'not_found' ? 'No encontrada' : 'Error'})`,
+            ),
+          );
       }
     }
 
-    // Usamos batchTransactionTolerant para continuar si alguno falla
-    return batchTransactionTolerant(
-      prisma,
-      companyApplications,
-      async (tx, relation) => {
-        // Verificamos si ya existe la relación
-        const existingRelation = await tx.companyApplication.findUnique({
-          where: {
-            companyId_applicationId: {
-              companyId: relation.companyId,
-              applicationId: relation.applicationId,
-            },
-          },
-        });
-
-        if (existingRelation) {
-          // Actualizamos la relación existente
-          return tx.companyApplication.update({
-            where: {
-              companyId_applicationId: {
-                companyId: relation.companyId,
-                applicationId: relation.applicationId,
-              },
-            },
-            data: {
-              isActive: relation.isActive,
-            },
-          });
-        } else {
-          // Creamos la relación
-          return tx.companyApplication.create({
-            data: relation,
-          });
-        }
-      },
-      {
-        isolationLevel: 'ReadCommitted',
-      }
+    // Mostrar resumen final
+    const totalCount = await prisma.companyApplication.count();
+    logger.log(
+      `Sembrado completado. ${totalCount} relaciones compañía-aplicación creadas.`,
     );
-  } catch (error) {
-    console.error('❌ Error en el seed de relaciones compañía-aplicación:', error);
-    return [];
+  } catch (error: any) {
+    logger.error(
+      `Error general al sembrar relaciones compañía-aplicación: ${error.message}`,
+    );
+    throw error;
   }
-} 
+};

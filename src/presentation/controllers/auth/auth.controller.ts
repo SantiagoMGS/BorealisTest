@@ -1,38 +1,36 @@
-import { ApiStandardResponses } from '@app/presentation/decorator/api-standard-response.decorator';
+import { CustomResponse } from '@core/decorators/custom-response.decorator';
+import { ResponseInterceptor } from '@core/interceptores/response.interceptor';
+import { LoginUseCase, LogoutUseCase } from '@domain/use-cases/auth';
+import { JwtAuthGuard } from '@infrastructure/guards/jwt-auth.guard';
 import {
   Body,
   Controller,
-  Get,
   HttpCode,
   HttpStatus,
-  Logger,
   Post,
   Req,
-  Request,
-  UseGuards
+  UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import {
+  ApiBearerAuth,
   ApiBody,
+  ApiOkResponse,
   ApiOperation,
-  ApiTags
+  ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { AuthUseCase } from 'src/core/domain/uses-cases/auth/auth.use-case';
-import { CustomAuthGuard } from 'src/core/domain/uses-cases/auth/guards/custom-auth.guard';
-import { RefreshTokenGuard } from 'src/core/domain/uses-cases/auth/guards/refresh-token.guard';
-import { ManageSessionUseCase } from 'src/core/domain/uses-cases/auth/manage-session.use-case';
-import { RefreshTokenUseCase } from 'src/core/domain/uses-cases/auth/refresh-token.use-case';
-import { LoginDto } from '../user/dtos/login.dto';
+import { Request } from 'express';
+import { ErrorResponseDto, LoginDto, LoginResponseDto } from './dtos';
+import { LoginMapper } from './mappers/login.mapper';
 
 @ApiTags('Autenticación')
 @Controller('auth')
+@UseInterceptors(ResponseInterceptor)
 export class AuthController {
-  private logger = new Logger(AuthController.name);
-
   constructor(
-    private readonly authUseCase: AuthUseCase,
-    private readonly refreshTokenUseCase: RefreshTokenUseCase,
-    private readonly manageSessionUseCase: ManageSessionUseCase,
+    private readonly loginUseCase: LoginUseCase,
+    private readonly logoutUseCase: LogoutUseCase,
   ) { }
 
   @Post('login')
@@ -42,98 +40,44 @@ export class AuthController {
     type: LoginDto,
     description: 'Credenciales del usuario para autenticación.',
   })
-  @ApiStandardResponses({ ok: 'Usuario autenticado exitosamente.', badRequest: true })
-  async login(@Body() loginDto: LoginDto, @Req() req) {
-    const user = await this.authUseCase.validateUser(loginDto.email, loginDto.password);
-    const loginResponse = await this.authUseCase.login(user);
-    const refreshToken = loginResponse.tokens.refresh_token;
+  @ApiOkResponse({
+    description: 'Usuario autenticado correctamente',
+    type: LoginResponseDto,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Credenciales incorrectas',
+    type: ErrorResponseDto,
+  })
+  @CustomResponse({
+    successMessage: 'Usuario autenticado correctamente',
+  })
+  async login(
+    @Body() loginDto: LoginDto,
+    @Req() req: Request,
+  ): Promise<LoginResponseDto> {
+    // Convertir DTO a entidad de dominio
+    const loginEntity = LoginMapper.toEntity(loginDto);
 
-    await this.manageSessionUseCase.createSession(
-      user.id,
-      refreshToken,
-      req.headers['user-agent'],
-    );
+    // Ejecutar caso de uso
+    const result = await this.loginUseCase.execute(loginEntity, req);
 
-    return {
-      ...loginResponse,
-      companies: user.companies,
-    };
-  }
-
-  @Post('refresh')
-  @UseGuards(RefreshTokenGuard)
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Refrescar token de acceso' })
-  @ApiStandardResponses({ ok: 'Token refrescado correctamente.' })
-  async refreshTokens(@Request() req) {
-    const refreshToken = req.headers['x-refresh-token'];
-    const userAgent = req.headers['user-agent'];
-
-    const {
-      userId,
-      accessToken,
-      refreshToken: newRefreshToken,
-      refreshTokenExpiresAt,
-    } = await this.refreshTokenUseCase.refreshAccessToken(refreshToken);
-
-    await this.manageSessionUseCase.createSession(userId!, newRefreshToken, userAgent);
-
-    return {
-      access_token: accessToken,
-      refresh_token: newRefreshToken,
-      refreshTokenExpiresAt,
-    };
+    // Convertir resultado a DTO de respuesta
+    return LoginMapper.toResponseDto(result);
   }
 
   @Post('logout')
+  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Cerrar sesión' })
-  @ApiBody({ schema: { type: 'object', properties: { refreshToken: { type: 'string' } } } })
-  @ApiStandardResponses({ ok: 'Logout exitoso.', badRequest: true })
-  async logout(@Req() req, @Body('refreshToken') refreshToken: string) {
-    await this.refreshTokenUseCase.logout(req.user.id);
-    await this.manageSessionUseCase.invalidateSession(refreshToken);
-    return { message: 'Logout exitoso' };
-  }
-
-  @Get('sessions')
-  @UseGuards(AuthGuard('internal'))
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Obtener sesiones activas' })
-  @ApiStandardResponses({ ok: 'Sesiones activas del usuario.' })
-  async getSessions(@Req() req) {
-    const sessions = await this.manageSessionUseCase.getActiveSessions(req.user.id);
-    return { sessions };
-  }
-
-  @Get('profile')
-  @UseGuards(AuthGuard('internal'))
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Obtener perfil del usuario autenticado' })
-  @ApiStandardResponses({ ok: 'Perfil del usuario autenticado.' })
-  getProfile(@Request() req) {
-    return {
-      message: 'Perfil del usuario autenticado internamente',
-      user: req.user,
-    };
-  }
-
-  @UseGuards(CustomAuthGuard)
-  @Get('secure-data')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Obtener datos seguros del usuario' })
-  @ApiStandardResponses({ ok: 'Acceso permitido a datos protegidos.' })
-  getSecureData(@Req() request) {
-    if (!request.user) {
-      return {
-        message: 'Acceso denegado',
-        error: 'El usuario no fue autenticado correctamente',
-      };
-    }
-
-    return {
-      message: '✅ Acceso permitido a datos protegidos',
-      user: request.user,
-    };
+  @ApiBearerAuth()
+  @ApiOkResponse({
+    description: 'Sesión cerrada correctamente',
+  })
+  @CustomResponse({
+    successMessage: 'Sesión cerrada correctamente',
+  })
+  async logout(@Req() req: Request): Promise<{ success: boolean }> {
+    const success = await this.logoutUseCase.execute(req);
+    return { success };
   }
 }

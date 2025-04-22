@@ -1,110 +1,162 @@
+import { Logger } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
-import { rolePermissionInitialData } from '../data/';
-import { batchTransactionTolerant } from '../utils/transaction.helper';
+import { rolePermissionInitialData } from './data/';
 
-type RolePermissionRelation = {
-  roleId: string;
-  actionId: string;
-  subresourceId: string;
-};
-
-/**
- * Siembra los datos iniciales de permisos para los roles
- * @param prisma Instancia de PrismaClient configurada
- * @returns Array de permisos creados/actualizados
- */
-export async function seedRolePermissions(prisma: PrismaClient) {
-  console.log('🔄 Iniciando seed de permisos para roles...');
-
+export const seedRolePermissions = async (prisma: PrismaClient) => {
+  const logger = new Logger('SeedRolePermissions');
   try {
-    // Obtenemos los roles, acciones y subrecursos existentes
+    logger.log('Iniciando sembrado de permisos para roles...');
+
+    // Verificar si ya existen permisos de roles
+    const rolePermissionCount = await prisma.rolePermission.count();
+
+    if (rolePermissionCount > 0) {
+      logger.log(
+        `Ya existen ${rolePermissionCount} permisos de roles en la base de datos. Omitiendo sembrado.`,
+      );
+      return;
+    }
+
+    // Obtener roles, recursos, subrecursos y acciones para mapearlos por nombre
     const roles = await prisma.role.findMany();
-    const actions = await prisma.action.findMany();
+    const resources = await prisma.resource.findMany();
     const subresources = await prisma.subresource.findMany();
+    const actions = await prisma.action.findMany();
 
-    // Mapeamos nombres a IDs para facilitar la búsqueda
-    const roleMap = new Map(roles.map(r => [r.name, r.id]));
-    const actionMap = new Map(actions.map(a => [a.name, a.id]));
-    const subresourceMap = new Map(subresources.map(s => [s.name, s.id]));
+    // Crear mapas para búsqueda rápida por nombre
+    const rolesMap = new Map(roles.map((role) => [role.name, role.id]));
+    const resourcesMap = new Map(
+      resources.map((resource) => [resource.name, resource.id]),
+    );
+    const actionsMap = new Map(
+      actions.map((action) => [action.name, action.id]),
+    );
 
-    // Recopilamos todas las combinaciones de permisos a crear
-    const rolePermissions: RolePermissionRelation[] = [];
-
-    // Procesamos cada rol
-    for (const rolePermission of rolePermissionInitialData) {
-      const roleId = roleMap.get(rolePermission.roleName);
-      if (!roleId) {
-        console.warn(`⚠️ No se encontró el rol: ${rolePermission.roleName}`);
-        continue;
+    // Mapa especial para subrecursos que combina nombre del subrecurso y nombre del recurso
+    const subresourcesMap = new Map();
+    subresources.forEach((subresource) => {
+      const resource = resources.find((r) => r.id === subresource.resourceId);
+      if (resource) {
+        const key = `${subresource.name}:${resource.name}`;
+        subresourcesMap.set(key, subresource.id);
       }
+    });
 
-      // Si es un SUPERADMIN, darle todos los permisos sobre todos los subrecursos
-      if (rolePermission.roleName === 'SUPERADMIN') {
-        for (const subresource of subresources) {
-          for (const action of actions) {
-            if (action.name === 'DELETE') {
-              rolePermissions.push({
-                roleId,
-                actionId: action.id,
-                subresourceId: subresource.id,
-              });
-            }
-          }
-        }
-      } else {
-        // Para los demás roles, solo los permisos específicos
-        for (const permission of rolePermission.permissions) {
-          const actionId = actionMap.get(permission.actionName);
-          const subresourceId = subresourceMap.get(permission.subresourceName);
+    // Para el rol ADMIN, otorgar todos los permisos a todos los subrecursos
+    const adminRoleId = rolesMap.get('ADMIN');
+    const deleteActionId = actionsMap.get('DELETE');
 
-          if (!actionId || !subresourceId) {
-            console.warn(
-              `⚠️ No se pudo mapear el permiso: ${permission.subresourceName} - ${permission.actionName} para el rol ${rolePermission.roleName}`
-            );
-            continue;
-          }
+    if (adminRoleId && deleteActionId) {
+      logger.log('Asignando permisos completos al rol ADMIN...');
 
-          rolePermissions.push({
-            roleId,
-            actionId,
-            subresourceId,
+      for (const subresource of subresources) {
+        try {
+          await prisma.rolePermission.create({
+            data: {
+              roleId: adminRoleId,
+              actionId: deleteActionId,
+              subresourceId: subresource.id,
+            },
           });
+        } catch (error: any) {
+          logger.error(
+            `Error al crear permiso para ADMIN en subrecurso ${subresource.name}: ${error.message}`,
+          );
         }
       }
     }
 
-    // Usamos batchTransactionTolerant para continuar si alguno falla
-    return batchTransactionTolerant(
-      prisma,
-      rolePermissions,
-      async (tx, permission) => {
-        // Verificamos si ya existe el permiso
-        const existingPermission = await tx.rolePermission.findUnique({
-          where: {
-            roleId_actionId_subresourceId: {
-              roleId: permission.roleId,
-              actionId: permission.actionId,
-              subresourceId: permission.subresourceId,
-            },
-          },
-        });
+    // Procesar cada rol y sus permisos (excepto ADMIN que ya se procesó)
+    for (const roleData of rolePermissionInitialData.filter(
+      (r) => r.roleName !== 'ADMIN',
+    )) {
+      const roleId = rolesMap.get(roleData.roleName);
 
-        if (existingPermission) {
-          // El permiso ya existe, simplemente lo retornamos
-          return existingPermission;
-        } else {
-          // Creamos el permiso
-          return tx.rolePermission.create({
-            data: permission,
-          });
-        }
-      },
-      {
-        isolationLevel: 'ReadCommitted',
+      if (!roleId) {
+        logger.warn(`No se encontró el rol: ${roleData.roleName}`);
+        continue;
       }
+
+      logger.log(`Procesando permisos para rol: ${roleData.roleName}`);
+
+      const results = await Promise.all(
+        roleData.permissions.map(async (permission) => {
+          try {
+            const { subresourceName, resourceName, actionName } = permission;
+
+            // Buscar IDs correspondientes
+            const actionId = actionsMap.get(actionName);
+            const subresourceId = subresourcesMap.get(
+              `${subresourceName}:${resourceName}`,
+            );
+
+            if (!actionId) {
+              return {
+                success: false,
+                message: `Acción no encontrada: ${actionName}`,
+                permission,
+              };
+            }
+
+            if (!subresourceId) {
+              return {
+                success: false,
+                message: `Subrecurso no encontrado: ${subresourceName} en recurso ${resourceName}`,
+                permission,
+              };
+            }
+
+            // Crear permiso
+            await prisma.rolePermission.create({
+              data: {
+                roleId,
+                actionId,
+                subresourceId,
+              },
+            });
+
+            return {
+              success: true,
+              permission,
+            };
+          } catch (error: any) {
+            return {
+              success: false,
+              message: error.message,
+              permission,
+            };
+          }
+        }),
+      );
+
+      // Contar resultados
+      const successCount = results.filter((r) => r.success).length;
+      const failCount = results.filter((r) => !r.success).length;
+
+      logger.log(
+        `  ✓ ${successCount} permisos creados para rol ${roleData.roleName}`,
+      );
+
+      if (failCount > 0) {
+        logger.warn(`  ✗ ${failCount} permisos fallaron al crearse`);
+        results
+          .filter((r) => !r.success)
+          .forEach((r) => {
+            logger.warn(`    - Error: ${r.message}`);
+            logger.warn(
+              `      Subrecurso: ${r.permission.subresourceName}, Recurso: ${r.permission.resourceName}, Acción: ${r.permission.actionName}`,
+            );
+          });
+      }
+    }
+
+    // Mostrar resumen final
+    const finalCount = await prisma.rolePermission.count();
+    logger.log(`Sembrado completado. ${finalCount} permisos de roles creados.`);
+  } catch (error: any) {
+    logger.error(
+      `Error general al sembrar permisos de roles: ${error.message}`,
     );
-  } catch (error) {
-    console.error('❌ Error en el seed de permisos para roles:', error);
-    return [];
+    throw error;
   }
-} 
+};

@@ -1,4 +1,4 @@
-// prisma/seed.ts
+import { Logger } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import {
   seedActions,
@@ -10,57 +10,43 @@ import {
   seedRolePermissions,
   seedRoles,
   seedSubresources,
+  seedSuppliers,
   seedUserCompanies,
-  seedUsers
-} from './seed/';
+  seedUsers,
+} from './seed/index';
 
-// Determinar el nivel de verbosidad desde los argumentos o variables de entorno
-const verboseLogging =
-  process.argv.includes('--verbose') || process.env.PRISMA_VERBOSE === 'true';
+// Inicializar cliente Prisma
+const prisma = new PrismaClient();
+const logger = new Logger('DatabaseSeed');
 
-// Crear instancia de Prisma con configuración de logging controlada
-const prisma = new PrismaClient({
-  log: verboseLogging
-    ? [
-        { level: 'query', emit: 'stdout' },
-        { level: 'info', emit: 'stdout' },
-        { level: 'warn', emit: 'stdout' },
-        { level: 'error', emit: 'stdout' },
-      ]
-    : [{ level: 'error', emit: 'stdout' }], // Solo mostramos errores en modo no verbose
-});
-
-/**
- * Función principal de seed que ejecuta todos los seeders
- * en el orden correcto respetando las dependencias entre entidades
- */
+// Función principal de sembrado
 async function main() {
   try {
-    console.log('🌱 Iniciando proceso de seed...');
+    logger.log('🌱 Iniciando proceso de sembrado de datos...');
 
-    // Ejecutamos seeds en orden secuencial para respetar dependencias
-    // 1. Primero las entidades base
-    await seedRoles(prisma);
-    await seedCompanies(prisma);
-    await seedApplications(prisma);
-    await seedActions(prisma);
-    await seedResources(prisma);
-    
-    // 2. Luego las entidades dependientes
-    await seedSubresources(prisma);
-    await seedUsers(prisma);
-    
-    // 3. Finalmente las relaciones
-    await seedUserCompanies(prisma);
-    await seedRolePermissions(prisma);
-    await seedCompanyApplications(prisma);
-    await seedApplicationResources(prisma);
+    // Ejecutar semillas en orden
+    // Semillas para configurar el sistema
+    await seedApplications(prisma); // Primero las aplicaciones
+    await seedCompanies(prisma); // Después las compañías
+    await seedCompanyApplications(prisma); // Relaciones entre compañías y aplicaciones
+    await seedUsers(prisma); // Luego los usuarios
+    await seedRoles(prisma); // Roles
+    await seedUserCompanies(prisma); // Relaciones entre usuarios, compañías y roles
+    await seedActions(prisma); // Acciones para permisos
+    await seedResources(prisma); // Después los recursos
+    await seedSubresources(prisma); // Subrecursos que dependen de recursos
+    await seedApplicationResources(prisma); // Finalmente recursos de aplicaciones
+    await seedRolePermissions(prisma); // Permisos de roles (debe ejecutarse al final)
 
-    console.log('✅ Proceso de seed completado con éxito');
-  } catch (error) {
-    console.error('❌ Error durante el proceso de seed:', error);
+    // Semillas para configurar laboratorio
+    await seedSuppliers(prisma); // Proveedores
+
+    logger.log('✅ ¡Proceso de sembrado completado con éxito!');
+  } catch (error: any) {
+    logger.error(`❌ Error durante el sembrado: ${error.message}`);
     process.exit(1);
   } finally {
+    // Cerrar conexión a la base de datos
     await prisma.$disconnect();
   }
 }

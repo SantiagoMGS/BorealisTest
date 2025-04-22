@@ -1,140 +1,125 @@
+import { Logger } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
-import { batchTransactionTolerant } from '../utils/transaction.helper';
+import { userCompanyInitialData } from './data';
 
-type UserCompanyRelation = {
-  userId: string;
-  companyId: string;
-  roleId: string;
-  isActive: boolean;
-};
-
-/**
- * Siembra los datos iniciales de relaciones entre usuarios y compañías
- * @param prisma Instancia de PrismaClient configurada
- * @returns Array de relaciones creadas/actualizadas
- */
-export async function seedUserCompanies(prisma: PrismaClient) {
-  console.log('🔄 Iniciando seed de relaciones usuario-compañía...');
-
+export const seedUserCompanies = async (prisma: PrismaClient) => {
+  const logger = new Logger('SeedUserCompanies');
   try {
-    // Obtenemos los usuarios, roles y compañías existentes
+    logger.log('Iniciando sembrado de relaciones usuario-compañía...');
+
+    // Verificar si ya existen relaciones para evitar duplicados
+    const userCompanyCount = await prisma.userCompany.count();
+
+    if (userCompanyCount > 0) {
+      logger.log(
+        `Ya existen ${userCompanyCount} relaciones usuario-compañía en la base de datos. Omitiendo sembrado.`,
+      );
+      return;
+    }
+
+    // Obtener todos los usuarios, compañías y roles para mapearlos por nombre/email
     const users = await prisma.user.findMany();
     const companies = await prisma.company.findMany();
     const roles = await prisma.role.findMany();
 
-    // Mapeamos nombres a IDs para facilitar la búsqueda
-    const userMap = new Map(users.map((u) => [u.email, u.id]));
-    const companyMap = new Map(companies.map((c) => [c.name, c.id]));
-    const roleMap = new Map(roles.map((r) => [r.name, r.id]));
+    // Crear mapas para búsqueda rápida
+    const usersMap = new Map(users.map((user) => [user.email, user.id]));
+    const companiesMap = new Map(
+      companies.map((company) => [company.name, company.id]),
+    );
+    const rolesMap = new Map(roles.map((role) => [role.name, role.id]));
 
-    // Obtener el ID del usuario admin y del rol SUPERADMIN
-    const adminUserId = userMap.get('admin@borealis.com');
-    const superadminRoleId = roleMap.get('SUPERADMIN');
+    // Crear relaciones desde los datos iniciales
+    const results = await Promise.all(
+      userCompanyInitialData.map(async (relationData) => {
+        try {
+          const { userEmail, companyName, roleName } = relationData;
 
-    if (!adminUserId || !superadminRoleId) {
-      console.warn(
-        '⚠️ No se encontró el usuario admin@borealis.com o el rol SUPERADMIN',
+          // Buscar IDs correspondientes
+          const userId = usersMap.get(userEmail);
+          const companyId = companiesMap.get(companyName);
+          const roleId = rolesMap.get(roleName);
+
+          // Validar que existan todos los elementos
+          if (!userId) {
+            return {
+              success: false,
+              message: `Usuario no encontrado: ${userEmail}`,
+              relationData,
+            };
+          }
+
+          if (!companyId) {
+            return {
+              success: false,
+              message: `Compañía no encontrada: ${companyName}`,
+              relationData,
+            };
+          }
+
+          if (!roleId) {
+            return {
+              success: false,
+              message: `Rol no encontrado: ${roleName}`,
+              relationData,
+            };
+          }
+
+          // Crear la relación
+          const userCompany = await prisma.userCompany.create({
+            data: {
+              userId,
+              companyId,
+              roleId,
+              isActive: true,
+            },
+          });
+
+          return {
+            success: true,
+            userCompany,
+            relationData,
+          };
+        } catch (error: any) {
+          return {
+            success: false,
+            message: error.message,
+            relationData,
+          };
+        }
+      }),
+    );
+
+    // Contar resultados
+    const successfulRelations = results.filter((r) => r.success);
+    const failedRelations = results.filter((r) => !r.success);
+
+    logger.log(
+      `Se han creado ${successfulRelations.length} relaciones usuario-compañía con éxito.`,
+    );
+
+    // Mostrar los éxitos
+    successfulRelations.forEach((result: any) => {
+      logger.log(
+        `Relación creada: ${result.relationData.userEmail} - ${result.relationData.companyName} - ${result.relationData.roleName}`,
       );
-    }
+    });
 
-    // Relaciones a crear
-    const userCompanyRelations = [
-      // Técnico en QUINTANA como TECNICO
-      {
-        userEmail: 'tecnico@borealis.com',
-        companyName: 'QUINTANA',
-        roleName: 'TECNICO',
-      },
-      // Auxiliar en COLOMBIAN MINT como AUXILIAR
-      {
-        userEmail: 'auxiliar@borealis.com',
-        companyName: 'COLOMBIAN MINT',
-        roleName: 'AUXILIAR',
-      },
-    ];
-
-    // Transformamos a relaciones con IDs
-    const userCompanyData: UserCompanyRelation[] = [];
-
-    // Primero agregamos el admin como SUPERADMIN en todas las compañías
-    if (adminUserId && superadminRoleId) {
-      for (const company of companies) {
-        userCompanyData.push({
-          userId: adminUserId,
-          companyId: company.id,
-          roleId: superadminRoleId,
-          isActive: true,
-        });
-        console.log(
-          `✅ Asignando admin@borealis.com como SUPERADMIN en compañía: ${company.name}`,
+    // Mostrar los errores
+    if (failedRelations.length > 0) {
+      logger.warn(
+        `No se pudieron crear ${failedRelations.length} relaciones usuario-compañía.`,
+      );
+      failedRelations.forEach((result: any) => {
+        logger.warn(
+          `- Error: ${result.message} para ${result.relationData.userEmail} - ${result.relationData.companyName}`,
         );
-      }
-    }
-
-    // Luego agregamos el resto de relaciones específicas
-    for (const relation of userCompanyRelations) {
-      const userId = userMap.get(relation.userEmail);
-      const companyId = companyMap.get(relation.companyName);
-      const roleId = roleMap.get(relation.roleName);
-
-      if (!userId || !companyId || !roleId) {
-        console.warn(
-          `⚠️ No se pudo mapear la relación: ${relation.userEmail} - ${relation.companyName} - ${relation.roleName}`,
-        );
-        continue;
-      }
-
-      userCompanyData.push({
-        userId,
-        companyId,
-        roleId,
-        isActive: true,
       });
     }
-
-    // Usamos batchTransactionTolerant para continuar si alguno falla
-    return batchTransactionTolerant(
-      prisma,
-      userCompanyData,
-      async (tx, relation) => {
-        // Verificamos si ya existe la relación
-        const existingRelation = await tx.userCompany.findUnique({
-          where: {
-            userId_companyId_roleId: {
-              userId: relation.userId,
-              companyId: relation.companyId,
-              roleId: relation.roleId,
-            },
-          },
-        });
-
-        if (existingRelation) {
-          // Actualizamos la relación existente
-          return tx.userCompany.update({
-            where: {
-              userId_companyId_roleId: {
-                userId: relation.userId,
-                companyId: relation.companyId,
-                roleId: relation.roleId,
-              },
-            },
-            data: {
-              isActive: relation.isActive,
-            },
-          });
-        } else {
-          // Creamos la relación
-          return tx.userCompany.create({
-            data: relation,
-          });
-        }
-      },
-      {
-        isolationLevel: 'ReadCommitted',
-      },
+  } catch (error: any) {
+    logger.error(
+      `Error general al sembrar relaciones usuario-compañía: ${error.message}`,
     );
-  } catch (error) {
-    console.error('❌ Error en el seed de relaciones usuario-compañía:', error);
-    return [];
+    throw error;
   }
-}
+};

@@ -1,18 +1,31 @@
+import { envs } from '@core/config';
+import { HttpExceptionFilter } from '@core/filters/http-exception.filter';
+import { ResponseInterceptor } from '@core/interceptores/response.interceptor';
 import { Logger, ValidationPipe } from '@nestjs/common';
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
+import {
+  FastifyAdapter,
+  NestFastifyApplication,
+} from '@nestjs/platform-fastify';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-import { HttpExceptionFilter } from './infrastructure/filters/http-exception.filter';
-import { ResponseInterceptor } from './infrastructure/interceptores/response.interceptor';
 
 async function bootstrap() {
   const logger = new Logger('BorealisMain');
   try {
-    const app = await NestFactory.create(AppModule);
+    // **Configuración de Fastify**
+    const fastifyAdapter = new FastifyAdapter();
 
-    // **Configuraciones globales**
-    app.useGlobalFilters(new HttpExceptionFilter());
-    app.useGlobalInterceptors(new ResponseInterceptor());
+    fastifyAdapter
+      .getInstance()
+      .addHook('onSend', (request, reply, payload, done) => {
+        done(null, payload);
+      });
+
+    const app = await NestFactory.create<NestFastifyApplication>(
+      AppModule,
+      fastifyAdapter,
+    );
 
     app.useGlobalPipes(
       new ValidationPipe({
@@ -21,6 +34,10 @@ async function bootstrap() {
         transform: true, // 🔹 Convierte automáticamente los datos de entrada al tipo esperado (útil para DTOs)
       }),
     );
+
+    const reflector = new Reflector();
+    app.useGlobalFilters(new HttpExceptionFilter(reflector));
+    app.useGlobalInterceptors(new ResponseInterceptor(reflector));
 
     // **Habilitar CORS**
     app.enableCors({
@@ -51,12 +68,13 @@ async function bootstrap() {
     SwaggerModule.setup('api/docs', app, document);
 
     // **Iniciar la aplicación**
-    const port = process.env.PORT || 3000;
+    const port = envs.port || 3000;
     await app.listen(port);
 
     logger.log(`🚀 Aplicación iniciada en http://localhost:${port}/api`);
-    logger.log(`📚 Documentación Swagger disponible en http://localhost:${port}/api/docs`);
-
+    logger.log(
+      `📚 Documentación Swagger disponible en http://localhost:${port}/api/docs`,
+    );
   } catch (error) {
     logger.error('❌ Error al iniciar la aplicación', error);
     process.exit(1);
