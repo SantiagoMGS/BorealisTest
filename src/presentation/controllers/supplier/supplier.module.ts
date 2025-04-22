@@ -4,11 +4,18 @@ import { CreateSupplierUseCase } from '@domain/use-cases/supplier';
 import { SupplierRepository } from '@domain/repositories/supplier';
 import { SupplierRepositoryImpl } from '@infrastructure/repositories/supplier';
 import { SupplierDataSourceService } from '@infrastructure/datasource/supplier';
-
+import { FindAllSupplierUseCase } from '@domain/use-cases/supplier/find-all-supplier.use-case';
+import { FindSupplierUseCase } from '@domain/use-cases/supplier/find-supplier.use-case';
+import { UpdateSupplierUseCase } from '@domain/use-cases/supplier/update-supplier.use-case';
+import { DeleteSupplierUseCase } from '@domain/use-cases/supplier/delete-supplier.use-case';
 @Module({
   controllers: [SupplierController],
   providers: [
     CreateSupplierUseCase,
+    FindAllSupplierUseCase,
+    FindSupplierUseCase,
+    UpdateSupplierUseCase,
+    DeleteSupplierUseCase,
     SupplierDataSourceService,
     {
       provide: SupplierRepository,

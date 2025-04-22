@@ -5,4 +5,5 @@ export interface ISupplierResponse {
   name: string;
   documentType: DocumentType;
   documentNumber: string;
+  isActive?: boolean;
 }
