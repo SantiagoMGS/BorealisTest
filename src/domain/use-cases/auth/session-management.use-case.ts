@@ -17,7 +17,8 @@ export class SessionManagementUseCase {
     device?: string,
     ipAddress?: string,
   ): Promise<{ token: string; refreshToken: string }> {
-    await this.sessionRepository.invalidateUserSessions(userId);
+    // Eliminar todas las sesiones anteriores del usuario
+    await this.sessionRepository.deleteUserSessions(userId);
 
     const payload: TokenPayload = { sub: userId };
     const tokens = this.tokenPort.generateTokens(payload);

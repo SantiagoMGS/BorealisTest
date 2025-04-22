@@ -5,7 +5,7 @@ export abstract class SessionRepository {
   abstract getActiveSessionByUserId(
     userId: string,
   ): Promise<ISessionEntity | null>;
-  abstract invalidateUserSessions(userId: string): Promise<void>;
+  abstract deleteUserSessions(userId: string): Promise<void>;
   abstract validateSession(token: string): Promise<boolean>;
   abstract updateLastActive(token: string): Promise<void>;
   abstract invalidateSession(token: string): Promise<void>;
