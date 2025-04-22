@@ -22,6 +22,7 @@ import { SupplierMapper } from './mappers';
 import { CurrentUser } from '@core/decorators/current-user.decorator';
 import { ResponseInterceptor } from '@core/interceptores/response.interceptor';
 import { CustomResponse } from '@core/decorators/custom-response.decorator';
+import { IAuthUser } from '@domain/entities/auth';
 
 @ApiTags('Proveedores')
 @Controller('suppliers')
@@ -54,7 +55,7 @@ export class SupplierController {
   })
   async create(
     @Body() createSupplierDto: CreateSupplierDto,
-    @CurrentUser() user: any,
+    @CurrentUser() user: IAuthUser,
   ): Promise<SupplierResponseDto> {
     // Convertir DTO a entidad de dominio
     const supplierEntity = SupplierMapper.toEntity(createSupplierDto);
