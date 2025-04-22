@@ -16,9 +16,17 @@ import {
   ApiUnauthorizedResponse,
   ApiBearerAuth,
 } from '@nestjs/swagger';
-import { LoginUseCase, LogoutUseCase } from '@domain/use-cases/auth';
-import { LoginDto } from './dtos';
-import { LoginResponseDto, ErrorResponseDto } from './dtos';
+import {
+  LoginUseCase,
+  LogoutUseCase,
+  SetCompanyUseCase,
+} from '@domain/use-cases/auth';
+import { LoginDto, SetCompanyDto } from './dtos';
+import {
+  LoginResponseDto,
+  ErrorResponseDto,
+  SetCompanyResponseDto,
+} from './dtos';
 import { ResponseInterceptor } from '@core/interceptores/response.interceptor';
 import { CustomResponse } from '@core/decorators/custom-response.decorator';
 import { Request } from 'express';
@@ -32,6 +40,7 @@ export class AuthController {
   constructor(
     private readonly loginUseCase: LoginUseCase,
     private readonly logoutUseCase: LogoutUseCase,
+    private readonly setCompanyUseCase: SetCompanyUseCase,
   ) {}
 
   @Post('login')
@@ -80,5 +89,28 @@ export class AuthController {
   async logout(@Req() req: Request): Promise<{ success: boolean }> {
     const success = await this.logoutUseCase.execute(req);
     return { success };
+  }
+
+  @Post('set-company')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Establecer compañía activa para el usuario' })
+  @ApiBearerAuth()
+  @ApiBody({
+    type: SetCompanyDto,
+    description: 'Datos para establecer la compañía del usuario',
+  })
+  @ApiOkResponse({
+    description: 'Compañía establecida correctamente',
+    type: SetCompanyResponseDto,
+  })
+  @CustomResponse({
+    successMessage: 'Compañía establecida correctamente',
+  })
+  async setCompany(
+    @Body() setCompanyDto: SetCompanyDto,
+    @Req() req: Request,
+  ): Promise<SetCompanyResponseDto> {
+    return this.setCompanyUseCase.execute(setCompanyDto.companyId, req);
   }
 }

@@ -70,7 +70,7 @@ export const subresourceInitialData: SubresourceWithResourceName[] = [
     resourceId: '',
     resourceName: 'Usuarios',
     icon: 'user',
-    path: '/users',
+    path: '/user',
   },
   {
     name: 'Compañías',
