@@ -31,7 +31,7 @@ export class SupplierDataSourceService {
         // Error de unique constraint (P2002)
         if (error.code === 'P2002') {
           throw new ConflictException(
-            'Ya existe un proveedor con el mismo documento y nombre',
+            'Ya existe un proveedor con el mismo documento',
           );
         }
       }
