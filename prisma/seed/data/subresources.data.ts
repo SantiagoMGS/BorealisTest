@@ -3,6 +3,7 @@ import { Prisma } from '@prisma/client';
 export interface SubresourceWithResourceName
   extends Prisma.SubresourceCreateManyInput {
   resourceName: string;
+  controller: string;
 }
 
 export const subresourceInitialData: SubresourceWithResourceName[] = [
@@ -13,6 +14,7 @@ export const subresourceInitialData: SubresourceWithResourceName[] = [
     resourceName: 'Recepción',
     icon: 'flask-sample',
     path: '/recepcion-dore',
+    controller: 'RecepcionDoreController',
   },
   {
     name: 'Recepción Muestras',
@@ -20,6 +22,7 @@ export const subresourceInitialData: SubresourceWithResourceName[] = [
     resourceName: 'Recepción',
     icon: 'flask-sample',
     path: '/recepcion-muestras',
+    controller: 'RecepcionMuestrasController',
   },
   {
     name: 'Gestión',
@@ -27,6 +30,7 @@ export const subresourceInitialData: SubresourceWithResourceName[] = [
     resourceName: 'Gestión',
     icon: 'clipboard-list',
     path: '/permisos',
+    controller: 'PermisosController',
   },
   {
     name: 'Niton',
@@ -34,6 +38,7 @@ export const subresourceInitialData: SubresourceWithResourceName[] = [
     resourceName: 'Resultados',
     icon: 'device-niton',
     path: '/niton-results',
+    controller: 'NitonResultsController',
   },
   {
     name: 'Absorción atómica',
@@ -41,6 +46,7 @@ export const subresourceInitialData: SubresourceWithResourceName[] = [
     resourceName: 'Resultados',
     icon: 'atom',
     path: '/absorbance-results',
+    controller: 'AbsorbanceResultsController',
   },
   {
     name: 'Copelación',
@@ -48,6 +54,7 @@ export const subresourceInitialData: SubresourceWithResourceName[] = [
     resourceName: 'Resultados',
     icon: 'fire-hot',
     path: '/copelation',
+    controller: 'CopelationController',
   },
   {
     name: 'Niton',
@@ -55,6 +62,7 @@ export const subresourceInitialData: SubresourceWithResourceName[] = [
     resourceName: 'Análisis',
     icon: 'shield-check',
     path: '/niton-analysis',
+    controller: 'NitonAnalysisController',
   },
   {
     name: 'Absorción atómica',
@@ -62,6 +70,7 @@ export const subresourceInitialData: SubresourceWithResourceName[] = [
     resourceName: 'Análisis',
     icon: 'shield-check',
     path: '/absorbance-analysis',
+    controller: 'AbsorbanceAnalysisController',
   },
 
   // Subrecursos para ADMINISTRACIÓN
@@ -71,6 +80,7 @@ export const subresourceInitialData: SubresourceWithResourceName[] = [
     resourceName: 'Usuarios',
     icon: 'user',
     path: '/user',
+    controller: 'UsersController',
   },
   {
     name: 'Compañías',
@@ -78,6 +88,7 @@ export const subresourceInitialData: SubresourceWithResourceName[] = [
     resourceName: 'Compañías',
     icon: 'building',
     path: '/companies',
+    controller: 'CompaniesController',
   },
   {
     name: 'Aplicaciones',
@@ -85,6 +96,7 @@ export const subresourceInitialData: SubresourceWithResourceName[] = [
     resourceName: 'Aplicaciones',
     icon: 'application',
     path: '/applications',
+    controller: 'ApplicationsController',
   },
   {
     name: 'Proveedores',
@@ -92,5 +104,6 @@ export const subresourceInitialData: SubresourceWithResourceName[] = [
     resourceName: 'Proveedores',
     icon: 'truck',
     path: '/providers',
+    controller: 'ProvidersController',
   },
 ];

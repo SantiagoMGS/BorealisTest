@@ -22,11 +22,8 @@ import {
   SetCompanyUseCase,
 } from '@domain/use-cases/auth';
 import { LoginDto, SetCompanyDto } from './dtos';
-import {
-  LoginResponseDto,
-  ErrorResponseDto,
-  SetCompanyResponseDto,
-} from './dtos';
+import { LoginResponseDto, SetCompanyResponseDto } from './dtos';
+import { ErrorResponseDto } from '@shared/models/error-response.dto';
 import { ResponseInterceptor } from '@core/interceptores/response.interceptor';
 import { CustomResponse } from '@core/decorators/custom-response.decorator';
 import { Request } from 'express';

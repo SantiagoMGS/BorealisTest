@@ -1,7 +1,11 @@
 import { ISessionEntity } from '@domain/entities/auth';
 import { SessionRepository } from '@domain/repositories/auth';
 import { Injectable } from '@nestjs/common';
-import { ITokenPort, TokenPayload } from '@domain/ports/auth/token.port';
+import {
+  ITokenPort,
+  TokenPayload,
+  TokenResponse,
+} from '@domain/ports/auth/token.port';
 
 @Injectable()
 export class SessionManagementUseCase {
@@ -10,14 +14,13 @@ export class SessionManagementUseCase {
     private readonly tokenPort: ITokenPort,
   ) {}
 
-  // Este método ya no se usará en el flujo de login
-  // pero lo mantenemos para compatibilidad con otras partes del código
   async createSession(
     userId: string,
     device?: string,
     ipAddress?: string,
-  ): Promise<{ token: string; refreshToken: string }> {
-    await this.sessionRepository.invalidateUserSessions(userId);
+  ): Promise<TokenResponse> {
+    // Eliminar todas las sesiones anteriores del usuario
+    await this.sessionRepository.deleteUserSessions(userId);
 
     const payload: TokenPayload = { sub: userId };
     const tokens = this.tokenPort.generateTokens(payload);
@@ -42,8 +45,8 @@ export class SessionManagementUseCase {
     await this.sessionRepository.createSession(sessionData);
 
     return {
-      token: tokens.access_token,
-      refreshToken: tokens.refresh_token,
+      access_token: tokens.access_token,
+      refresh_token: tokens.refresh_token,
     };
   }
 
@@ -67,9 +70,7 @@ export class SessionManagementUseCase {
     return this.sessionRepository.invalidateSession(token);
   }
 
-  async refreshToken(
-    refreshToken: string,
-  ): Promise<{ token: string; refreshToken: string } | null> {
+  async refreshToken(refreshToken: string): Promise<TokenResponse | null> {
     try {
       const payload = this.tokenPort.verifyToken(refreshToken);
       const userId = payload.sub;

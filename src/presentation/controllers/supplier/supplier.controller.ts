@@ -27,7 +27,7 @@ import {
   SupplierResponseDto,
   UpdateSupplierDto,
 } from './dtos';
-import { ErrorResponseDto } from '../auth/dtos';
+import { ErrorResponseDto } from '@shared/models/error-response.dto';
 import { SupplierMapper } from './mappers';
 import { CurrentUser } from '@core/decorators/current-user.decorator';
 import { ResponseInterceptor } from '@core/interceptores/response.interceptor';
