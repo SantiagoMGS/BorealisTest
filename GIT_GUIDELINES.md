@@ -1,6 +1,6 @@
 # Estándares de Git y Herramientas – Proyecto Aurum - Borealis
 
-## Objetivo de la Reunión
+## Objetivo del documento
 
 Definir y acordar los estándares para el manejo de Git y herramientas relacionadas en el proyecto **Aurum - Borealis**.
 
