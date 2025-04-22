@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { DocumentType } from '@prisma/client';
 import {
   IsEnum,
   IsNotEmpty,
@@ -7,6 +6,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
+import { DocumentType } from '@prisma/client';
 
 export class CreateSupplierDto {
   @ApiProperty({

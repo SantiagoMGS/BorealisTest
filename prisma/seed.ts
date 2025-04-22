@@ -1,18 +1,18 @@
-import { Logger } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
+import { Logger } from '@nestjs/common';
 import {
+  seedUsers,
+  seedCompanies,
+  seedApplications,
+  seedResources,
+  seedSubresources,
   seedActions,
   seedApplicationResources,
-  seedApplications,
-  seedCompanies,
   seedCompanyApplications,
-  seedResources,
-  seedRolePermissions,
   seedRoles,
-  seedSubresources,
-  seedSuppliers,
+  seedRolePermissions,
   seedUserCompanies,
-  seedUsers,
+  seedSuppliers,
 } from './seed/index';
 
 // Inicializar cliente Prisma

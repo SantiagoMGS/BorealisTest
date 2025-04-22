@@ -1,6 +1,6 @@
-import { Logger } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import { roleInitialData } from './data/';
+import { Logger } from '@nestjs/common';
 
 export const seedRoles = async (prisma: PrismaClient) => {
   const logger = new Logger('SeedRoles');

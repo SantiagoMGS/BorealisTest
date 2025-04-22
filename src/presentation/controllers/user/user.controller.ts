@@ -1,23 +1,23 @@
-import { CurrentUser } from '@core/decorators/current-user.decorator';
-import { CustomResponse } from '@core/decorators/custom-response.decorator';
-import { GetPermissionsByCompanyUseCase } from '@domain/use-cases/user/get-permissions-by-company.use-case';
-import { JwtAuthGuard } from '@infrastructure/guards/jwt-auth.guard';
 import {
   Controller,
   Get,
+  UseGuards,
   Param,
   ParseUUIDPipe,
-  UseGuards,
 } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { CurrentUser } from '@core/decorators/current-user.decorator';
+import { JwtAuthGuard } from '@infrastructure/guards/jwt-auth.guard';
+import { GetPermissionsByCompanyUseCase } from '@domain/use-cases/user/get-permissions-by-company.use-case';
 import { PermissionsByCompanyResponseDto } from './dtos/permissions-response.dto';
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { CustomResponse } from '@core/decorators/custom-response.decorator';
 
 @ApiTags('Usuarios')
 @Controller('user')
 export class UserController {
   constructor(
     private readonly getPermissionsByCompanyUseCase: GetPermissionsByCompanyUseCase,
-  ) { }
+  ) {}
 
   @Get('profile')
   @UseGuards(JwtAuthGuard)
