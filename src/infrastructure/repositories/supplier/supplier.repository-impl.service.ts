@@ -18,9 +18,6 @@ export class SupplierRepositoryImpl implements SupplierRepository {
       name: supplier.name,
       documentType: supplier.documentType,
       documentNumber: supplier.documentNumber,
-      isActive: supplier.isActive,
-      createdAt: supplier.createdAt,
-      updatedAt: supplier.updatedAt,
     };
   }
 }

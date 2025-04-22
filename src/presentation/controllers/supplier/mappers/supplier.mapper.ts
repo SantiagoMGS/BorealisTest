@@ -23,9 +23,6 @@ export class SupplierMapper {
     responseDto.name = supplier.name;
     responseDto.documentType = supplier.documentType;
     responseDto.documentNumber = supplier.documentNumber;
-    responseDto.isActive = supplier.isActive;
-    responseDto.createdAt = supplier.createdAt;
-    responseDto.updatedAt = supplier.updatedAt;
 
     return responseDto;
   }
