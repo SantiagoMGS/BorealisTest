@@ -1,107 +1,147 @@
-# Guía de Implementación de Permisos
+# Sistema de Permisos Basado en Niveles de Acción
 
-Este documento describe cómo implementar y garantizar permisos en la aplicación utilizando el sistema de permisos escalonados.
+Esta aplicación implementa un sistema de permisos jerárquico basado en roles, donde cada rol puede tener acceso a diferentes subrecursos con diferentes niveles de acción.
 
-## Funcionamiento General
+## Estructura de Permisos
 
-El sistema de permisos se basa en tres entidades principales:
+### Niveles de Acción
 
-1. **Roles**: Asignados a los usuarios en el contexto de una empresa.
-2. **Subrecursos**: Partes específicas de la aplicación que se desean proteger.
-3. **Acciones**: Operaciones que se pueden realizar en un subrecurso, con niveles jerárquicos:
-   - `read`: nivel 1
-   - `create`: nivel 2
-   - `update`: nivel 3
-   - `delete`: nivel 4 (el nivel más alto)
+Los permisos se basan en niveles de acción jerárquicos:
 
-Un rol puede tener asignado **sólo un nivel de acción** por cada subrecurso. Este nivel de acción otorga automáticamente todos los permisos de niveles inferiores (por ejemplo, un permiso de `delete` nivel 4, también permite `read`, `create`, y `update`).
+| Nivel | Acción | Descripción                                   | Incluye                         |
+| ----- | ------ | --------------------------------------------- | ------------------------------- |
+| 1     | READ   | Solo lectura                                  | Solo READ                       |
+| 2     | CREATE | Crear nuevos registros                        | READ + CREATE                   |
+| 3     | UPDATE | Modificar registros existentes                | READ + CREATE + UPDATE          |
+| 4     | DELETE | Eliminar registros y todas las demás acciones | READ + CREATE + UPDATE + DELETE |
 
-## Configuración de Permisos
+### Componentes Principales
 
-### 1. Esquema de Base de Datos
+- **Subrecurso**: Representa una funcionalidad específica de la aplicación a la que se puede asignar un permiso.
+- **Rol**: Conjunto de permisos que determina qué puede hacer un usuario.
+- **RolePermission**: Relación entre un rol, un subrecurso y una acción permitida.
 
-La tabla `RolePermission` tiene un constraint único en `roleId` y `subresourceId` para garantizar que un rol solo pueda tener una acción por subrecurso:
+## Uso de Decoradores
 
-```prisma
-model RolePermission {
-  roleId        String   @db.Uuid
-  actionId      String   @db.Uuid
-  subresourceId String   @db.Uuid
-  // ... otros campos ...
+### 1. `RequireSubresource`
 
-  @@id([roleId, actionId, subresourceId])
-  @@unique([roleId, subresourceId]) // Limita a una acción por rol y subrecurso
-}
-```
-
-### 2. Decoradores para Controladores y Rutas
-
-Utiliza el decorador `RequireSubresource` para especificar a qué subrecurso corresponde un controlador o una ruta específica:
+Define el subrecurso que requiere el controlador o método específico:
 
 ```typescript
-// A nivel de controlador (aplica a todas las rutas)
-@Controller('resource')
-@UseGuards(AuthGuard('internal'), PermissionGuard)
-@RequireSubresource('resource')
-export class ResourceController {
-  // ...
-}
-
-// A nivel de método (para rutas específicas con diferente subrecurso)
-@Patch('special-action')
-@RequireSubresource('resource-special')
-@UseGuards(PermissionGuard)
-async specialAction() {
+@Controller('supplier')
+@RequireSubresource('supplier-management')
+export class SupplierController {
   // ...
 }
 ```
 
-### 3. Guard de Permisos
+### 2. `RequireActionLevel`
 
-El `PermissionGuard` determina automáticamente:
-
-1. El subrecurso (desde el decorador o la URL)
-2. La acción requerida (desde el método HTTP)
-3. El nivel de permiso del usuario actual
-
-## Ejemplo Práctico
-
-### Configuración de un Nuevo Controlador
+Permite especificar un nivel de acción personalizado para un método:
 
 ```typescript
-import { RequireSubresource } from 'src/core/domain/uses-cases/auth/decorators/permissions.decorator';
-import { PermissionGuard } from 'src/core/domain/uses-cases/auth/guards/permission.guard';
+@Post('approve')
+@RequireActionLevel(3) // Requiere nivel UPDATE
+async approveSupplier(@Param('id') id: string) {
+  // ...
+}
+```
 
-@ApiTags('Products')
-@Controller('product')
-@UseGuards(AuthGuard('internal'), PermissionGuard)
-@RequireSubresource('product')
-export class ProductController {
-  
-  @Post()
-  // No se requiere decorador adicional, hereda 'product' del controlador
-  // y la acción 'create' se determina automáticamente del método HTTP
-  async createProduct(@Body() dto: CreateProductDto) {
+## Determinación Automática del Nivel de Acción
+
+Si no se especifica un nivel de acción con `@RequireActionLevel`, se determina automáticamente basado en el método HTTP:
+
+- **GET**: Nivel 1 (READ)
+- **POST**: Nivel 2 (CREATE)
+- **PUT/PATCH**: Nivel 3 (UPDATE)
+- **DELETE**: Nivel 4 (DELETE)
+
+## Implementación en Controladores
+
+### Proteger un Controlador Completo:
+
+```typescript
+@Controller('supplier')
+@UseGuards(JwtAuthGuard, PermissionGuard)
+@RequireSubresource('supplier-management')
+export class SupplierController {
+  // Todos los métodos requieren acceso al subrecurso 'supplier-management'
+  // con el nivel de acción determinado por el método HTTP
+}
+```
+
+### Proteger Métodos Individuales:
+
+```typescript
+@Controller('analytics')
+@UseGuards(JwtAuthGuard)
+export class AnalyticsController {
+  @Get('basic-report')
+  // No usa PermissionGuard, solo requiere autenticación
+  async getBasicReport() {
     // ...
   }
-  
+
+  @Get('advanced-report')
+  @UseGuards(PermissionGuard)
+  @RequireSubresource('advanced-analytics')
+  async getAdvancedReport() {
+    // Requiere acceso al subrecurso 'advanced-analytics' con nivel READ
+  }
+}
+```
+
+## Consejos para la Asignación de Permisos
+
+1. **Organización de Subrecursos**: Agrupa subrecursos por funcionalidad y asegúrate de que los nombres sean descriptivos.
+
+2. **Asignación de Niveles**: Siempre asigna el nivel más alto que necesita un rol para un subrecurso específico.
+
+3. **Reutilización de Roles**: Crea roles estandarizados para grupos de usuarios con necesidades similares.
+
+4. **Permisos Escalonados**: Recuerda que un usuario con nivel 4 (DELETE) tiene automáticamente todos los permisos de niveles inferiores.
+
+## Ejemplos Prácticos
+
+### Ejemplo: Gestión de Proveedores
+
+```typescript
+@Controller('supplier')
+@UseGuards(JwtAuthGuard, PermissionGuard)
+@RequireSubresource('supplier')
+export class SupplierController {
   @Get()
-  // Acción 'read' automáticamente determinada del método HTTP GET
-  async getAllProducts() {
+  // Nivel 1 (READ) - Determinado automáticamente
+  async getAllSuppliers() {
     // ...
   }
-  
+
+  @Post()
+  // Nivel 2 (CREATE) - Determinado automáticamente
+  async createSupplier(@Body() dto: CreateSupplierDto) {
+    // ...
+  }
+
+  @Put(':id')
+  // Nivel 3 (UPDATE) - Determinado automáticamente
+  async updateSupplier(
+    @Param('id') id: string,
+    @Body() dto: UpdateSupplierDto,
+  ) {
+    // ...
+  }
+
   @Delete(':id')
-  // Acción 'delete' automáticamente determinada del método HTTP DELETE
-  async deleteProduct(@Param('id') id: string) {
+  // Nivel 4 (DELETE) - Determinado automáticamente
+  async deleteSupplier(@Param('id') id: string) {
     // ...
   }
-  
-  @Patch('special/:id')
-  // Aquí especificamos un subrecurso diferente
-  @RequireSubresource('product-special')
-  async specialProductAction(@Param('id') id: string) {
-    // Requiere permisos para 'product-special'
+
+  @Post(':id/validate')
+  // Acción personalizada que requiere nivel específico
+  @RequireActionLevel(3) // Requiere nivel UPDATE
+  async validateSupplier(@Param('id') id: string) {
+    // ...
   }
 }
 ```
@@ -117,7 +157,8 @@ La validación de permisos en el `PermissionGuard` garantizará que los niveles 
 
 ## Consideraciones Importantes
 
-1. **Nombres de Subrecursos**: Es crucial que los nombres utilizados en el decorador `RequireSubresource` coincidan exactamente con los nombres de subrecursos existentes en la base de datos. 
+1. **Nombres de Subrecursos**: Es crucial que los nombres utilizados en el decorador `RequireSubresource` coincidan exactamente con los nombres de subrecursos existentes en la base de datos.
+
    - Por ejemplo, usar `@RequireSubresource('Gestión de usuarios')` en lugar de `@RequireSubresource('user')`.
    - Si no existe el subrecurso, la autorización fallará.
 
@@ -148,4 +189,4 @@ La aplicación incluye estos subrecursos predefinidos:
 - 'Indicadores' - Para visualización de indicadores
 - 'Reportes' - Para gestión de reportes
 
-Si necesitas un nuevo subrecurso, debes agregarlo a `prisma/data/subresources.data.ts` y ejecutar el seed. 
+Si necesitas un nuevo subrecurso, debes agregarlo a `prisma/data/subresources.data.ts` y ejecutar el seed.

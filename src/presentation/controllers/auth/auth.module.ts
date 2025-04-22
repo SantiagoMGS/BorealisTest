@@ -10,6 +10,7 @@ import {
   LoginUseCase,
   LogoutUseCase,
   SessionManagementUseCase,
+  SetCompanyUseCase,
 } from '@domain/use-cases/auth';
 import { envs } from '@core/config';
 import { JwtStrategy } from '@infrastructure/strategies/jwt.strategy';
@@ -17,6 +18,7 @@ import { AuthSessionDataSourceService } from '@infrastructure/datasource/auth/se
 import { SessionRepositoryImpl } from '@infrastructure/repositories/auth/session.repository-impl.service';
 import { LoginRepositoryImplService } from '@infrastructure/repositories/auth/login.repository-impl.service';
 import { TokenService } from '@infrastructure/services/token/token.service';
+import { PrismaService } from '@core/prisma/prisma.service';
 
 // Token de inyección para ITokenPort
 export const TOKEN_PORT = 'TOKEN_PORT';
@@ -62,6 +64,17 @@ export const TOKEN_PORT = 'TOKEN_PORT';
       inject: [LoginRepository, SessionRepository],
     },
     LogoutUseCase,
+    {
+      provide: SetCompanyUseCase,
+      useFactory: (
+        sessionRepository: SessionRepository,
+        tokenPort: TokenService,
+        prisma: PrismaService,
+      ) => {
+        return new SetCompanyUseCase(sessionRepository, tokenPort, prisma);
+      },
+      inject: [SessionRepository, TOKEN_PORT, PrismaService],
+    },
 
     // Servicios de infraestructura
     LoginDataSourceService,
