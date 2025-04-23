@@ -76,8 +76,8 @@ export class SetCompanyUseCase {
     tokens: { access_token: string; refresh_token: string },
     req: Request,
   ): Promise<void> {
-    // Invalidar sesiones anteriores
-    await this.sessionRepository.invalidateUserSessions(userId);
+    // Eliminar todas las sesiones activas del usuario
+    await this.sessionRepository.deleteUserSessions(userId);
 
     const deviceInfo = req?.headers['user-agent'];
     const ipAddress = req?.ip;
@@ -99,6 +99,7 @@ export class SetCompanyUseCase {
       lastActive: new Date(),
     };
 
+    // Crear una nueva sesión con el nuevo token
     await this.sessionRepository.createSession(sessionData);
   }
 }

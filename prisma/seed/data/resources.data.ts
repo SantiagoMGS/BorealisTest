@@ -1,59 +1,87 @@
 import { Prisma } from '@prisma/client';
 
-export interface ResourceWithApplicationName
-  extends Prisma.ResourceCreateInput {
-  applicationName: string;
-}
-
-export const resourceInitialData: ResourceWithApplicationName[] = [
+// Definimos los recursos utilizando directamente el tipo de Prisma
+export const resourceInitialData: Prisma.ResourceCreateInput[] = [
   // Recursos para LIMS
   {
     name: 'Recepción',
     icon: 'user-group',
     path: '/reception',
-    applicationName: 'LIMS',
+    application: {
+      connect: {
+        name: 'LIMS',
+      },
+    },
   },
   {
     name: 'Gestión',
     icon: 'building',
     path: '/management',
-    applicationName: 'LIMS',
+    application: {
+      connect: {
+        name: 'LIMS',
+      },
+    },
   },
   {
     name: 'Resultados',
     icon: 'shield-check',
     path: '/results',
-    applicationName: 'LIMS',
+    application: {
+      connect: {
+        name: 'LIMS',
+      },
+    },
   },
   {
     name: 'Análisis',
     icon: 'shield-check',
     path: '/analysis',
-    applicationName: 'LIMS',
+    application: {
+      connect: {
+        name: 'LIMS',
+      },
+    },
   },
   // Recursos para ADMINISTRACIÓN
   {
     name: 'Usuarios',
     icon: 'user',
     path: '/users',
-    applicationName: 'ADMINISTRACIÓN',
+    application: {
+      connect: {
+        name: 'ADMINISTRACIÓN',
+      },
+    },
   },
   {
     name: 'Compañías',
     icon: 'building',
     path: '/companies',
-    applicationName: 'ADMINISTRACIÓN',
+    application: {
+      connect: {
+        name: 'ADMINISTRACIÓN',
+      },
+    },
   },
   {
     name: 'Aplicaciones',
     icon: 'application',
     path: '/applications',
-    applicationName: 'ADMINISTRACIÓN',
+    application: {
+      connect: {
+        name: 'ADMINISTRACIÓN',
+      },
+    },
   },
   {
     name: 'Proveedores',
     icon: 'truck',
     path: '/providers',
-    applicationName: 'ADMINISTRACIÓN',
+    application: {
+      connect: {
+        name: 'ADMINISTRACIÓN',
+      },
+    },
   },
 ];

@@ -17,36 +17,18 @@ export const seedSubresources = async (prisma: PrismaClient) => {
       return;
     }
 
-    // Obtener todos los recursos para asociarlos
-    const resources = await prisma.resource.findMany();
-    const resourcesMap = new Map(resources.map((res) => [res.name, res.id]));
-
     // Crear subrecursos desde los datos iniciales
     const results = await Promise.all(
       subresourceInitialData.map(async (subresourceData) => {
-        // Obtener el ID del recurso padre por nombre
-        const resourceId = resourcesMap.get(subresourceData.resourceName);
-
-        if (!resourceId) {
-          logger.error(
-            `No se encontró el recurso padre: ${subresourceData.resourceName}`,
-          );
-          return {
-            success: false,
-            name: subresourceData.name,
-            resourceName: subresourceData.resourceName,
-            reason: 'parent_not_found',
-          };
-        }
+        const resourceName = subresourceData.resource.connect!.name;
 
         try {
-          // Extraer el nombre del recurso y agregar el ID real
-          const { resourceName, ...createData } = subresourceData;
-          createData.resourceId = resourceId;
-
-          // Crear el subrecurso
+          // Crear el subrecurso con la relación usando connect
           const subresource = await prisma.subresource.create({
-            data: createData,
+            data: subresourceData,
+            include: {
+              resource: true, // Incluir los datos del recurso en la respuesta
+            },
           });
 
           return {
@@ -56,13 +38,13 @@ export const seedSubresources = async (prisma: PrismaClient) => {
           };
         } catch (error: any) {
           logger.error(
-            `Error al crear subrecurso ${subresourceData.name} para ${subresourceData.resourceName}: ${error.message}`,
+            `Error al crear subrecurso ${subresourceData.name} para ${resourceName}: ${error.message}`,
           );
           return {
             success: false,
             error,
             name: subresourceData.name,
-            resourceName: subresourceData.resourceName,
+            resourceName,
             reason: 'error',
           };
         }

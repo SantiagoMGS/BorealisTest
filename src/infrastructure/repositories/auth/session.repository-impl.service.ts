@@ -19,8 +19,8 @@ export class SessionRepositoryImpl implements SessionRepository {
     return this.sessionDataSourceService.getActiveSessionByUserId(userId);
   }
 
-  async invalidateUserSessions(userId: string): Promise<void> {
-    return this.sessionDataSourceService.invalidateUserSessions(userId);
+  async deleteUserSessions(userId: string): Promise<void> {
+    return this.sessionDataSourceService.deleteUserSessions(userId);
   }
 
   async validateSession(token: string): Promise<boolean> {

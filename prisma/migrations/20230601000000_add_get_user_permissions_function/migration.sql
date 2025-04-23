@@ -64,12 +64,10 @@ BEGIN
   JOIN actions a ON a.id = rp."actionId"
   JOIN subresources s ON s.id = rp."subresourceId"
   JOIN resources res ON res.id = s."resourceId"
-  JOIN application_resources ar ON res.id = ar."resourceId"
-  JOIN applications app ON app.id = ar."applicationId"
+  JOIN applications app ON app.id = res."applicationId"
   JOIN company_applications ca ON ca."applicationId" = app.id
   WHERE rp."roleId" = v_role_id
   AND ca."companyId" = p_company_id
-  AND ar."isActive" = true
   AND app."isActive" = true
   AND ca."isActive" = true
   ORDER BY app.name, res.name, s.name, a.name;

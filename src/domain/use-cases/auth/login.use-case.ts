@@ -31,8 +31,8 @@ export class LoginUseCase {
       const refreshExpiresAt = new Date();
       refreshExpiresAt.setDate(refreshExpiresAt.getDate() + 7);
 
-      // Invalidar sesiones anteriores
-      await this.sessionRepository.invalidateUserSessions(user.id);
+      // Eliminar todas las sesiones anteriores del usuario
+      await this.sessionRepository.deleteUserSessions(user.id);
 
       const sessionData: ISessionEntity = {
         userId: user.id,

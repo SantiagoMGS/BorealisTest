@@ -7,12 +7,14 @@ import {
   seedResources,
   seedSubresources,
   seedActions,
-  seedApplicationResources,
   seedCompanyApplications,
   seedRoles,
   seedRolePermissions,
   seedUserCompanies,
   seedSuppliers,
+  seedDocumentTypes,
+  seedReceptionTypes,
+  seedReceptionOrigins,
 } from './seed/index';
 
 // Inicializar cliente Prisma
@@ -33,13 +35,15 @@ async function main() {
     await seedRoles(prisma); // Roles
     await seedUserCompanies(prisma); // Relaciones entre usuarios, compañías y roles
     await seedActions(prisma); // Acciones para permisos
-    await seedResources(prisma); // Después los recursos
+    await seedResources(prisma); // Después los recursos, ahora ya asociados directamente a sus aplicaciones
     await seedSubresources(prisma); // Subrecursos que dependen de recursos
-    await seedApplicationResources(prisma); // Finalmente recursos de aplicaciones
     await seedRolePermissions(prisma); // Permisos de roles (debe ejecutarse al final)
 
     // Semillas para configurar laboratorio
+    await seedDocumentTypes(prisma); // Tipos de documento (debe ir antes de proveedores)
     await seedSuppliers(prisma); // Proveedores
+    await seedReceptionTypes(prisma); // Tipos de recepción
+    await seedReceptionOrigins(prisma); // Orígenes de recepción
 
     logger.log('✅ ¡Proceso de sembrado completado con éxito!');
   } catch (error: any) {

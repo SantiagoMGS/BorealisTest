@@ -9,7 +9,7 @@ export class SupplierMapper {
   static toEntity(createDto: CreateSupplierDto): ISupplierEntity {
     return {
       name: createDto.name,
-      documentType: createDto.documentType,
+      documentTypeId: createDto.documentTypeId,
       documentNumber: createDto.documentNumber,
     };
   }
@@ -21,8 +21,19 @@ export class SupplierMapper {
     const responseDto = new SupplierResponseDto();
     responseDto.id = supplier.id;
     responseDto.name = supplier.name;
-    responseDto.documentType = supplier.documentType;
+    responseDto.documentTypeId = supplier.documentTypeId;
+
+    // Agregar información del documentType si está disponible
+    if (supplier.documentType) {
+      responseDto.documentType = {
+        id: supplier.documentType.id,
+        name: supplier.documentType.name,
+        code: supplier.documentType.code,
+      };
+    }
+
     responseDto.documentNumber = supplier.documentNumber;
+    responseDto.isActive = supplier.isActive ?? true;
 
     return responseDto;
   }

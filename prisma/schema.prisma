@@ -72,18 +72,20 @@ model Role {
 }
 
 model Resource {
-  id           String                @id @default(uuid()) @db.Uuid
-  name         String                @unique
-  icon         String
-  path         String                @unique
-  createdAt    DateTime              @default(now())
-  updatedAt    DateTime              @updatedAt
-  createdBy    String?               @db.Uuid
-  updatedBy    String?               @db.Uuid
-  applications ApplicationResource[]
-  subresources Subresource[]
+  id            String        @id @default(uuid()) @db.Uuid
+  name          String        @unique
+  icon          String
+  path          String        @unique
+  applicationId String        @db.Uuid
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  createdBy     String?       @db.Uuid
+  updatedBy     String?       @db.Uuid
+  application   Application   @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  subresources  Subresource[]
 
   @@index([name])
+  @@index([applicationId])
   @@map("resources")
 }
 
@@ -181,6 +183,7 @@ model Subresource {
   resourceId      String           @db.Uuid
   icon            String
   path            String           @unique
+  controller      String           @unique
   updatedAt       DateTime         @updatedAt
   createdAt       DateTime         @default(now())
   createdBy       String?          @db.Uuid
@@ -194,39 +197,21 @@ model Subresource {
 }
 
 model Application {
-  id          String                @id @default(uuid()) @db.Uuid
-  name        String                @unique
+  id          String               @id @default(uuid()) @db.Uuid
+  name        String               @unique
   description String?
-  path        String                @unique
+  path        String               @unique
   logo        String?
-  isActive    Boolean               @default(true)
-  createdAt   DateTime              @default(now())
-  updatedAt   DateTime              @updatedAt
-  createdBy   String?               @db.Uuid
-  updatedBy   String?               @db.Uuid
-  resources   ApplicationResource[]
+  isActive    Boolean              @default(true)
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+  createdBy   String?              @db.Uuid
+  updatedBy   String?              @db.Uuid
+  resources   Resource[]
   companies   CompanyApplication[]
 
   @@index([name])
   @@map("applications")
-}
-
-model ApplicationResource {
-  applicationId String      @db.Uuid
-  resourceId    String      @db.Uuid
-  isActive      Boolean     @default(true)
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  createdBy     String?     @db.Uuid
-  updatedBy     String?     @db.Uuid
-  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
-  resource      Resource    @relation(fields: [resourceId], references: [id], onDelete: Cascade)
-
-  @@id([applicationId, resourceId])
-  @@unique([applicationId, resourceId])
-  @@index([applicationId])
-  @@index([resourceId])
-  @@map("application_resources")
 }
 
 model CompanyApplication {
@@ -247,18 +232,22 @@ model CompanyApplication {
   @@map("company_applications")
 }
 
-enum DocumentType {
-  NIT
-  NIT_EXT
-  PAS
-  CC
-  CE
+model DocumentType {
+  id       String  @id @default(uuid()) @db.Uuid
+  name     String  @unique
+  code     String  @unique
+  isActive Boolean @default(true)
+
+  suppliers Supplier[]
+
+  @@index([code])
+  @@map("document_types")
 }
 
 model Supplier {
   id             String            @id @default(uuid()) @db.Uuid
   name           String
-  documentType   DocumentType
+  documentTypeId String            @db.Uuid
   documentNumber String
   isActive       Boolean           @default(true)
   createdAt      DateTime          @default(now())
@@ -268,10 +257,12 @@ model Supplier {
   companies      CompanySupplier[]
   receptions     Reception[]
 
-  @@index([documentNumber])
-  @@index([name])
+  documentType DocumentType @relation(fields: [documentTypeId], references: [id], onDelete: Cascade)
+
   @@unique([documentNumber])
   @@unique([documentNumber, name])
+  @@index([documentNumber])
+  @@index([name])
   @@map("suppliers")
 }
 
@@ -293,47 +284,55 @@ model CompanySupplier {
 }
 
 // Tipos de recepción: Dore, Muestras, Mineral, Concentrado.
-enum ReceptionType {
-  DORE
-  MUESTRAS
-  MINERAL
-  CONCENTRADO
+model ReceptionType {
+  id          String  @id @default(uuid()) @db.Uuid
+  name        String  @unique
+  description String?
+  isActive    Boolean @default(true)
+  
+  receptions Reception[]
+  
+  @@map("reception_types")
 }
 
 // Origen de la recepción: Cabeza, Cola, Secado, Aluvial, Joyería, Subsistencia, etc.
-enum ReceptionOrigin {
-  CABEZA
-  COLA
-  SECADO
-  JOYERIA
-  SUBSISTENCIA
-  VETA_FUNDIDO
-  MINERAL
-  CONCENTRADO
+model ReceptionOrigin {
+  id          String  @id @default(uuid()) @db.Uuid
+  name        String  @unique
+  description String?
+  isActive    Boolean @default(true)
+  
+  receptions Reception[]
+  
+  @@map("reception_origins")
 }
 
 // Modelo para encabezado de recepción
 model Reception {
-  id              String          @id @default(uuid()) @db.Uuid
-  companyId       String          @db.Uuid
-  supplierId      String          @db.Uuid
-  receptionType   ReceptionType
-  receptionOrigin ReceptionOrigin
-  receptionDate   DateTime
-  batchNumber     String?
-  observation     String?
-  isActive        Boolean         @default(true)
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
-  createdBy       String?         @db.Uuid
-  updatedBy       String?         @db.Uuid
+  id                String   @id @default(uuid()) @db.Uuid
+  companyId         String   @db.Uuid
+  supplierId        String   @db.Uuid
+  receptionTypeId   String   @db.Uuid
+  receptionOriginId String   @db.Uuid
+  receptionDate     DateTime
+  batchNumber       String?
+  observation       String?
+  isActive          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  createdBy         String?  @db.Uuid
+  updatedBy         String?  @db.Uuid
 
-  company        Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  supplier       Supplier        @relation(fields: [supplierId], references: [id], onDelete: Cascade)
-  receptionUnits ReceptionUnit[]
+  company         Company          @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  supplier        Supplier         @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  receptionType   ReceptionType    @relation(fields: [receptionTypeId], references: [id])
+  receptionOrigin ReceptionOrigin  @relation(fields: [receptionOriginId], references: [id])
+  receptionUnits  ReceptionUnit[]
 
   @@index([companyId])
   @@index([supplierId])
+  @@index([receptionTypeId])
+  @@index([receptionOriginId])
   @@map("receptions")
 }
 

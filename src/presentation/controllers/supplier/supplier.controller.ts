@@ -38,7 +38,6 @@ import { FindAllSupplierUseCase } from '@domain/use-cases/supplier/find-all-supp
 import { FindSupplierUseCase } from '@domain/use-cases/supplier/find-supplier.use-case';
 import { UpdateSupplierUseCase } from '@domain/use-cases/supplier/update-supplier.use-case';
 import { DeleteSupplierUseCase } from '@domain/use-cases/supplier/delete-supplier.use-case';
-import { isUUID } from 'class-validator';
 import { ISupplierResponse } from '@domain/interfaces/supplier';
 @ApiTags('Proveedores')
 @Controller('suppliers')
@@ -129,7 +128,13 @@ export class SupplierController {
     successMessage: 'Proveedor encontrado exitosamente',
   })
   async findById(@Param('id') id: string): Promise<SupplierResponseDto> {
-    const params = isUUID(id) ? { id } : { documentNumber: id };
+    // No es la mejor práctica tener la regex directamente en el controlador
+    // TODO: Mover esta validación a un servicio de utilidad o usar una librería como 'uuid'
+    const uuidRegex =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+    const params = uuidRegex.test(id) ? { id } : { documentNumber: id };
+
     const supplier = await this.findSupplierUseCase.execute(params);
     return SupplierMapper.toResponseDto(supplier);
   }

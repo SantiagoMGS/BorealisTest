@@ -3,7 +3,7 @@ import { DocumentType } from '@prisma/client';
 export interface ISupplierEntity {
   id?: string;
   name: string;
-  documentType: DocumentType;
+  documentTypeId: string;
   documentNumber: string;
   isActive?: boolean;
   createdAt?: Date;
