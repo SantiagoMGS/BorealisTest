@@ -5,9 +5,38 @@ import {
   ReceptionTypeDto,
   SupplierDto,
 } from '../dtos';
+import {
+  DocumentTypeEntity,
+  SupplierEntity,
+  ReceptionTypeEntity,
+  ReceptionOriginEntity,
+  AnalysisTypeEntity,
+  CatalogTypeEnum,
+} from '@domain/entities/catalog/catalog.entity';
 
+/**
+ * Mapper para convertir entidades de catálogo a DTOs
+ */
 export class CatalogMapper {
-  static documentTypeToDto(entity: any): DocumentTypeDto {
+  /**
+   * Factory que devuelve el mapper adecuado según el tipo de catálogo
+   */
+  static getMapper(type: CatalogTypeEnum): any {
+    const mappers = {
+      [CatalogTypeEnum.DOCUMENT_TYPES]: this.documentTypeToDto,
+      [CatalogTypeEnum.SUPPLIERS]: this.supplierToDto,
+      [CatalogTypeEnum.RECEPTION_TYPES]: this.receptionTypeToDto,
+      [CatalogTypeEnum.RECEPTION_ORIGINS]: this.receptionOriginToDto,
+      [CatalogTypeEnum.ANALYSIS_TYPES]: this.analysisTypeToDto,
+    };
+
+    return mappers[type] || ((item: any) => item);
+  }
+
+  /**
+   * Convierte una entidad de tipo documento a DTO
+   */
+  static documentTypeToDto(entity: DocumentTypeEntity): DocumentTypeDto {
     return {
       id: entity.id,
       name: entity.name,
@@ -15,7 +44,10 @@ export class CatalogMapper {
     };
   }
 
-  static supplierToDto(entity: any): SupplierDto {
+  /**
+   * Convierte una entidad de proveedor a DTO
+   */
+  static supplierToDto(entity: SupplierEntity): SupplierDto {
     return {
       id: entity.id,
       name: entity.name,
@@ -24,7 +56,10 @@ export class CatalogMapper {
     };
   }
 
-  static receptionTypeToDto(entity: any): ReceptionTypeDto {
+  /**
+   * Convierte una entidad de tipo de recepción a DTO
+   */
+  static receptionTypeToDto(entity: ReceptionTypeEntity): ReceptionTypeDto {
     return {
       id: entity.id,
       name: entity.name,
@@ -32,7 +67,12 @@ export class CatalogMapper {
     };
   }
 
-  static receptionOriginToDto(entity: any): ReceptionOriginDto {
+  /**
+   * Convierte una entidad de origen de recepción a DTO
+   */
+  static receptionOriginToDto(
+    entity: ReceptionOriginEntity,
+  ): ReceptionOriginDto {
     return {
       id: entity.id,
       name: entity.name,
@@ -40,7 +80,10 @@ export class CatalogMapper {
     };
   }
 
-  static analysisTypeToDto(entity: any): AnalysisTypeDto {
+  /**
+   * Convierte una entidad de tipo de análisis a DTO
+   */
+  static analysisTypeToDto(entity: AnalysisTypeEntity): AnalysisTypeDto {
     return {
       id: entity.id,
       name: entity.name,

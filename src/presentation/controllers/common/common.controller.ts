@@ -4,6 +4,7 @@ import {
   Param,
   UseInterceptors,
   UseGuards,
+  BadRequestException,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -13,11 +14,12 @@ import {
   ApiParam,
 } from '@nestjs/swagger';
 import { GetCatalogsUseCase } from '@domain/use-cases/catalog';
-import { CatalogResponseDto, CatalogType, CatalogParamDto } from './dtos';
+import { CatalogResponseDto, CatalogType } from './dtos';
 import { ResponseInterceptor } from '@core/interceptores/response.interceptor';
 import { CustomResponse } from '@core/decorators/custom-response.decorator';
 import { JwtAuthGuard } from '@infrastructure/guards/jwt-auth.guard';
 import { CatalogMapper } from './mappers/catalog.mapper';
+import { CatalogTypeEnum } from '@domain/entities/catalog/catalog.entity';
 
 @ApiTags('Catálogos')
 @Controller('common')
@@ -43,32 +45,21 @@ export class CommonController {
     successMessage: 'Catálogo obtenido correctamente',
   })
   async getCatalogs(
-    @Param('type') type: CatalogType,
+    @Param('type') type: CatalogTypeEnum,
   ): Promise<{ data: any[] }> {
+    // Validamos que el tipo de catálogo sea válido
+    if (!Object.values(CatalogTypeEnum).includes(type)) {
+      throw new BadRequestException(`Tipo de catálogo '${type}' no válido`);
+    }
+
+    // Obtenemos los elementos del catálogo usando el caso de uso
     const items = await this.getCatalogsUseCase.execute(type);
 
-    let data: any[] = [];
+    // Obtenemos el mapper adecuado para este tipo de catálogo
+    const mapper = CatalogMapper.getMapper(type);
 
-    // Aplicar mappers específicos según el tipo de catálogo
-    switch (type) {
-      case CatalogType.DOCUMENT_TYPES:
-        data = items.map((item) => CatalogMapper.documentTypeToDto(item));
-        break;
-      case CatalogType.SUPPLIERS:
-        data = items.map((item) => CatalogMapper.supplierToDto(item));
-        break;
-      case CatalogType.RECEPTION_TYPES:
-        data = items.map((item) => CatalogMapper.receptionTypeToDto(item));
-        break;
-      case CatalogType.RECEPTION_ORIGINS:
-        data = items.map((item) => CatalogMapper.receptionOriginToDto(item));
-        break;
-      case CatalogType.ANALYSIS_TYPES:
-        data = items.map((item) => CatalogMapper.analysisTypeToDto(item));
-        break;
-      default:
-        data = items;
-    }
+    // Aplicamos el mapper a cada elemento
+    const data = items.map((item) => mapper(item));
 
     return { data };
   }
