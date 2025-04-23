@@ -134,6 +134,6 @@ export const subresourceInitialData: Prisma.SubresourceCreateInput[] = [
     },
     icon: 'truck',
     path: '/providers',
-    controller: 'ProvidersController',
+    controller: 'SupplierController',
   },
 ];

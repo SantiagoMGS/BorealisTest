@@ -38,10 +38,15 @@ import { FindAllSupplierUseCase } from '@domain/use-cases/supplier/find-all-supp
 import { FindSupplierUseCase } from '@domain/use-cases/supplier/find-supplier.use-case';
 import { UpdateSupplierUseCase } from '@domain/use-cases/supplier/update-supplier.use-case';
 import { DeleteSupplierUseCase } from '@domain/use-cases/supplier/delete-supplier.use-case';
-import { ISupplierResponse } from '@domain/interfaces/supplier';
+import { RequirePermission } from '@core/decorators/require-permission.decorator';
+import { PermissionsGuard } from '@infrastructure/guards/permissions.guard';
+
 @ApiTags('Proveedores')
+@ApiBearerAuth()
 @Controller('suppliers')
 @UseInterceptors(ResponseInterceptor)
+@RequirePermission(SupplierController.name)
+@UseGuards(JwtAuthGuard, PermissionsGuard)
 export class SupplierController {
   constructor(
     private readonly createSupplierUseCase: CreateSupplierUseCase,
