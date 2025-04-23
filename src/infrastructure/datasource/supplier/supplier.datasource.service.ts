@@ -23,19 +23,29 @@ export class SupplierDataSourceService {
     supplierData: ISupplierEntity,
   ): Promise<ISupplierResponse> {
     try {
+      // Verificar si existe el tipo de documento
+      const documentType = await this.prisma.documentType.findUnique({
+        where: { id: supplierData.documentTypeId },
+      });
+
+      if (!documentType) {
+        throw new NotFoundException('Tipo de documento no encontrado');
+      }
+
       const supplier = await this.prisma.supplier.create({
         data: supplierData,
         include: {
-          documentType: true, // Incluir los datos del tipo de documento
+          documentType: true,
         },
       });
       return supplier;
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        // P2002 es el código de error que Prisma devuelve cuando hay una violación de una restricción única
-        // En este caso, significa que ya existe un registro con el mismo número de documento
         if (error.code === 'P2002') {
           throw new ConflictException('El número de documento ya existe');
+        }
+        if (error.code === 'P2003') {
+          throw new NotFoundException('Tipo de documento no encontrado');
         }
       }
       throw error;
