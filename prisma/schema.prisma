@@ -276,6 +276,7 @@ model Supplier {
 }
 
 model CompanySupplier {
+  id         String   @id @default(uuid()) @db.Uuid
   companyId  String   @db.Uuid
   supplierId String   @db.Uuid
   isActive   Boolean  @default(true)
@@ -286,8 +287,6 @@ model CompanySupplier {
   company    Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
   supplier   Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
 
-  @@id([companyId, supplierId])
-  @@unique([companyId, supplierId])
   @@index([companyId])
   @@index([supplierId])
   @@map("company_suppliers")

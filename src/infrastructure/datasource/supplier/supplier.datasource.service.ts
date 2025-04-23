@@ -52,13 +52,6 @@ export class SupplierDataSourceService {
     let supplier: ISupplierResponse | null = null;
 
     if (params.id) {
-      // Validar que el ID tenga el formato correcto de UUID
-      const uuidRegex =
-        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-      if (!uuidRegex.test(params.id)) {
-        throw new NotFoundException('ID de proveedor inválido');
-      }
-
       supplier = await this.prisma.supplier.findUnique({
         where: { id: params.id },
       });
@@ -83,10 +76,49 @@ export class SupplierDataSourceService {
     id: string,
     supplier: Partial<ISupplierEntity>,
   ): Promise<ISupplierResponse> {
-    return await this.prisma.supplier.update({
-      where: { id },
-      data: supplier,
-    });
+    try {
+      // Primero verificar si existe el proveedor
+      const existingSupplier = await this.prisma.supplier.findUnique({
+        where: { id },
+      });
+
+      if (!existingSupplier) {
+        throw new NotFoundException('Proveedor no encontrado');
+      }
+
+      if (!existingSupplier.isActive) {
+        throw new NotFoundException('Proveedor inactivo');
+      }
+
+      // Si se está actualizando el documentNumber, verificar que no exista otro con el mismo número
+      if (supplier.documentNumber) {
+        const supplierWithSameDocument = await this.prisma.supplier.findFirst({
+          where: {
+            documentNumber: supplier.documentNumber,
+            id: { not: id },
+            isActive: true,
+          },
+        });
+
+        if (supplierWithSameDocument) {
+          throw new ConflictException(
+            'Ya existe un proveedor con este número de documento',
+          );
+        }
+      }
+
+      return await this.prisma.supplier.update({
+        where: { id },
+        data: supplier,
+      });
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2025') {
+          throw new NotFoundException('Proveedor no encontrado');
+        }
+      }
+      throw error;
+    }
   }
 
   async deleteSupplier(
