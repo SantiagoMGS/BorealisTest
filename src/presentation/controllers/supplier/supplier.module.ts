@@ -8,7 +8,10 @@ import { FindAllSupplierUseCase } from '@domain/use-cases/supplier/find-all-supp
 import { FindSupplierUseCase } from '@domain/use-cases/supplier/find-supplier.use-case';
 import { UpdateSupplierUseCase } from '@domain/use-cases/supplier/update-supplier.use-case';
 import { DeleteSupplierUseCase } from '@domain/use-cases/supplier/delete-supplier.use-case';
+import { PermissionsModule } from '@core/permissions/permissions.module';
+
 @Module({
+  imports: [PermissionsModule],
   controllers: [SupplierController],
   providers: [
     CreateSupplierUseCase,

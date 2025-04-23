@@ -6,6 +6,7 @@ import { Module } from '@nestjs/common';
 import { PrismaModule } from '@core/prisma/prisma.module';
 import { UserModule } from './presentation/controllers/user/user.module';
 import { SupplierModule } from './presentation/controllers/supplier/supplier.module';
+import { PermissionsModule } from '@core/permissions/permissions.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { SupplierModule } from './presentation/controllers/supplier/supplier.mod
     CoreModule,
     UserModule,
     SupplierModule,
+    PermissionsModule,
   ],
   providers: [JwtStrategy],
 })
