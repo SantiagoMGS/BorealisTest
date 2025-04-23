@@ -10,3 +10,5 @@ export { seedRolePermissions } from './seed-role-permissions';
 export { seedUserCompanies } from './seed-user-companies';
 export { seedSuppliers } from './seed-suppliers';
 export { seedDocumentTypes } from './seed-document-types';
+export { seedReceptionTypes } from './seed-reception-types';
+export { seedReceptionOrigins } from './seed-reception-origins';

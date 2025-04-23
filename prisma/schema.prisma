@@ -72,17 +72,17 @@ model Role {
 }
 
 model Resource {
-  id           String       @id @default(uuid()) @db.Uuid
-  name         String       @unique
-  icon         String
-  path         String       @unique
-  applicationId String      @db.Uuid
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-  createdBy    String?      @db.Uuid
-  updatedBy    String?      @db.Uuid
-  application  Application  @relation(fields: [applicationId], references: [id], onDelete: Cascade)
-  subresources Subresource[]
+  id            String        @id @default(uuid()) @db.Uuid
+  name          String        @unique
+  icon          String
+  path          String        @unique
+  applicationId String        @db.Uuid
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  createdBy     String?       @db.Uuid
+  updatedBy     String?       @db.Uuid
+  application   Application   @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  subresources  Subresource[]
 
   @@index([name])
   @@index([applicationId])
@@ -197,16 +197,16 @@ model Subresource {
 }
 
 model Application {
-  id          String                @id @default(uuid()) @db.Uuid
-  name        String                @unique
+  id          String               @id @default(uuid()) @db.Uuid
+  name        String               @unique
   description String?
-  path        String                @unique
+  path        String               @unique
   logo        String?
-  isActive    Boolean               @default(true)
-  createdAt   DateTime              @default(now())
-  updatedAt   DateTime              @updatedAt
-  createdBy   String?               @db.Uuid
-  updatedBy   String?               @db.Uuid
+  isActive    Boolean              @default(true)
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+  createdBy   String?              @db.Uuid
+  updatedBy   String?              @db.Uuid
   resources   Resource[]
   companies   CompanyApplication[]
 
@@ -285,47 +285,55 @@ model CompanySupplier {
 }
 
 // Tipos de recepción: Dore, Muestras, Mineral, Concentrado.
-enum ReceptionType {
-  DORE
-  MUESTRAS
-  MINERAL
-  CONCENTRADO
+model ReceptionType {
+  id          String  @id @default(uuid()) @db.Uuid
+  name        String  @unique
+  description String?
+  isActive    Boolean @default(true)
+  
+  receptions Reception[]
+  
+  @@map("reception_types")
 }
 
 // Origen de la recepción: Cabeza, Cola, Secado, Aluvial, Joyería, Subsistencia, etc.
-enum ReceptionOrigin {
-  CABEZA
-  COLA
-  SECADO
-  JOYERIA
-  SUBSISTENCIA
-  VETA_FUNDIDO
-  MINERAL
-  CONCENTRADO
+model ReceptionOrigin {
+  id          String  @id @default(uuid()) @db.Uuid
+  name        String  @unique
+  description String?
+  isActive    Boolean @default(true)
+  
+  receptions Reception[]
+  
+  @@map("reception_origins")
 }
 
 // Modelo para encabezado de recepción
 model Reception {
-  id              String          @id @default(uuid()) @db.Uuid
-  companyId       String          @db.Uuid
-  supplierId      String          @db.Uuid
-  receptionType   ReceptionType
-  receptionOrigin ReceptionOrigin
-  receptionDate   DateTime
-  batchNumber     String?
-  observation     String?
-  isActive        Boolean         @default(true)
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
-  createdBy       String?         @db.Uuid
-  updatedBy       String?         @db.Uuid
+  id                String   @id @default(uuid()) @db.Uuid
+  companyId         String   @db.Uuid
+  supplierId        String   @db.Uuid
+  receptionTypeId   String   @db.Uuid
+  receptionOriginId String   @db.Uuid
+  receptionDate     DateTime
+  batchNumber       String?
+  observation       String?
+  isActive          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  createdBy         String?  @db.Uuid
+  updatedBy         String?  @db.Uuid
 
-  company        Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  supplier       Supplier        @relation(fields: [supplierId], references: [id], onDelete: Cascade)
-  receptionUnits ReceptionUnit[]
+  company         Company          @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  supplier        Supplier         @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  receptionType   ReceptionType    @relation(fields: [receptionTypeId], references: [id])
+  receptionOrigin ReceptionOrigin  @relation(fields: [receptionOriginId], references: [id])
+  receptionUnits  ReceptionUnit[]
 
   @@index([companyId])
   @@index([supplierId])
+  @@index([receptionTypeId])
+  @@index([receptionOriginId])
   @@map("receptions")
 }
 
