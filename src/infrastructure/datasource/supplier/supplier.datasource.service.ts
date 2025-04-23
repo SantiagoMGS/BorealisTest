@@ -25,6 +25,9 @@ export class SupplierDataSourceService {
     try {
       const supplier = await this.prisma.supplier.create({
         data: supplierData,
+        include: {
+          documentType: true, // Incluir los datos del tipo de documento
+        },
       });
       return supplier;
     } catch (error) {
@@ -42,6 +45,9 @@ export class SupplierDataSourceService {
   async findAll(): Promise<ISupplierResponse[]> {
     return await this.prisma.supplier.findMany({
       where: { isActive: true },
+      include: {
+        documentType: true, // Incluir los datos del tipo de documento
+      },
     });
   }
 
@@ -61,10 +67,16 @@ export class SupplierDataSourceService {
 
       supplier = await this.prisma.supplier.findUnique({
         where: { id: params.id },
+        include: {
+          documentType: true, // Incluir los datos del tipo de documento
+        },
       });
     } else if (params.documentNumber) {
       supplier = await this.prisma.supplier.findFirst({
         where: { documentNumber: params.documentNumber },
+        include: {
+          documentType: true, // Incluir los datos del tipo de documento
+        },
       });
     }
 
@@ -86,6 +98,9 @@ export class SupplierDataSourceService {
     return await this.prisma.supplier.update({
       where: { id },
       data: supplier,
+      include: {
+        documentType: true, // Incluir los datos del tipo de documento
+      },
     });
   }
 
@@ -103,6 +118,9 @@ export class SupplierDataSourceService {
         isActive: false,
         updatedBy: userId,
         updatedAt: new Date(),
+      },
+      include: {
+        documentType: true, // Incluir los datos del tipo de documento
       },
     });
   }

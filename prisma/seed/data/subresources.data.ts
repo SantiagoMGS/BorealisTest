@@ -1,73 +1,91 @@
 import { Prisma } from '@prisma/client';
 
-export interface SubresourceWithResourceName
-  extends Prisma.SubresourceCreateManyInput {
-  resourceName: string;
-  controller: string;
-}
-
-export const subresourceInitialData: SubresourceWithResourceName[] = [
+export const subresourceInitialData: Prisma.SubresourceCreateInput[] = [
   // Subrecursos para LIMS
   {
     name: 'Recepción Doré',
-    resourceId: '',
-    resourceName: 'Recepción',
+    resource: {
+      connect: {
+        name: 'Recepción',
+      },
+    },
     icon: 'flask-sample',
     path: '/recepcion-dore',
     controller: 'RecepcionDoreController',
   },
   {
     name: 'Recepción Muestras',
-    resourceId: '',
-    resourceName: 'Recepción',
+    resource: {
+      connect: {
+        name: 'Recepción',
+      },
+    },
     icon: 'flask-sample',
     path: '/recepcion-muestras',
     controller: 'RecepcionMuestrasController',
   },
   {
     name: 'Gestión',
-    resourceId: '',
-    resourceName: 'Gestión',
+    resource: {
+      connect: {
+        name: 'Gestión',
+      },
+    },
     icon: 'clipboard-list',
     path: '/permisos',
     controller: 'PermisosController',
   },
   {
     name: 'Niton',
-    resourceId: '',
-    resourceName: 'Resultados',
+    resource: {
+      connect: {
+        name: 'Resultados',
+      },
+    },
     icon: 'device-niton',
     path: '/niton-results',
     controller: 'NitonResultsController',
   },
   {
     name: 'Absorción atómica',
-    resourceId: '',
-    resourceName: 'Resultados',
+    resource: {
+      connect: {
+        name: 'Resultados',
+      },
+    },
     icon: 'atom',
     path: '/absorbance-results',
     controller: 'AbsorbanceResultsController',
   },
   {
     name: 'Copelación',
-    resourceId: '',
-    resourceName: 'Resultados',
+    resource: {
+      connect: {
+        name: 'Resultados',
+      },
+    },
     icon: 'fire-hot',
     path: '/copelation',
     controller: 'CopelationController',
   },
   {
     name: 'Niton',
-    resourceId: '',
-    resourceName: 'Análisis',
+    resource: {
+      connect: {
+        name: 'Análisis',
+      },
+    },
     icon: 'shield-check',
     path: '/niton-analysis',
     controller: 'NitonAnalysisController',
   },
   {
     name: 'Absorción atómica',
-    resourceId: '',
-    resourceName: 'Análisis',
+    resource: {
+      connect: {
+        name: 'Análisis',
+      },
+    },
     icon: 'shield-check',
     path: '/absorbance-analysis',
     controller: 'AbsorbanceAnalysisController',
@@ -76,32 +94,44 @@ export const subresourceInitialData: SubresourceWithResourceName[] = [
   // Subrecursos para ADMINISTRACIÓN
   {
     name: 'Usuarios',
-    resourceId: '',
-    resourceName: 'Usuarios',
+    resource: {
+      connect: {
+        name: 'Usuarios',
+      },
+    },
     icon: 'user',
     path: '/user',
     controller: 'UsersController',
   },
   {
     name: 'Compañías',
-    resourceId: '',
-    resourceName: 'Compañías',
+    resource: {
+      connect: {
+        name: 'Compañías',
+      },
+    },
     icon: 'building',
     path: '/companies',
     controller: 'CompaniesController',
   },
   {
     name: 'Aplicaciones',
-    resourceId: '',
-    resourceName: 'Aplicaciones',
+    resource: {
+      connect: {
+        name: 'Aplicaciones',
+      },
+    },
     icon: 'application',
     path: '/applications',
     controller: 'ApplicationsController',
   },
   {
     name: 'Proveedores',
-    resourceId: '',
-    resourceName: 'Proveedores',
+    resource: {
+      connect: {
+        name: 'Proveedores',
+      },
+    },
     icon: 'truck',
     path: '/providers',
     controller: 'ProvidersController',

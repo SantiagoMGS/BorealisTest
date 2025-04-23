@@ -1,14 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsEnum,
   IsNotEmpty,
   IsString,
   MaxLength,
   MinLength,
   IsOptional,
   IsBoolean,
+  IsUUID,
 } from 'class-validator';
-import { DocumentType } from '@prisma/client';
 
 export class UpdateSupplierDto {
   @ApiProperty({
@@ -23,14 +22,15 @@ export class UpdateSupplierDto {
   name?: string;
 
   @ApiProperty({
-    description: 'Tipo de documento del proveedor',
-    enum: DocumentType,
-    example: DocumentType.NIT,
+    description: 'ID del tipo de documento',
+    example: '123e4567-e89b-12d3-a456-426614174000',
     required: false,
   })
   @IsOptional()
-  @IsEnum(DocumentType, { message: 'Tipo de documento no válido' })
-  documentType?: DocumentType;
+  @IsUUID('4', {
+    message: 'El ID del tipo de documento debe ser un UUID válido',
+  })
+  documentTypeId?: string;
 
   @ApiProperty({
     description: 'Número de documento del proveedor',

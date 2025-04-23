@@ -248,18 +248,22 @@ model CompanyApplication {
   @@map("company_applications")
 }
 
-enum DocumentType {
-  NIT
-  NIT_EXT
-  PAS
-  CC
-  CE
+model DocumentType {
+  id       String  @id @default(uuid()) @db.Uuid
+  name     String  @unique
+  code     String  @unique
+  isActive Boolean @default(true)
+
+  suppliers Supplier[]
+
+  @@index([code])
+  @@map("document_types")
 }
 
 model Supplier {
   id             String            @id @default(uuid()) @db.Uuid
   name           String
-  documentType   DocumentType
+  documentTypeId String            @db.Uuid
   documentNumber String
   isActive       Boolean           @default(true)
   createdAt      DateTime          @default(now())
@@ -269,10 +273,12 @@ model Supplier {
   companies      CompanySupplier[]
   receptions     Reception[]
 
-  @@index([documentNumber])
-  @@index([name])
+  documentType DocumentType @relation(fields: [documentTypeId], references: [id], onDelete: Cascade)
+
   @@unique([documentNumber])
   @@unique([documentNumber, name])
+  @@index([documentNumber])
+  @@index([name])
   @@map("suppliers")
 }
 

@@ -62,7 +62,7 @@ export const seedSuppliers = async (prisma: PrismaClient) => {
     successfulSuppliers.forEach((result) => {
       if (result.supplier) {
         logger.log(
-          `Proveedor creado: ${result.supplier.name} (${result.supplier.documentType}: ${result.supplier.documentNumber})`,
+          `Proveedor creado: ${result.supplier.name} - Documento: ${result.supplier.documentNumber})`,
         );
       }
     });

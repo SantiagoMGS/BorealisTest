@@ -10,3 +10,4 @@ export { seedRoles } from './seed-roles';
 export { seedRolePermissions } from './seed-role-permissions';
 export { seedUserCompanies } from './seed-user-companies';
 export { seedSuppliers } from './seed-suppliers';
+export { seedDocumentTypes } from './seed-document-types';

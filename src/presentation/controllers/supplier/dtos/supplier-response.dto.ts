@@ -1,5 +1,24 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { DocumentType } from '@prisma/client';
+
+export class DocumentTypeDto {
+  @ApiProperty({
+    description: 'ID único del tipo de documento',
+    example: '029d5411-4b62-48bd-bc0b-0e995c174a95',
+  })
+  id!: string;
+
+  @ApiProperty({
+    description: 'Nombre del tipo de documento',
+    example: 'Número de Identificación Tributaria',
+  })
+  name!: string;
+
+  @ApiProperty({
+    description: 'Código del tipo de documento',
+    example: 'NIT',
+  })
+  code!: string;
+}
 
 export class SupplierResponseDto {
   @ApiProperty({
@@ -15,11 +34,16 @@ export class SupplierResponseDto {
   name!: string;
 
   @ApiProperty({
-    description: 'Tipo de documento del proveedor',
-    enum: DocumentType,
-    example: 'NIT',
+    description: 'ID del tipo de documento',
+    example: '029d5411-4b62-48bd-bc0b-0e995c174a95',
   })
-  documentType!: DocumentType;
+  documentTypeId!: string;
+
+  @ApiProperty({
+    description: 'Tipo de documento del proveedor',
+    type: DocumentTypeDto,
+  })
+  documentType?: DocumentTypeDto;
 
   @ApiProperty({
     description: 'Número de documento del proveedor',
