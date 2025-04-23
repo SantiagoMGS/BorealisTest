@@ -4,7 +4,6 @@ export { seedApplications } from './seed-application';
 export { seedResources } from './seed-resources';
 export { seedSubresources } from './seed-subresources';
 export { seedActions } from './seed-actions';
-export { seedApplicationResources } from './seed-application-resources';
 export { seedCompanyApplications } from './seed-company-applications';
 export { seedRoles } from './seed-roles';
 export { seedRolePermissions } from './seed-role-permissions';

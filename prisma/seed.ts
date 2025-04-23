@@ -7,7 +7,6 @@ import {
   seedResources,
   seedSubresources,
   seedActions,
-  seedApplicationResources,
   seedCompanyApplications,
   seedRoles,
   seedRolePermissions,
@@ -34,9 +33,8 @@ async function main() {
     await seedRoles(prisma); // Roles
     await seedUserCompanies(prisma); // Relaciones entre usuarios, compañías y roles
     await seedActions(prisma); // Acciones para permisos
-    await seedResources(prisma); // Después los recursos
+    await seedResources(prisma); // Después los recursos, ahora ya asociados directamente a sus aplicaciones
     await seedSubresources(prisma); // Subrecursos que dependen de recursos
-    await seedApplicationResources(prisma); // Finalmente recursos de aplicaciones
     await seedRolePermissions(prisma); // Permisos de roles (debe ejecutarse al final)
 
     // Semillas para configurar laboratorio

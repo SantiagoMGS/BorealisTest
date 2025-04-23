@@ -72,18 +72,20 @@ model Role {
 }
 
 model Resource {
-  id           String                @id @default(uuid()) @db.Uuid
-  name         String                @unique
+  id           String       @id @default(uuid()) @db.Uuid
+  name         String       @unique
   icon         String
-  path         String                @unique
-  createdAt    DateTime              @default(now())
-  updatedAt    DateTime              @updatedAt
-  createdBy    String?               @db.Uuid
-  updatedBy    String?               @db.Uuid
-  applications ApplicationResource[]
+  path         String       @unique
+  applicationId String      @db.Uuid
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  createdBy    String?      @db.Uuid
+  updatedBy    String?      @db.Uuid
+  application  Application  @relation(fields: [applicationId], references: [id], onDelete: Cascade)
   subresources Subresource[]
 
   @@index([name])
+  @@index([applicationId])
   @@map("resources")
 }
 
@@ -205,29 +207,11 @@ model Application {
   updatedAt   DateTime              @updatedAt
   createdBy   String?               @db.Uuid
   updatedBy   String?               @db.Uuid
-  resources   ApplicationResource[]
+  resources   Resource[]
   companies   CompanyApplication[]
 
   @@index([name])
   @@map("applications")
-}
-
-model ApplicationResource {
-  applicationId String      @db.Uuid
-  resourceId    String      @db.Uuid
-  isActive      Boolean     @default(true)
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  createdBy     String?     @db.Uuid
-  updatedBy     String?     @db.Uuid
-  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
-  resource      Resource    @relation(fields: [resourceId], references: [id], onDelete: Cascade)
-
-  @@id([applicationId, resourceId])
-  @@unique([applicationId, resourceId])
-  @@index([applicationId])
-  @@index([resourceId])
-  @@map("application_resources")
 }
 
 model CompanyApplication {

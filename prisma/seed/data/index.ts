@@ -1,5 +1,4 @@
 export { actionInitialData } from './actions.data';
-export { applicationResourceInitialData } from './application-resource.data';
 export { applicationInitialData } from './applications.data';
 export { companyInitialData } from './companies.data';
 export { companyApplicationInitialData } from './company-application.data';

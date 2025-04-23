@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { resourceInitialData } from './data/';
 import { Logger } from '@nestjs/common';
 
@@ -20,19 +20,19 @@ export const seedResources = async (prisma: PrismaClient) => {
     // Crear recursos desde los datos iniciales
     const results = await Promise.all(
       resourceInitialData.map(async (resourceData) => {
-        // Extraer el campo applicationName que no forma parte del modelo Resource
-        const { applicationName, ...resourceCreateData } = resourceData;
-
         try {
-          // Crear el recurso
+          // Crear el recurso utilizando Prisma con el formato ya estructurado
           const resource = await prisma.resource.create({
-            data: resourceCreateData,
+            data: resourceData,
+            include: {
+              application: true, // Incluimos application para verificar que se conectó correctamente
+            },
           });
 
           return {
             success: true,
             resource,
-            applicationName,
+            applicationName: resource.application.name,
           };
         } catch (error: any) {
           logger.error(
@@ -42,7 +42,8 @@ export const seedResources = async (prisma: PrismaClient) => {
             success: false,
             error,
             name: resourceData.name,
-            applicationName,
+            applicationName:
+              resourceData.application.connect?.name || 'Desconocida',
           };
         }
       }),
