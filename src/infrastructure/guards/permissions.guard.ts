@@ -38,6 +38,8 @@ export class PermissionsGuard implements CanActivate {
       id: string;
       companyId?: string;
       roleId?: string;
+      name?: string;
+      email?: string;
     };
 
     if (!user) {

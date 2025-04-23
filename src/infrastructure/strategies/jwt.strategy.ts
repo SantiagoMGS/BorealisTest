@@ -33,6 +33,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const { hashedPassword, ...safeUser } = user;
     return {
       ...safeUser,
+      companyId: payload.companyId,
+      roleId: payload.roleId,
     };
   }
 }
