@@ -22,7 +22,7 @@ import { PermissionsGuard } from '@infrastructure/guards/permissions.guard';
 import { CustomResponse } from '@core/decorators/custom-response.decorator';
 import { ErrorResponseDto } from '@shared/models/error-response.dto';
 import { AssignSuppliersUseCase } from '@domain/use-cases/company-supplier/assign-suppliers.use-case';
-import { AssignSuppliersDto } from '@domain/dtos/company-supplier/assign-suppliers.dto';
+import { AssignSuppliersDto } from './dtos';
 
 @ApiTags('Proveedores de la Empresa')
 @ApiBearerAuth()

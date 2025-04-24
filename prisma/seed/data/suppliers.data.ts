@@ -8,7 +8,8 @@ export const supplierInitialData: Prisma.SupplierCreateInput[] = [
         code: 'NIT',
       },
     },
-    documentNumber: '900123456-7',
+    verificationDigit: '7',
+    documentNumber: '900123456',
   },
   {
     name: 'Carlos Pérez - Minero Independiente',
@@ -17,6 +18,8 @@ export const supplierInitialData: Prisma.SupplierCreateInput[] = [
         code: 'CC',
       },
     },
+    verificationDigit: '',
+
     documentNumber: '79856234',
   },
   {
@@ -26,7 +29,9 @@ export const supplierInitialData: Prisma.SupplierCreateInput[] = [
         code: 'NIT',
       },
     },
-    documentNumber: '812345678-9',
+    verificationDigit: '9',
+
+    documentNumber: '812345678',
   },
   {
     name: 'Extracción Minerales del Cauca',
@@ -35,7 +40,8 @@ export const supplierInitialData: Prisma.SupplierCreateInput[] = [
         code: 'NIT',
       },
     },
-    documentNumber: '860234567-1',
+    documentNumber: '860234567',
+    verificationDigit: '1',
   },
   {
     name: 'Sofia Rodriguez - Joyería',
@@ -45,5 +51,6 @@ export const supplierInitialData: Prisma.SupplierCreateInput[] = [
       },
     },
     documentNumber: '52436789',
+    verificationDigit: '',
   },
 ];

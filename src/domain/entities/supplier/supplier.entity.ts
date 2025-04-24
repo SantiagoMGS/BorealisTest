@@ -4,6 +4,7 @@ export interface ISupplierEntity {
   id?: string;
   name: string;
   documentTypeId: string;
+  verificationDigit: string;
   documentNumber: string;
   isActive?: boolean;
   createdAt?: Date;

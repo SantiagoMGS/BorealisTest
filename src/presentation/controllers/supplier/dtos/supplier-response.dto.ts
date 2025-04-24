@@ -52,6 +52,12 @@ export class SupplierResponseDto {
   documentNumber!: string;
 
   @ApiProperty({
+    description: 'Dígito de verificación del documento',
+    example: '1',
+  })
+  verificationDigit!: string;
+
+  @ApiProperty({
     description: 'Estado del proveedor',
     example: true,
   })

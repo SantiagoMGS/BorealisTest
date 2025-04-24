@@ -16,6 +16,7 @@ export class CompanySupplierMapper {
         id: supplier.id,
         name: supplier.name,
         documentNumber: supplier.documentNumber,
+        verificationDigit: supplier.verificationDigit,
       },
     };
   }

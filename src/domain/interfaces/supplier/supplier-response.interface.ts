@@ -10,5 +10,6 @@ export interface ISupplierResponse {
     code: string;
   };
   documentNumber: string;
+  verificationDigit: string;
   isActive?: boolean;
 }

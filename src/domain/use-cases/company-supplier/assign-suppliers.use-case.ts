@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { AssignSuppliersDto } from '@domain/dtos/company-supplier/assign-suppliers.dto';
 import { CompanySupplierRepositoryImpl } from '@infrastructure/repositories/company-supplier/company-supplier.repository';
+import { AssignSuppliersDto } from '@presentation/controllers/company-supplier/dtos';
 
 @Injectable()
 export class AssignSuppliersUseCase {

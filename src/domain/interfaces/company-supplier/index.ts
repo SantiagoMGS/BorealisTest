@@ -8,5 +8,6 @@ export interface ICompanySupplierResponse {
     id: string;
     name: string;
     documentNumber: string;
+    verificationDigit: string;
   };
 }

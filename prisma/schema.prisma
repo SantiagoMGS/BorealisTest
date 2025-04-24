@@ -245,17 +245,18 @@ model DocumentType {
 }
 
 model Supplier {
-  id             String            @id @default(uuid()) @db.Uuid
-  name           String
-  documentTypeId String            @db.Uuid
-  documentNumber String
-  isActive       Boolean           @default(true)
-  createdAt      DateTime          @default(now())
-  updatedAt      DateTime          @updatedAt
-  createdBy      String?           @db.Uuid
-  updatedBy      String?           @db.Uuid
-  companies      CompanySupplier[]
-  receptions     Reception[]
+  id                String            @id @default(uuid()) @db.Uuid
+  name              String
+  documentTypeId    String            @db.Uuid
+  documentNumber    String
+  verificationDigit String
+  isActive          Boolean           @default(true)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  createdBy         String?           @db.Uuid
+  updatedBy         String?           @db.Uuid
+  companies         CompanySupplier[]
+  receptions        Reception[]
 
   documentType DocumentType @relation(fields: [documentTypeId], references: [id], onDelete: Cascade)
 
@@ -289,9 +290,9 @@ model ReceptionType {
   name        String  @unique
   description String?
   isActive    Boolean @default(true)
-  
+
   receptions Reception[]
-  
+
   @@map("reception_types")
 }
 
@@ -301,9 +302,9 @@ model ReceptionOrigin {
   name        String  @unique
   description String?
   isActive    Boolean @default(true)
-  
+
   receptions Reception[]
-  
+
   @@map("reception_origins")
 }
 
@@ -323,10 +324,10 @@ model Reception {
   createdBy         String?  @db.Uuid
   updatedBy         String?  @db.Uuid
 
-  company         Company          @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  supplier        Supplier         @relation(fields: [supplierId], references: [id], onDelete: Cascade)
-  receptionType   ReceptionType    @relation(fields: [receptionTypeId], references: [id])
-  receptionOrigin ReceptionOrigin  @relation(fields: [receptionOriginId], references: [id])
+  company         Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  supplier        Supplier        @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  receptionType   ReceptionType   @relation(fields: [receptionTypeId], references: [id])
+  receptionOrigin ReceptionOrigin @relation(fields: [receptionOriginId], references: [id])
   receptionUnits  ReceptionUnit[]
 
   @@index([companyId])

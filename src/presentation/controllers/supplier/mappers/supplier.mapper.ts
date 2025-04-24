@@ -11,6 +11,7 @@ export class SupplierMapper {
       name: createDto.name,
       documentTypeId: createDto.documentTypeId,
       documentNumber: createDto.documentNumber,
+      verificationDigit: createDto.verificationDigit,
     };
   }
 
@@ -22,6 +23,7 @@ export class SupplierMapper {
     responseDto.id = supplier.id;
     responseDto.name = supplier.name;
     responseDto.documentTypeId = supplier.documentTypeId;
+    responseDto.verificationDigit = supplier.verificationDigit;
 
     // Agregar información del documentType si está disponible
     if (supplier.documentType) {
