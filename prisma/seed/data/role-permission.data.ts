@@ -8,9 +8,17 @@ export const rolePermissionInitialData: {
   }>;
 }[] = [
   {
+    roleName: 'SUPER_ADMIN',
+    permissions: [
+      // Permisos completos en todas las compañías, todos los subrecursos y todas las acciones
+      // Se completa automáticamente en el seed
+    ],
+  },
+  {
     roleName: 'ADMIN',
     permissions: [
-      // Nivel máximo de permisos (DELETE incluye CREATE, READ, UPDATE) para todas las subrecursos
+      // Permisos DELETE (incluye CREATE, READ, UPDATE) para todos los subrecursos de su compañía
+      // Se completa automáticamente en el seed con acción DELETE para todos los subrecursos
     ],
   },
   {

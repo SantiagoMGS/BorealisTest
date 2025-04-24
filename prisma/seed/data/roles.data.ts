@@ -2,8 +2,13 @@ import { Prisma } from '@prisma/client';
 
 export const roleInitialData: Prisma.RoleCreateInput[] = [
   {
+    name: 'SUPER_ADMIN',
+    description:
+      'Super administrador con acceso total a todas las compañías del sistema',
+  },
+  {
     name: 'ADMIN',
-    description: 'Administrador con acceso completo al sistema',
+    description: 'Administrador con acceso completo a una compañía específica',
   },
   {
     name: 'JEFE LABORATORIO',
