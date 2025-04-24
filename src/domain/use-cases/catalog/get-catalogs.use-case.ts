@@ -9,9 +9,6 @@ import {
 } from '@domain/entities/catalog/catalog.entity';
 import { ICatalogReadRepository } from '@domain/repositories/catalog';
 
-/**
- * Caso de uso para obtener catálogos del sistema
- */
 @Injectable()
 export class GetCatalogsUseCase {
   constructor(

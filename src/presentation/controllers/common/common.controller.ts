@@ -44,23 +44,15 @@ export class CommonController {
   @CustomResponse({
     successMessage: 'Catálogo obtenido correctamente',
   })
-  async getCatalogs(
-    @Param('type') type: CatalogTypeEnum,
-  ): Promise<{ data: any[] }> {
-    // Validamos que el tipo de catálogo sea válido
+  async getCatalogs(@Param('type') type: CatalogTypeEnum) {
     if (!Object.values(CatalogTypeEnum).includes(type)) {
       throw new BadRequestException(`Tipo de catálogo '${type}' no válido`);
     }
 
-    // Obtenemos los elementos del catálogo usando el caso de uso
     const items = await this.getCatalogsUseCase.execute(type);
 
-    // Obtenemos el mapper adecuado para este tipo de catálogo
     const mapper = CatalogMapper.getMapper(type);
 
-    // Aplicamos el mapper a cada elemento
-    const data = items.map((item) => mapper(item));
-
-    return { data };
+    return items.map((item) => mapper(item));
   }
 }

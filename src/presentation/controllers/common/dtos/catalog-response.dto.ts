@@ -59,7 +59,18 @@ export class AnalysisTypeDto {
 }
 
 export class CatalogResponseDto {
-  @ApiProperty({ type: [Object] })
+  @ApiProperty({
+    type: 'array',
+    items: {
+      oneOf: [
+        { $ref: '#/components/schemas/DocumentTypeDto' },
+        { $ref: '#/components/schemas/SupplierDto' },
+        { $ref: '#/components/schemas/ReceptionTypeDto' },
+        { $ref: '#/components/schemas/ReceptionOriginDto' },
+        { $ref: '#/components/schemas/AnalysisTypeDto' },
+      ],
+    },
+  })
   data!:
     | DocumentTypeDto[]
     | SupplierDto[]

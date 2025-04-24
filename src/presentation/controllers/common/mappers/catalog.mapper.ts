@@ -14,9 +14,6 @@ import {
   CatalogTypeEnum,
 } from '@domain/entities/catalog/catalog.entity';
 
-/**
- * Mapper para convertir entidades de catálogo a DTOs
- */
 export class CatalogMapper {
   /**
    * Factory que devuelve el mapper adecuado según el tipo de catálogo
@@ -33,9 +30,6 @@ export class CatalogMapper {
     return mappers[type] || ((item: any) => item);
   }
 
-  /**
-   * Convierte una entidad de tipo documento a DTO
-   */
   static documentTypeToDto(entity: DocumentTypeEntity): DocumentTypeDto {
     return {
       id: entity.id,
@@ -44,9 +38,6 @@ export class CatalogMapper {
     };
   }
 
-  /**
-   * Convierte una entidad de proveedor a DTO
-   */
   static supplierToDto(entity: SupplierEntity): SupplierDto {
     return {
       id: entity.id,
@@ -56,9 +47,6 @@ export class CatalogMapper {
     };
   }
 
-  /**
-   * Convierte una entidad de tipo de recepción a DTO
-   */
   static receptionTypeToDto(entity: ReceptionTypeEntity): ReceptionTypeDto {
     return {
       id: entity.id,
@@ -67,9 +55,6 @@ export class CatalogMapper {
     };
   }
 
-  /**
-   * Convierte una entidad de origen de recepción a DTO
-   */
   static receptionOriginToDto(
     entity: ReceptionOriginEntity,
   ): ReceptionOriginDto {
@@ -80,9 +65,6 @@ export class CatalogMapper {
     };
   }
 
-  /**
-   * Convierte una entidad de tipo de análisis a DTO
-   */
   static analysisTypeToDto(entity: AnalysisTypeEntity): AnalysisTypeDto {
     return {
       id: entity.id,

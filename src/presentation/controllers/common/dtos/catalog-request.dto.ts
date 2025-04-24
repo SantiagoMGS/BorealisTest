@@ -2,7 +2,6 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
 import { CatalogTypeEnum } from '@domain/entities/catalog/catalog.entity';
 
-// Reexportamos el enum para usar en la capa de presentación
 export { CatalogTypeEnum as CatalogType };
 
 export class CatalogParamDto {
