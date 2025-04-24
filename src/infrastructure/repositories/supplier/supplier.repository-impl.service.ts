@@ -47,4 +47,9 @@ export class SupplierRepositoryImpl implements SupplierRepository {
     );
     return SupplierMapper.toResponseDto(deletedSupplier);
   }
+
+  async findById(id: string): Promise<ISupplierResponse> {
+    const supplier = await this.supplierDataSource.findById(id);
+    return SupplierMapper.toResponseDto(supplier);
+  }
 }

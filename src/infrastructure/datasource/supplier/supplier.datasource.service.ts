@@ -163,4 +163,19 @@ export class SupplierDataSourceService {
       },
     });
   }
+
+  async findById(id: string): Promise<ISupplierResponse> {
+    const supplier = await this.prisma.supplier.findUnique({
+      where: { id },
+      include: {
+        documentType: true,
+      },
+    });
+
+    if (!supplier) {
+      throw new NotFoundException('Proveedor no encontrado');
+    }
+
+    return supplier;
+  }
 }

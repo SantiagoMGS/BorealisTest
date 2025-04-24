@@ -7,6 +7,7 @@ import { PrismaModule } from '@core/prisma/prisma.module';
 import { UserModule } from './presentation/controllers/user/user.module';
 import { SupplierModule } from './presentation/controllers/supplier/supplier.module';
 import { PermissionsModule } from '@core/permissions/permissions.module';
+import { CompanySupplierModule } from './presentation/controllers/company-supplier/company-supplier.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { PermissionsModule } from '@core/permissions/permissions.module';
     UserModule,
     SupplierModule,
     PermissionsModule,
+    CompanySupplierModule,
   ],
   providers: [JwtStrategy],
 })
