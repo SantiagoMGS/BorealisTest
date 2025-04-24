@@ -9,26 +9,38 @@ const hashPassword = (password: string): string => {
 
 export const userInitialData: Prisma.UserCreateInput[] = [
   {
-    name: 'Administrador',
-    email: 'admin@borealis.com',
+    name: 'Super Administrador',
+    email: 'superadmin@borealis.com',
     hashedPassword: hashPassword('Borealis2025'),
     isActive: true,
   },
   {
-    name: 'Técnico Demo',
-    email: 'tecnico@borealis.com',
+    name: 'Admin Quintana',
+    email: 'admin@quintana.com',
+    hashedPassword: hashPassword('Borealis2025'),
+    isActive: true,
+  },
+  {
+    name: 'Admin Mona Minas',
+    email: 'admin@monaminas.com',
+    hashedPassword: hashPassword('Borealis2025'),
+    isActive: true,
+  },
+  {
+    name: 'Admin Colombian Mint',
+    email: 'admin@colombianmint.com',
     hashedPassword: hashPassword('Borealis2025'),
     isActive: true,
   },
   {
     name: 'Auxiliar Demo',
-    email: 'auxiliar@borealis.com',
+    email: 'auxiliar@quintana.com',
     hashedPassword: hashPassword('Borealis2025'),
     isActive: true,
   },
   {
     name: 'Jefe Laboratorio Demo',
-    email: 'jefelaboratorio@borealis.com',
+    email: 'jefelaboratorio@quintana.com',
     hashedPassword: hashPassword('Borealis2025'),
     isActive: true,
   },

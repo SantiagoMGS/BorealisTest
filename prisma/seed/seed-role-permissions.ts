@@ -42,33 +42,55 @@ export const seedRolePermissions = async (prisma: PrismaClient) => {
       }
     });
 
-    // Para el rol ADMIN, otorgar todos los permisos a todos los subrecursos
-    const adminRoleId = rolesMap.get('ADMIN');
-    const deleteActionId = actionsMap.get('DELETE');
-
-    if (adminRoleId && deleteActionId) {
-      logger.log('Asignando permisos completos al rol ADMIN...');
+    // Función para asignar permisos DELETE a un rol en todos los subrecursos
+    const assignFullPermissions = async (
+      roleName: string,
+      roleId: string,
+      actionId: string,
+    ) => {
+      logger.log(`Asignando permisos completos al rol ${roleName}...`);
 
       for (const subresource of subresources) {
         try {
           await prisma.rolePermission.create({
             data: {
-              roleId: adminRoleId,
-              actionId: deleteActionId,
+              roleId: roleId,
+              actionId: actionId,
               subresourceId: subresource.id,
             },
           });
         } catch (error: any) {
           logger.error(
-            `Error al crear permiso para ADMIN en subrecurso ${subresource.name}: ${error.message}`,
+            `Error al crear permiso para ${roleName} en subrecurso ${subresource.name}: ${error.message}`,
           );
         }
       }
+    };
+
+    // Para los roles con permisos completos
+    const adminRoleId = rolesMap.get('ADMIN');
+    const superAdminRoleId = rolesMap.get('SUPER_ADMIN');
+    const deleteActionId = actionsMap.get('DELETE');
+
+    if (deleteActionId) {
+      // Asignar permisos completos a ADMIN
+      if (adminRoleId) {
+        await assignFullPermissions('ADMIN', adminRoleId, deleteActionId);
+      }
+
+      // Asignar permisos completos a SUPER_ADMIN
+      if (superAdminRoleId) {
+        await assignFullPermissions(
+          'SUPER_ADMIN',
+          superAdminRoleId,
+          deleteActionId,
+        );
+      }
     }
 
-    // Procesar cada rol y sus permisos (excepto ADMIN que ya se procesó)
+    // Procesar cada rol y sus permisos (excepto ADMIN y SUPER_ADMIN que ya se procesaron)
     for (const roleData of rolePermissionInitialData.filter(
-      (r) => r.roleName !== 'ADMIN',
+      (r) => r.roleName !== 'ADMIN' && r.roleName !== 'SUPER_ADMIN',
     )) {
       const roleId = rolesMap.get(roleData.roleName);
 
