@@ -1,5 +1,6 @@
 import { AuthModule } from '@presentation/controllers/auth/auth.module';
-import { CommonModule } from '@shared/common.module';
+import { CommonModule as SharedCommonModule } from '@shared/common.module';
+import { CommonModule } from '@presentation/controllers/common/common.module';
 import { CoreModule } from '@core/core.module';
 import { JwtStrategy } from '@infrastructure/strategies/jwt.strategy';
 import { Module } from '@nestjs/common';
@@ -13,6 +14,7 @@ import { CompanySupplierModule } from './presentation/controllers/company-suppli
   imports: [
     PrismaModule,
     AuthModule,
+    SharedCommonModule,
     CommonModule,
     CoreModule,
     UserModule,
