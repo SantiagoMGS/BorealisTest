@@ -9,6 +9,7 @@ import { UserModule } from './presentation/controllers/user/user.module';
 import { SupplierModule } from './presentation/controllers/supplier/supplier.module';
 import { PermissionsModule } from '@core/permissions/permissions.module';
 import { CompanySupplierModule } from './presentation/controllers/company-supplier/company-supplier.module';
+import { TenantModule } from '@core/config/tenant.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { CompanySupplierModule } from './presentation/controllers/company-suppli
     SharedCommonModule,
     CommonModule,
     CoreModule,
+    TenantModule,
     UserModule,
     SupplierModule,
     PermissionsModule,

@@ -9,4 +9,7 @@ export interface IAuthUser {
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
+  // Propiedades para multitenancy
+  companyId?: string;
+  roleId?: string;
 }
