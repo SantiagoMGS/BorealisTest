@@ -24,6 +24,10 @@ export class CreateSupplierDto {
   })
   @IsNotEmpty({ message: 'El nombre corto del proveedor es requerido' })
   @IsString({ message: 'El nombre corto debe ser una cadena de texto' })
+  @MinLength(3, { message: 'El nombre corto debe tener al menos 3 caracteres' })
+  @MaxLength(10, {
+    message: 'El nombre corto no puede exceder los 10 caracteres',
+  })
   shortName!: string;
 
   @ApiProperty({
