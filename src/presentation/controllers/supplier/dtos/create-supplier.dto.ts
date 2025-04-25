@@ -19,6 +19,14 @@ export class CreateSupplierDto {
   name!: string;
 
   @ApiProperty({
+    description: 'Nombre corto del proveedor',
+    example: 'MSR',
+  })
+  @IsNotEmpty({ message: 'El nombre corto del proveedor es requerido' })
+  @IsString({ message: 'El nombre corto debe ser una cadena de texto' })
+  shortName!: string;
+
+  @ApiProperty({
     description: 'ID del tipo de documento',
     example: '123e4567-e89b-12d3-a456-426614174000',
   })

@@ -9,6 +9,7 @@ export class SupplierMapper {
   static toEntity(createDto: CreateSupplierDto): ISupplierEntity {
     return {
       name: createDto.name,
+      shortName: createDto.shortName,
       documentTypeId: createDto.documentTypeId,
       documentNumber: createDto.documentNumber,
       verificationDigit: createDto.verificationDigit,
