@@ -305,8 +305,9 @@ model ReceptionOrigin {
   description String?
   isActive    Boolean @default(true)
 
-  receptions Reception[]
-  validTypes ReceptionTypeOrigin[]
+  receptions    Reception[]
+  validTypes    ReceptionTypeOrigin[]
+  ReceptionUnit ReceptionUnit[]
 
   @@map("reception_origins")
 }
@@ -360,16 +361,20 @@ model Reception {
 
 // Modelo para detalle de recepción (cada dore y cada muestra)
 model ReceptionUnit {
-  id             String  @id @default(uuid()) @db.Uuid
-  receptionId    String  @db.Uuid
-  recievedWeight Decimal
-  dryWeight      Decimal
+  id                String  @id @default(uuid()) @db.Uuid
+  receptionId       String  @db.Uuid
+  receptionOriginId String  @db.Uuid
+  recievedWeight    Decimal
+  dryWeight         Decimal
 
-  reception  Reception   @relation(fields: [receptionId], references: [id], onDelete: Cascade)
+  reception       Reception       @relation(fields: [receptionId], references: [id], onDelete: Cascade)
+  receptionOrigin ReceptionOrigin @relation(fields: [receptionOriginId], references: [id])
+
   subSamples SubSample[]
   barrenado  Barrenado[]
 
   @@index([receptionId])
+  @@index([receptionOriginId])
   @@map("reception_units")
 }
 

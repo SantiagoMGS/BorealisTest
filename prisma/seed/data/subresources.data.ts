@@ -22,7 +22,7 @@ export const subresourceInitialData: Prisma.SubresourceCreateInput[] = [
     },
     icon: 'flask-sample',
     path: '/recepcion-muestras',
-    controller: 'RecepcionMuestrasController',
+    controller: 'SampleReceptionController',
   },
   {
     name: 'Gestión',

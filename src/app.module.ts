@@ -10,7 +10,7 @@ import { SupplierModule } from './presentation/controllers/supplier/supplier.mod
 import { PermissionsModule } from '@core/permissions/permissions.module';
 import { CompanySupplierModule } from './presentation/controllers/company-supplier/company-supplier.module';
 import { TenantModule } from '@core/config/tenant.module';
-
+import { ReceptionModule } from '@presentation/controllers/reception/reception.module';
 @Module({
   imports: [
     PrismaModule,
@@ -23,6 +23,7 @@ import { TenantModule } from '@core/config/tenant.module';
     SupplierModule,
     PermissionsModule,
     CompanySupplierModule,
+    ReceptionModule,
   ],
   providers: [JwtStrategy],
 })
