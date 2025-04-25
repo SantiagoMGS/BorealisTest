@@ -8,7 +8,7 @@ import {
   ReceptionOriginEntity,
   AnalysisTypeEntity,
 } from '@domain/entities/catalog/catalog.entity';
-import { CatalogDatasource } from '@infrastructure/datasources/catalog';
+import { CatalogDatasource } from '@infrastructure/datasource/catalog';
 
 @Injectable()
 export class CatalogRepositoryImpl implements ICatalogReadRepository {
