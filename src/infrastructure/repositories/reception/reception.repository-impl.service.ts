@@ -30,8 +30,11 @@ export class ReceptionRepositoryImpl implements ReceptionRepository {
     };
   }
 
-  async getReceptionById(id: string): Promise<IReceptionResponse> {
-    return this.receptionDataSource.getReceptionById(id);
+  async getReceptionById(
+    id: string,
+    companyId: string,
+  ): Promise<IReceptionResponse> {
+    return this.receptionDataSource.getReceptionById(id, companyId);
   }
 
   async updateReception(

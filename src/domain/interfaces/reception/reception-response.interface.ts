@@ -15,4 +15,5 @@ export interface IReceptionResponse {
   supplier?: any;
   receptionType?: any;
   receptionOrigin?: any;
+  receptionUnits?: any[];
 }

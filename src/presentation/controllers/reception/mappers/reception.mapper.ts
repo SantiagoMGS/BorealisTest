@@ -6,15 +6,22 @@ export class ReceptionMapper {
   /**
    * Convierte un DTO de creación a una entidad de dominio
    */
-  static toEntity(createDto: CreateReceptionDto): IReceptionEntity {
+  static toEntity(
+    createDto: CreateReceptionDto,
+    companyId: string,
+  ): IReceptionEntity {
     return {
-      companyId: createDto.companyId,
+      companyId,
       supplierId: createDto.supplierId,
       receptionTypeId: createDto.receptionTypeId,
-      receptionOriginId: createDto.receptionOriginId,
       receptionDate: createDto.receptionDate,
       batchNumber: createDto.batchNumber,
       observation: createDto.observation,
+      receptionUnits: createDto.items.map((item) => ({
+        receptionOriginId: item.receptionOriginId,
+        recievedWeight: item.recievedWeight,
+        dryWeight: item.dryWeight,
+      })),
     };
   }
 
@@ -46,6 +53,10 @@ export class ReceptionMapper {
 
     if (reception.receptionOrigin) {
       responseDto.receptionOrigin = reception.receptionOrigin;
+    }
+
+    if (reception.receptionUnits) {
+      responseDto.receptionUnits = reception.receptionUnits;
     }
 
     return responseDto;

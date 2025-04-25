@@ -6,7 +6,10 @@ export abstract class ReceptionRepository {
     reception: IReceptionEntity,
   ): Promise<IReceptionResponse>;
 
-  abstract getReceptionById(id: string): Promise<IReceptionResponse>;
+  abstract getReceptionById(
+    id: string,
+    companyId: string,
+  ): Promise<IReceptionResponse>;
 
   abstract getReceptions(
     companyId?: string,

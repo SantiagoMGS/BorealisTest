@@ -10,9 +10,32 @@ export class ReceptionDataSourceService {
   async createReception(
     reception: IReceptionEntity,
   ): Promise<IReceptionResponse> {
+    // Extraemos las unidades de recepción
+    const { receptionUnits, ...receptionData } = reception;
+
+    // Usamos el primer origen como origen principal de la recepción
+    // Esto es necesario porque el esquema de Prisma requiere un receptionOriginId
+    const receptionOriginId = receptionUnits[0].receptionOriginId;
+
+    // Creamos la recepción con sus unidades de recepción asociadas
     const createdReception = await this.prisma.reception.create({
       data: {
-        ...reception,
+        ...receptionData,
+        receptionOriginId,
+        receptionUnits: {
+          create: receptionUnits,
+        },
+      },
+      include: {
+        company: true,
+        supplier: true,
+        receptionType: true,
+        receptionOrigin: true,
+        receptionUnits: {
+          include: {
+            receptionOrigin: true,
+          },
+        },
       },
     });
 
@@ -41,24 +64,39 @@ export class ReceptionDataSourceService {
       where,
       orderBy: { createdAt: 'desc' },
       include: {
-        company: true,
-        supplier: true,
-        receptionType: true,
-        receptionOrigin: true,
+        company: {
+          select: {
+            id: true,
+            name: true,
+            shortName: true,
+          },
+        },
+        supplier: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        receptionType: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        receptionOrigin: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
         receptionUnits: {
           include: {
-            receptionOrigin: true,
-            subSamples: {
-              include: {
-                subSampleType: true,
-                analyses: {
-                  include: {
-                    analysisType: true,
-                  },
-                },
+            receptionOrigin: {
+              select: {
+                id: true,
+                name: true,
               },
             },
-            barrenado: true,
           },
         },
       },
@@ -71,20 +109,27 @@ export class ReceptionDataSourceService {
     }));
   }
 
-  async getReceptionById(id: string): Promise<IReceptionResponse> {
+  async getReceptionById(
+    id: string,
+    companyId: string,
+  ): Promise<IReceptionResponse> {
     console.log(id);
 
-    // Primero verificamos si la recepción existe sin aplicar filtros para detectar el caso específico
-    const receptionExists = await this.prisma.reception.findUnique({
-      where: { id },
+    // Primero verificamos si la recepción existe y pertenece a la compañía del usuario
+    const receptionExists = await this.prisma.reception.findFirst({
+      where: {
+        id,
+        companyId,
+        isActive: true,
+      },
       select: { id: true },
     });
 
     if (!receptionExists) {
-      throw new Error('Recepción no encontrada');
+      throw new Error('Recepción no encontrada o no tienes acceso a ella');
     }
 
-    // Si existe, obtenemos todos los datos
+    // Si existe y pertenece a la compañía, obtenemos todos los datos
     const reception = await this.prisma.reception.findUnique({
       where: { id },
       include: {
@@ -113,12 +158,21 @@ export class ReceptionDataSourceService {
             name: true,
           },
         },
+        receptionUnits: {
+          include: {
+            receptionOrigin: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
       },
     });
 
-    // Si no se encontró con los filtros aplicados, es porque la recepción no pertenece a la compañía del usuario
     if (!reception) {
-      throw new Error('No tienes acceso a esta recepción');
+      throw new Error('Recepción no encontrada');
     }
 
     return {
@@ -132,12 +186,69 @@ export class ReceptionDataSourceService {
     id: string,
     reception: Partial<IReceptionEntity>,
   ): Promise<IReceptionResponse> {
+    // Si hay unidades de recepción para actualizar, las manejamos por separado
+    const { receptionUnits, ...receptionData } = reception;
+
+    // Actualizamos solo los datos de la recepción principal
     const updatedReception = await this.prisma.reception.update({
       where: { id },
-      data: {
-        ...reception,
+      data: receptionData,
+      include: {
+        company: true,
+        supplier: true,
+        receptionType: true,
+        receptionOrigin: true,
+        receptionUnits: {
+          include: {
+            receptionOrigin: true,
+          },
+        },
       },
     });
+
+    // Si hay unidades nuevas, las procesamos
+    if (receptionUnits && receptionUnits.length > 0) {
+      // Primero eliminamos las unidades existentes
+      await this.prisma.receptionUnit.deleteMany({
+        where: { receptionId: id },
+      });
+
+      // Luego creamos las nuevas
+      for (const unit of receptionUnits) {
+        await this.prisma.receptionUnit.create({
+          data: {
+            ...unit,
+            receptionId: id,
+          },
+        });
+      }
+
+      // Obtenemos la recepción actualizada con las nuevas unidades
+      const refreshedReception = await this.prisma.reception.findUnique({
+        where: { id },
+        include: {
+          company: true,
+          supplier: true,
+          receptionType: true,
+          receptionOrigin: true,
+          receptionUnits: {
+            include: {
+              receptionOrigin: true,
+            },
+          },
+        },
+      });
+
+      if (!refreshedReception) {
+        throw new Error(`No se encontró la recepción con ID ${id}`);
+      }
+
+      return {
+        ...refreshedReception,
+        batchNumber: refreshedReception.batchNumber || undefined,
+        observation: refreshedReception.observation || undefined,
+      };
+    }
 
     return {
       ...updatedReception,

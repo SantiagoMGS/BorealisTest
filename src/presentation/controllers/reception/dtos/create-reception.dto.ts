@@ -1,22 +1,45 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
+  IsArray,
   IsDate,
+  IsDecimal,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
   IsUUID,
+  ValidateNested,
 } from 'class-validator';
 
-export class CreateReceptionDto {
+// DTO para las unidades de recepción (items)
+export class CreateReceptionUnitDto {
   @ApiProperty({
-    description: 'ID de la compañía',
+    description: 'ID del origen de recepción',
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @IsUUID()
   @IsNotEmpty()
-  companyId!: string;
+  receptionOriginId!: string;
 
+  @ApiProperty({
+    description: 'Peso recibido',
+    example: 1000.5,
+  })
+  @IsNumber()
+  @IsNotEmpty()
+  recievedWeight!: number;
+
+  @ApiProperty({
+    description: 'Peso seco',
+    example: 950.2,
+  })
+  @IsNumber()
+  @IsNotEmpty()
+  dryWeight!: number;
+}
+
+export class CreateReceptionDto {
   @ApiProperty({
     description: 'ID del proveedor',
     example: '123e4567-e89b-12d3-a456-426614174000',
@@ -32,14 +55,6 @@ export class CreateReceptionDto {
   @IsUUID()
   @IsNotEmpty()
   receptionTypeId!: string;
-
-  @ApiProperty({
-    description: 'ID del origen de recepción',
-    example: '123e4567-e89b-12d3-a456-426614174000',
-  })
-  @IsUUID()
-  @IsNotEmpty()
-  receptionOriginId!: string;
 
   @ApiProperty({
     description: 'Fecha de recepción',
@@ -67,4 +82,14 @@ export class CreateReceptionDto {
   @IsString()
   @IsOptional()
   observation?: string;
+
+  @ApiProperty({
+    description: 'Unidades de recepción',
+    type: [CreateReceptionUnitDto],
+  })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreateReceptionUnitDto)
+  @IsNotEmpty()
+  items!: CreateReceptionUnitDto[];
 }

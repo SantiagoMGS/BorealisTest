@@ -17,7 +17,7 @@ export class GetReceptionUseCase {
     return result.data;
   }
 
-  async execute(id: string): Promise<IReceptionResponse> {
-    return this.receptionRepository.getReceptionById(id);
+  async execute(id: string, companyId: string): Promise<IReceptionResponse> {
+    return this.receptionRepository.getReceptionById(id, companyId);
   }
 }

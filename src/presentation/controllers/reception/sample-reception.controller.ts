@@ -22,6 +22,8 @@ import { PermissionsGuard } from '@infrastructure/guards/permissions.guard';
 import { JwtAuthGuard } from '@infrastructure/guards/jwt-auth.guard';
 import { ResponseInterceptor } from '@core/interceptores/response.interceptor';
 import { RequirePermission } from '@core/decorators/require-permission.decorator';
+import { CurrentUser } from '@core/decorators/current-user.decorator';
+import { IAuthUser } from '@domain/entities/auth';
 
 @ApiTags('Recepciones')
 @ApiBearerAuth()
@@ -36,7 +38,7 @@ export class SampleReceptionController {
   ) {}
 
   @Post()
-  @ApiOperation({ summary: 'Crear una nueva recepción' })
+  @ApiOperation({ summary: 'Crear una nueva recepción con múltiples unidades' })
   @ApiResponse({
     status: 201,
     description: 'Recepción creada exitosamente',
@@ -44,28 +46,50 @@ export class SampleReceptionController {
   })
   async createReception(
     @Body() createReceptionDto: CreateReceptionDto,
+    @CurrentUser() user: IAuthUser,
   ): Promise<ReceptionResponseDto> {
-    const receptionEntity = ReceptionMapper.toEntity(createReceptionDto);
+    const receptionEntity = ReceptionMapper.toEntity(
+      createReceptionDto,
+      user.companyId!,
+    );
     const reception =
       await this.createReceptionUseCase.execute(receptionEntity);
     return ReceptionMapper.toResponseDto(reception);
   }
 
   @Get()
-  @ApiOperation({ summary: 'Obtener lista de recepciones' })
+  @ApiOperation({ summary: 'Obtener todas las recepciones' })
   @ApiResponse({
     status: 200,
     description: 'Lista de recepciones obtenida exitosamente',
     type: [ReceptionResponseDto],
   })
   async getReceptions(
-    @Query('companyId') companyId?: string,
+    @CurrentUser('companyId') companyId: string,
     @Query('supplierId') supplierId?: string,
   ): Promise<ReceptionResponseDto[]> {
+    // Obtener todas las recepciones - si se proporciona supplierId, filtra por ese proveedor
     const receptions = await this.getReceptionUseCase.executeGetAll(
       companyId,
       supplierId,
     );
+    return receptions.map((reception) =>
+      ReceptionMapper.toResponseDto(reception),
+    );
+  }
+
+  @Get('all')
+  @ApiOperation({ summary: 'Obtener todas las recepciones sin filtros' })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista completa de recepciones obtenida exitosamente',
+    type: [ReceptionResponseDto],
+  })
+  async getAllReceptions(
+    @CurrentUser('companyId') companyId: string,
+  ): Promise<ReceptionResponseDto[]> {
+    // Obtener todas las recepciones sin filtros adicionales
+    const receptions = await this.getReceptionUseCase.executeGetAll(companyId);
     return receptions.map((reception) =>
       ReceptionMapper.toResponseDto(reception),
     );
@@ -84,8 +108,9 @@ export class SampleReceptionController {
   })
   async getReceptionById(
     @Param('id') id: string,
+    @CurrentUser('companyId') companyId: string,
   ): Promise<ReceptionResponseDto> {
-    const reception = await this.getReceptionUseCase.execute(id);
+    const reception = await this.getReceptionUseCase.execute(id, companyId);
     return ReceptionMapper.toResponseDto(reception);
   }
 }
