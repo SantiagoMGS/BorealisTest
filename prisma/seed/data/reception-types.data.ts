@@ -2,14 +2,13 @@ import { Prisma } from '@prisma/client';
 
 export const receptionTypeInitialData: Prisma.ReceptionTypeCreateInput[] = [
   {
-    name: 'Doré',
-    description:
-      'Aleación de oro y plata con pequeñas cantidades de metales base',
+    name: 'Dore',
+    description: 'Recepción de Dore',
     isActive: true,
   },
   {
     name: 'Muestras',
-    description: 'Muestras de mineral para análisis',
+    description: 'Recepción de Muestras',
     isActive: true,
   },
   {

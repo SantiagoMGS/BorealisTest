@@ -1,41 +1,92 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, ReceptionOrigin } from '@prisma/client';
+import { receptionOriginInitialData } from './data/reception-origins.data';
 import { Logger } from '@nestjs/common';
-import { receptionOriginInitialData } from './data';
+
+type SuccessResult = {
+  success: true;
+  receptionOrigin: ReceptionOrigin;
+};
+
+type ErrorResult = {
+  success: false;
+  error: any;
+  name: string;
+};
+
+type Result = SuccessResult | ErrorResult;
 
 /**
  * Datos iniciales de orígenes de recepción
  * Ej. Cabeza, Cola, Secado, Aluvial, Joyería, Subsistencia, etc.
  */
-export async function seedReceptionOrigins(
-  prisma: PrismaClient,
-): Promise<void> {
+export const seedReceptionOrigins = async (prisma: PrismaClient) => {
   const logger = new Logger('SeedReceptionOrigins');
-
-  logger.log('Iniciando sembrado de orígenes de recepción...');
-
   try {
-    // Verificar si ya existen registros
-    const count = await prisma.receptionOrigin.count();
+    logger.log('Iniciando sembrado de orígenes de recepción...');
 
-    if (count > 0) {
+    // Verificar si ya existen orígenes de recepción para evitar duplicados
+    const receptionOriginCount = await prisma.receptionOrigin.count();
+
+    if (receptionOriginCount > 0) {
       logger.log(
-        `Ya existen ${count} orígenes de recepción, omitiendo sembrado.`,
+        `Ya existen ${receptionOriginCount} orígenes de recepción en la base de datos. Omitiendo sembrado.`,
       );
       return;
     }
 
-    // Crear registros
-    for (const receptionOrigin of receptionOriginInitialData) {
-      await prisma.receptionOrigin.create({
-        data: receptionOrigin,
+    // Crear orígenes de recepción desde los datos iniciales
+    const results = await Promise.all(
+      receptionOriginInitialData.map(async (receptionOriginData) => {
+        return prisma.receptionOrigin
+          .create({
+            data: receptionOriginData,
+          })
+          .then(
+            (receptionOrigin) =>
+              ({ success: true, receptionOrigin }) as SuccessResult,
+          )
+          .catch((error) => {
+            logger.error(
+              `Error al crear origen de recepción ${receptionOriginData.name}: ${error.message}`,
+            );
+            return {
+              success: false,
+              error,
+              name: receptionOriginData.name,
+            } as ErrorResult;
+          });
+      }),
+    );
+
+    // Contar resultados
+    const successfulOrigins = results.filter(
+      (r): r is SuccessResult => r.success,
+    );
+    const failedOrigins = results.filter((r): r is ErrorResult => !r.success);
+
+    logger.log(
+      `Se han creado ${successfulOrigins.length} orígenes de recepción con éxito.`,
+    );
+
+    if (failedOrigins.length > 0) {
+      logger.warn(
+        `No se pudieron crear ${failedOrigins.length} orígenes de recepción.`,
+      );
+      failedOrigins.forEach((result) => {
+        logger.warn(`- Falló al crear: ${result.name}`);
       });
     }
 
-    logger.log(
-      `✅ Sembrados ${receptionOriginInitialData.length} orígenes de recepción con éxito`,
-    );
+    // Mostrar los orígenes de recepción creados
+    successfulOrigins.forEach((result) => {
+      logger.log(
+        `Origen de recepción creado: ${result.receptionOrigin.name} - ${result.receptionOrigin.description}`,
+      );
+    });
   } catch (error: any) {
-    logger.error(`❌ Error al sembrar orígenes de recepción: ${error.message}`);
+    logger.error(
+      `Error general al sembrar orígenes de recepción: ${error.message}`,
+    );
     throw error;
   }
-}
+};

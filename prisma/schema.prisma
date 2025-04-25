@@ -291,7 +291,9 @@ model ReceptionType {
   description String?
   isActive    Boolean @default(true)
 
-  receptions Reception[]
+  receptions          Reception[]
+  validOrigins        ReceptionTypeOrigin[]
+  validSubSampleTypes ReceptionTypeSubSampleType[]
 
   @@map("reception_types")
 }
@@ -304,8 +306,27 @@ model ReceptionOrigin {
   isActive    Boolean @default(true)
 
   receptions Reception[]
+  validTypes ReceptionTypeOrigin[]
 
   @@map("reception_origins")
+}
+
+// Relación entre tipos de recepción y orígenes válidos
+model ReceptionTypeOrigin {
+  receptionTypeId   String   @db.Uuid
+  receptionOriginId String   @db.Uuid
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  createdBy         String?  @db.Uuid
+  updatedBy         String?  @db.Uuid
+
+  receptionType   ReceptionType   @relation(fields: [receptionTypeId], references: [id], onDelete: Cascade)
+  receptionOrigin ReceptionOrigin @relation(fields: [receptionOriginId], references: [id], onDelete: Cascade)
+
+  @@id([receptionTypeId, receptionOriginId])
+  @@index([receptionTypeId])
+  @@index([receptionOriginId])
+  @@map("reception_type_origins")
 }
 
 // Modelo para encabezado de recepción
@@ -352,19 +373,46 @@ model ReceptionUnit {
   @@map("reception_units")
 }
 
-// Tipos de submuestra: MPL, MPR, MPA, etc.
-enum SubSampleType {
-  MPL // Muestra para laboratorio 
-  MPR // Muestra para rayos re-analisis
-  MPA // Muestra para arbitraje
-  CUSTODIA // Muestra para custodia
-  BARRENADO // Muestra de barrenado
+// Relación entre tipos de recepción y tipos de submuestra válidos
+model ReceptionTypeSubSampleType {
+  receptionTypeId String   @db.Uuid
+  subSampleTypeId String   @db.Uuid
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  createdBy       String?  @db.Uuid
+  updatedBy       String?  @db.Uuid
+
+  receptionType ReceptionType @relation(fields: [receptionTypeId], references: [id], onDelete: Cascade)
+  subSampleType SubSampleType @relation(fields: [subSampleTypeId], references: [id], onDelete: Cascade)
+
+  @@id([receptionTypeId, subSampleTypeId])
+  @@index([receptionTypeId])
+  @@index([subSampleTypeId])
+  @@map("reception_type_sub_sample_types")
+}
+
+// Tipos de submuestra: MPL, MPR, MPA, Barrenado.
+model SubSampleType {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String   @unique
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdBy   String?  @db.Uuid
+  updatedBy   String?  @db.Uuid
+
+  subSamples SubSample[]
+  validTypes ReceptionTypeSubSampleType[]
+
+  @@index([name])
+  @@map("sub_sample_types")
 }
 
 model SubSample {
   id              String        @id @default(uuid()) @db.Uuid
   receptionUnitId String        @db.Uuid
-  subSampleType   SubSampleType
+  subSampleType   SubSampleType @relation(fields: [subSampleTypeId], references: [id])
   weight          Decimal
   isActive        Boolean       @default(true)
   createdAt       DateTime      @default(now())
@@ -372,8 +420,9 @@ model SubSample {
   createdBy       String?       @db.Uuid
   updatedBy       String?       @db.Uuid
 
-  receptionUnit ReceptionUnit @relation(fields: [receptionUnitId], references: [id], onDelete: Cascade)
-  analyses      Analysis[]
+  receptionUnit   ReceptionUnit @relation(fields: [receptionUnitId], references: [id], onDelete: Cascade)
+  analyses        Analysis[]
+  subSampleTypeId String        @db.Uuid
 
   @@index([receptionUnitId])
   @@map("sub_samples")
