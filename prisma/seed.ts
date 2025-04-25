@@ -17,6 +17,7 @@ import {
   seedReceptionOrigins,
   seedCompanySuppliers,
   seedReceptionTypeOrigins,
+  seedAnalysisTypes,
 } from './seed/index';
 
 // Inicializar cliente Prisma
@@ -48,6 +49,7 @@ async function main() {
     await seedReceptionTypes(prisma); // Tipos de recepción
     await seedReceptionOrigins(prisma); // Orígenes de recepción
     await seedReceptionTypeOrigins(prisma); // Relaciones entre tipos y orígenes de recepción
+    await seedAnalysisTypes(prisma); // Tipos de análisis
 
     logger.log('✅ ¡Proceso de sembrado completado con éxito!');
   } catch (error: any) {

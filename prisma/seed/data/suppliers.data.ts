@@ -3,6 +3,7 @@ import { Prisma } from '@prisma/client';
 export const supplierInitialData: Prisma.SupplierCreateInput[] = [
   {
     name: 'Minería Los Andes S.A.S',
+    shortName: 'MLA',
     documentType: {
       connect: {
         code: 'NIT',
@@ -13,28 +14,29 @@ export const supplierInitialData: Prisma.SupplierCreateInput[] = [
   },
   {
     name: 'Carlos Pérez - Minero Independiente',
+    shortName: 'CP-MI',
     documentType: {
       connect: {
         code: 'CC',
       },
     },
     verificationDigit: '',
-
     documentNumber: '79856234',
   },
   {
     name: 'Cooperativa Minera del Pacífico',
+    shortName: 'CMP',
     documentType: {
       connect: {
         code: 'NIT',
       },
     },
     verificationDigit: '9',
-
     documentNumber: '812345678',
   },
   {
     name: 'Extracción Minerales del Cauca',
+    shortName: 'EMC',
     documentType: {
       connect: {
         code: 'NIT',
@@ -45,6 +47,7 @@ export const supplierInitialData: Prisma.SupplierCreateInput[] = [
   },
   {
     name: 'Sofia Rodriguez - Joyería',
+    shortName: 'SR-J',
     documentType: {
       connect: {
         code: 'CE',
@@ -55,6 +58,7 @@ export const supplierInitialData: Prisma.SupplierCreateInput[] = [
   },
   {
     name: 'Minerales del Valle S.A.S',
+    shortName: 'MDV',
     documentType: {
       connect: {
         code: 'NIT',
@@ -65,6 +69,7 @@ export const supplierInitialData: Prisma.SupplierCreateInput[] = [
   },
   {
     name: 'Ana Gómez - Artesanías en Oro',
+    shortName: 'AG-AO',
     documentType: {
       connect: {
         code: 'CC',
@@ -75,6 +80,7 @@ export const supplierInitialData: Prisma.SupplierCreateInput[] = [
   },
   {
     name: 'Exportadora de Metales Preciosos Ltda.',
+    shortName: 'EMP',
     documentType: {
       connect: {
         code: 'NIT',
@@ -85,6 +91,7 @@ export const supplierInitialData: Prisma.SupplierCreateInput[] = [
   },
   {
     name: 'Juan Martínez - Minero Artesanal',
+    shortName: 'JM-MA',
     documentType: {
       connect: {
         code: 'CC',
@@ -95,6 +102,7 @@ export const supplierInitialData: Prisma.SupplierCreateInput[] = [
   },
   {
     name: 'Asociación Minera del Chocó',
+    shortName: 'AMC',
     documentType: {
       connect: {
         code: 'NIT',
@@ -105,6 +113,7 @@ export const supplierInitialData: Prisma.SupplierCreateInput[] = [
   },
   {
     name: 'Minerales del Caribe S.A.',
+    shortName: 'MDC',
     documentType: {
       connect: {
         code: 'NIT',
@@ -115,6 +124,7 @@ export const supplierInitialData: Prisma.SupplierCreateInput[] = [
   },
   {
     name: 'Luisa Fernández - Joyería Artesanal',
+    shortName: 'LF-JA',
     documentType: {
       connect: {
         code: 'CC',
@@ -125,6 +135,7 @@ export const supplierInitialData: Prisma.SupplierCreateInput[] = [
   },
   {
     name: 'Consorcio Minero Andino',
+    shortName: 'CMA',
     documentType: {
       connect: {
         code: 'NIT',
@@ -135,6 +146,7 @@ export const supplierInitialData: Prisma.SupplierCreateInput[] = [
   },
   {
     name: 'Pedro Ramírez - Comerciante de Oro',
+    shortName: 'PR-CO',
     documentType: {
       connect: {
         code: 'CC',
@@ -145,6 +157,7 @@ export const supplierInitialData: Prisma.SupplierCreateInput[] = [
   },
   {
     name: 'Gold Mining International Corp.',
+    shortName: 'GMIC',
     documentType: {
       connect: {
         code: 'CE',
@@ -155,6 +168,7 @@ export const supplierInitialData: Prisma.SupplierCreateInput[] = [
   },
   {
     name: 'Cooperativa Minera de Antioquia',
+    shortName: 'CMA2',
     documentType: {
       connect: {
         code: 'NIT',
@@ -165,6 +179,7 @@ export const supplierInitialData: Prisma.SupplierCreateInput[] = [
   },
   {
     name: 'María Valencia - Procesadora de Minerales',
+    shortName: 'MV-PM',
     documentType: {
       connect: {
         code: 'CC',
@@ -175,6 +190,7 @@ export const supplierInitialData: Prisma.SupplierCreateInput[] = [
   },
   {
     name: 'Inversiones Mineras del Sur',
+    shortName: 'IMS',
     documentType: {
       connect: {
         code: 'NIT',
@@ -185,6 +201,7 @@ export const supplierInitialData: Prisma.SupplierCreateInput[] = [
   },
   {
     name: 'Diego Torres - Exportador Independiente',
+    shortName: 'DT-EI',
     documentType: {
       connect: {
         code: 'CC',
@@ -195,6 +212,7 @@ export const supplierInitialData: Prisma.SupplierCreateInput[] = [
   },
   {
     name: 'Metales y Aleaciones S.A.S',
+    shortName: 'MYA',
     documentType: {
       connect: {
         code: 'NIT',

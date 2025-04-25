@@ -13,3 +13,4 @@ export { subresourceInitialData } from './subresources.data';
 export { supplierInitialData } from './suppliers.data';
 export { userCompanyInitialData } from './user-company.data';
 export { userInitialData } from './users.data';
+export { analysisTypeInitialData } from './analysis_type';

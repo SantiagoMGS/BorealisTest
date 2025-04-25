@@ -247,6 +247,7 @@ model DocumentType {
 model Supplier {
   id                String            @id @default(uuid()) @db.Uuid
   name              String
+  shortName         String            @unique
   documentTypeId    String            @db.Uuid
   documentNumber    String
   verificationDigit String
@@ -452,15 +453,16 @@ model Barrenado {
 
 // Tipos de análisis: Absorción atómica, XRF (Niton), Copelación, etc.
 model AnalysisType {
-  id           String  @id @default(uuid()) @db.Uuid
-  name         String  @unique
-  description  String?
-  resultSchema Json
-  isActive     Boolean @default(true)
+  id          String  @id @default(uuid()) @db.Uuid
+  name        String  @unique
+  shortName   String  @unique
+  description String?
+  isActive    Boolean @default(true)
 
   analyses Analysis[]
 
   @@index([name])
+  @@index([shortName])
   @@map("analysis_types")
 }
 
