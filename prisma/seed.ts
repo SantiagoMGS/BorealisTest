@@ -15,6 +15,7 @@ import {
   seedDocumentTypes,
   seedReceptionTypes,
   seedReceptionOrigins,
+  seedCompanySuppliers,
 } from './seed/index';
 
 // Inicializar cliente Prisma
@@ -42,6 +43,7 @@ async function main() {
     // Semillas para configurar laboratorio
     await seedDocumentTypes(prisma); // Tipos de documento (debe ir antes de proveedores)
     await seedSuppliers(prisma); // Proveedores
+    await seedCompanySuppliers(prisma); // Relaciones entre compañías y proveedores (debe ir después de proveedores y compañías)
     await seedReceptionTypes(prisma); // Tipos de recepción
     await seedReceptionOrigins(prisma); // Orígenes de recepción
 

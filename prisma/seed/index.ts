@@ -12,3 +12,4 @@ export { seedSuppliers } from './seed-suppliers';
 export { seedDocumentTypes } from './seed-document-types';
 export { seedReceptionTypes } from './seed-reception-types';
 export { seedReceptionOrigins } from './seed-reception-origins';
+export { seedCompanySuppliers } from './seed-company-suppliers';

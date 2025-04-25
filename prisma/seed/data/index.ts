@@ -2,6 +2,7 @@ export { actionInitialData } from './actions.data';
 export { applicationInitialData } from './applications.data';
 export { companyInitialData } from './companies.data';
 export { companyApplicationInitialData } from './company-application.data';
+export { companySupplierInitialData } from './company-suppliers.data';
 export { documentTypeInitialData } from './document-types.data';
 export { receptionOriginInitialData } from './reception-origins.data';
 export { receptionTypeInitialData } from './reception-types.data';
