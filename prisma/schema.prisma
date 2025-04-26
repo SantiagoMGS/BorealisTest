@@ -313,6 +313,7 @@ model ReceptionType {
 model ReceptionOrigin {
   id          String  @id @default(uuid()) @db.Uuid
   name        String  @unique
+  shortName   String  @unique
   description String?
   isActive    Boolean @default(true)
 

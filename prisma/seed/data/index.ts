@@ -6,6 +6,7 @@ export { companySupplierInitialData } from './company-suppliers.data';
 export { documentTypeInitialData } from './document-types.data';
 export { receptionOriginInitialData } from './reception-origins.data';
 export { receptionTypeInitialData } from './reception-types.data';
+export { receptionTypeOriginInitialData } from './reception-type-origin.data';
 export { resourceInitialData } from './resources.data';
 export { rolePermissionInitialData } from './role-permission.data';
 export { roleInitialData } from './roles.data';
