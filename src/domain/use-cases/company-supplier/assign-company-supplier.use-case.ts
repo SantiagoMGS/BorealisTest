@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ICompanySupplierRepository } from '@domain/repositories/company-supplier/company-supplier.repository';
 import { ICompanyRepository } from '@domain/repositories/company/company.repository';
 import { SupplierRepository } from '@domain/repositories/supplier/supplier.repository';
-import { AssignSuppliersDto } from '@presentation/controllers/company-supplier/dtos';
+import { AssignSuppliersDto } from '@presentation/controllers/company/dtos';
 
 @Injectable()
 export class AssignCompanySupplierUseCase {

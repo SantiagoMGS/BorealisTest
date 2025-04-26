@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ICompanySupplierRepository } from '@domain/repositories/company-supplier/company-supplier.repository';
 import { CompanySupplierDataSourceService } from '@infrastructure/datasource/company-supplier';
 import { ICompanySupplierResponse } from '@domain/interfaces/company-supplier';
-import { CompanySupplierMapper } from '@presentation/controllers/company-supplier/mappers/company-supplier.mapper';
+import { CompanySupplierMapper } from '@presentation/controllers/company/mappers/company-supplier.mapper';
 
 @Injectable()
 export class CompanySupplierRepositoryImpl

@@ -30,7 +30,7 @@ import { AssignSuppliersDto } from './dtos';
 @UseInterceptors(ResponseInterceptor)
 //@RequirePermission(CompanySupplierController.name)
 @UseGuards(JwtAuthGuard, PermissionsGuard)
-export class CompanySupplierController {
+export class CompanyController {
   constructor(
     private readonly assignSuppliersUseCase: AssignSuppliersUseCase,
   ) {}
