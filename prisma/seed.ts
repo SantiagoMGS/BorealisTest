@@ -18,6 +18,7 @@ import {
   seedCompanySuppliers,
   seedReceptionTypeOrigins,
   seedAnalysisTypes,
+  seedMeasurementUnits,
 } from './seed/index';
 
 // Inicializar cliente Prisma
@@ -43,6 +44,7 @@ async function main() {
     await seedRolePermissions(prisma); // Permisos de roles (debe ejecutarse al final)
 
     // Semillas para configurar laboratorio
+    await seedMeasurementUnits(prisma); // Unidades de medida
     await seedDocumentTypes(prisma); // Tipos de documento (debe ir antes de proveedores)
     await seedSuppliers(prisma); // Proveedores
     await seedCompanySuppliers(prisma); // Relaciones entre compañías y proveedores (debe ir después de proveedores y compañías)

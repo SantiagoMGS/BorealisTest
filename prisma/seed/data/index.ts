@@ -14,3 +14,4 @@ export { supplierInitialData } from './suppliers.data';
 export { userCompanyInitialData } from './user-company.data';
 export { userInitialData } from './users.data';
 export { analysisTypeInitialData } from './analysis_type';
+export { measurementUnitInitialData } from './measurement-unit.data';

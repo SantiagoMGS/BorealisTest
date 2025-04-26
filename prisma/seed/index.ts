@@ -18,3 +18,4 @@ export { seedReceptionTypes } from './seed-reception-types';
 export { seedReceptionOrigins } from './seed-reception-origins';
 export { seedReceptionTypeOrigins } from './seed-reception-type-origins';
 export { seedAnalysisTypes } from './seed-analysis-types';
+export { seedMeasurementUnits } from './seed-measurement-unit';
