@@ -23,6 +23,7 @@ import { ReceptionModule } from '@presentation/controllers/reception/reception.m
     SupplierModule,
     PermissionsModule,
     CompanyModule,
+    ReceptionModule,
   ],
   providers: [JwtStrategy],
 })
