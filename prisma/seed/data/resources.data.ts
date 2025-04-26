@@ -5,7 +5,7 @@ export const resourceInitialData: Prisma.ResourceCreateInput[] = [
   // Recursos para LIMS
   {
     name: 'Recepción',
-    icon: 'user-group',
+    icon: 'fa-computer-speaker',
     path: '/reception',
     application: {
       connect: {
