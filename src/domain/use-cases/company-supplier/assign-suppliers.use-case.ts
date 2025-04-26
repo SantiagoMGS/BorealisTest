@@ -9,9 +9,12 @@ export class AssignSuppliersUseCase {
     private readonly companySupplierRepository: CompanySupplierRepositoryImpl,
   ) {}
 
-  async execute(dto: AssignSuppliersDto): Promise<ISuppliersAssignmentResult> {
+  async execute(
+    dto: AssignSuppliersDto,
+    companyId: string,
+  ): Promise<ISuppliersAssignmentResult> {
     return await this.companySupplierRepository.assignSuppliers(
-      dto.companyId,
+      companyId,
       dto.supplierIds,
     );
   }

@@ -27,6 +27,7 @@ import { CustomResponse } from '@core/decorators/custom-response.decorator';
 import { ErrorResponseDto } from '@shared/models/error-response.dto';
 import { AssignSuppliersUseCase } from '@domain/use-cases/company-supplier/assign-suppliers.use-case';
 import { AssignSuppliersDto, SuppliersAssignmentResultDto } from './dtos';
+import { CurrentUser } from '@core/decorators/current-user.decorator';
 
 @ApiTags('Proveedores de la Empresa')
 @ApiBearerAuth()
@@ -63,8 +64,9 @@ export class CompanyController {
   })
   async assignSuppliers(
     @Body() data: AssignSuppliersDto,
+    @CurrentUser('companyId') companyId: string,
   ): Promise<SuppliersAssignmentResultDto> {
-    const result = await this.assignSuppliersUseCase.execute(data);
+    const result = await this.assignSuppliersUseCase.execute(data, companyId);
 
     if (result.allFailed) {
       throw new BadRequestException(

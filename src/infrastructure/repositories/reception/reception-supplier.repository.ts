@@ -1,8 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { ICompanySupplierRepository } from '@domain/repositories/company-supplier/company-supplier.repository';
 import { CompanySupplierDataSourceService } from '@infrastructure/datasource/company-supplier';
-import { ICompanySupplierResponse } from '@domain/interfaces/company-supplier';
-import { CompanySupplierMapper } from '@presentation/controllers/company-supplier/mappers/company-supplier.mapper';
+import {
+  ICompanySupplierResponse,
+  ISuppliersAssignmentResult,
+} from '@domain/interfaces/company-supplier';
+import { CompanySupplierMapper } from '@presentation/controllers/company/mappers/company-supplier.mapper';
 
 @Injectable()
 export class ReceptionSupplierRepositoryImpl
@@ -15,8 +18,8 @@ export class ReceptionSupplierRepositoryImpl
   async assignSuppliers(
     companyId: string,
     supplierIds: string[],
-  ): Promise<void> {
-    await this.companySupplierDataSource.assignSuppliers(
+  ): Promise<ISuppliersAssignmentResult> {
+    return await this.companySupplierDataSource.assignSuppliers(
       companyId,
       supplierIds,
     );

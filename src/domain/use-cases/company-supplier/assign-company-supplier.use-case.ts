@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { ICompanySupplierRepository } from '@domain/repositories/company-supplier/company-supplier.repository';
 import { ICompanyRepository } from '@domain/repositories/company/company.repository';
 import { SupplierRepository } from '@domain/repositories/supplier/supplier.repository';
 import { AssignSuppliersDto } from '@presentation/controllers/company/dtos';
+import { ISuppliersAssignmentResult } from '@domain/interfaces/company-supplier';
 
 @Injectable()
 export class AssignCompanySupplierUseCase {
@@ -12,27 +13,78 @@ export class AssignCompanySupplierUseCase {
     private readonly supplierRepository: SupplierRepository,
   ) {}
 
-  async execute(assignSuppliersDto: AssignSuppliersDto): Promise<void> {
-    const { companyId, supplierIds } = assignSuppliersDto;
+  async execute(
+    assignSuppliersDto: AssignSuppliersDto,
+    companyId: string,
+  ): Promise<ISuppliersAssignmentResult> {
+    const { supplierIds } = assignSuppliersDto;
+    const result: ISuppliersAssignmentResult = {
+      successful: [],
+      failed: [],
+      allFailed: true,
+    };
 
     // Verificar que la compañía existe
     const company = await this.companyRepository.findById(companyId);
     if (!company) {
-      throw new Error('Compañía no encontrada');
+      throw new BadRequestException('Compañía no encontrada');
     }
 
-    // Verificar que todos los proveedores existen
+    // Procesar cada proveedor individualmente
     for (const supplierId of supplierIds) {
-      const supplier = await this.supplierRepository.findById(supplierId);
-      if (!supplier) {
-        throw new Error(`Proveedor con ID ${supplierId} no encontrado`);
+      try {
+        // Verificar que el proveedor existe
+        const supplier = await this.supplierRepository.findById(supplierId);
+        if (!supplier) {
+          result.failed.push({
+            supplierId,
+            reason: `Proveedor con ID ${supplierId} no encontrado`,
+          });
+          continue;
+        }
+
+        // Verificar si ya existe la relación utilizando el repositorio
+        const existingRelations =
+          await this.companySupplierRepository.getCompanySuppliers(companyId);
+        const alreadyExists = existingRelations.some(
+          (relation) => relation.supplier.id === supplierId,
+        );
+
+        if (alreadyExists) {
+          result.failed.push({
+            supplierId,
+            reason: 'El proveedor ya está asignado a la empresa',
+          });
+          continue;
+        }
+
+        // Intentar crear la relación para este proveedor
+        await this.companySupplierRepository.assignSuppliers(companyId, [
+          supplierId,
+        ]);
+
+        result.successful.push({
+          supplierId,
+          success: true,
+        });
+      } catch (error: any) {
+        result.failed.push({
+          supplierId,
+          reason: error.message || 'Error desconocido al asignar proveedor',
+        });
       }
     }
 
-    // Asignar los proveedores a la compañía
-    await this.companySupplierRepository.assignSuppliers(
-      companyId,
-      supplierIds,
-    );
+    // Actualizar la bandera allFailed
+    result.allFailed = result.successful.length === 0;
+
+    // Si todos los proveedores fallaron, lanzar excepción
+    if (result.allFailed) {
+      throw new BadRequestException(
+        'Ningún proveedor pudo ser asignado a la empresa',
+      );
+    }
+
+    return result;
   }
 }
