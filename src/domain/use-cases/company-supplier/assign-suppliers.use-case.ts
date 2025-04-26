@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CompanySupplierRepositoryImpl } from '@infrastructure/repositories/company-supplier/company-supplier.repository';
 import { AssignSuppliersDto } from '@presentation/controllers/company/dtos';
+import { ISuppliersAssignmentResult } from '@domain/interfaces/company-supplier';
 
 @Injectable()
 export class AssignSuppliersUseCase {
@@ -8,8 +9,8 @@ export class AssignSuppliersUseCase {
     private readonly companySupplierRepository: CompanySupplierRepositoryImpl,
   ) {}
 
-  async execute(dto: AssignSuppliersDto): Promise<void> {
-    await this.companySupplierRepository.assignSuppliers(
+  async execute(dto: AssignSuppliersDto): Promise<ISuppliersAssignmentResult> {
+    return await this.companySupplierRepository.assignSuppliers(
       dto.companyId,
       dto.supplierIds,
     );

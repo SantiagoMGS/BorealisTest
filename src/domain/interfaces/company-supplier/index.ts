@@ -11,3 +11,15 @@ export interface ICompanySupplierResponse {
     verificationDigit: string;
   };
 }
+
+export interface ISuppliersAssignmentResult {
+  successful: {
+    supplierId: string;
+    success: boolean;
+  }[];
+  failed: {
+    supplierId: string;
+    reason: string;
+  }[];
+  allFailed: boolean;
+}

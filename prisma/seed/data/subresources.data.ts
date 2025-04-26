@@ -112,7 +112,7 @@ export const subresourceInitialData: Prisma.SubresourceCreateInput[] = [
     },
     icon: 'building',
     path: '/companies',
-    controller: 'CompaniesController',
+    controller: 'CompanyController',
   },
   {
     name: 'Aplicaciones',

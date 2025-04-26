@@ -4,6 +4,9 @@ import {
   Body,
   UseGuards,
   UseInterceptors,
+  Get,
+  BadRequestException,
+  HttpStatus,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -13,6 +16,7 @@ import {
   ApiBadRequestResponse,
   ApiUnauthorizedResponse,
   ApiBearerAuth,
+  ApiOkResponse,
 } from '@nestjs/swagger';
 
 import { JwtAuthGuard } from '@infrastructure/guards/jwt-auth.guard';
@@ -22,38 +26,52 @@ import { PermissionsGuard } from '@infrastructure/guards/permissions.guard';
 import { CustomResponse } from '@core/decorators/custom-response.decorator';
 import { ErrorResponseDto } from '@shared/models/error-response.dto';
 import { AssignSuppliersUseCase } from '@domain/use-cases/company-supplier/assign-suppliers.use-case';
-import { AssignSuppliersDto } from './dtos';
+import { AssignSuppliersDto, SuppliersAssignmentResultDto } from './dtos';
 
 @ApiTags('Proveedores de la Empresa')
 @ApiBearerAuth()
-@Controller('company-suppliers')
+@Controller('company')
 @UseInterceptors(ResponseInterceptor)
-//@RequirePermission(CompanySupplierController.name)
+@RequirePermission(CompanyController.name)
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 export class CompanyController {
   constructor(
     private readonly assignSuppliersUseCase: AssignSuppliersUseCase,
   ) {}
 
-  @Post('assign')
+  @Post('assign-suppliers')
   @ApiOperation({ summary: 'Asignar proveedores a la empresa' })
   @ApiBody({
     type: AssignSuppliersDto,
     description: 'Datos para asignar proveedores a la empresa',
   })
-  @ApiCreatedResponse({
-    description: 'Proveedores asignados exitosamente',
+  @ApiOkResponse({
+    description: 'Resultado del proceso de asignación de proveedores',
+    type: SuppliersAssignmentResultDto,
   })
   @ApiBadRequestResponse({
-    description: 'Error en los datos enviados',
+    description:
+      'Error en los datos enviados o ningún proveedor pudo ser asignado',
     type: ErrorResponseDto,
   })
   @ApiUnauthorizedResponse({
     description: 'No autorizado',
     type: ErrorResponseDto,
   })
-  @CustomResponse({ successMessage: 'Proveedores asignados exitosamente' })
-  async assignSuppliers(@Body() data: AssignSuppliersDto): Promise<void> {
-    await this.assignSuppliersUseCase.execute(data);
+  @CustomResponse({
+    successMessage: 'Proceso de asignación de proveedores completado',
+  })
+  async assignSuppliers(
+    @Body() data: AssignSuppliersDto,
+  ): Promise<SuppliersAssignmentResultDto> {
+    const result = await this.assignSuppliersUseCase.execute(data);
+
+    if (result.allFailed) {
+      throw new BadRequestException(
+        'Ningún proveedor pudo ser asignado a la empresa',
+      );
+    }
+
+    return result;
   }
 }
