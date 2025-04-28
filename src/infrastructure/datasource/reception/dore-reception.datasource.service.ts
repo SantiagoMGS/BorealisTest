@@ -147,7 +147,6 @@ export class DoreReceptionDataSourceService {
             receivedWeight: item.receivedWeight,
             observation: item.observation,
             statusId: receivedStatus.id,
-            code: `DORE-${new Date().getTime()}-${Math.floor(Math.random() * 1000)}`,
           },
           include: {
             status: {
