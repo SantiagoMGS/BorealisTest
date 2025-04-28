@@ -28,7 +28,7 @@ export class CreateSampleDto {
   })
   @IsNumber()
   @IsNotEmpty()
-  recievedWeight!: number;
+  receivedWeight!: number;
 
   @ApiProperty({
     description: 'Peso seco',

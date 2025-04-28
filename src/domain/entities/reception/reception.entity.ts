@@ -2,8 +2,9 @@
  * Entidad de dominio para unidad de recepción
  */
 export interface ISampleEntity {
+  code?: number;
   receptionOriginId: string;
-  recievedWeight: number;
+  receivedWeight: number;
   dryWeight: number;
 }
 

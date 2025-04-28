@@ -24,6 +24,7 @@ import {
   seedMeasurementUnits,
   seedMineTypes,
   seedSupplierMiningTitles,
+  seedStatus,
 } from './seed/index';
 
 // Inicializar cliente Prisma
@@ -62,6 +63,7 @@ async function main() {
     await seedReceptionOrigins(prisma); // Orígenes de recepción
     await seedReceptionTypeOrigins(prisma); // Relaciones entre tipos y orígenes de recepción
     await seedAnalysisTypes(prisma); // Tipos de análisis
+    await seedStatus(prisma); // Estados
 
     logger.log('✅ ¡Proceso de sembrado completado con éxito!');
   } catch (error: any) {

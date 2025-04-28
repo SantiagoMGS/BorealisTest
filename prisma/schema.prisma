@@ -8,20 +8,20 @@ datasource db {
 }
 
 /// Modelos para la autenticación y usuarios
-///   Incluye:
-///   - User: Usuario del sistema
-///   - Session: Sesión del usuario
-///   - Role: Rol del usuario
-///   - Resource: Recurso del sistema
-///   - Action: Acción del sistema
-///   - Company: Compañía del sistema
-///   - CompanyBranding: Configuración visual de la compañía
-///   - UserCompany: Relación entre usuario y compañía
-///   - RolePermission: Relación entre rol, acción y subrecurso
-///   - Subresource: Subrecurso del sistema
-///   - Application: Aplicación del sistema
-///   - ApplicationResource: Relación entre aplicación y recurso
-///   - CompanyApplication: Relación entre compañía y aplicación
+/// Incluye:
+/// - User: Usuario del sistema
+/// - Session: Sesión del usuario
+/// - Role: Rol del usuario
+/// - Resource: Recurso del sistema
+/// - Action: Acción del sistema
+/// - Company: Compañía del sistema
+/// - CompanyBranding: Configuración visual de la compañía
+/// - UserCompany: Relación entre usuario y compañía
+/// - RolePermission: Relación entre rol, acción y subrecurso
+/// - Subresource: Subrecurso del sistema
+/// - Application: Aplicación del sistema
+/// - ApplicationResource: Relación entre aplicación y recurso
+/// - CompanyApplication: Relación entre compañía y aplicación
 model User {
   id             String        @id @default(uuid()) @db.Uuid
   name           String
@@ -59,11 +59,11 @@ model Role {
   id          String           @id @default(uuid()) @db.Uuid
   name        String           @unique
   description String?
-  isSystem    Boolean          @default(false) // Añadir temporalmente
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
   createdBy   String?          @db.Uuid
   updatedBy   String?          @db.Uuid
+  isSystem    Boolean          @default(false)
   permissions RolePermission[]
   users       UserCompany[]
 
@@ -76,11 +76,11 @@ model Resource {
   name          String        @unique
   icon          String
   path          String        @unique
-  applicationId String        @db.Uuid
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   createdBy     String?       @db.Uuid
   updatedBy     String?       @db.Uuid
+  applicationId String        @db.Uuid
   application   Application   @relation(fields: [applicationId], references: [id], onDelete: Cascade)
   subresources  Subresource[]
 
@@ -115,9 +115,9 @@ model Company {
   updatedBy    String?              @db.Uuid
   applications CompanyApplication[]
   branding     CompanyBranding?
-  users        UserCompany[]
   suppliers    CompanySupplier[]
   receptions   Reception[]
+  users        UserCompany[]
 
   @@index([name])
   @@map("companies")
@@ -183,11 +183,11 @@ model Subresource {
   resourceId      String           @db.Uuid
   icon            String
   path            String           @unique
-  controller      String           @unique
   updatedAt       DateTime         @updatedAt
   createdAt       DateTime         @default(now())
   createdBy       String?          @db.Uuid
   updatedBy       String?          @db.Uuid
+  controller      String           @unique
   rolePermissions RolePermission[]
   resource        Resource         @relation(fields: [resourceId], references: [id], onDelete: Cascade)
 
@@ -207,8 +207,8 @@ model Application {
   updatedAt   DateTime             @updatedAt
   createdBy   String?              @db.Uuid
   updatedBy   String?              @db.Uuid
-  resources   Resource[]
   companies   CompanyApplication[]
+  resources   Resource[]
 
   @@index([name])
   @@map("applications")
@@ -233,11 +233,10 @@ model CompanyApplication {
 }
 
 model DocumentType {
-  id       String  @id @default(uuid()) @db.Uuid
-  name     String  @unique
-  code     String  @unique
-  isActive Boolean @default(true)
-
+  id        String     @id @default(uuid()) @db.Uuid
+  name      String     @unique
+  code      String     @unique
+  isActive  Boolean    @default(true)
   suppliers Supplier[]
 
   @@index([code])
@@ -245,24 +244,22 @@ model DocumentType {
 }
 
 model Supplier {
-  id                String            @id @default(uuid()) @db.Uuid
-  name              String
-  shortName         String            @unique
-  documentTypeId    String            @db.Uuid
-  documentNumber    String
-  verificationDigit String
-  isActive          Boolean           @default(true)
-  createdAt         DateTime          @default(now())
-  updatedAt         DateTime          @updatedAt
-  createdBy         String?           @db.Uuid
-  updatedBy         String?           @db.Uuid
-  companies         CompanySupplier[]
-  receptions        Reception[]
-
-  documentType         DocumentType          @relation(fields: [documentTypeId], references: [id], onDelete: Cascade)
+  id                   String                @id @default(uuid()) @db.Uuid
+  name                 String
+  documentNumber       String                @unique
+  isActive             Boolean               @default(true)
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  createdBy            String?               @db.Uuid
+  updatedBy            String?               @db.Uuid
+  documentTypeId       String                @db.Uuid
+  verificationDigit    String
+  shortName            String                @unique
+  companies            CompanySupplier[]
+  receptions           Reception[]
   supplierMiningTitles SupplierMiningTitle[]
+  documentType         DocumentType          @relation(fields: [documentTypeId], references: [id], onDelete: Cascade)
 
-  @@unique([documentNumber])
   @@unique([documentNumber, name])
   @@index([documentNumber])
   @@index([name])
@@ -270,7 +267,6 @@ model Supplier {
 }
 
 model CompanySupplier {
-  id         String   @id @default(uuid()) @db.Uuid
   companyId  String   @db.Uuid
   supplierId String   @db.Uuid
   isActive   Boolean  @default(true)
@@ -278,6 +274,7 @@ model CompanySupplier {
   updatedAt  DateTime @updatedAt
   createdBy  String?  @db.Uuid
   updatedBy  String?  @db.Uuid
+  id         String   @id @default(uuid()) @db.Uuid
   company    Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
   supplier   Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
 
@@ -287,55 +284,48 @@ model CompanySupplier {
 }
 
 model MeasurementUnit {
-  id        String @id @default(uuid()) @db.Uuid
-  name      String @unique
-  shortName String @unique
-
-  isActive Boolean @default(true)
+  id        String  @id @default(uuid()) @db.Uuid
+  name      String  @unique
+  shortName String  @unique
+  isActive  Boolean @default(true)
 
   @@map("measurement_units")
 }
 
-// Tipos de recepción: Dore, Muestras, Mineral, Concentrado.
 model ReceptionType {
-  id          String  @id @default(uuid()) @db.Uuid
-  name        String  @unique
-  description String?
-  isActive    Boolean @default(true)
-
-  receptions          Reception[]
+  id                  String                       @id @default(uuid()) @db.Uuid
+  name                String                       @unique
+  description         String?
+  isActive            Boolean                      @default(true)
   validOrigins        ReceptionTypeOrigin[]
   validSubSampleTypes ReceptionTypeSubSampleType[]
+  receptions          Reception[]
 
   @@map("reception_types")
 }
 
-// Origen de la recepción: Cabeza, Cola, Secado, Aluvial, Joyería, Subsistencia, etc.
 model ReceptionOrigin {
-  id          String  @id @default(uuid()) @db.Uuid
-  name        String  @unique
-  shortName   String  @unique
+  id          String                @id @default(uuid()) @db.Uuid
+  name        String                @unique
   description String?
-  isActive    Boolean @default(true)
-
-  receptions Reception[]
-  validTypes ReceptionTypeOrigin[]
-  Sample     Sample[]
+  isActive    Boolean               @default(true)
+  shortName   String                @unique
+  validTypes  ReceptionTypeOrigin[]
+  receptions  Reception[]
+  Sample      Sample[]
 
   @@map("reception_origins")
 }
 
-// Relación entre tipos de recepción y orígenes válidos
 model ReceptionTypeOrigin {
-  receptionTypeId   String   @db.Uuid
-  receptionOriginId String   @db.Uuid
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  createdBy         String?  @db.Uuid
-  updatedBy         String?  @db.Uuid
-
-  receptionType   ReceptionType   @relation(fields: [receptionTypeId], references: [id], onDelete: Cascade)
-  receptionOrigin ReceptionOrigin @relation(fields: [receptionOriginId], references: [id], onDelete: Cascade)
+  receptionTypeId   String          @db.Uuid
+  receptionOriginId String          @db.Uuid
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  createdBy         String?         @db.Uuid
+  updatedBy         String?         @db.Uuid
+  receptionOrigin   ReceptionOrigin @relation(fields: [receptionOriginId], references: [id], onDelete: Cascade)
+  receptionType     ReceptionType   @relation(fields: [receptionTypeId], references: [id], onDelete: Cascade)
 
   @@id([receptionTypeId, receptionOriginId])
   @@index([receptionTypeId])
@@ -343,27 +333,25 @@ model ReceptionTypeOrigin {
   @@map("reception_type_origins")
 }
 
-// Modelo para encabezado de recepción
 model Reception {
-  id                String   @id @default(uuid()) @db.Uuid
-  companyId         String   @db.Uuid
-  supplierId        String   @db.Uuid
-  receptionTypeId   String   @db.Uuid
-  receptionOriginId String   @db.Uuid
+  id                String          @id @default(uuid()) @db.Uuid
+  companyId         String          @db.Uuid
+  supplierId        String          @db.Uuid
   receptionDate     DateTime
   batchNumber       String?
   observation       String?
-  isActive          Boolean  @default(true)
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  createdBy         String?  @db.Uuid
-  updatedBy         String?  @db.Uuid
-
-  company         Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  supplier        Supplier        @relation(fields: [supplierId], references: [id], onDelete: Cascade)
-  receptionType   ReceptionType   @relation(fields: [receptionTypeId], references: [id])
-  receptionOrigin ReceptionOrigin @relation(fields: [receptionOriginId], references: [id])
-  Samples         Sample[]
+  isActive          Boolean         @default(true)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  createdBy         String?         @db.Uuid
+  updatedBy         String?         @db.Uuid
+  receptionOriginId String          @db.Uuid
+  receptionTypeId   String          @db.Uuid
+  company           Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  receptionOrigin   ReceptionOrigin @relation(fields: [receptionOriginId], references: [id])
+  receptionType     ReceptionType   @relation(fields: [receptionTypeId], references: [id])
+  supplier          Supplier        @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  Samples           Sample[]
 
   @@index([companyId])
   @@index([supplierId])
@@ -372,61 +360,71 @@ model Reception {
   @@map("receptions")
 }
 
-// Modelo para detalle de recepción (cada dore y cada muestra)
 model Sample {
-  id                String  @id @default(uuid()) @db.Uuid
-  receptionId       String  @db.Uuid
-  receptionOriginId String  @db.Uuid
-  recievedWeight    Decimal
+  id                String          @id @default(uuid()) @db.Uuid
+  receptionId       String          @db.Uuid
+  receptionOriginId String          @db.Uuid
+  receivedWeight    Decimal
   dryWeight         Decimal
-
-  reception       Reception       @relation(fields: [receptionId], references: [id], onDelete: Cascade)
-  receptionOrigin ReceptionOrigin @relation(fields: [receptionOriginId], references: [id])
-
-  subSamples SubSample[]
-  barrenado  Barrenado[]
+  code              Int             @unique
+  statusId          String          @db.Uuid
+  barrenado         Barrenado[]
+  reception         Reception       @relation(fields: [receptionId], references: [id], onDelete: Cascade)
+  receptionOrigin   ReceptionOrigin @relation(fields: [receptionOriginId], references: [id])
+  status            Status          @relation(fields: [statusId], references: [id])
+  subSamples        SubSample[]
 
   @@index([receptionId])
   @@index([receptionOriginId])
+  @@index([statusId])
   @@map("samples")
 }
 
 model Dore {
-  id             String  @id @default(uuid()) @db.Uuid
-  code           Int     @unique
-  recievedWeight Decimal @default(0) @db.Decimal(10, 4)
-  finalWeight    Decimal @default(0) @db.Decimal(10, 4)
-  goldLaw        Decimal @default(0) @db.Decimal(10, 4)
-  goldWeight     Decimal @default(0) @db.Decimal(10, 4)
-  silverLaw      Decimal @default(0) @db.Decimal(10, 4)
-  silverWeight   Decimal @default(0) @db.Decimal(10, 4)
-  goldBalance    Decimal @default(0) @db.Decimal(10, 4)
-  silverBalance  Decimal @default(0) @db.Decimal(10, 4)
-  approvedLaw    Boolean @default(false)
+  id             String   @id @default(uuid()) @db.Uuid
+  code           Int      @unique
+  receivedWeight Decimal  @default(0) @db.Decimal(10, 4)
+  finalWeight    Decimal  @default(0) @db.Decimal(10, 4)
+  goldLaw        Decimal  @default(0) @db.Decimal(10, 4)
+  goldWeight     Decimal  @default(0) @db.Decimal(10, 4)
+  silverLaw      Decimal  @default(0) @db.Decimal(10, 4)
+  silverWeight   Decimal  @default(0) @db.Decimal(10, 4)
+  goldBalance    Decimal  @default(0) @db.Decimal(10, 4)
+  silverBalance  Decimal  @default(0) @db.Decimal(10, 4)
+  approvedLaw    Boolean  @default(false)
   observation    String?
-  statusId       String  @db.Uuid
-
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  createdBy String?  @db.Uuid
-  updatedBy String?  @db.Uuid
+  statusId       String   @db.Uuid
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  createdBy      String?  @db.Uuid
+  updatedBy      String?  @db.Uuid
+  status         Status   @relation(fields: [statusId], references: [id])
 
   @@index([code])
+  @@index([statusId])
   @@map("dore")
 }
 
-// Relación entre tipos de recepción y tipos de submuestra válidos
-model ReceptionTypeSubSampleType {
-  receptionTypeId String   @db.Uuid
-  subSampleTypeId String   @db.Uuid
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  createdBy       String?  @db.Uuid
-  updatedBy       String?  @db.Uuid
+model Status {
+  id       String   @id @default(uuid()) @db.Uuid
+  name     String   @unique
+  isActive Boolean  @default(true)
+  dores    Dore[]
+  samples  Sample[]
 
-  receptionType ReceptionType @relation(fields: [receptionTypeId], references: [id], onDelete: Cascade)
-  subSampleType SubSampleType @relation(fields: [subSampleTypeId], references: [id], onDelete: Cascade)
+  @@map("status")
+}
+
+model ReceptionTypeSubSampleType {
+  receptionTypeId String        @db.Uuid
+  subSampleTypeId String        @db.Uuid
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  createdBy       String?       @db.Uuid
+  updatedBy       String?       @db.Uuid
+  receptionType   ReceptionType @relation(fields: [receptionTypeId], references: [id], onDelete: Cascade)
+  subSampleType   SubSampleType @relation(fields: [subSampleTypeId], references: [id], onDelete: Cascade)
 
   @@id([receptionTypeId, subSampleTypeId])
   @@index([receptionTypeId])
@@ -434,38 +432,35 @@ model ReceptionTypeSubSampleType {
   @@map("reception_type_sub_sample_types")
 }
 
-// Tipos de submuestra: MPL, MPR, MPA, Barrenado.
 model SubSampleType {
-  id          String   @id @default(uuid()) @db.Uuid
-  name        String   @unique
+  id          String                       @id @default(uuid()) @db.Uuid
+  name        String                       @unique
   description String?
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  createdBy   String?  @db.Uuid
-  updatedBy   String?  @db.Uuid
-
-  subSamples SubSample[]
-  validTypes ReceptionTypeSubSampleType[]
+  isActive    Boolean                      @default(true)
+  createdAt   DateTime                     @default(now())
+  updatedAt   DateTime                     @updatedAt
+  createdBy   String?                      @db.Uuid
+  updatedBy   String?                      @db.Uuid
+  validTypes  ReceptionTypeSubSampleType[]
+  subSamples  SubSample[]
 
   @@index([name])
   @@map("sub_sample_types")
 }
 
 model SubSample {
-  id            String        @id @default(uuid()) @db.Uuid
-  SampleId      String        @db.Uuid
-  subSampleType SubSampleType @relation(fields: [subSampleTypeId], references: [id])
-  weight        Decimal
-  isActive      Boolean       @default(true)
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  createdBy     String?       @db.Uuid
-  updatedBy     String?       @db.Uuid
-
-  Sample          Sample     @relation(fields: [SampleId], references: [id], onDelete: Cascade)
+  id              String        @id @default(uuid()) @db.Uuid
+  SampleId        String        @db.Uuid
+  weight          Decimal
+  isActive        Boolean       @default(true)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  createdBy       String?       @db.Uuid
+  updatedBy       String?       @db.Uuid
+  subSampleTypeId String        @db.Uuid
   analyses        Analysis[]
-  subSampleTypeId String     @db.Uuid
+  Sample          Sample        @relation(fields: [SampleId], references: [id], onDelete: Cascade)
+  subSampleType   SubSampleType @relation(fields: [subSampleTypeId], references: [id])
 
   @@index([SampleId])
   @@map("sub_samples")
@@ -481,44 +476,39 @@ model Barrenado {
   updatedAt     DateTime @updatedAt
   createdBy     String?  @db.Uuid
   updatedBy     String?  @db.Uuid
-
-  Sample Sample @relation(fields: [SampleId], references: [id], onDelete: Cascade)
+  Sample        Sample   @relation(fields: [SampleId], references: [id], onDelete: Cascade)
 
   @@index([SampleId])
   @@map("barrenados")
 }
 
-// Tipos de análisis: Absorción atómica, XRF (Niton), Copelación, etc.
 model AnalysisType {
-  id          String  @id @default(uuid()) @db.Uuid
-  name        String  @unique
-  shortName   String  @unique
+  id          String     @id @default(uuid()) @db.Uuid
+  name        String     @unique
   description String?
-  isActive    Boolean @default(true)
-
-  analyses Analysis[]
+  isActive    Boolean    @default(true)
+  shortName   String     @unique
+  analyses    Analysis[]
 
   @@index([name])
   @@index([shortName])
   @@map("analysis_types")
 }
 
-// Tabla para registrar los resultados 
 model Analysis {
-  id             String   @id @default(uuid()) @db.Uuid
-  analysisTypeId String   @db.Uuid
-  subSampleId    String   @db.Uuid
+  id             String       @id @default(uuid()) @db.Uuid
+  analysisTypeId String       @db.Uuid
+  subSampleId    String       @db.Uuid
   resultValue    Json
   analysisDate   DateTime
   analysisResult Json
-  isActive       Boolean  @default(true)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  createdBy      String?  @db.Uuid
-  updatedBy      String?  @db.Uuid
-
-  analysisType AnalysisType @relation(fields: [analysisTypeId], references: [id], onDelete: Cascade)
-  subSample    SubSample    @relation(fields: [subSampleId], references: [id], onDelete: Cascade)
+  isActive       Boolean      @default(true)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  createdBy      String?      @db.Uuid
+  updatedBy      String?      @db.Uuid
+  analysisType   AnalysisType @relation(fields: [analysisTypeId], references: [id], onDelete: Cascade)
+  subSample      SubSample    @relation(fields: [subSampleId], references: [id], onDelete: Cascade)
 
   @@index([analysisTypeId])
   @@index([subSampleId])
@@ -541,21 +531,19 @@ model Department {
   daneCode  String  @unique
   isActive  Boolean @default(true)
   countryId String  @db.Uuid
-
-  cities  City[]
-  country Country @relation(fields: [countryId], references: [id], onDelete: Cascade)
+  cities    City[]
+  country   Country @relation(fields: [countryId], references: [id], onDelete: Cascade)
 
   @@index([name])
   @@map("departments")
 }
 
 model City {
-  id           String  @id @default(uuid()) @db.Uuid
-  name         String
-  daneCode     String
-  isActive     Boolean @default(true)
-  departmentId String  @db.Uuid
-
+  id                   String                @id @default(uuid()) @db.Uuid
+  name                 String
+  daneCode             String
+  isActive             Boolean               @default(true)
+  departmentId         String                @db.Uuid
   department           Department            @relation(fields: [departmentId], references: [id], onDelete: Cascade)
   supplierMiningTitles SupplierMiningTitle[]
 
@@ -565,11 +553,10 @@ model City {
 }
 
 model mineType {
-  id                String  @id @default(uuid()) @db.Uuid
-  name              String  @unique
-  royaltyPercentage Decimal @db.Decimal(7, 4)
-  isActive          Boolean @default(true)
-
+  id                   String                @id @default(uuid()) @db.Uuid
+  name                 String                @unique
+  royaltyPercentage    Decimal               @db.Decimal(7, 4)
+  isActive             Boolean               @default(true)
   supplierMiningTitles SupplierMiningTitle[]
 
   @@index([name])
@@ -577,17 +564,15 @@ model mineType {
 }
 
 model SupplierMiningTitle {
-  id         String @id @default(uuid()) @db.Uuid
-  name       String @unique
-  supplierId String @db.Uuid
-  mineTypeId String @db.Uuid
-  cityId     String @db.Uuid
-
-  isActive Boolean @default(true)
-
-  supplier Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
-  city     City     @relation(fields: [cityId], references: [id], onDelete: Cascade)
-  mineType mineType @relation(fields: [mineTypeId], references: [id], onDelete: Cascade)
+  id         String   @id @default(uuid()) @db.Uuid
+  name       String   @unique
+  supplierId String   @db.Uuid
+  mineTypeId String   @db.Uuid
+  cityId     String   @db.Uuid
+  isActive   Boolean  @default(true)
+  city       City     @relation(fields: [cityId], references: [id], onDelete: Cascade)
+  mineType   mineType @relation(fields: [mineTypeId], references: [id], onDelete: Cascade)
+  supplier   Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
 
   @@index([supplierId])
   @@index([mineTypeId])

@@ -61,7 +61,7 @@ CREATE TABLE "Reception" (
 CREATE TABLE "Sample" (
     "id" UUID NOT NULL,
     "receptionId" UUID NOT NULL,
-    "recievedWeight" DECIMAL(65,30) NOT NULL,
+    "receivedWeight" DECIMAL(65,30) NOT NULL,
     "dryWeight" DECIMAL(65,30) NOT NULL,
 
     CONSTRAINT "Sample_pkey" PRIMARY KEY ("id")

@@ -19,7 +19,7 @@ export class ReceptionMapper {
       observation: createDto.observation,
       Samples: createDto.items.map((item) => ({
         receptionOriginId: item.receptionOriginId,
-        recievedWeight: item.recievedWeight,
+        receivedWeight: item.receivedWeight,
         dryWeight: item.dryWeight,
       })),
     };

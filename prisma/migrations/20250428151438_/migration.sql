@@ -2,7 +2,7 @@
 CREATE TABLE "dore" (
     "id" UUID NOT NULL,
     "code" INTEGER NOT NULL,
-    "recievedWeight" DECIMAL(10,4) NOT NULL DEFAULT 0,
+    "receivedWeight" DECIMAL(10,4) NOT NULL DEFAULT 0,
     "finalWeight" DECIMAL(10,4) NOT NULL DEFAULT 0,
     "goldLaw" DECIMAL(10,4) NOT NULL DEFAULT 0,
     "goldWeight" DECIMAL(10,4) NOT NULL DEFAULT 0,

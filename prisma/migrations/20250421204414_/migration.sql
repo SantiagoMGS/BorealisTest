@@ -113,7 +113,7 @@ CREATE TABLE "receptions" (
 CREATE TABLE "reception_units" (
     "id" UUID NOT NULL,
     "receptionId" UUID NOT NULL,
-    "recievedWeight" DECIMAL(65,30) NOT NULL,
+    "receivedWeight" DECIMAL(65,30) NOT NULL,
     "dryWeight" DECIMAL(65,30) NOT NULL,
 
     CONSTRAINT "reception_units_pkey" PRIMARY KEY ("id")
