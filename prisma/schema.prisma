@@ -285,6 +285,16 @@ model CompanySupplier {
   @@map("company_suppliers")
 }
 
+model MeasurementUnit {
+  id          String  @id @default(uuid()) @db.Uuid
+  name        String  @unique
+  shortName   String  @unique
+  
+  isActive    Boolean @default(true)
+
+  @@map("measurement_units")
+}
+
 // Tipos de recepción: Dore, Muestras, Mineral, Concentrado.
 model ReceptionType {
   id          String  @id @default(uuid()) @db.Uuid
