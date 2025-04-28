@@ -9,9 +9,9 @@ export { seedCompanies } from './seed-company';
 export { seedCompanyApplications } from './seed-company-applications';
 export { seedUserCompanies } from './seed-user-companies';
 export { seedActions } from './seed-actions';
-import { seedCities } from './seed-city';
-import { seedCountries } from './seed-country';
-import { seedDepartments } from './seed-department';
+export { seedCities } from './seed-city';
+export { seedCountries } from './seed-country';
+export { seedDepartments } from './seed-department';
 
 // Exportaciones para módulo de laboratorio
 export { seedDocumentTypes } from './seed-document-types';
