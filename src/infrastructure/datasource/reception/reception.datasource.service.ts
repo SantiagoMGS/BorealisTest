@@ -209,13 +209,13 @@ export class ReceptionDataSourceService {
     // Si hay unidades nuevas, las procesamos
     if (Samples && Samples.length > 0) {
       // Primero eliminamos las unidades existentes
-      await this.prisma.Sample.deleteMany({
+      await this.prisma.sample.deleteMany({
         where: { receptionId: id },
       });
 
       // Luego creamos las nuevas
       for (const unit of Samples) {
-        await this.prisma.Sample.create({
+        await this.prisma.sample.create({
           data: {
             ...unit,
             receptionId: id,

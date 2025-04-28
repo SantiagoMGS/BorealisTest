@@ -20,7 +20,7 @@ export const seedAnalysisTypes = async (prisma: PrismaClient) => {
     // Crear tipos de análisis desde los datos iniciales
     const results = await Promise.all(
       analysisTypeInitialData.map(async (analysisTypeData) => {
-        const { requiredAmount, ...dataToCreate } = analysisTypeData;
+        const { ...dataToCreate } = analysisTypeData;
         return prisma.analysisType
           .create({
             data: dataToCreate,
