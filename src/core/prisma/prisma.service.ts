@@ -74,14 +74,14 @@ export class PrismaService
           // Para modelos relacionados indirectamente a través de Reception
           // Usamos una operación más compleja aquí
           if (params.model === 'SubSample') {
-            params.args.where.receptionUnit = {
+            params.args.where.Sample = {
               reception: {
                 companyId: companyId,
               },
             };
           } else if (params.model === 'Analysis') {
             params.args.where.subSample = {
-              receptionUnit: {
+              Sample: {
                 reception: {
                   companyId: companyId,
                 },
@@ -102,7 +102,7 @@ export class PrismaService
     const modelsToFilter = [
       'Supplier',
       'Reception',
-      'ReceptionUnit',
+      'Sample',
       'SubSample',
       'Analysis',
       'Barrenado',

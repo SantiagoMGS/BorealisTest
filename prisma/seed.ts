@@ -18,6 +18,9 @@ import {
   seedCompanySuppliers,
   seedReceptionTypeOrigins,
   seedAnalysisTypes,
+  seedCities,
+  seedCountries,
+  seedDepartments,
 } from './seed/index';
 
 // Inicializar cliente Prisma
