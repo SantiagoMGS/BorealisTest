@@ -5,6 +5,7 @@ import {
   SupplierDto,
   CityDto,
   DepartmentDto,
+  DoreReceptionTypeDto,
 } from '../dtos';
 import {
   DocumentTypeEntity,
@@ -14,6 +15,7 @@ import {
   CatalogTypeEnum,
   CityEntity,
   DepartmentEntity,
+  DoreReceptionTypeEntity,
 } from '@domain/entities/catalog/catalog.entity';
 
 export class CatalogMapper {
@@ -28,6 +30,7 @@ export class CatalogMapper {
       [CatalogTypeEnum.ANALYSIS_TYPES]: this.analysisTypeToDto,
       [CatalogTypeEnum.CITIES]: this.cityToDto,
       [CatalogTypeEnum.DEPARTMENTS]: this.departmentToDto,
+      [CatalogTypeEnum.DORE_RECEPTION_TYPES]: this.doreReceptionTypeToDto,
     };
 
     return mappers[type] || ((item: any) => item);
@@ -81,6 +84,16 @@ export class CatalogMapper {
       name: entity.name,
       code: entity.code,
       countryId: entity.countryId,
+    };
+  }
+
+  static doreReceptionTypeToDto(
+    entity: DoreReceptionTypeEntity,
+  ): DoreReceptionTypeDto {
+    return {
+      id: entity.id,
+      name: entity.name,
+      description: entity.description,
     };
   }
 }

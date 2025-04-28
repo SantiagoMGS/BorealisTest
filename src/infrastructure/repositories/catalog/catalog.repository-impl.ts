@@ -8,6 +8,7 @@ import {
   AnalysisTypeEntity,
   CityEntity,
   DepartmentEntity,
+  DoreReceptionTypeEntity,
 } from '@domain/entities/catalog/catalog.entity';
 import { CatalogDatasource } from '@infrastructure/datasource/catalog';
 
@@ -25,7 +26,8 @@ export class CatalogRepositoryImpl implements ICatalogReadRepository {
       | ReceptionTypeEntity
       | AnalysisTypeEntity
       | CityEntity
-      | DepartmentEntity,
+      | DepartmentEntity
+      | DoreReceptionTypeEntity,
   >(type: CatalogTypeEnum): Promise<T[]> {
     switch (type) {
       case CatalogTypeEnum.DOCUMENT_TYPES:
@@ -40,6 +42,8 @@ export class CatalogRepositoryImpl implements ICatalogReadRepository {
         return this.getCities() as Promise<T[]>;
       case CatalogTypeEnum.DEPARTMENTS:
         return this.getDepartments() as Promise<T[]>;
+      case CatalogTypeEnum.DORE_RECEPTION_TYPES:
+        return this.getDoreReceptionTypes() as Promise<T[]>;
       default:
         return [] as T[];
     }
@@ -79,5 +83,11 @@ export class CatalogRepositoryImpl implements ICatalogReadRepository {
       ...department,
       code: department.daneCode,
     })) as DepartmentEntity[];
+  }
+
+  async getDoreReceptionTypes(): Promise<DoreReceptionTypeEntity[]> {
+    const doreReceptionTypes =
+      await this.catalogDatasource.getDoreReceptionTypes();
+    return doreReceptionTypes as DoreReceptionTypeEntity[];
   }
 }

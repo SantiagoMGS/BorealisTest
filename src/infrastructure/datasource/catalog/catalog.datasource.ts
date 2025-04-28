@@ -73,4 +73,41 @@ export class CatalogDatasource {
       },
     });
   }
+
+  async getDoreReceptionTypes() {
+    // Buscar el ID del tipo de recepción 'Doré'
+    const doreReceptionType = await this.prisma.receptionType.findFirst({
+      where: {
+        name: 'Doré',
+        isActive: true,
+      },
+    });
+
+    if (!doreReceptionType) {
+      return [];
+    }
+
+    // Obtener los orígenes asociados al tipo Doré
+    const doreOrigins = await this.prisma.receptionTypeOrigin.findMany({
+      where: {
+        receptionTypeId: doreReceptionType.id,
+      },
+      select: {
+        receptionOrigin: {
+          select: {
+            id: true,
+            name: true,
+            description: true,
+          },
+        },
+      },
+    });
+
+    // Transformar a formato requerido
+    return doreOrigins.map((item) => ({
+      id: item.receptionOrigin.id,
+      name: item.receptionOrigin.name,
+      description: item.receptionOrigin.description,
+    }));
+  }
 }
