@@ -1,7 +1,6 @@
 import {
   AnalysisTypeDto,
   DocumentTypeDto,
-  ReceptionOriginDto,
   ReceptionTypeDto,
   SupplierDto,
   CityDto,
@@ -11,7 +10,6 @@ import {
   DocumentTypeEntity,
   SupplierEntity,
   ReceptionTypeEntity,
-  ReceptionOriginEntity,
   AnalysisTypeEntity,
   CatalogTypeEnum,
   CityEntity,
@@ -27,7 +25,6 @@ export class CatalogMapper {
       [CatalogTypeEnum.DOCUMENT_TYPES]: this.documentTypeToDto,
       [CatalogTypeEnum.SUPPLIERS]: this.supplierToDto,
       [CatalogTypeEnum.RECEPTION_TYPES]: this.receptionTypeToDto,
-      [CatalogTypeEnum.RECEPTION_ORIGINS]: this.receptionOriginToDto,
       [CatalogTypeEnum.ANALYSIS_TYPES]: this.analysisTypeToDto,
       [CatalogTypeEnum.CITIES]: this.cityToDto,
       [CatalogTypeEnum.DEPARTMENTS]: this.departmentToDto,
@@ -54,16 +51,6 @@ export class CatalogMapper {
   }
 
   static receptionTypeToDto(entity: ReceptionTypeEntity): ReceptionTypeDto {
-    return {
-      id: entity.id,
-      name: entity.name,
-      description: entity.description,
-    };
-  }
-
-  static receptionOriginToDto(
-    entity: ReceptionOriginEntity,
-  ): ReceptionOriginDto {
     return {
       id: entity.id,
       name: entity.name,

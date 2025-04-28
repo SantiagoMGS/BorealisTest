@@ -4,7 +4,6 @@ import {
   DocumentTypeEntity,
   SupplierEntity,
   ReceptionTypeEntity,
-  ReceptionOriginEntity,
   AnalysisTypeEntity,
   CityEntity,
   DepartmentEntity,
@@ -26,7 +25,6 @@ export class GetCatalogsUseCase {
       | DocumentTypeEntity
       | SupplierEntity
       | ReceptionTypeEntity
-      | ReceptionOriginEntity
       | AnalysisTypeEntity
       | CityEntity
       | DepartmentEntity,

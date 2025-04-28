@@ -3,7 +3,6 @@ import {
   DocumentTypeEntity,
   SupplierEntity,
   ReceptionTypeEntity,
-  ReceptionOriginEntity,
   AnalysisTypeEntity,
   CityEntity,
   DepartmentEntity,
@@ -18,7 +17,6 @@ export interface ICatalogReadRepository {
       | DocumentTypeEntity
       | SupplierEntity
       | ReceptionTypeEntity
-      | ReceptionOriginEntity
       | AnalysisTypeEntity
       | CityEntity
       | DepartmentEntity,
@@ -29,7 +27,6 @@ export interface ICatalogReadRepository {
   getDocumentTypes(): Promise<DocumentTypeEntity[]>;
   getSuppliers(): Promise<SupplierEntity[]>;
   getReceptionTypes(): Promise<ReceptionTypeEntity[]>;
-  getReceptionOrigins(): Promise<ReceptionOriginEntity[]>;
   getAnalysisTypes(): Promise<AnalysisTypeEntity[]>;
   getCities(): Promise<CityEntity[]>;
   getDepartments(): Promise<DepartmentEntity[]>;

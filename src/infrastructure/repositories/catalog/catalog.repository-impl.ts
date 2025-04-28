@@ -5,7 +5,6 @@ import {
   DocumentTypeEntity,
   SupplierEntity,
   ReceptionTypeEntity,
-  ReceptionOriginEntity,
   AnalysisTypeEntity,
   CityEntity,
   DepartmentEntity,
@@ -24,7 +23,6 @@ export class CatalogRepositoryImpl implements ICatalogReadRepository {
       | DocumentTypeEntity
       | SupplierEntity
       | ReceptionTypeEntity
-      | ReceptionOriginEntity
       | AnalysisTypeEntity
       | CityEntity
       | DepartmentEntity,
@@ -36,8 +34,6 @@ export class CatalogRepositoryImpl implements ICatalogReadRepository {
         return this.getSuppliers() as Promise<T[]>;
       case CatalogTypeEnum.RECEPTION_TYPES:
         return this.getReceptionTypes() as Promise<T[]>;
-      case CatalogTypeEnum.RECEPTION_ORIGINS:
-        return this.getReceptionOrigins() as Promise<T[]>;
       case CatalogTypeEnum.ANALYSIS_TYPES:
         return this.getAnalysisTypes() as Promise<T[]>;
       case CatalogTypeEnum.CITIES:
@@ -62,11 +58,6 @@ export class CatalogRepositoryImpl implements ICatalogReadRepository {
   async getReceptionTypes(): Promise<ReceptionTypeEntity[]> {
     const receptionTypes = await this.catalogDatasource.getReceptionTypes();
     return receptionTypes as ReceptionTypeEntity[];
-  }
-
-  async getReceptionOrigins(): Promise<ReceptionOriginEntity[]> {
-    const receptionOrigins = await this.catalogDatasource.getReceptionOrigins();
-    return receptionOrigins as ReceptionOriginEntity[];
   }
 
   async getAnalysisTypes(): Promise<AnalysisTypeEntity[]> {

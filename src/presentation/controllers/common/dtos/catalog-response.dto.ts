@@ -36,17 +36,6 @@ export class ReceptionTypeDto {
   description?: string;
 }
 
-export class ReceptionOriginDto {
-  @ApiProperty({ example: 'cfe72ce1-7144-4d85-9765-1c4c3fd5db4c' })
-  id!: string;
-
-  @ApiProperty({ example: 'Cabeza' })
-  name!: string;
-
-  @ApiProperty({ example: 'Descripción del origen de recepción' })
-  description?: string;
-}
-
 export class AnalysisTypeDto {
   @ApiProperty({ example: 'cfe72ce1-7144-4d85-9765-1c4c3fd5db4c' })
   id!: string;
@@ -97,7 +86,6 @@ export class CatalogResponseDto {
         { $ref: '#/components/schemas/DocumentTypeDto' },
         { $ref: '#/components/schemas/SupplierDto' },
         { $ref: '#/components/schemas/ReceptionTypeDto' },
-        { $ref: '#/components/schemas/ReceptionOriginDto' },
         { $ref: '#/components/schemas/AnalysisTypeDto' },
         { $ref: '#/components/schemas/CityDto' },
         { $ref: '#/components/schemas/DepartmentDto' },
@@ -108,7 +96,6 @@ export class CatalogResponseDto {
     | DocumentTypeDto[]
     | SupplierDto[]
     | ReceptionTypeDto[]
-    | ReceptionOriginDto[]
     | AnalysisTypeDto[]
     | CityDto[]
     | DepartmentDto[];

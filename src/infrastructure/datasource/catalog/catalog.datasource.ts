@@ -39,17 +39,6 @@ export class CatalogDatasource {
     });
   }
 
-  async getReceptionOrigins() {
-    return this.prisma.receptionOrigin.findMany({
-      where: { isActive: true },
-      select: {
-        id: true,
-        name: true,
-        description: true,
-      },
-    });
-  }
-
   async getAnalysisTypes() {
     return this.prisma.analysisType.findMany({
       where: { isActive: true },
