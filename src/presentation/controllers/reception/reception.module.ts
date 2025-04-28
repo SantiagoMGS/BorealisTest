@@ -11,11 +11,17 @@ import { ReceptionRepository } from '@domain/repositories/reception/reception.re
 import { CompanySupplierDataSourceService } from '@infrastructure/datasource/company-supplier';
 import { SampleReceptionController } from './sample-reception.controller';
 import { CompanyModule } from '../company/company.module';
+import { DoreReceptionController } from './dore-reception.controller';
+import { CreateDoreReceptionUseCase } from '@domain/use-cases/reception/create-dore-reception.usecase';
+import { DoreReceptionRepositoryImpl } from '@infrastructure/repositories/reception/dore-reception.repository-impl.service';
+import { DoreReceptionDataSourceService } from '@infrastructure/datasource/reception/dore-reception.datasource.service';
+import { DoreReceptionRepository } from '@domain/repositories/reception/dore-reception.repository';
 
 @Module({
   imports: [PermissionsModule, PrismaModule, CompanyModule],
-  controllers: [SampleReceptionController],
+  controllers: [SampleReceptionController, DoreReceptionController],
   providers: [
+    // Sample reception
     CreateReceptionUseCase,
     GetReceptionUseCase,
     //ListReceptionsUseCase,
@@ -26,6 +32,15 @@ import { CompanyModule } from '../company/company.module';
     {
       provide: ReceptionRepository,
       useClass: ReceptionRepositoryImpl,
+    },
+
+    // Dore reception
+    CreateDoreReceptionUseCase,
+    DoreReceptionDataSourceService,
+    DoreReceptionRepositoryImpl,
+    {
+      provide: DoreReceptionRepository,
+      useClass: DoreReceptionRepositoryImpl,
     },
   ],
   exports: [ReceptionSupplierRepositoryImpl],

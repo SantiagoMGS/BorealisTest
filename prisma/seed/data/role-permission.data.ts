@@ -30,11 +30,6 @@ export const rolePermissionInitialData: {
         actionName: 'UPDATE',
       },
       {
-        subresourceName: 'Gestión',
-        resourceName: 'Gestión',
-        actionName: 'UPDATE',
-      },
-      {
         subresourceName: 'Niton',
         resourceName: 'Resultados',
         actionName: 'UPDATE',
