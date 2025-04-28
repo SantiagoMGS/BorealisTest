@@ -6,6 +6,8 @@ import {
   ReceptionTypeEntity,
   ReceptionOriginEntity,
   AnalysisTypeEntity,
+  CityEntity,
+  DepartmentEntity,
 } from '@domain/entities/catalog/catalog.entity';
 import { ICatalogReadRepository } from '@domain/repositories/catalog';
 
@@ -25,7 +27,9 @@ export class GetCatalogsUseCase {
       | SupplierEntity
       | ReceptionTypeEntity
       | ReceptionOriginEntity
-      | AnalysisTypeEntity,
+      | AnalysisTypeEntity
+      | CityEntity
+      | DepartmentEntity,
   >(catalogType: CatalogTypeEnum): Promise<T[]> {
     return this.catalogRepository.getByType<T>(catalogType);
   }

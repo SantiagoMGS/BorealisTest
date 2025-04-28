@@ -58,6 +58,37 @@ export class AnalysisTypeDto {
   description?: string;
 }
 
+export class DepartmentDto {
+  @ApiProperty({ example: 'cfe72ce1-7144-4d85-9765-1c4c3fd5db4c' })
+  id!: string;
+
+  @ApiProperty({ example: 'Lima' })
+  name!: string;
+
+  @ApiProperty({ example: 'LIM' })
+  code!: string;
+
+  @ApiProperty({
+    example: 'cfe72ce1-7144-4d85-9765-1c4c3fd5db4c',
+    required: false,
+  })
+  countryId?: string;
+}
+
+export class CityDto {
+  @ApiProperty({ example: 'cfe72ce1-7144-4d85-9765-1c4c3fd5db4c' })
+  id!: string;
+
+  @ApiProperty({ example: 'Lima' })
+  name!: string;
+
+  @ApiProperty({ example: 'LIM' })
+  code!: string;
+
+  @ApiProperty({ example: 'cfe72ce1-7144-4d85-9765-1c4c3fd5db4c' })
+  departmentId!: string;
+}
+
 export class CatalogResponseDto {
   @ApiProperty({
     type: 'array',
@@ -68,6 +99,8 @@ export class CatalogResponseDto {
         { $ref: '#/components/schemas/ReceptionTypeDto' },
         { $ref: '#/components/schemas/ReceptionOriginDto' },
         { $ref: '#/components/schemas/AnalysisTypeDto' },
+        { $ref: '#/components/schemas/CityDto' },
+        { $ref: '#/components/schemas/DepartmentDto' },
       ],
     },
   })
@@ -76,5 +109,7 @@ export class CatalogResponseDto {
     | SupplierDto[]
     | ReceptionTypeDto[]
     | ReceptionOriginDto[]
-    | AnalysisTypeDto[];
+    | AnalysisTypeDto[]
+    | CityDto[]
+    | DepartmentDto[];
 }

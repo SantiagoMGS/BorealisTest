@@ -4,6 +4,8 @@ export enum CatalogTypeEnum {
   RECEPTION_TYPES = 'RECEPTION_TYPES',
   RECEPTION_ORIGINS = 'RECEPTION_ORIGINS',
   ANALYSIS_TYPES = 'ANALYSIS_TYPES',
+  CITIES = 'CITIES',
+  DEPARTMENTS = 'DEPARTMENTS',
 }
 
 export interface CatalogItem {
@@ -31,4 +33,14 @@ export interface ReceptionOriginEntity extends CatalogItem {
 
 export interface AnalysisTypeEntity extends CatalogItem {
   description?: string;
+}
+
+export interface DepartmentEntity extends CatalogItem {
+  code: string;
+  countryId?: string;
+}
+
+export interface CityEntity extends CatalogItem {
+  code: string;
+  departmentId: string;
 }

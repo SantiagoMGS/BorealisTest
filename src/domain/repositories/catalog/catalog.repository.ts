@@ -5,6 +5,8 @@ import {
   ReceptionTypeEntity,
   ReceptionOriginEntity,
   AnalysisTypeEntity,
+  CityEntity,
+  DepartmentEntity,
 } from '@domain/entities/catalog/catalog.entity';
 
 /**
@@ -17,7 +19,9 @@ export interface ICatalogReadRepository {
       | SupplierEntity
       | ReceptionTypeEntity
       | ReceptionOriginEntity
-      | AnalysisTypeEntity,
+      | AnalysisTypeEntity
+      | CityEntity
+      | DepartmentEntity,
   >(
     type: CatalogTypeEnum,
   ): Promise<T[]>;
@@ -27,4 +31,6 @@ export interface ICatalogReadRepository {
   getReceptionTypes(): Promise<ReceptionTypeEntity[]>;
   getReceptionOrigins(): Promise<ReceptionOriginEntity[]>;
   getAnalysisTypes(): Promise<AnalysisTypeEntity[]>;
+  getCities(): Promise<CityEntity[]>;
+  getDepartments(): Promise<DepartmentEntity[]>;
 }

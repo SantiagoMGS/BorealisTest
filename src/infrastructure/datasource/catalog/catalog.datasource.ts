@@ -60,4 +60,28 @@ export class CatalogDatasource {
       },
     });
   }
+
+  async getCities() {
+    return this.prisma.city.findMany({
+      where: { isActive: true },
+      select: {
+        id: true,
+        name: true,
+        daneCode: true,
+        departmentId: true,
+      },
+    });
+  }
+
+  async getDepartments() {
+    return this.prisma.department.findMany({
+      where: { isActive: true },
+      select: {
+        id: true,
+        name: true,
+        daneCode: true,
+        countryId: true,
+      },
+    });
+  }
 }

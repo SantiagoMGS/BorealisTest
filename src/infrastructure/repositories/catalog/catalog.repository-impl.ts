@@ -7,6 +7,8 @@ import {
   ReceptionTypeEntity,
   ReceptionOriginEntity,
   AnalysisTypeEntity,
+  CityEntity,
+  DepartmentEntity,
 } from '@domain/entities/catalog/catalog.entity';
 import { CatalogDatasource } from '@infrastructure/datasource/catalog';
 
@@ -23,7 +25,9 @@ export class CatalogRepositoryImpl implements ICatalogReadRepository {
       | SupplierEntity
       | ReceptionTypeEntity
       | ReceptionOriginEntity
-      | AnalysisTypeEntity,
+      | AnalysisTypeEntity
+      | CityEntity
+      | DepartmentEntity,
   >(type: CatalogTypeEnum): Promise<T[]> {
     switch (type) {
       case CatalogTypeEnum.DOCUMENT_TYPES:
@@ -36,6 +40,10 @@ export class CatalogRepositoryImpl implements ICatalogReadRepository {
         return this.getReceptionOrigins() as Promise<T[]>;
       case CatalogTypeEnum.ANALYSIS_TYPES:
         return this.getAnalysisTypes() as Promise<T[]>;
+      case CatalogTypeEnum.CITIES:
+        return this.getCities() as Promise<T[]>;
+      case CatalogTypeEnum.DEPARTMENTS:
+        return this.getDepartments() as Promise<T[]>;
       default:
         return [] as T[];
     }
@@ -64,5 +72,21 @@ export class CatalogRepositoryImpl implements ICatalogReadRepository {
   async getAnalysisTypes(): Promise<AnalysisTypeEntity[]> {
     const analysisTypes = await this.catalogDatasource.getAnalysisTypes();
     return analysisTypes as AnalysisTypeEntity[];
+  }
+
+  async getCities(): Promise<CityEntity[]> {
+    const cities = await this.catalogDatasource.getCities();
+    return cities.map((city) => ({
+      ...city,
+      code: city.daneCode,
+    })) as CityEntity[];
+  }
+
+  async getDepartments(): Promise<DepartmentEntity[]> {
+    const departments = await this.catalogDatasource.getDepartments();
+    return departments.map((department) => ({
+      ...department,
+      code: department.daneCode,
+    })) as DepartmentEntity[];
   }
 }
