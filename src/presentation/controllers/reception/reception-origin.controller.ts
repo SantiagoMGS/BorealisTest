@@ -1,0 +1,53 @@
+import {
+  Controller,
+  Get,
+  Param,
+  UseInterceptors,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiOkResponse,
+  ApiBearerAuth,
+  ApiParam,
+} from '@nestjs/swagger';
+import { ResponseInterceptor } from '@core/interceptores/response.interceptor';
+import { JwtAuthGuard } from '@infrastructure/guards/jwt-auth.guard';
+import { PermissionsGuard } from '@infrastructure/guards/permissions.guard';
+import { RequirePermission } from '@core/decorators/require-permission.decorator';
+import { DefaultAnalysisResponseDto } from './dtos';
+import { GetDefaultAnalysisUseCase } from '@domain/use-cases/reception/get-default-analysis.usecase';
+
+@ApiTags('Orígenes de Recepción')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard, PermissionsGuard)
+@UseInterceptors(ResponseInterceptor)
+//@RequirePermission(ReceptionOriginController.name)
+@Controller('reception-origins')
+export class ReceptionOriginController {
+  constructor(
+    private readonly getDefaultAnalysisUseCase: GetDefaultAnalysisUseCase,
+  ) {}
+
+  @Get('default-analysis/:originId')
+  @ApiOperation({
+    summary: 'Obtener análisis por defecto para un origen de recepción',
+    description:
+      'Devuelve la lista de análisis por defecto que se deben realizar para un origen de recepción específico',
+  })
+  @ApiParam({
+    name: 'originId',
+    type: 'string',
+    description: 'ID del origen de recepción',
+  })
+  @ApiOkResponse({
+    description: 'Lista de análisis por defecto obtenida correctamente',
+    type: [DefaultAnalysisResponseDto],
+  })
+  async getDefaultAnalysisByOrigin(
+    @Param('originId') originId: string,
+  ): Promise<DefaultAnalysisResponseDto[]> {
+    return this.getDefaultAnalysisUseCase.execute(originId);
+  }
+}
