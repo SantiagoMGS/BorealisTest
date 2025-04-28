@@ -31,6 +31,9 @@ async function main() {
 
     // Ejecutar semillas en orden
     // Semillas para configurar el sistema
+    await seedCountries(prisma);
+    await seedDepartments(prisma);
+    await seedCities(prisma);
     await seedApplications(prisma); // Primero las aplicaciones
     await seedCompanies(prisma); // Después las compañías
     await seedCompanyApplications(prisma); // Relaciones entre compañías y aplicaciones
