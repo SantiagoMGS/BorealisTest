@@ -13,7 +13,7 @@ import {
 } from 'class-validator';
 
 // DTO para las unidades de recepción (items)
-export class CreateReceptionUnitDto {
+export class CreateSampleDto {
   @ApiProperty({
     description: 'ID del origen de recepción',
     example: '123e4567-e89b-12d3-a456-426614174000',
@@ -85,11 +85,11 @@ export class CreateReceptionDto {
 
   @ApiProperty({
     description: 'Unidades de recepción',
-    type: [CreateReceptionUnitDto],
+    type: [CreateSampleDto],
   })
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => CreateReceptionUnitDto)
+  @Type(() => CreateSampleDto)
   @IsNotEmpty()
-  items!: CreateReceptionUnitDto[];
+  items!: CreateSampleDto[];
 }

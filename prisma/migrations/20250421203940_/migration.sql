@@ -58,19 +58,19 @@ CREATE TABLE "Reception" (
 );
 
 -- CreateTable
-CREATE TABLE "ReceptionUnit" (
+CREATE TABLE "Sample" (
     "id" UUID NOT NULL,
     "receptionId" UUID NOT NULL,
     "recievedWeight" DECIMAL(65,30) NOT NULL,
     "dryWeight" DECIMAL(65,30) NOT NULL,
 
-    CONSTRAINT "ReceptionUnit_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Sample_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "SubSample" (
     "id" UUID NOT NULL,
-    "receptionUnitId" UUID NOT NULL,
+    "SampleId" UUID NOT NULL,
     "subSampleType" "SubSampleType" NOT NULL,
     "weight" DECIMAL(65,30) NOT NULL,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
@@ -85,7 +85,7 @@ CREATE TABLE "SubSample" (
 -- CreateTable
 CREATE TABLE "Barrenado" (
     "id" UUID NOT NULL,
-    "receptionUnitId" UUID NOT NULL,
+    "SampleId" UUID NOT NULL,
     "totalWeight" DECIMAL(65,30) NOT NULL,
     "balanceWeight" DECIMAL(65,30) NOT NULL,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
@@ -138,13 +138,13 @@ ALTER TABLE "Reception" ADD CONSTRAINT "Reception_companyId_fkey" FOREIGN KEY ("
 ALTER TABLE "Reception" ADD CONSTRAINT "Reception_supplierId_fkey" FOREIGN KEY ("supplierId") REFERENCES "Supplier"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ReceptionUnit" ADD CONSTRAINT "ReceptionUnit_receptionId_fkey" FOREIGN KEY ("receptionId") REFERENCES "Reception"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Sample" ADD CONSTRAINT "Sample_receptionId_fkey" FOREIGN KEY ("receptionId") REFERENCES "Reception"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "SubSample" ADD CONSTRAINT "SubSample_receptionUnitId_fkey" FOREIGN KEY ("receptionUnitId") REFERENCES "ReceptionUnit"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "SubSample" ADD CONSTRAINT "SubSample_SampleId_fkey" FOREIGN KEY ("SampleId") REFERENCES "Sample"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Barrenado" ADD CONSTRAINT "Barrenado_receptionUnitId_fkey" FOREIGN KEY ("receptionUnitId") REFERENCES "ReceptionUnit"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Barrenado" ADD CONSTRAINT "Barrenado_SampleId_fkey" FOREIGN KEY ("SampleId") REFERENCES "Sample"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Analysis" ADD CONSTRAINT "Analysis_analysisTypeId_fkey" FOREIGN KEY ("analysisTypeId") REFERENCES "AnalysisType"("id") ON DELETE CASCADE ON UPDATE CASCADE;

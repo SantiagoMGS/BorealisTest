@@ -6,7 +6,7 @@
   - You are about to drop the `Barrenado` table. If the table is not empty, all the data it contains will be lost.
   - You are about to drop the `CompanySupplier` table. If the table is not empty, all the data it contains will be lost.
   - You are about to drop the `Reception` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `ReceptionUnit` table. If the table is not empty, all the data it contains will be lost.
+  - You are about to drop the `Sample` table. If the table is not empty, all the data it contains will be lost.
   - You are about to drop the `SubSample` table. If the table is not empty, all the data it contains will be lost.
   - You are about to drop the `Supplier` table. If the table is not empty, all the data it contains will be lost.
 
@@ -18,7 +18,7 @@ ALTER TABLE "Analysis" DROP CONSTRAINT "Analysis_analysisTypeId_fkey";
 ALTER TABLE "Analysis" DROP CONSTRAINT "Analysis_subSampleId_fkey";
 
 -- DropForeignKey
-ALTER TABLE "Barrenado" DROP CONSTRAINT "Barrenado_receptionUnitId_fkey";
+ALTER TABLE "Barrenado" DROP CONSTRAINT "Barrenado_SampleId_fkey";
 
 -- DropForeignKey
 ALTER TABLE "CompanySupplier" DROP CONSTRAINT "CompanySupplier_companyId_fkey";
@@ -33,10 +33,10 @@ ALTER TABLE "Reception" DROP CONSTRAINT "Reception_companyId_fkey";
 ALTER TABLE "Reception" DROP CONSTRAINT "Reception_supplierId_fkey";
 
 -- DropForeignKey
-ALTER TABLE "ReceptionUnit" DROP CONSTRAINT "ReceptionUnit_receptionId_fkey";
+ALTER TABLE "Sample" DROP CONSTRAINT "Sample_receptionId_fkey";
 
 -- DropForeignKey
-ALTER TABLE "SubSample" DROP CONSTRAINT "SubSample_receptionUnitId_fkey";
+ALTER TABLE "SubSample" DROP CONSTRAINT "SubSample_SampleId_fkey";
 
 -- DropTable
 DROP TABLE "Analysis";
@@ -54,7 +54,7 @@ DROP TABLE "CompanySupplier";
 DROP TABLE "Reception";
 
 -- DropTable
-DROP TABLE "ReceptionUnit";
+DROP TABLE "Sample";
 
 -- DropTable
 DROP TABLE "SubSample";
@@ -122,7 +122,7 @@ CREATE TABLE "reception_units" (
 -- CreateTable
 CREATE TABLE "sub_samples" (
     "id" UUID NOT NULL,
-    "receptionUnitId" UUID NOT NULL,
+    "SampleId" UUID NOT NULL,
     "subSampleType" "SubSampleType" NOT NULL,
     "weight" DECIMAL(65,30) NOT NULL,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
@@ -137,7 +137,7 @@ CREATE TABLE "sub_samples" (
 -- CreateTable
 CREATE TABLE "barrenados" (
     "id" UUID NOT NULL,
-    "receptionUnitId" UUID NOT NULL,
+    "SampleId" UUID NOT NULL,
     "totalWeight" DECIMAL(65,30) NOT NULL,
     "balanceWeight" DECIMAL(65,30) NOT NULL,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
@@ -205,10 +205,10 @@ CREATE INDEX "receptions_supplierId_idx" ON "receptions"("supplierId");
 CREATE INDEX "reception_units_receptionId_idx" ON "reception_units"("receptionId");
 
 -- CreateIndex
-CREATE INDEX "sub_samples_receptionUnitId_idx" ON "sub_samples"("receptionUnitId");
+CREATE INDEX "sub_samples_SampleId_idx" ON "sub_samples"("SampleId");
 
 -- CreateIndex
-CREATE INDEX "barrenados_receptionUnitId_idx" ON "barrenados"("receptionUnitId");
+CREATE INDEX "barrenados_SampleId_idx" ON "barrenados"("SampleId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "analysis_types_name_key" ON "analysis_types"("name");
@@ -238,10 +238,10 @@ ALTER TABLE "receptions" ADD CONSTRAINT "receptions_supplierId_fkey" FOREIGN KEY
 ALTER TABLE "reception_units" ADD CONSTRAINT "reception_units_receptionId_fkey" FOREIGN KEY ("receptionId") REFERENCES "receptions"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "sub_samples" ADD CONSTRAINT "sub_samples_receptionUnitId_fkey" FOREIGN KEY ("receptionUnitId") REFERENCES "reception_units"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "sub_samples" ADD CONSTRAINT "sub_samples_SampleId_fkey" FOREIGN KEY ("SampleId") REFERENCES "reception_units"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "barrenados" ADD CONSTRAINT "barrenados_receptionUnitId_fkey" FOREIGN KEY ("receptionUnitId") REFERENCES "reception_units"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "barrenados" ADD CONSTRAINT "barrenados_SampleId_fkey" FOREIGN KEY ("SampleId") REFERENCES "reception_units"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "analyses" ADD CONSTRAINT "analyses_analysisTypeId_fkey" FOREIGN KEY ("analysisTypeId") REFERENCES "analysis_types"("id") ON DELETE CASCADE ON UPDATE CASCADE;

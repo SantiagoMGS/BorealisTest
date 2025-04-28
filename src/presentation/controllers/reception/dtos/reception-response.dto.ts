@@ -98,5 +98,5 @@ export class ReceptionResponseDto {
     required: false,
     type: 'array',
   })
-  receptionUnits?: any[];
+  Samples?: any[];
 }

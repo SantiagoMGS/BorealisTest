@@ -1,7 +1,7 @@
 /**
  * Entidad de dominio para unidad de recepción
  */
-export interface IReceptionUnitEntity {
+export interface ISampleEntity {
   receptionOriginId: string;
   recievedWeight: number;
   dryWeight: number;
@@ -17,5 +17,5 @@ export interface IReceptionEntity {
   receptionDate: Date;
   batchNumber?: string;
   observation?: string;
-  receptionUnits: IReceptionUnitEntity[];
+  Samples: ISampleEntity[];
 }

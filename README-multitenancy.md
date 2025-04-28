@@ -98,7 +98,7 @@ Para `SubSample` o `Analysis` que tienen relaciones más profundas:
 
 ```typescript
 params.args.where.subSample = {
-  receptionUnit: {
+  Sample: {
     reception: {
       companyId: companyId,
     },

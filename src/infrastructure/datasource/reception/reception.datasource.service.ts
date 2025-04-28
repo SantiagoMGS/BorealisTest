@@ -11,19 +11,19 @@ export class ReceptionDataSourceService {
     reception: IReceptionEntity,
   ): Promise<IReceptionResponse> {
     // Extraemos las unidades de recepción
-    const { receptionUnits, ...receptionData } = reception;
+    const { Samples, ...receptionData } = reception;
 
     // Usamos el primer origen como origen principal de la recepción
     // Esto es necesario porque el esquema de Prisma requiere un receptionOriginId
-    const receptionOriginId = receptionUnits[0].receptionOriginId;
+    const receptionOriginId = Samples[0].receptionOriginId;
 
     // Creamos la recepción con sus unidades de recepción asociadas
     const createdReception = await this.prisma.reception.create({
       data: {
         ...receptionData,
         receptionOriginId,
-        receptionUnits: {
-          create: receptionUnits,
+        Samples: {
+          create: Samples,
         },
       },
       include: {
@@ -31,7 +31,7 @@ export class ReceptionDataSourceService {
         supplier: true,
         receptionType: true,
         receptionOrigin: true,
-        receptionUnits: {
+        Samples: {
           include: {
             receptionOrigin: true,
           },
@@ -89,7 +89,7 @@ export class ReceptionDataSourceService {
             name: true,
           },
         },
-        receptionUnits: {
+        Samples: {
           include: {
             receptionOrigin: {
               select: {
@@ -158,7 +158,7 @@ export class ReceptionDataSourceService {
             name: true,
           },
         },
-        receptionUnits: {
+        Samples: {
           include: {
             receptionOrigin: {
               select: {
@@ -187,7 +187,7 @@ export class ReceptionDataSourceService {
     reception: Partial<IReceptionEntity>,
   ): Promise<IReceptionResponse> {
     // Si hay unidades de recepción para actualizar, las manejamos por separado
-    const { receptionUnits, ...receptionData } = reception;
+    const { Samples, ...receptionData } = reception;
 
     // Actualizamos solo los datos de la recepción principal
     const updatedReception = await this.prisma.reception.update({
@@ -198,7 +198,7 @@ export class ReceptionDataSourceService {
         supplier: true,
         receptionType: true,
         receptionOrigin: true,
-        receptionUnits: {
+        Samples: {
           include: {
             receptionOrigin: true,
           },
@@ -207,15 +207,15 @@ export class ReceptionDataSourceService {
     });
 
     // Si hay unidades nuevas, las procesamos
-    if (receptionUnits && receptionUnits.length > 0) {
+    if (Samples && Samples.length > 0) {
       // Primero eliminamos las unidades existentes
-      await this.prisma.receptionUnit.deleteMany({
+      await this.prisma.sample.deleteMany({
         where: { receptionId: id },
       });
 
       // Luego creamos las nuevas
-      for (const unit of receptionUnits) {
-        await this.prisma.receptionUnit.create({
+      for (const unit of Samples) {
+        await this.prisma.sample.create({
           data: {
             ...unit,
             receptionId: id,
@@ -231,7 +231,7 @@ export class ReceptionDataSourceService {
           supplier: true,
           receptionType: true,
           receptionOrigin: true,
-          receptionUnits: {
+          Samples: {
             include: {
               receptionOrigin: true,
             },

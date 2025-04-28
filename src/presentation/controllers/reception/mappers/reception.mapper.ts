@@ -17,7 +17,7 @@ export class ReceptionMapper {
       receptionDate: createDto.receptionDate,
       batchNumber: createDto.batchNumber,
       observation: createDto.observation,
-      receptionUnits: createDto.items.map((item) => ({
+      Samples: createDto.items.map((item) => ({
         receptionOriginId: item.receptionOriginId,
         recievedWeight: item.recievedWeight,
         dryWeight: item.dryWeight,
@@ -55,8 +55,8 @@ export class ReceptionMapper {
       responseDto.receptionOrigin = reception.receptionOrigin;
     }
 
-    if (reception.receptionUnits) {
-      responseDto.receptionUnits = reception.receptionUnits;
+    if (reception.Samples) {
+      responseDto.Samples = reception.Samples;
     }
 
     return responseDto;
