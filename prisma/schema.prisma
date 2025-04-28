@@ -568,12 +568,13 @@ model City {
 model mineType {
   id String @id @default(uuid()) @db.Uuid
   name String @unique
-  royalty_percentage Decimal @db.Decimal(7, 4)
+  royaltyPercentage Decimal @db.Decimal(7, 4)
   isActive Boolean @default(true)
 
   supplierMiningTitles SupplierMiningTitle[]
 
   @@index([name])
+  @@map("mine_types")
 }
 
 model SupplierMiningTitle {
