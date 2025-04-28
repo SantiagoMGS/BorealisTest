@@ -8,6 +8,7 @@ import { FindAllSupplierUseCase } from '@domain/use-cases/supplier/find-all-supp
 import { FindSupplierUseCase } from '@domain/use-cases/supplier/find-supplier.use-case';
 import { UpdateSupplierUseCase } from '@domain/use-cases/supplier/update-supplier.use-case';
 import { DeleteSupplierUseCase } from '@domain/use-cases/supplier/delete-supplier.use-case';
+import { FindMiningTitlesUseCase } from '@domain/use-cases/supplier/find-mining-title.use-case';
 import { PermissionsModule } from '@core/permissions/permissions.module';
 
 @Module({
@@ -19,6 +20,7 @@ import { PermissionsModule } from '@core/permissions/permissions.module';
     FindSupplierUseCase,
     UpdateSupplierUseCase,
     DeleteSupplierUseCase,
+    FindMiningTitlesUseCase,
     SupplierDataSourceService,
     {
       provide: SupplierRepository,

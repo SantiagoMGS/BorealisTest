@@ -6,7 +6,10 @@ import {
 import { PrismaService } from '@core/prisma/prisma.service';
 import { ISupplierEntity } from '@domain/entities/supplier';
 import { Prisma } from '@prisma/client';
-import { ISupplierResponse } from '@domain/interfaces/supplier';
+import {
+  ISupplierResponse,
+  IMiningTitleResponse,
+} from '@domain/interfaces/supplier';
 
 @Injectable()
 export class SupplierDataSourceService {
@@ -177,5 +180,57 @@ export class SupplierDataSourceService {
     }
 
     return supplier;
+  }
+
+  async findMiningTitles(supplierId: string): Promise<IMiningTitleResponse[]> {
+    // Primero verificar si existe el proveedor
+    const existingSupplier = await this.prisma.supplier.findUnique({
+      where: { id: supplierId },
+    });
+
+    if (!existingSupplier) {
+      throw new NotFoundException('Proveedor no encontrado');
+    }
+
+    if (!existingSupplier.isActive) {
+      throw new NotFoundException('Proveedor inactivo');
+    }
+
+    // Buscar todos los títulos mineros del proveedor
+    const miningTitles = await this.prisma.supplierMiningTitle.findMany({
+      where: { supplierId },
+      include: {
+        mineType: true,
+        city: {
+          include: {
+            department: true,
+          },
+        },
+      },
+    });
+
+    if (miningTitles.length === 0) {
+      throw new NotFoundException(
+        'No se encontraron títulos mineros para este proveedor',
+      );
+    }
+
+    return miningTitles.map((miningTitle) => ({
+      id: miningTitle.id,
+      name: miningTitle.name,
+      mineTypeId: miningTitle.mineTypeId,
+      mineTypeName: miningTitle.mineType.name,
+      royaltyPercentage: miningTitle.mineType.royaltyPercentage.toString(),
+      cityId: miningTitle.cityId,
+      cityName: miningTitle.city.name,
+      departmentId: miningTitle.city.departmentId,
+      departmentName: miningTitle.city.department.name,
+    }));
+  }
+
+  async findMiningTitle(supplierId: string): Promise<IMiningTitleResponse> {
+    // Este método puede mantenerse para compatibilidad o eliminarse
+    const titles = await this.findMiningTitles(supplierId);
+    return titles[0]; // Retorna el primer título encontrado
   }
 }

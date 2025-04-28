@@ -26,9 +26,10 @@ import {
   CreateSupplierDto,
   SupplierResponseDto,
   UpdateSupplierDto,
+  SupplierMiningTitlesResponseDto,
 } from './dtos';
 import { ErrorResponseDto } from '../auth/dtos';
-import { SupplierMapper } from './mappers';
+import { SupplierMapper, MiningTitleMapper } from './mappers';
 import { CurrentUser } from '@core/decorators/current-user.decorator';
 import { ResponseInterceptor } from '@core/interceptores/response.interceptor';
 import { CustomResponse } from '@core/decorators/custom-response.decorator';
@@ -40,6 +41,7 @@ import { UpdateSupplierUseCase } from '@domain/use-cases/supplier/update-supplie
 import { DeleteSupplierUseCase } from '@domain/use-cases/supplier/delete-supplier.use-case';
 import { RequirePermission } from '@core/decorators/require-permission.decorator';
 import { PermissionsGuard } from '@infrastructure/guards/permissions.guard';
+import { FindMiningTitlesUseCase } from '@domain/use-cases/supplier/find-mining-title.use-case';
 
 @ApiTags('Proveedores')
 @ApiBearerAuth()
@@ -54,6 +56,7 @@ export class SupplierController {
     private readonly findSupplierUseCase: FindSupplierUseCase,
     private readonly updateSupplierUseCase: UpdateSupplierUseCase,
     private readonly deleteSupplierUseCase: DeleteSupplierUseCase,
+    private readonly findMiningTitlesUseCase: FindMiningTitlesUseCase,
   ) {}
 
   // Crear un nuevo proveedor
@@ -207,5 +210,30 @@ export class SupplierController {
   ): Promise<SupplierResponseDto> {
     const supplier = await this.deleteSupplierUseCase.execute(id, user.id);
     return SupplierMapper.toResponseDto(supplier);
+  }
+
+  @Get('mining-titles/:id')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: 'Obtener los títulos mineros de un proveedor',
+  })
+  @ApiParam({
+    name: 'id',
+    type: String,
+    description: 'ID del proveedor',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Títulos mineros encontrados',
+    type: SupplierMiningTitlesResponseDto,
+  })
+  @CustomResponse({
+    successMessage: 'Títulos mineros encontrados exitosamente',
+  })
+  async findMiningTitles(
+    @Param('id') id: string,
+  ): Promise<SupplierMiningTitlesResponseDto> {
+    const miningTitles = await this.findMiningTitlesUseCase.execute(id);
+    return { miningTitles: MiningTitleMapper.toResponseDtoList(miningTitles) };
   }
 }

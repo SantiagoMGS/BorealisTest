@@ -1,5 +1,8 @@
 import { ISupplierEntity } from '@domain/entities/supplier';
-import { ISupplierResponse } from '@domain/interfaces/supplier';
+import {
+  ISupplierResponse,
+  IMiningTitleResponse,
+} from '@domain/interfaces/supplier';
 
 export abstract class SupplierRepository {
   abstract createSupplier(
@@ -16,4 +19,7 @@ export abstract class SupplierRepository {
   ): Promise<ISupplierResponse>;
   abstract delete(id: string, userId?: string): Promise<ISupplierResponse>;
   abstract findById(id: string): Promise<ISupplierResponse>;
+  abstract findMiningTitles(
+    supplierId: string,
+  ): Promise<IMiningTitleResponse[]>;
 }
