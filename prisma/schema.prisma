@@ -259,7 +259,8 @@ model Supplier {
   companies         CompanySupplier[]
   receptions        Reception[]
 
-  documentType DocumentType @relation(fields: [documentTypeId], references: [id], onDelete: Cascade)
+  documentType         DocumentType          @relation(fields: [documentTypeId], references: [id], onDelete: Cascade)
+  supplierMiningTitles SupplierMiningTitle[]
 
   @@unique([documentNumber])
   @@unique([documentNumber, name])
@@ -285,6 +286,16 @@ model CompanySupplier {
   @@map("company_suppliers")
 }
 
+model MeasurementUnit {
+  id        String @id @default(uuid()) @db.Uuid
+  name      String @unique
+  shortName String @unique
+
+  isActive Boolean @default(true)
+
+  @@map("measurement_units")
+}
+
 // Tipos de recepción: Dore, Muestras, Mineral, Concentrado.
 model ReceptionType {
   id          String  @id @default(uuid()) @db.Uuid
@@ -303,6 +314,7 @@ model ReceptionType {
 model ReceptionOrigin {
   id          String  @id @default(uuid()) @db.Uuid
   name        String  @unique
+  shortName   String  @unique
   description String?
   isActive    Boolean @default(true)
 
@@ -376,7 +388,32 @@ model Sample {
 
   @@index([receptionId])
   @@index([receptionOriginId])
-  @@map("samples")
+  @@map("reception_units")
+}
+
+model Dore {
+  id             String  @id @default(uuid()) @db.Uuid
+  code           Int     @unique
+  recievedWeight Decimal @default(0) @db.Decimal(10, 4)
+  finalWeight    Decimal @default(0) @db.Decimal(10, 4)
+  goldLaw        Decimal @default(0) @db.Decimal(10, 4)
+  goldWeight     Decimal @default(0) @db.Decimal(10, 4)
+  silverLaw      Decimal @default(0) @db.Decimal(10, 4)
+  silverWeight   Decimal @default(0) @db.Decimal(10, 4)
+  goldBalance    Decimal @default(0) @db.Decimal(10, 4)
+  silverBalance  Decimal @default(0) @db.Decimal(10, 4)
+  approvedLaw    Boolean @default(false)
+  observation    String?
+  statusId       String  @db.Uuid
+
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String?  @db.Uuid
+  updatedBy String?  @db.Uuid
+
+  @@index([code])
+  @@map("dore")
 }
 
 // Relación entre tipos de recepción y tipos de submuestra válidos
@@ -519,9 +556,40 @@ model City {
   isActive     Boolean @default(true)
   departmentId String  @db.Uuid
 
-  department Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  department           Department            @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  supplierMiningTitles SupplierMiningTitle[]
 
-  //supplierMiningTitles supplierMiningTitles[]
+  @@unique([name, daneCode, departmentId])
   @@index([name])
   @@map("cities")
+}
+
+model mineType {
+  id                String  @id @default(uuid()) @db.Uuid
+  name              String  @unique
+  royaltyPercentage Decimal @db.Decimal(7, 4)
+  isActive          Boolean @default(true)
+
+  supplierMiningTitles SupplierMiningTitle[]
+
+  @@index([name])
+  @@map("mine_types")
+}
+
+model SupplierMiningTitle {
+  id         String @id @default(uuid()) @db.Uuid
+  name       String @unique
+  supplierId String @db.Uuid
+  mineTypeId String @db.Uuid
+  cityId     String @db.Uuid
+
+  isActive Boolean @default(true)
+
+  supplier Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  city     City     @relation(fields: [cityId], references: [id], onDelete: Cascade)
+  mineType mineType @relation(fields: [mineTypeId], references: [id], onDelete: Cascade)
+
+  @@index([supplierId])
+  @@index([mineTypeId])
+  @@map("supplier_mining_titles")
 }

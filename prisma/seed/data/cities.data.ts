@@ -5,11 +5,6 @@ export const cityInitialData = [
     department: { connect: { name: 'ANTIOQUIA' } },
   },
   {
-    name: 'MEDELLIN',
-    daneCode: '001',
-    department: { connect: { name: 'ANTIOQUIA' } },
-  },
-  {
     name: 'ABEJORRAL',
     daneCode: '002',
     department: { connect: { name: 'ANTIOQUIA' } },
