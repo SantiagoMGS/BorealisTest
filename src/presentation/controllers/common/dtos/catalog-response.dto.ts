@@ -89,6 +89,17 @@ export class DoreReceptionTypeDto {
   description?: string;
 }
 
+export class SampleReceptionTypeDto {
+  @ApiProperty({ example: 'cfe72ce1-7144-4d85-9765-1c4c3fd5db4c' })
+  id!: string;
+
+  @ApiProperty({ example: 'Cabeza' })
+  name!: string;
+
+  @ApiProperty({ example: 'Descripción del origen para Muestras' })
+  description?: string;
+}
+
 export class CatalogResponseDto {
   @ApiProperty({
     type: 'array',
@@ -101,6 +112,7 @@ export class CatalogResponseDto {
         { $ref: '#/components/schemas/CityDto' },
         { $ref: '#/components/schemas/DepartmentDto' },
         { $ref: '#/components/schemas/DoreReceptionTypeDto' },
+        { $ref: '#/components/schemas/SampleReceptionTypeDto' },
       ],
     },
   })
@@ -111,5 +123,6 @@ export class CatalogResponseDto {
     | AnalysisTypeDto[]
     | CityDto[]
     | DepartmentDto[]
-    | DoreReceptionTypeDto[];
+    | DoreReceptionTypeDto[]
+    | SampleReceptionTypeDto[];
 }

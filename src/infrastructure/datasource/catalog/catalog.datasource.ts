@@ -110,4 +110,41 @@ export class CatalogDatasource {
       description: item.receptionOrigin.description,
     }));
   }
+
+  async getSampleReceptionTypes() {
+    // Buscar el ID del tipo de recepción 'Muestra'
+    const sampleReceptionType = await this.prisma.receptionType.findFirst({
+      where: {
+        name: 'Muestra',
+        isActive: true,
+      },
+    });
+
+    if (!sampleReceptionType) {
+      return [];
+    }
+
+    // Obtener los orígenes asociados al tipo Muestra
+    const sampleOrigins = await this.prisma.receptionTypeOrigin.findMany({
+      where: {
+        receptionTypeId: sampleReceptionType.id,
+      },
+      select: {
+        receptionOrigin: {
+          select: {
+            id: true,
+            name: true,
+            description: true,
+          },
+        },
+      },
+    });
+
+    // Transformar a formato requerido
+    return sampleOrigins.map((item) => ({
+      id: item.receptionOrigin.id,
+      name: item.receptionOrigin.name,
+      description: item.receptionOrigin.description,
+    }));
+  }
 }

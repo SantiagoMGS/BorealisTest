@@ -6,6 +6,7 @@ export enum CatalogTypeEnum {
   CITIES = 'CITIES',
   DEPARTMENTS = 'DEPARTMENTS',
   DORE_RECEPTION_TYPES = 'DORE_RECEPTION_TYPES',
+  SAMPLE_RECEPTION_TYPES = 'SAMPLE_RECEPTION_TYPES',
 }
 
 export interface CatalogItem {
@@ -42,5 +43,9 @@ export interface CityEntity extends CatalogItem {
 }
 
 export interface DoreReceptionTypeEntity extends CatalogItem {
+  description?: string;
+}
+
+export interface SampleReceptionTypeEntity extends CatalogItem {
   description?: string;
 }
