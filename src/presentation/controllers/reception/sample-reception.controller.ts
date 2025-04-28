@@ -25,12 +25,12 @@ import { RequirePermission } from '@core/decorators/require-permission.decorator
 import { CurrentUser } from '@core/decorators/current-user.decorator';
 import { IAuthUser } from '@domain/entities/auth';
 
-@ApiTags('Recepciones')
+@ApiTags('Recepciones de Muestras')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @UseInterceptors(ResponseInterceptor)
-//@RequirePermission(SampleReceptionController.name)
-@Controller('receptions')
+@RequirePermission(SampleReceptionController.name)
+@Controller('sample-receptions')
 export class SampleReceptionController {
   constructor(
     private readonly createReceptionUseCase: CreateReceptionUseCase,

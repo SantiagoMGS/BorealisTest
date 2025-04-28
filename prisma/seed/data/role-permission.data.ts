@@ -88,7 +88,7 @@ export const rolePermissionInitialData: {
       {
         subresourceName: 'Recepción Muestras',
         resourceName: 'Recepción',
-        actionName: 'CREATE',
+        actionName: 'READ',
       },
       {
         subresourceName: 'Absorción atómica',

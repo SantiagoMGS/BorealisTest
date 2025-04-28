@@ -8,7 +8,7 @@ import { PrismaModule } from '@core/prisma/prisma.module';
 import { UserModule } from './presentation/controllers/user/user.module';
 import { SupplierModule } from './presentation/controllers/supplier/supplier.module';
 import { PermissionsModule } from '@core/permissions/permissions.module';
-import { CompanySupplierModule } from './presentation/controllers/company-supplier/company-supplier.module';
+import { CompanyModule } from './presentation/controllers/company/company.module';
 import { TenantModule } from '@core/config/tenant.module';
 import { ReceptionModule } from '@presentation/controllers/reception/reception.module';
 @Module({
@@ -22,7 +22,7 @@ import { ReceptionModule } from '@presentation/controllers/reception/reception.m
     UserModule,
     SupplierModule,
     PermissionsModule,
-    CompanySupplierModule,
+    CompanyModule,
     ReceptionModule,
   ],
   providers: [JwtStrategy],

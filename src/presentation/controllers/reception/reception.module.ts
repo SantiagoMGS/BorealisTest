@@ -8,12 +8,12 @@ import { PrismaModule } from '@core/prisma/prisma.module';
 import { PermissionsModule } from '@core/permissions/permissions.module';
 import { ReceptionSupplierRepositoryImpl } from '@infrastructure/repositories/reception/reception-supplier.repository';
 import { ReceptionRepository } from '@domain/repositories/reception/reception.repository';
-import { CompanySupplierModule } from '@presentation/controllers/company-supplier/company-supplier.module';
 import { CompanySupplierDataSourceService } from '@infrastructure/datasource/company-supplier';
 import { SampleReceptionController } from './sample-reception.controller';
+import { CompanyModule } from '../company/company.module';
 
 @Module({
-  imports: [PermissionsModule, PrismaModule, CompanySupplierModule],
+  imports: [PermissionsModule, PrismaModule, CompanyModule],
   controllers: [SampleReceptionController],
   providers: [
     CreateReceptionUseCase,

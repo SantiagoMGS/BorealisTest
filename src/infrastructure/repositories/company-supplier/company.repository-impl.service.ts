@@ -2,7 +2,7 @@ import { CompanyDataSourceService } from '@infrastructure/datasource/company';
 import { ICompanyRepository } from '@domain/repositories/company/company.repository';
 import { Injectable } from '@nestjs/common';
 import { ICompanyResponse } from '@domain/interfaces/auth';
-import { CompanyMapper } from '@presentation/controllers/company/mappers/company.mapper';
+import { CompanyMapper } from '@presentation/controllers/company/mappers/';
 
 @Injectable()
 export class CompanyRepositoryImpl implements ICompanyRepository {
