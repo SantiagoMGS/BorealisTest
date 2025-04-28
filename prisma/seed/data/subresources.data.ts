@@ -10,8 +10,8 @@ export const subresourceInitialData: Prisma.SubresourceCreateInput[] = [
       },
     },
     icon: 'fa-coins',
-    path: '/recepcion-dore',
-    controller: 'RecepcionDoreController',
+    path: 'lims/recepcion-dore',
+    controller: 'DoreReceptionController',
   },
   {
     name: 'Recepción Muestras',
@@ -21,19 +21,30 @@ export const subresourceInitialData: Prisma.SubresourceCreateInput[] = [
       },
     },
     icon: 'fa-vial-virus',
-    path: '/recepcion-muestras',
+    path: 'lims/recepcion-muestras',
     controller: 'SampleReceptionController',
   },
   {
-    name: 'Gestión',
+    name: 'Listar Recepción Doré',
     resource: {
       connect: {
         name: 'Gestión',
       },
     },
     icon: 'clipboard-list',
-    path: '/permisos',
-    controller: 'PermisosController',
+    path: 'lims/list-dore-receptions',
+    controller: 'ListDoreReceptionController',
+  },
+  {
+    name: 'Listar Recepción Muestras',
+    resource: {
+      connect: {
+        name: 'Gestión',
+      },
+    },
+    icon: 'clipboard-list',
+    path: 'lims/list-sample-receptions',
+    controller: 'ListSampleReceptionController',
   },
   {
     name: 'Niton',

@@ -18,12 +18,22 @@ import { CompanySupplierDataSourceService } from '@infrastructure/datasource/com
 import { SampleReceptionController } from './sample-reception.controller';
 import { ReceptionOriginController } from './reception-origin.controller';
 import { CompanyModule } from '../company/company.module';
+import { DoreReceptionController } from './dore-reception.controller';
+import { CreateDoreReceptionUseCase } from '@domain/use-cases/reception/create-dore-reception.usecase';
+import { DoreReceptionRepositoryImpl } from '@infrastructure/repositories/reception/dore-reception.repository-impl.service';
+import { DoreReceptionDataSourceService } from '@infrastructure/datasource/reception/dore-reception.datasource.service';
+import { DoreReceptionRepository } from '@domain/repositories/reception/dore-reception.repository';
 
 @Module({
   imports: [PermissionsModule, PrismaModule, CompanyModule],
-  controllers: [SampleReceptionController, ReceptionOriginController],
+  controllers: [
+    SampleReceptionController,
+    ReceptionOriginController,
+    DoreReceptionController,
+  ],
   providers: [
     // Casos de uso
+    // Sample reception
     CreateReceptionUseCase,
     GetReceptionUseCase,
     GetDefaultAnalysisUseCase,
@@ -47,6 +57,15 @@ import { CompanyModule } from '../company/company.module';
     {
       provide: ReceptionOriginRepository,
       useClass: ReceptionOriginRepositoryImpl,
+    },
+
+    // Dore reception
+    CreateDoreReceptionUseCase,
+    DoreReceptionDataSourceService,
+    DoreReceptionRepositoryImpl,
+    {
+      provide: DoreReceptionRepository,
+      useClass: DoreReceptionRepositoryImpl,
     },
   ],
   exports: [ReceptionSupplierRepositoryImpl],
