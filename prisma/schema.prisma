@@ -388,7 +388,7 @@ model Sample {
 
   @@index([receptionId])
   @@index([receptionOriginId])
-  @@map("reception_units")
+  @@map("samples")
 }
 
 model Dore {
