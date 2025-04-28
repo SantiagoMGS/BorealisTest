@@ -20,10 +20,16 @@ export const receptionOriginInitialData: Prisma.ReceptionOriginCreateInput[] = [
       'Artículos de plata para evaluación o recuperación del metal precioso',
   },
   {
-    name: 'Veta fundido',
+    name: 'Veta Fundido',
     shortName: 'VF',
     description:
       'Material extraído directamente de vetas mineralógicas procesado por fundición',
+  },
+  {
+    name: 'Plata Fundida',
+    shortName: 'PF',
+    description:
+      'Material fundido de plata para evaluación o recuperación del metal precioso',
   },
   {
     name: 'COLA',
@@ -81,7 +87,7 @@ export const receptionOriginInitialData: Prisma.ReceptionOriginCreateInput[] = [
   },
   {
     name: 'MUESTRA AMBIENTAL',
-    shortName: '',
+    shortName: 'MA',
     description:
       'Especímenes recolectados para monitoreo y cumplimiento de normativas ambientales',
   },

@@ -1,13 +1,3 @@
-/*
-  Warnings:
-
-  - A unique constraint covering the columns `[shortName]` on the table `reception_origins` will be added. If there are existing duplicate values, this will fail.
-  - Added the required column `shortName` to the `reception_origins` table without a default value. This is not possible if the table is not empty.
-
-*/
--- AlterTable
-ALTER TABLE "reception_origins" ADD COLUMN     "shortName" TEXT NOT NULL;
-
 -- CreateTable
 CREATE TABLE "dore" (
     "id" UUID NOT NULL,
@@ -86,9 +76,6 @@ CREATE INDEX "departments_name_idx" ON "departments"("name");
 
 -- CreateIndex
 CREATE INDEX "cities_name_idx" ON "cities"("name");
-
--- CreateIndex
-CREATE UNIQUE INDEX "reception_origins_shortName_key" ON "reception_origins"("shortName");
 
 -- AddForeignKey
 ALTER TABLE "departments" ADD CONSTRAINT "departments_countryId_fkey" FOREIGN KEY ("countryId") REFERENCES "countries"("id") ON DELETE CASCADE ON UPDATE CASCADE;
