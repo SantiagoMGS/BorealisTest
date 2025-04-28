@@ -559,15 +559,37 @@ model City {
   departmentId String @db.Uuid
 
   department Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
-  //supplierMiningTitles supplierMiningTitles[]
+  supplierMiningTitles SupplierMiningTitle[]
   @@index([name])
+  @@unique([name, daneCode, departmentId])
   @@map("cities")
+}
+
+model mineType {
+  id String @id @default(uuid()) @db.Uuid
+  name String @unique
+  royalty_percentage Decimal @db.Decimal(7, 4)
+  isActive Boolean @default(true)
+
+  supplierMiningTitles SupplierMiningTitle[]
+
+  @@index([name])
 }
 
 model SupplierMiningTitle {
   id String @id @default(uuid()) @db.Uuid
   name String @unique
-  isActive Boolean @default(true)
   supplierId String @db.Uuid
+  mineTypeId String @db.Uuid
+  cityId String @db.Uuid
+
+  isActive Boolean @default(true)
+
   supplier Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  city City @relation(fields: [cityId], references: [id], onDelete: Cascade)
+  mineType mineType @relation(fields: [mineTypeId], references: [id], onDelete: Cascade)
+
+  @@index([supplierId])
+  @@index([mineTypeId])
+  @@map("supplier_mining_titles")
 }

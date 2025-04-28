@@ -22,6 +22,8 @@ import {
   seedDepartments,
   seedCities,
   seedMeasurementUnits,
+  seedMineTypes,
+  seedSupplierMiningTitles,
 } from './seed/index';
 
 // Inicializar cliente Prisma
@@ -54,6 +56,8 @@ async function main() {
     await seedDocumentTypes(prisma); // Tipos de documento (debe ir antes de proveedores)
     await seedSuppliers(prisma); // Proveedores
     await seedCompanySuppliers(prisma); // Relaciones entre compañías y proveedores (debe ir después de proveedores y compañías)
+    await seedMineTypes(prisma); // Tipos de mina
+    await seedSupplierMiningTitles(prisma); // Títulos mineros de proveedores
     await seedReceptionTypes(prisma); // Tipos de recepción
     await seedReceptionOrigins(prisma); // Orígenes de recepción
     await seedReceptionTypeOrigins(prisma); // Relaciones entre tipos y orígenes de recepción
