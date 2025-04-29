@@ -26,7 +26,7 @@ export class DoreReceptionDataSourceService {
    * @param reception Datos de la recepción
    * @returns La recepción creada con sus items
    */
-  async createDoreReception(reception: IDoreReceptionEntity): Promise<any> {
+  async createReception(reception: IDoreReceptionEntity): Promise<any> {
     try {
       // Verificamos que existan todas las entidades relacionadas
       await this.supplierDataSource.findById(reception.supplierId);

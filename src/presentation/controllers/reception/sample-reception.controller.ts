@@ -16,8 +16,8 @@ import {
 } from '@nestjs/swagger';
 import { CreateReceptionDto, ReceptionResponseDto } from './dtos';
 import { ReceptionMapper } from './mappers';
-import { CreateReceptionUseCase } from '@domain/use-cases/reception/create-reception.usecase';
-import { GetReceptionUseCase } from '@domain/use-cases/reception/get-reception.usecase';
+import { CreateReceptionUseCase } from '@domain/use-cases/reception/create-sample-reception.usecase';
+import { GetReceptionUseCase } from '@domain/use-cases/reception/get-sample-reception.usecase';
 import { PermissionsGuard } from '@infrastructure/guards/permissions.guard';
 import { JwtAuthGuard } from '@infrastructure/guards/jwt-auth.guard';
 import { ResponseInterceptor } from '@core/interceptores/response.interceptor';

@@ -1,16 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { ReceptionRepository } from '@domain/repositories/reception/reception.repository';
+import { SampleReceptionRepository } from '@domain/repositories/reception/sample-reception.repository';
 import { IReceptionResponse } from '@domain/interfaces/reception';
 
 @Injectable()
 export class GetReceptionUseCase {
-  constructor(private readonly receptionRepository: ReceptionRepository) {}
+  constructor(
+    private readonly sampleReceptionRepository: SampleReceptionRepository,
+  ) {}
 
   async executeGetAll(
     companyId?: string,
     supplierId?: string,
   ): Promise<IReceptionResponse[]> {
-    const result = await this.receptionRepository.getReceptions(
+    const result = await this.sampleReceptionRepository.getReceptions(
       companyId,
       supplierId,
     );
@@ -18,6 +20,6 @@ export class GetReceptionUseCase {
   }
 
   async execute(id: string, companyId: string): Promise<IReceptionResponse> {
-    return this.receptionRepository.getReceptionById(id, companyId);
+    return this.sampleReceptionRepository.getReceptionById(id, companyId);
   }
 }

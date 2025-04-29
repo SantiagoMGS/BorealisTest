@@ -8,7 +8,7 @@ import { IReceptionEntity } from '@domain/entities/reception/reception.entity';
 import { IReceptionResponse } from '@domain/interfaces/reception';
 
 @Injectable()
-export class ReceptionDataSourceService {
+export class SampleReceptionDataSourceService {
   constructor(private readonly prisma: PrismaService) {}
 
   async createReception(

@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
-import { CreateReceptionUseCase } from '@domain/use-cases/reception/create-reception.usecase';
-import { GetReceptionUseCase } from '@domain/use-cases/reception/get-reception.usecase';
+import { CreateReceptionUseCase } from '@domain/use-cases/reception/create-sample-reception.usecase';
+import { GetReceptionUseCase } from '@domain/use-cases/reception/get-sample-reception.usecase';
 import { GetDefaultAnalysisUseCase } from '@domain/use-cases/reception/get-default-analysis.usecase';
 //import { ListReceptionsUseCase } from '@domain/use-cases/reception/list-receptions.usecase';
-import { ReceptionRepositoryImpl } from '@infrastructure/repositories/reception/reception.repository-impl.service';
+import { SampleReceptionRepositoryImpl } from '@infrastructure/repositories/reception/sample-reception.repository-impl.service';
 import { ReceptionOriginRepositoryImpl } from '@infrastructure/repositories/reception/reception-origin.repository-impl';
 import {
-  ReceptionDataSourceService,
+  SampleReceptionDataSourceService,
   ReceptionOriginDataSourceService,
   ReceptionTypeDataSourceService,
 } from '@infrastructure/datasource/reception';
@@ -14,7 +14,7 @@ import { StatusDataSourceService } from '@infrastructure/datasource/status';
 import { PrismaModule } from '@core/prisma/prisma.module';
 import { PermissionsModule } from '@core/permissions/permissions.module';
 import { ReceptionSupplierRepositoryImpl } from '@infrastructure/repositories/reception/reception-supplier.repository';
-import { ReceptionRepository } from '@domain/repositories/reception/reception.repository';
+import { SampleReceptionRepository } from '@domain/repositories/reception/sample-reception.repository';
 import { ReceptionOriginRepository } from '@domain/repositories/reception/reception-origin.repository';
 import { CompanySupplierDataSourceService } from '@infrastructure/datasource/company-supplier';
 import { SampleReceptionController } from './sample-reception.controller';
@@ -43,7 +43,7 @@ import { DoreReceptionRepository } from '@domain/repositories/reception/dore-rec
     //ListReceptionsUseCase,
 
     // Servicios de fuente de datos
-    ReceptionDataSourceService,
+    SampleReceptionDataSourceService,
     ReceptionOriginDataSourceService,
     ReceptionTypeDataSourceService,
     StatusDataSourceService,
@@ -51,13 +51,13 @@ import { DoreReceptionRepository } from '@domain/repositories/reception/dore-rec
 
     // Implementaciones de repositorios
     ReceptionSupplierRepositoryImpl,
-    ReceptionRepositoryImpl,
+    SampleReceptionRepositoryImpl,
     ReceptionOriginRepositoryImpl,
 
     // Proveedores de repositorios
     {
-      provide: ReceptionRepository,
-      useClass: ReceptionRepositoryImpl,
+      provide: SampleReceptionRepository,
+      useClass: SampleReceptionRepositoryImpl,
     },
     {
       provide: ReceptionOriginRepository,

@@ -1,7 +1,7 @@
 import { IReceptionEntity } from '@domain/entities/reception/reception.entity';
 import { IReceptionResponse } from '@domain/interfaces/reception';
 
-export abstract class ReceptionRepository {
+export abstract class SampleReceptionRepository {
   abstract createReception(
     reception: IReceptionEntity,
   ): Promise<IReceptionResponse>;
