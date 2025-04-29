@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { CreateReceptionUseCase } from '@domain/use-cases/reception/create-reception.usecase';
 import { GetReceptionUseCase } from '@domain/use-cases/reception/get-reception.usecase';
+import { GetSuppliersByOriginUseCase } from '@domain/use-cases/reception/get-suppliers-by-origin.usecase';
 //import { ListReceptionsUseCase } from '@domain/use-cases/reception/list-receptions.usecase';
 import { ReceptionRepositoryImpl } from '@infrastructure/repositories/reception/reception.repository-impl.service';
 import { ReceptionDataSourceService } from '@infrastructure/datasource/reception/reception.datasource.service';
@@ -24,6 +25,7 @@ import { DoreReceptionRepository } from '@domain/repositories/reception/dore-rec
     // Sample reception
     CreateReceptionUseCase,
     GetReceptionUseCase,
+    GetDefaultAnalysisUseCase,
     //ListReceptionsUseCase,
     ReceptionDataSourceService,
     CompanySupplierDataSourceService,

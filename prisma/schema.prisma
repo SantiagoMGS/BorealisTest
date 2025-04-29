@@ -255,10 +255,12 @@ model Supplier {
   documentTypeId       String                @db.Uuid
   verificationDigit    String
   shortName            String                @unique
+  
   companies            CompanySupplier[]
   receptions           Reception[]
   supplierMiningTitles SupplierMiningTitle[]
   documentType         DocumentType          @relation(fields: [documentTypeId], references: [id], onDelete: Cascade)
+  supplierOrigins      SupplierReceptionOrigin[]
 
   @@unique([documentNumber, name])
   @@index([documentNumber])
@@ -310,9 +312,11 @@ model ReceptionOrigin {
   description String?
   isActive    Boolean               @default(true)
   shortName   String                @unique
+
   validTypes  ReceptionTypeOrigin[]
   receptions  Reception[]
   Sample      Sample[]
+  suppliers   SupplierReceptionOrigin[]
 
   @@map("reception_origins")
 }
@@ -552,7 +556,7 @@ model City {
   @@map("cities")
 }
 
-model mineType {
+model MineType {
   id                   String                @id @default(uuid()) @db.Uuid
   name                 String                @unique
   royaltyPercentage    Decimal               @db.Decimal(7, 4)
@@ -571,10 +575,23 @@ model SupplierMiningTitle {
   cityId     String   @db.Uuid
   isActive   Boolean  @default(true)
   city       City     @relation(fields: [cityId], references: [id], onDelete: Cascade)
-  mineType   mineType @relation(fields: [mineTypeId], references: [id], onDelete: Cascade)
+  mineType   MineType @relation(fields: [mineTypeId], references: [id], onDelete: Cascade)
   supplier   Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
 
   @@index([supplierId])
   @@index([mineTypeId])
   @@map("supplier_mining_titles")
+}
+
+model SupplierReceptionOrigin {
+  id         String   @id @default(uuid()) @db.Uuid
+  supplierId String   @db.Uuid
+  originId   String   @db.Uuid
+
+  supplier   Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  origin     ReceptionOrigin   @relation(fields: [originId], references: [id], onDelete: Cascade)
+
+  @@index([supplierId])
+  @@index([originId])
+  @@map("supplier_reception_origins")
 }

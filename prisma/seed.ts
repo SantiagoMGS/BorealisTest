@@ -17,6 +17,7 @@ import {
   seedReceptionOrigins,
   seedCompanySuppliers,
   seedReceptionTypeOrigins,
+  seedSupplierReceptionOrigins,
   seedAnalysisTypes,
   seedCountries,
   seedDepartments,
@@ -62,6 +63,7 @@ async function main() {
     await seedReceptionTypes(prisma); // Tipos de recepción
     await seedReceptionOrigins(prisma); // Orígenes de recepción
     await seedReceptionTypeOrigins(prisma); // Relaciones entre tipos y orígenes de recepción
+    await seedSupplierReceptionOrigins(prisma); // Relaciones entre proveedores y orígenes de recepción
     await seedAnalysisTypes(prisma); // Tipos de análisis
     await seedStatus(prisma); // Estados
 
