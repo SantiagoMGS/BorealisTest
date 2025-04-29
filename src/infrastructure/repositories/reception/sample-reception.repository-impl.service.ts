@@ -1,26 +1,28 @@
 import { Injectable } from '@nestjs/common';
-import { ReceptionRepository } from '@domain/repositories/reception/reception.repository';
+import { SampleReceptionRepository } from '@domain/repositories/reception/sample-reception.repository';
 import { IReceptionResponse } from '@domain/interfaces/reception';
 import { IReceptionEntity } from '@domain/entities/reception/reception.entity';
-import { ReceptionDataSourceService } from '@infrastructure/datasource/reception/reception.datasource.service';
+import { SampleReceptionDataSourceService } from '@infrastructure/datasource/reception/sample-reception.datasource.service';
 
 @Injectable()
-export class ReceptionRepositoryImpl implements ReceptionRepository {
+export class SampleReceptionRepositoryImpl
+  implements SampleReceptionRepository
+{
   constructor(
-    private readonly receptionDataSource: ReceptionDataSourceService,
+    private readonly sampleReceptionDataSource: SampleReceptionDataSourceService,
   ) {}
 
   async createReception(
     reception: IReceptionEntity,
   ): Promise<IReceptionResponse> {
-    return this.receptionDataSource.createReception(reception);
+    return this.sampleReceptionDataSource.createReception(reception);
   }
 
   async getReceptions(
     companyId?: string,
     supplierId?: string,
   ): Promise<{ data: IReceptionResponse[]; total: number }> {
-    const receptions = await this.receptionDataSource.getReceptions(
+    const receptions = await this.sampleReceptionDataSource.getReceptions(
       companyId,
       supplierId,
     );
@@ -34,17 +36,17 @@ export class ReceptionRepositoryImpl implements ReceptionRepository {
     id: string,
     companyId: string,
   ): Promise<IReceptionResponse> {
-    return this.receptionDataSource.getReceptionById(id, companyId);
+    return this.sampleReceptionDataSource.getReceptionById(id, companyId);
   }
 
   async updateReception(
     id: string,
     reception: Partial<IReceptionEntity>,
   ): Promise<IReceptionResponse> {
-    return this.receptionDataSource.updateReception(id, reception);
+    return this.sampleReceptionDataSource.updateReception(id, reception);
   }
 
   async deleteReception(id: string): Promise<void> {
-    return this.receptionDataSource.deleteReception(id);
+    return this.sampleReceptionDataSource.deleteReception(id);
   }
 }

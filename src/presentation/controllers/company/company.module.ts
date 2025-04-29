@@ -5,6 +5,7 @@ import { CompanySupplierDataSourceService } from '@infrastructure/datasource/com
 import { PermissionsModule } from '@core/permissions/permissions.module';
 import { PrismaModule } from '@core/prisma/prisma.module';
 import { CompanyController } from './company.controller';
+import { CompanyDataSourceService } from '@infrastructure/datasource/company/company.datasource.service';
 
 @Module({
   imports: [PermissionsModule, PrismaModule],
@@ -13,7 +14,8 @@ import { CompanyController } from './company.controller';
     AssignSuppliersUseCase,
     CompanySupplierDataSourceService,
     CompanySupplierRepositoryImpl,
+    CompanyDataSourceService,
   ],
-  exports: [CompanySupplierRepositoryImpl],
+  exports: [CompanySupplierRepositoryImpl, CompanyDataSourceService],
 })
 export class CompanyModule {}

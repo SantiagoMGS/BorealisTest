@@ -307,15 +307,16 @@ model ReceptionType {
 }
 
 model ReceptionOrigin {
-  id          String                @id @default(uuid()) @db.Uuid
-  name        String                @unique
-  description String?
-  isActive    Boolean               @default(true)
-  shortName   String                @unique
+  id                   String                      @id @default(uuid()) @db.Uuid
+  name                 String                      @unique
+  description          String?
+  isActive             Boolean                     @default(true)
+  shortName            String                      @unique
 
-  validTypes  ReceptionTypeOrigin[]
-  receptions  Reception[]
-  Sample      Sample[]
+  validTypes           ReceptionTypeOrigin[]
+  receptions           Reception[]
+  Sample               Sample[]
+  defaultAnalysisTypes DefaultAnalysisTypeOrigin[]
   suppliers   SupplierReceptionOrigin[]
 
   @@map("reception_origins")
@@ -365,23 +366,33 @@ model Reception {
 }
 
 model Sample {
-  id                String          @id @default(uuid()) @db.Uuid
-  receptionId       String          @db.Uuid
-  receptionOriginId String          @db.Uuid
+  id                String                   @id @default(uuid()) @db.Uuid
+  receptionId       String                   @db.Uuid
+  receptionOriginId String                   @db.Uuid
   receivedWeight    Decimal
   dryWeight         Decimal
-  code              Int             @unique
-  statusId          String          @db.Uuid
+  code              Int                      @unique
+  statusId          String                   @db.Uuid
   barrenado         Barrenado[]
-  reception         Reception       @relation(fields: [receptionId], references: [id], onDelete: Cascade)
-  receptionOrigin   ReceptionOrigin @relation(fields: [receptionOriginId], references: [id])
-  status            Status          @relation(fields: [statusId], references: [id])
+  reception         Reception                @relation(fields: [receptionId], references: [id], onDelete: Cascade)
+  receptionOrigin   ReceptionOrigin          @relation(fields: [receptionOriginId], references: [id])
+  status            Status                   @relation(fields: [statusId], references: [id])
   subSamples        SubSample[]
+  requiredAnalyses  SampleRequiredAnalysis[]
 
   @@index([receptionId])
   @@index([receptionOriginId])
   @@index([statusId])
   @@map("samples")
+}
+
+model SampleRequiredAnalysis {
+  id             String       @id @default(uuid()) @db.Uuid
+  sampleId       String       @db.Uuid
+  analysisTypeId String       @db.Uuid
+  done           Boolean      @default(false)
+  sample         Sample       @relation(fields: [sampleId], references: [id], onDelete: Cascade)
+  analysisType   AnalysisType @relation(fields: [analysisTypeId], references: [id], onDelete: Cascade)
 }
 
 model Dore {
@@ -487,12 +498,14 @@ model Barrenado {
 }
 
 model AnalysisType {
-  id          String     @id @default(uuid()) @db.Uuid
-  name        String     @unique
-  description String?
-  isActive    Boolean    @default(true)
-  shortName   String     @unique
-  analyses    Analysis[]
+  id                String                      @id @default(uuid()) @db.Uuid
+  name              String                      @unique
+  description       String?
+  isActive          Boolean                     @default(true)
+  shortName         String                      @unique
+  analyses          Analysis[]
+  requiredIn        SampleRequiredAnalysis[]
+  defaultForOrigins DefaultAnalysisTypeOrigin[]
 
   @@index([name])
   @@index([shortName])
@@ -581,6 +594,22 @@ model SupplierMiningTitle {
   @@index([supplierId])
   @@index([mineTypeId])
   @@map("supplier_mining_titles")
+}
+
+model DefaultAnalysisTypeOrigin {
+  receptionOriginId String          @db.Uuid
+  analysisTypeId    String          @db.Uuid
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  createdBy         String?         @db.Uuid
+  updatedBy         String?         @db.Uuid
+  receptionOrigin   ReceptionOrigin @relation(fields: [receptionOriginId], references: [id], onDelete: Cascade)
+  analysisType      AnalysisType    @relation(fields: [analysisTypeId], references: [id], onDelete: Cascade)
+
+  @@id([receptionOriginId, analysisTypeId])
+  @@index([receptionOriginId])
+  @@index([analysisTypeId])
+  @@map("default_analysis_type_origins")
 }
 
 model SupplierReceptionOrigin {

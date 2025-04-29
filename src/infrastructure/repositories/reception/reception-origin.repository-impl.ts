@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ReceptionOriginRepository } from '@domain/repositories/reception/reception-origin.repository';
+import { ReceptionOriginDataSourceService } from '@infrastructure/datasource/reception';
 import { ReceptionOrigin } from '@prisma/client';
-import { ReceptionOriginDataSourceService } from '@infrastructure/datasource/reception/reception-origin.datasource.service';
 
 @Injectable()
 export class ReceptionOriginRepositoryImpl extends ReceptionOriginRepository {
@@ -17,15 +17,9 @@ export class ReceptionOriginRepositoryImpl extends ReceptionOriginRepository {
 
   async getDefaultAnalysisByOriginId(
     originId: string,
-  ): Promise<Array<{ id: string; name: string }>> {
+  ): Promise<Array<{ id: string; name: string; shortName: string }>> {
     return this.receptionOriginDataSource.getDefaultAnalysisByOriginId(
       originId,
     );
-  }
-
-  async getSuppliersByOriginId(
-    originId: string,
-  ): Promise<Array<{ id: string; name: string }>> {
-    return this.receptionOriginDataSource.getSuppliersByOriginId(originId);
   }
 }

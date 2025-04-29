@@ -37,6 +37,23 @@ export class CreateSampleDto {
   @IsNumber()
   @IsNotEmpty()
   dryWeight!: number;
+
+  @ApiProperty({
+    description: 'IDs de los tipos de análisis requeridos',
+    example: [
+      '123e4567-e89b-12d3-a456-426614174000',
+      '123e4567-e89b-12d3-a456-426614174001',
+    ],
+    required: true,
+    type: [String],
+  })
+  @IsArray()
+  @IsUUID(undefined, { each: true })
+  @IsNotEmpty({
+    message:
+      'Se requiere especificar al menos un tipo de análisis para cada muestra',
+  })
+  analysisTypeIds!: string[];
 }
 
 export class CreateReceptionDto {

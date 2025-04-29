@@ -44,9 +44,9 @@ export class CatalogRepositoryImpl implements ICatalogReadRepository {
         return this.getCities() as Promise<T[]>;
       case CatalogTypeEnum.DEPARTMENTS:
         return this.getDepartments() as Promise<T[]>;
-      case CatalogTypeEnum.DORE_RECEPTION_TYPES:
+      case CatalogTypeEnum.DORE_RECEPTION_ORIGINS:
         return this.getDoreReceptionTypes() as Promise<T[]>;
-      case CatalogTypeEnum.SAMPLE_RECEPTION_TYPES:
+      case CatalogTypeEnum.SAMPLE_RECEPTION_ORIGINS:
         return this.getSampleReceptionTypes() as Promise<T[]>;
       default:
         return [] as T[];

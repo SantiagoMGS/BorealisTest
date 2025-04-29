@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '@core/prisma/prisma.service';
 import { ISupplierEntity } from '@domain/entities/supplier';
-import { Prisma } from '@prisma/client';
+import { Prisma, Supplier } from '@prisma/client';
 import {
   ISupplierResponse,
   IMiningTitleResponse,
@@ -67,8 +67,8 @@ export class SupplierDataSourceService {
   async findByParams(params: {
     id?: string;
     documentNumber?: string;
-  }): Promise<ISupplierResponse> {
-    let supplier: ISupplierResponse | null = null;
+  }): Promise<Supplier> {
+    let supplier: Supplier | null = null;
 
     if (params.id) {
       supplier = await this.prisma.supplier.findUnique({
@@ -168,6 +168,8 @@ export class SupplierDataSourceService {
   }
 
   async findById(id: string): Promise<ISupplierResponse> {
+    console.log('id', id);
+
     const supplier = await this.prisma.supplier.findUnique({
       where: { id },
       include: {

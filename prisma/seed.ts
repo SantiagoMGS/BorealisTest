@@ -26,6 +26,7 @@ import {
   seedMineTypes,
   seedSupplierMiningTitles,
   seedStatus,
+  seedDefaultAnalysisOrigins,
 } from './seed/index';
 
 // Inicializar cliente Prisma
@@ -66,10 +67,13 @@ async function main() {
     await seedSupplierReceptionOrigins(prisma); // Relaciones entre proveedores y orígenes de recepción
     await seedAnalysisTypes(prisma); // Tipos de análisis
     await seedStatus(prisma); // Estados
+    await seedDefaultAnalysisOrigins(prisma); // Análisis por defecto
 
     logger.log('✅ ¡Proceso de sembrado completado con éxito!');
-  } catch (error: any) {
-    logger.error(`❌ Error durante el sembrado: ${error.message}`);
+  } catch (error: unknown) {
+    logger.error(
+      `❌ Error durante el sembrado: ${error instanceof Error ? error.message : 'Unknown error'}`,
+    );
     process.exit(1);
   } finally {
     // Cerrar conexión a la base de datos

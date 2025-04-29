@@ -27,6 +27,6 @@ import { PermissionsModule } from '@core/permissions/permissions.module';
       useClass: SupplierRepositoryImpl,
     },
   ],
-  exports: [SupplierRepository],
+  exports: [SupplierRepository, SupplierDataSourceService],
 })
 export class SupplierModule {}

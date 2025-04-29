@@ -32,8 +32,8 @@ export class CatalogMapper {
       [CatalogTypeEnum.ANALYSIS_TYPES]: this.analysisTypeToDto,
       [CatalogTypeEnum.CITIES]: this.cityToDto,
       [CatalogTypeEnum.DEPARTMENTS]: this.departmentToDto,
-      [CatalogTypeEnum.DORE_RECEPTION_TYPES]: this.doreReceptionTypeToDto,
-      [CatalogTypeEnum.SAMPLE_RECEPTION_TYPES]: this.sampleReceptionTypeToDto,
+      [CatalogTypeEnum.DORE_RECEPTION_ORIGINS]: this.doreReceptionTypeToDto,
+      [CatalogTypeEnum.SAMPLE_RECEPTION_ORIGINS]: this.sampleReceptionTypeToDto,
     };
 
     return mappers[type] || ((item: any) => item);

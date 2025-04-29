@@ -1,17 +1,26 @@
 import { Module } from '@nestjs/common';
-import { CreateReceptionUseCase } from '@domain/use-cases/reception/create-reception.usecase';
-import { GetReceptionUseCase } from '@domain/use-cases/reception/get-reception.usecase';
-import { GetSuppliersByOriginUseCase } from '@domain/use-cases/reception/get-suppliers-by-origin.usecase';
+import { CreateReceptionUseCase } from '@domain/use-cases/reception/create-sample-reception.usecase';
+import { GetReceptionUseCase } from '@domain/use-cases/reception/get-sample-reception.usecase';
+import { GetDefaultAnalysisUseCase } from '@domain/use-cases/reception/get-default-analysis.usecase';
 //import { ListReceptionsUseCase } from '@domain/use-cases/reception/list-receptions.usecase';
-import { ReceptionRepositoryImpl } from '@infrastructure/repositories/reception/reception.repository-impl.service';
-import { ReceptionDataSourceService } from '@infrastructure/datasource/reception/reception.datasource.service';
+import { SampleReceptionRepositoryImpl } from '@infrastructure/repositories/reception/sample-reception.repository-impl.service';
+import { ReceptionOriginRepositoryImpl } from '@infrastructure/repositories/reception/reception-origin.repository-impl';
+import {
+  SampleReceptionDataSourceService,
+  ReceptionOriginDataSourceService,
+  ReceptionTypeDataSourceService,
+} from '@infrastructure/datasource/reception';
+import { StatusDataSourceService } from '@infrastructure/datasource/status';
 import { PrismaModule } from '@core/prisma/prisma.module';
 import { PermissionsModule } from '@core/permissions/permissions.module';
 import { ReceptionSupplierRepositoryImpl } from '@infrastructure/repositories/reception/reception-supplier.repository';
-import { ReceptionRepository } from '@domain/repositories/reception/reception.repository';
+import { SampleReceptionRepository } from '@domain/repositories/reception/sample-reception.repository';
+import { ReceptionOriginRepository } from '@domain/repositories/reception/reception-origin.repository';
 import { CompanySupplierDataSourceService } from '@infrastructure/datasource/company-supplier';
 import { SampleReceptionController } from './sample-reception.controller';
+import { ReceptionOriginController } from './reception-origin.controller';
 import { CompanyModule } from '../company/company.module';
+import { SupplierModule } from '../supplier/supplier.module';
 import { DoreReceptionController } from './dore-reception.controller';
 import { CreateDoreReceptionUseCase } from '@domain/use-cases/reception/create-dore-reception.usecase';
 import { DoreReceptionRepositoryImpl } from '@infrastructure/repositories/reception/dore-reception.repository-impl.service';
@@ -19,21 +28,40 @@ import { DoreReceptionDataSourceService } from '@infrastructure/datasource/recep
 import { DoreReceptionRepository } from '@domain/repositories/reception/dore-reception.repository';
 
 @Module({
-  imports: [PermissionsModule, PrismaModule, CompanyModule],
-  controllers: [SampleReceptionController, DoreReceptionController],
+  imports: [PermissionsModule, PrismaModule, CompanyModule, SupplierModule],
+  controllers: [
+    SampleReceptionController,
+    ReceptionOriginController,
+    DoreReceptionController,
+  ],
   providers: [
+    // Casos de uso
     // Sample reception
     CreateReceptionUseCase,
     GetReceptionUseCase,
-    //GetDefaultAnalysisUseCase,
+    GetDefaultAnalysisUseCase,
     //ListReceptionsUseCase,
-    ReceptionDataSourceService,
+
+    // Servicios de fuente de datos
+    SampleReceptionDataSourceService,
+    ReceptionOriginDataSourceService,
+    ReceptionTypeDataSourceService,
+    StatusDataSourceService,
     CompanySupplierDataSourceService,
+
+    // Implementaciones de repositorios
     ReceptionSupplierRepositoryImpl,
-    ReceptionRepositoryImpl,
+    SampleReceptionRepositoryImpl,
+    ReceptionOriginRepositoryImpl,
+
+    // Proveedores de repositorios
     {
-      provide: ReceptionRepository,
-      useClass: ReceptionRepositoryImpl,
+      provide: SampleReceptionRepository,
+      useClass: SampleReceptionRepositoryImpl,
+    },
+    {
+      provide: ReceptionOriginRepository,
+      useClass: ReceptionOriginRepositoryImpl,
     },
 
     // Dore reception
