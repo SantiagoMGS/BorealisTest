@@ -16,6 +16,7 @@ export { roleInitialData } from './roles.data';
 export { rolePermissionInitialData } from './role-permission.data';
 export { subresourceInitialData } from './subresources.data';
 export { supplierInitialData } from './suppliers.data';
+export { supplierReceptionOriginInitialData } from './supplier-reception-origin.data';
 export { userCompanyInitialData } from './user-company.data';
 export { userInitialData } from './users.data';
 export { measurementUnitInitialData } from './measurement-unit.data';
