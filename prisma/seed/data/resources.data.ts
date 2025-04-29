@@ -84,4 +84,14 @@ export const resourceInitialData: Prisma.ResourceCreateInput[] = [
       },
     },
   },
+  {
+    name: 'Orígenes de Recepción',
+    icon: 'fa-truck',
+    path: '/reception-origins',
+    application: {
+      connect: {
+        name: 'ADMINISTRACIÓN',
+      },
+    },
+  },
 ];

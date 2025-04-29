@@ -17,7 +17,7 @@ export class ReceptionOriginRepositoryImpl extends ReceptionOriginRepository {
 
   async getDefaultAnalysisByOriginId(
     originId: string,
-  ): Promise<Array<{ id: string; name: string }>> {
+  ): Promise<Array<{ id: string; name: string; shortName: string }>> {
     return this.receptionOriginDataSource.getDefaultAnalysisByOriginId(
       originId,
     );

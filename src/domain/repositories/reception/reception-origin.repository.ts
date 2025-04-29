@@ -18,5 +18,5 @@ export abstract class ReceptionOriginRepository {
    */
   abstract getDefaultAnalysisByOriginId(
     originId: string,
-  ): Promise<Array<{ id: string; name: string }>>;
+  ): Promise<Array<{ id: string; name: string; shortName: string }>>;
 }

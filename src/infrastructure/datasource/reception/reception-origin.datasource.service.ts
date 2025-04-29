@@ -33,52 +33,38 @@ export class ReceptionOriginDataSourceService {
     // Primero verificamos que el origen existe
     const origin = await this.findById(originId);
 
-    // Obtener todos los tipos de análisis disponibles
-    const allAnalysisTypes = await this.prisma.analysisType.findMany({
-      where: { isActive: true },
-      select: {
-        id: true,
-        name: true,
-        shortName: true,
-      },
-    });
-
-    // Definir reglas de análisis por defecto basadas en el origen
-    // Estas reglas podrían ser almacenadas en la base de datos en una implementación futura
-    const defaultAnalysisByOrigin: Record<string, string[]> = {
-      COLA: ['XRF', 'LW', 'AA'],
-      'CABEZA MOLINO': ['XRF', 'AA'],
-      OVERFLOW: ['XRF', 'AA'],
-      'CONCENTRADO FLOTACION': ['XRF', 'AA', 'EF'],
-      'MUESTRA DE MINA': ['XRF', 'LW'],
-      'BIG BAGS': ['XRF', 'AA', 'G'],
-      'SOLUCION LIQUIDA': ['AA', 'PH'],
-      'SOLUCION BARREN': ['AA', 'MC', 'PH'],
-      'MUESTRA DE PATIO O PILA': ['XRF', 'AA', 'DH'],
-      'MUESTRA AMBIENTAL': ['XRF', 'AA', 'PH'],
-      'Minería de Subsistencia': ['EF'],
-      'Joyería Desuso': ['EF'],
-      'Joyería de Plata': ['EF'],
-      'Veta Fundido': ['EF', 'XRF'],
-      'Plata Fundida': ['EF'],
-    };
-
-    // Buscar los análisis por defecto para este origen
-    const defaultAnalysisShortNames =
-      defaultAnalysisByOrigin[origin.name] || [];
+    // Obtener los análisis por defecto desde la base de datos
+    const defaultAnalysis =
+      await this.prisma.defaultAnalysisTypeOrigin.findMany({
+        where: {
+          receptionOriginId: originId,
+        },
+        include: {
+          analysisType: {
+            select: {
+              id: true,
+              name: true,
+              shortName: true,
+            },
+          },
+        },
+      });
 
     // Si no hay análisis por defecto, devolver arreglo vacío
-    if (defaultAnalysisShortNames.length === 0) {
+    if (defaultAnalysis.length === 0) {
       return [];
     }
 
-    // Filtrar los tipos de análisis según los nombres cortos de los análisis por defecto
-    const defaultAnalysis = allAnalysisTypes
-      .filter((analysisType) =>
-        defaultAnalysisShortNames.includes(analysisType.shortName),
-      )
-      .map(({ id, name }) => ({ id, name }));
-
-    return defaultAnalysis;
+    // Transformar los resultados al formato esperado
+    return defaultAnalysis.map(
+      (item: {
+        analysisType: { id: string; name: string; shortName: string };
+      }) => ({
+        id: item.analysisType.id,
+        name: item.analysisType.name,
+        shortName: item.analysisType.shortName,
+        selected: true,
+      }),
+    );
   }
 }
