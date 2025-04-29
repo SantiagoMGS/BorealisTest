@@ -2,6 +2,8 @@ import {
   Injectable,
   ConflictException,
   NotFoundException,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { PrismaService } from '@core/prisma/prisma.service';
 import { ISupplierEntity } from '@domain/entities/supplier';
@@ -10,6 +12,7 @@ import {
   ISupplierResponse,
   IMiningTitleResponse,
 } from '@domain/interfaces/supplier';
+import { MiningTitlePersistenceMapper } from './mappers/mining-title.mapper';
 
 @Injectable()
 export class SupplierDataSourceService {
@@ -41,6 +44,7 @@ export class SupplierDataSourceService {
           documentType: true,
         },
       });
+
       return supplier;
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -56,18 +60,20 @@ export class SupplierDataSourceService {
   }
 
   async findAll(): Promise<ISupplierResponse[]> {
-    return await this.prisma.supplier.findMany({
+    const suppliers = await this.prisma.supplier.findMany({
       where: { isActive: true },
       include: {
         documentType: true, // Incluir los datos del tipo de documento
       },
     });
+
+    return suppliers;
   }
 
   async findByParams(params: {
     id?: string;
     documentNumber?: string;
-  }): Promise<Supplier> {
+  }): Promise<ISupplierResponse> {
     let supplier: Supplier | null = null;
 
     if (params.id) {
@@ -99,7 +105,7 @@ export class SupplierDataSourceService {
 
   async updateSupplier(
     id: string,
-    supplier: Partial<ISupplierEntity>,
+    supplierData: Partial<ISupplierEntity>,
   ): Promise<ISupplierResponse> {
     try {
       // Primero verificar si existe el proveedor
@@ -116,10 +122,10 @@ export class SupplierDataSourceService {
       }
 
       // Si se está actualizando el documentNumber, verificar que no exista otro con el mismo número
-      if (supplier.documentNumber) {
+      if (supplierData.documentNumber) {
         const supplierWithSameDocument = await this.prisma.supplier.findFirst({
           where: {
-            documentNumber: supplier.documentNumber,
+            documentNumber: supplierData.documentNumber,
             id: { not: id },
             isActive: true,
           },
@@ -132,10 +138,12 @@ export class SupplierDataSourceService {
         }
       }
 
-      return await this.prisma.supplier.update({
+      const updatedSupplier = await this.prisma.supplier.update({
         where: { id },
-        data: supplier,
+        data: supplierData,
       });
+
+      return updatedSupplier;
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2025') {
@@ -154,17 +162,17 @@ export class SupplierDataSourceService {
     if (!supplier.isActive) {
       throw new NotFoundException('Proveedor inactivo');
     }
-    return await this.prisma.supplier.update({
+
+    const deletedSupplier = await this.prisma.supplier.update({
       where: { id },
       data: {
         isActive: false,
         updatedBy: userId,
         updatedAt: new Date(),
       },
-      include: {
-        documentType: true, // Incluir los datos del tipo de documento
-      },
     });
+
+    return deletedSupplier;
   }
 
   async findById(id: string): Promise<ISupplierResponse> {
@@ -193,20 +201,8 @@ export class SupplierDataSourceService {
   }
 
   async findMiningTitles(supplierId: string): Promise<IMiningTitleResponse[]> {
-    // Primero verificar si existe el proveedor
-    const existingSupplier = await this.prisma.supplier.findUnique({
-      where: { id: supplierId },
-    });
+    await this.findById(supplierId);
 
-    if (!existingSupplier) {
-      throw new NotFoundException('Proveedor no encontrado');
-    }
-
-    if (!existingSupplier.isActive) {
-      throw new NotFoundException('Proveedor inactivo');
-    }
-
-    // Buscar todos los títulos mineros del proveedor
     const miningTitles = await this.prisma.supplierMiningTitle.findMany({
       where: { supplierId },
       include: {
@@ -219,23 +215,13 @@ export class SupplierDataSourceService {
       },
     });
 
-    if (miningTitles.length === 0) {
-      throw new NotFoundException(
+    if (miningTitles.length === 0)
+      throw new HttpException(
         'No se encontraron títulos mineros para este proveedor',
+        HttpStatus.NO_CONTENT,
       );
-    }
 
-    return miningTitles.map((miningTitle) => ({
-      id: miningTitle.id,
-      name: miningTitle.name,
-      mineTypeId: miningTitle.mineTypeId,
-      mineTypeName: miningTitle.mineType.name,
-      royaltyPercentage: miningTitle.mineType.royaltyPercentage.toString(),
-      cityId: miningTitle.cityId,
-      cityName: miningTitle.city.name,
-      departmentId: miningTitle.city.departmentId,
-      departmentName: miningTitle.city.department.name,
-    }));
+    return MiningTitlePersistenceMapper.toDomainList(miningTitles);
   }
 
   async findMiningTitle(supplierId: string): Promise<IMiningTitleResponse> {

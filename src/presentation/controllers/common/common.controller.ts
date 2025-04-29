@@ -28,6 +28,31 @@ import { CatalogTypeEnum } from '@domain/entities/catalog/catalog.entity';
 export class CommonController {
   constructor(private readonly getCatalogsUseCase: GetCatalogsUseCase) {}
 
+  @Get('catalog-valid-options')
+  @ApiOperation({ summary: 'Obtener tipos de catálogos disponibles' })
+  @ApiBearerAuth()
+  @ApiOkResponse({
+    description: 'Tipos de catálogos obtenidos correctamente',
+    schema: {
+      type: 'object',
+      properties: {
+        data: {
+          type: 'array',
+          items: {
+            type: 'string',
+            enum: Object.values(CatalogTypeEnum),
+          },
+        },
+      },
+    },
+  })
+  @CustomResponse({
+    successMessage: 'Tipos de catálogos obtenidos correctamente',
+  })
+  getCatalogTypes() {
+    return Object.values(CatalogTypeEnum);
+  }
+
   @Get('catalogs/:type')
   @ApiOperation({ summary: 'Obtener catálogos del sistema' })
   @ApiBearerAuth()

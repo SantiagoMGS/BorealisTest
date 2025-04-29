@@ -10,7 +10,7 @@ export interface ISupplierResponse {
     code: string;
   };
   documentNumber: string;
-  verificationDigit: string;
+  verificationDigit?: number | null;
   shortName: string;
   isActive?: boolean;
 }

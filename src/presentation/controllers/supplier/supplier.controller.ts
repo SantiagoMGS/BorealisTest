@@ -8,6 +8,8 @@ import {
   Param,
   Patch,
   Delete,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -19,6 +21,7 @@ import {
   ApiBearerAuth,
   ApiResponse,
   ApiParam,
+  ApiNoContentResponse,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '@infrastructure/guards/jwt-auth.guard';
 import { CreateSupplierUseCase } from '@domain/use-cases/supplier';
@@ -27,6 +30,7 @@ import {
   SupplierResponseDto,
   UpdateSupplierDto,
   SupplierMiningTitlesResponseDto,
+  MiningTitleResponseDto,
 } from './dtos';
 import { ErrorResponseDto } from '../auth/dtos';
 import { SupplierMapper, MiningTitleMapper } from './mappers';
@@ -107,14 +111,14 @@ export class SupplierController {
   @ApiResponse({
     status: 200,
     description: 'Perfil de los proveedores',
-    type: AllSupplierResponseDto,
+    type: [SupplierResponseDto],
   })
   @CustomResponse({
     successMessage: 'Proveedores obtenidos exitosamente',
   })
-  async findAll(): Promise<AllSupplierResponseDto> {
+  async findAll(): Promise<SupplierResponseDto[]> {
     const suppliers = await this.findAllSupplierUseCase.execute();
-    return { suppliers: suppliers.map(SupplierMapper.toResponseDto) };
+    return SupplierMapper.toResponseDtoList(suppliers);
   }
 
   @Get(':id')
@@ -225,15 +229,23 @@ export class SupplierController {
   @ApiResponse({
     status: 200,
     description: 'Títulos mineros encontrados',
-    type: SupplierMiningTitlesResponseDto,
+    type: [MiningTitleResponseDto],
+  })
+  @ApiNoContentResponse({
+    description: 'No se encontraron títulos mineros para el proveedor',
   })
   @CustomResponse({
     successMessage: 'Títulos mineros encontrados exitosamente',
   })
   async findMiningTitles(
     @Param('id') id: string,
-  ): Promise<SupplierMiningTitlesResponseDto> {
+  ): Promise<MiningTitleResponseDto[]> {
     const miningTitles = await this.findMiningTitlesUseCase.execute(id);
-    return { miningTitles: MiningTitleMapper.toResponseDtoList(miningTitles) };
+
+    if (miningTitles.length === 0) {
+      return [];
+    }
+
+    return MiningTitleMapper.toResponseDtoList(miningTitles);
   }
 }

@@ -253,7 +253,7 @@ model Supplier {
   createdBy            String?               @db.Uuid
   updatedBy            String?               @db.Uuid
   documentTypeId       String                @db.Uuid
-  verificationDigit    String
+  verificationDigit    Int?
   shortName            String                @unique
   
   companies            CompanySupplier[]
