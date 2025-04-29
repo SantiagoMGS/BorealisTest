@@ -30,7 +30,6 @@ export class ReceptionOriginDataSourceService {
    * Obtiene los análisis por defecto asociados a un origen de recepción
    */
   async getDefaultAnalysisByOriginId(originId: string) {
-    console.log(originId);
     // Primero verificamos que el origen existe
     const origin = await this.findById(originId);
 
