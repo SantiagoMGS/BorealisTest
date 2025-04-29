@@ -172,6 +172,16 @@ export class SupplierDataSourceService {
       where: { id },
       include: {
         documentType: true,
+        supplierMiningTitles: {
+          include: {
+            mineType: true,
+            city: {
+              include: {
+                department: true,
+              },
+            },
+          },
+        },
       },
     });
 
