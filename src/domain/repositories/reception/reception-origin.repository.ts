@@ -1,16 +1,22 @@
+import { ReceptionOrigin } from '@prisma/client';
+
 /**
  * Interfaz para operaciones con orígenes de recepción
  */
 export abstract class ReceptionOriginRepository {
   /**
-   * Obtiene un origen de recepción por su ID
+   * Busca un origen de recepción por su ID
+   * @param id ID del origen de recepción
+   * @returns El origen de recepción encontrado
    */
-  abstract getReceptionOriginById(id: string): Promise<any>;
+  abstract findById(id: string): Promise<ReceptionOrigin>;
 
   /**
-   * Obtiene los análisis por defecto para un origen de recepción
+   * Obtiene los análisis por defecto asociados a un origen de recepción
+   * @param originId ID del origen de recepción
+   * @returns Lista de análisis por defecto
    */
   abstract getDefaultAnalysisByOriginId(
     originId: string,
-  ): Promise<{ id: string; name: string }[]>;
+  ): Promise<Array<{ id: string; name: string }>>;
 }

@@ -1,21 +1,25 @@
 import { PrismaService } from '@core/prisma/prisma.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { ReceptionOrigin } from '@prisma/client';
 
 @Injectable()
 export class ReceptionOriginDataSourceService {
   constructor(private readonly prisma: PrismaService) {}
 
   /**
-   * Obtiene un origen de recepción por su ID
+   * Busca un origen de recepción por su ID
+   * @param id ID del origen de recepción
+   * @returns El origen de recepción encontrado
+   * @throws NotFoundException si no se encuentra el origen de recepción
    */
-  async getReceptionOriginById(id: string) {
+  async findById(id: string): Promise<ReceptionOrigin> {
     const origin = await this.prisma.receptionOrigin.findUnique({
       where: { id },
     });
 
     if (!origin) {
       throw new NotFoundException(
-        `Origen de recepción con ID ${id} no encontrado`,
+        `No se encontró el origen de recepción con ID ${id}`,
       );
     }
 
@@ -27,7 +31,7 @@ export class ReceptionOriginDataSourceService {
    */
   async getDefaultAnalysisByOriginId(originId: string) {
     // Primero verificamos que el origen existe
-    const origin = await this.getReceptionOriginById(originId);
+    const origin = await this.findById(originId);
 
     // Obtener todos los tipos de análisis disponibles
     const allAnalysisTypes = await this.prisma.analysisType.findMany({

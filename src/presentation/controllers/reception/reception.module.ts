@@ -8,7 +8,9 @@ import { ReceptionOriginRepositoryImpl } from '@infrastructure/repositories/rece
 import {
   ReceptionDataSourceService,
   ReceptionOriginDataSourceService,
+  ReceptionTypeDataSourceService,
 } from '@infrastructure/datasource/reception';
+import { StatusDataSourceService } from '@infrastructure/datasource/status';
 import { PrismaModule } from '@core/prisma/prisma.module';
 import { PermissionsModule } from '@core/permissions/permissions.module';
 import { ReceptionSupplierRepositoryImpl } from '@infrastructure/repositories/reception/reception-supplier.repository';
@@ -18,6 +20,7 @@ import { CompanySupplierDataSourceService } from '@infrastructure/datasource/com
 import { SampleReceptionController } from './sample-reception.controller';
 import { ReceptionOriginController } from './reception-origin.controller';
 import { CompanyModule } from '../company/company.module';
+import { SupplierModule } from '../supplier/supplier.module';
 import { DoreReceptionController } from './dore-reception.controller';
 import { CreateDoreReceptionUseCase } from '@domain/use-cases/reception/create-dore-reception.usecase';
 import { DoreReceptionRepositoryImpl } from '@infrastructure/repositories/reception/dore-reception.repository-impl.service';
@@ -25,7 +28,7 @@ import { DoreReceptionDataSourceService } from '@infrastructure/datasource/recep
 import { DoreReceptionRepository } from '@domain/repositories/reception/dore-reception.repository';
 
 @Module({
-  imports: [PermissionsModule, PrismaModule, CompanyModule],
+  imports: [PermissionsModule, PrismaModule, CompanyModule, SupplierModule],
   controllers: [
     SampleReceptionController,
     ReceptionOriginController,
@@ -42,6 +45,8 @@ import { DoreReceptionRepository } from '@domain/repositories/reception/dore-rec
     // Servicios de fuente de datos
     ReceptionDataSourceService,
     ReceptionOriginDataSourceService,
+    ReceptionTypeDataSourceService,
+    StatusDataSourceService,
     CompanySupplierDataSourceService,
 
     // Implementaciones de repositorios

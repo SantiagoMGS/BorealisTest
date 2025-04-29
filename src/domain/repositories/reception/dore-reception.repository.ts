@@ -12,23 +12,4 @@ export abstract class DoreReceptionRepository {
   abstract createDoreReception(
     doreReception: IDoreReceptionEntity,
   ): Promise<any>;
-
-  /**
-   * Obtiene una recepción de doré por ID
-   * @param id ID de la recepción
-   * @param companyId ID de la compañía
-   * @returns La recepción encontrada o null
-   */
-  abstract getDoreReceptionById(id: string, companyId: string): Promise<any>;
-
-  /**
-   * Obtiene todas las recepciones de doré
-   * @param companyId ID de la compañía
-   * @param supplierId ID del proveedor (opcional)
-   * @returns Lista de recepciones
-   */
-  abstract getDoreReceptions(
-    companyId: string,
-    supplierId?: string,
-  ): Promise<any[]>;
 }

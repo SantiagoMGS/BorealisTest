@@ -16,21 +16,4 @@ export class DoreReceptionRepositoryImpl extends DoreReceptionRepository {
       doreReception,
     );
   }
-
-  async getDoreReceptionById(id: string, companyId: string): Promise<any> {
-    return await this.doreReceptionDatasource.getDoreReceptionById(
-      id,
-      companyId,
-    );
-  }
-
-  async getDoreReceptions(
-    companyId: string,
-    supplierId?: string,
-  ): Promise<any[]> {
-    return await this.doreReceptionDatasource.getDoreReceptions(
-      companyId,
-      supplierId,
-    );
-  }
 }
