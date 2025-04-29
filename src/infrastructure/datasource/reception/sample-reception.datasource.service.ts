@@ -6,131 +6,51 @@ import {
 } from '@nestjs/common';
 import { IReceptionEntity } from '@domain/entities/reception/reception.entity';
 import { IReceptionResponse } from '@domain/interfaces/reception';
+import { CompanyDataSourceService } from '@infrastructure/datasource/company/company.datasource.service';
+import { SupplierDataSourceService } from '@infrastructure/datasource/supplier/supplier.datasource.service';
+import { ReceptionTypeDataSourceService } from './reception-type.datasource.service';
+import { ReceptionOriginDataSourceService } from './reception-origin.datasource.service';
+import { StatusDataSourceService } from '@infrastructure/datasource/status';
 
 @Injectable()
 export class SampleReceptionDataSourceService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly companyDataSource: CompanyDataSourceService,
+    private readonly supplierDataSource: SupplierDataSourceService,
+    private readonly receptionTypeDataSource: ReceptionTypeDataSourceService,
+    private readonly receptionOriginDataSource: ReceptionOriginDataSourceService,
+    private readonly statusDataSource: StatusDataSourceService,
+  ) {}
 
   async createReception(
     reception: IReceptionEntity,
   ): Promise<IReceptionResponse> {
-    // Validamos los datos de entrada
-    if (!reception) {
-      throw new BadRequestException('Los datos de la recepción son requeridos');
-    }
-
-    if (!reception.companyId) {
-      throw new BadRequestException('El ID de la compañía es requerido');
-    }
-
-    if (!reception.supplierId) {
-      throw new BadRequestException('El ID del proveedor es requerido');
-    }
-
-    if (!reception.receptionTypeId) {
-      throw new BadRequestException('El ID del tipo de recepción es requerido');
-    }
-
-    if (!reception.receptionDate) {
-      throw new BadRequestException('La fecha de recepción es requerida');
-    }
-
-    if (!reception.Samples || reception.Samples.length === 0) {
-      throw new BadRequestException(
-        'Se requiere al menos una muestra para la recepción',
-      );
-    }
-
-    // Validamos cada muestra
-    for (const sample of reception.Samples) {
-      if (!sample.receptionOriginId) {
-        throw new BadRequestException(
-          'El ID del origen de recepción es requerido para cada muestra',
-        );
-      }
-
-      if (sample.receivedWeight === undefined || sample.receivedWeight < 0) {
-        throw new BadRequestException(
-          'El peso recibido debe ser un número positivo',
-        );
-      }
-
-      if (sample.dryWeight === undefined || sample.dryWeight < 0) {
-        throw new BadRequestException(
-          'El peso seco debe ser un número positivo',
-        );
-      }
-    }
-
     try {
       // Verificar que el proveedor existe y obtener su shortName
-      const supplier = await this.prisma.supplier.findUnique({
-        where: { id: reception.supplierId },
-        select: { id: true, shortName: true },
-      });
+      await this.supplierDataSource.findById(reception.supplierId);
 
-      if (!supplier) {
-        throw new NotFoundException(
-          `No se encontró el proveedor con ID ${reception.supplierId}`,
-        );
-      }
-
-      // Verificar que la compañía existe y obtener su shortName
-      const company = await this.prisma.company.findUnique({
-        where: { id: reception.companyId },
-        select: { id: true, shortName: true },
-      });
-
-      if (!company) {
-        throw new NotFoundException(
-          `No se encontró la compañía con ID ${reception.companyId}`,
-        );
-      }
+      // Verificar que la compañía existe
+      await this.companyDataSource.findById(reception.companyId);
 
       // Verificar que el tipo de recepción existe
-      const receptionTypeExists = await this.prisma.receptionType.findUnique({
-        where: { id: reception.receptionTypeId },
-      });
-
-      if (!receptionTypeExists) {
-        throw new NotFoundException(
-          `No se encontró el tipo de recepción con ID ${reception.receptionTypeId}`,
-        );
-      }
+      await this.receptionTypeDataSource.findById(reception.receptionTypeId);
 
       // Obtener el estado "RECIBIDO"
-      const receivedStatus = await this.prisma.status.findUnique({
-        where: { name: 'RECIBIDO' },
-      });
-
-      if (!receivedStatus) {
-        throw new NotFoundException('No se encontró el estado "RECIBIDO"');
-      }
+      const receivedStatus = await this.statusDataSource.findByName('RECIBIDO');
 
       // Extraemos las unidades de recepción
       const { Samples, ...receptionData } = reception;
 
-      // Validamos que los orígenes de recepción existan y obtenemos sus shortName
+      // Validamos que los orígenes de recepción existan
       const validatedSamples = [];
+
       for (const sample of Samples) {
-        const origin = await this.prisma.receptionOrigin.findUnique({
-          where: { id: sample.receptionOriginId },
-          select: { id: true, shortName: true },
-        });
-
-        if (!origin) {
-          throw new NotFoundException(
-            `No se encontró el origen de recepción con ID ${sample.receptionOriginId}`,
-          );
-        }
-
-        validatedSamples.push({
-          ...sample,
-          origin,
-        });
+        await this.receptionOriginDataSource.findById(sample.receptionOriginId);
+        validatedSamples.push(sample);
       }
 
-      // Usamos el primer origen como origen principal de la recepción
+      // Usamos el primer origen como origen principal de la recepción (es requerido por el esquema)
       const receptionOriginId = Samples[0].receptionOriginId;
 
       // Obtenemos el siguiente código base para las muestras
@@ -157,7 +77,7 @@ export class SampleReceptionDataSourceService {
       const createdReception = await this.prisma.reception.create({
         data: {
           ...receptionData,
-          receptionOriginId,
+          receptionOriginId, // Requerido por el esquema de la BD
           Samples: {
             create: sampleCreates,
           },
@@ -166,29 +86,60 @@ export class SampleReceptionDataSourceService {
           company: true,
           supplier: true,
           receptionType: true,
-          receptionOrigin: true,
           Samples: {
             include: {
               receptionOrigin: true,
+              requiredAnalyses: {
+                include: {
+                  analysisType: true,
+                },
+              },
             },
           },
         },
       });
+
+      // Creamos los análisis requeridos para cada muestra
+      for (let i = 0; i < createdReception.Samples.length; i++) {
+        const sample = createdReception.Samples[i];
+        const originalSample = Samples[i];
+
+        // Crear los análisis requeridos y guardar sus referencias
+        const requiredAnalyses = await Promise.all(
+          originalSample.analysisTypeIds!.map((analysisTypeId) =>
+            this.prisma.sampleRequiredAnalysis.create({
+              data: {
+                sampleId: sample.id,
+                analysisTypeId: analysisTypeId,
+                done: false,
+              },
+              include: {
+                analysisType: true,
+              },
+            }),
+          ),
+        );
+
+        // Asignar los análisis requeridos a cada muestra en la respuesta
+        (sample as any).requiredAnalyses = requiredAnalyses;
+      }
 
       return {
         ...createdReception,
         batchNumber: createdReception.batchNumber || undefined,
         observation: createdReception.observation || undefined,
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       if (
         error instanceof NotFoundException ||
         error instanceof BadRequestException
       ) {
         throw error;
       }
+      const errorMessage =
+        error instanceof Error ? error.message : 'Error desconocido';
       throw new BadRequestException(
-        `Error al crear la recepción: ${error.message}`,
+        `Error al crear la recepción: ${errorMessage}`,
       );
     }
   }
@@ -202,31 +153,13 @@ export class SampleReceptionDataSourceService {
 
       if (companyId) {
         // Verificar que la compañía existe
-        const companyExists = await this.prisma.company.findUnique({
-          where: { id: companyId },
-        });
-
-        if (!companyExists) {
-          throw new NotFoundException(
-            `No se encontró la compañía con ID ${companyId}`,
-          );
-        }
-
+        await this.companyDataSource.findById(companyId);
         where.companyId = companyId;
       }
 
       if (supplierId) {
         // Verificar que el proveedor existe
-        const supplierExists = await this.prisma.supplier.findUnique({
-          where: { id: supplierId },
-        });
-
-        if (!supplierExists) {
-          throw new NotFoundException(
-            `No se encontró el proveedor con ID ${supplierId}`,
-          );
-        }
-
+        await this.supplierDataSource.findById(supplierId);
         where.supplierId = supplierId;
       }
 
@@ -234,37 +167,15 @@ export class SampleReceptionDataSourceService {
         where,
         orderBy: { createdAt: 'desc' },
         include: {
-          company: {
-            select: {
-              id: true,
-              name: true,
-              shortName: true,
-            },
-          },
-          supplier: {
-            select: {
-              id: true,
-              name: true,
-            },
-          },
-          receptionType: {
-            select: {
-              id: true,
-              name: true,
-            },
-          },
-          receptionOrigin: {
-            select: {
-              id: true,
-              name: true,
-            },
-          },
+          company: true,
+          supplier: true,
+          receptionType: true,
           Samples: {
             include: {
-              receptionOrigin: {
-                select: {
-                  id: true,
-                  name: true,
+              receptionOrigin: true,
+              requiredAnalyses: {
+                include: {
+                  analysisType: true,
                 },
               },
             },
@@ -277,12 +188,14 @@ export class SampleReceptionDataSourceService {
         batchNumber: reception.batchNumber || undefined,
         observation: reception.observation || undefined,
       }));
-    } catch (error: any) {
+    } catch (error: unknown) {
       if (error instanceof NotFoundException) {
         throw error;
       }
+      const errorMessage =
+        error instanceof Error ? error.message : 'Error desconocido';
       throw new BadRequestException(
-        `Error al obtener las recepciones: ${error.message}`,
+        `Error al obtener las recepciones: ${errorMessage}`,
       );
     }
   }
@@ -291,15 +204,10 @@ export class SampleReceptionDataSourceService {
     id: string,
     companyId: string,
   ): Promise<IReceptionResponse> {
-    if (!id) {
-      throw new BadRequestException('El ID de la recepción es requerido');
-    }
-
-    if (!companyId) {
-      throw new BadRequestException('El ID de la compañía es requerido');
-    }
-
     try {
+      // Verificar que la compañía existe
+      await this.companyDataSource.findById(companyId);
+
       // Primero verificamos si la recepción existe y pertenece a la compañía del usuario
       const receptionExists = await this.prisma.reception.findFirst({
         where: {
@@ -320,37 +228,15 @@ export class SampleReceptionDataSourceService {
       const reception = await this.prisma.reception.findUnique({
         where: { id },
         include: {
-          company: {
-            select: {
-              id: true,
-              name: true,
-              shortName: true,
-            },
-          },
-          supplier: {
-            select: {
-              id: true,
-              name: true,
-            },
-          },
-          receptionType: {
-            select: {
-              id: true,
-              name: true,
-            },
-          },
-          receptionOrigin: {
-            select: {
-              id: true,
-              name: true,
-            },
-          },
+          company: true,
+          supplier: true,
+          receptionType: true,
           Samples: {
             include: {
-              receptionOrigin: {
-                select: {
-                  id: true,
-                  name: true,
+              receptionOrigin: true,
+              requiredAnalyses: {
+                include: {
+                  analysisType: true,
                 },
               },
             },
@@ -367,12 +253,14 @@ export class SampleReceptionDataSourceService {
         batchNumber: reception.batchNumber || undefined,
         observation: reception.observation || undefined,
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       if (error instanceof NotFoundException) {
         throw error;
       }
+      const errorMessage =
+        error instanceof Error ? error.message : 'Error desconocido';
       throw new BadRequestException(
-        `Error al obtener la recepción: ${error.message}`,
+        `Error al obtener la recepción: ${errorMessage}`,
       );
     }
   }
@@ -381,14 +269,6 @@ export class SampleReceptionDataSourceService {
     id: string,
     reception: Partial<IReceptionEntity>,
   ): Promise<IReceptionResponse> {
-    if (!id) {
-      throw new BadRequestException('El ID de la recepción es requerido');
-    }
-
-    if (!reception) {
-      throw new BadRequestException('Los datos de la recepción son requeridos');
-    }
-
     try {
       // Verificar que la recepción existe
       const receptionExists = await this.prisma.reception.findUnique({
@@ -401,87 +281,29 @@ export class SampleReceptionDataSourceService {
 
       // Validar las relaciones si se van a actualizar
       if (reception.companyId) {
-        const companyExists = await this.prisma.company.findUnique({
-          where: { id: reception.companyId },
-        });
-
-        if (!companyExists) {
-          throw new NotFoundException(
-            `No se encontró la compañía con ID ${reception.companyId}`,
-          );
-        }
+        await this.companyDataSource.findById(reception.companyId);
       }
 
       if (reception.supplierId) {
-        const supplierExists = await this.prisma.supplier.findUnique({
-          where: { id: reception.supplierId },
-        });
-
-        if (!supplierExists) {
-          throw new NotFoundException(
-            `No se encontró el proveedor con ID ${reception.supplierId}`,
-          );
-        }
+        await this.supplierDataSource.findById(reception.supplierId);
       }
 
       if (reception.receptionTypeId) {
-        const receptionTypeExists = await this.prisma.receptionType.findUnique({
-          where: { id: reception.receptionTypeId },
-        });
-
-        if (!receptionTypeExists) {
-          throw new NotFoundException(
-            `No se encontró el tipo de recepción con ID ${reception.receptionTypeId}`,
-          );
-        }
+        await this.receptionTypeDataSource.findById(reception.receptionTypeId);
       }
 
       // Obtener el estado "RECIBIDO" para las nuevas muestras
-      const receivedStatus = await this.prisma.status.findUnique({
-        where: { name: 'RECIBIDO' },
-      });
-
-      if (!receivedStatus) {
-        throw new NotFoundException('No se encontró el estado "RECIBIDO"');
-      }
+      const receivedStatus = await this.statusDataSource.findByName('RECIBIDO');
 
       // Si hay unidades de recepción para actualizar, las validamos
       const { Samples, ...receptionData } = reception;
 
       if (Samples && Samples.length > 0) {
-        // Validamos cada muestra
+        // Validamos que los orígenes de recepción existan
         for (const sample of Samples) {
-          if (!sample.receptionOriginId) {
-            throw new BadRequestException(
-              'El ID del origen de recepción es requerido para cada muestra',
-            );
-          }
-
-          if (
-            sample.receivedWeight === undefined ||
-            sample.receivedWeight < 0
-          ) {
-            throw new BadRequestException(
-              'El peso recibido debe ser un número positivo',
-            );
-          }
-
-          if (sample.dryWeight === undefined || sample.dryWeight < 0) {
-            throw new BadRequestException(
-              'El peso seco debe ser un número positivo',
-            );
-          }
-
-          // Verificar que el origen de recepción existe
-          const originExists = await this.prisma.receptionOrigin.findUnique({
-            where: { id: sample.receptionOriginId },
-          });
-
-          if (!originExists) {
-            throw new NotFoundException(
-              `No se encontró el origen de recepción con ID ${sample.receptionOriginId}`,
-            );
-          }
+          await this.receptionOriginDataSource.findById(
+            sample.receptionOriginId,
+          );
         }
       }
 
@@ -564,15 +386,17 @@ export class SampleReceptionDataSourceService {
         batchNumber: updatedReception.batchNumber || undefined,
         observation: updatedReception.observation || undefined,
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       if (
         error instanceof NotFoundException ||
         error instanceof BadRequestException
       ) {
         throw error;
       }
+      const errorMessage =
+        error instanceof Error ? error.message : 'Error desconocido';
       throw new BadRequestException(
-        `Error al actualizar la recepción: ${error.message}`,
+        `Error al actualizar la recepción: ${errorMessage}`,
       );
     }
   }
@@ -596,12 +420,14 @@ export class SampleReceptionDataSourceService {
         where: { id },
         data: { isActive: false },
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       if (error instanceof NotFoundException) {
         throw error;
       }
+      const errorMessage =
+        error instanceof Error ? error.message : 'Error desconocido';
       throw new BadRequestException(
-        `Error al eliminar la recepción: ${error.message}`,
+        `Error al eliminar la recepción: ${errorMessage}`,
       );
     }
   }

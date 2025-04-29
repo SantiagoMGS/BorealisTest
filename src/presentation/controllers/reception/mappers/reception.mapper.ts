@@ -21,6 +21,7 @@ export class ReceptionMapper {
         receptionOriginId: item.receptionOriginId,
         receivedWeight: item.receivedWeight,
         dryWeight: item.dryWeight,
+        analysisTypeIds: item.analysisTypeIds,
       })),
     };
   }
