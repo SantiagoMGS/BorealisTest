@@ -221,4 +221,114 @@ export const supplierInitialData: Prisma.SupplierCreateInput[] = [
     documentNumber: '901789456',
     verificationDigit: '3',
   },
+  {
+    name: 'Refinería Nacional de Metales S.A.',
+    shortName: 'RNM',
+    documentType: {
+      connect: {
+        code: 'NIT',
+      },
+    },
+    documentNumber: '900456123',
+    verificationDigit: '5',
+  },
+  {
+    name: 'Artesanos Unidos del Oro Ltda.',
+    shortName: 'AUO',
+    documentType: {
+      connect: {
+        code: 'NIT',
+      },
+    },
+    documentNumber: '823789654',
+    verificationDigit: '2',
+  },
+  {
+    name: 'Gabriela Martínez - Importadora de Joyería',
+    shortName: 'GM-IJ',
+    documentType: {
+      connect: {
+        code: 'CC',
+      },
+    },
+    documentNumber: '43567891',
+    verificationDigit: '',
+  },
+  {
+    name: 'Inversiones Mineras El Dorado S.A.S',
+    shortName: 'IMED',
+    documentType: {
+      connect: {
+        code: 'NIT',
+      },
+    },
+    documentNumber: '901234789',
+    verificationDigit: '7',
+  },
+  {
+    name: 'Andrés Suárez - Comerciante de Metales',
+    shortName: 'AS-CM',
+    documentType: {
+      connect: {
+        code: 'CC',
+      },
+    },
+    documentNumber: '80234567',
+    verificationDigit: '',
+  },
+  {
+    name: 'Mineros del Amazonas S.A.',
+    shortName: 'MDA',
+    documentType: {
+      connect: {
+        code: 'NIT',
+      },
+    },
+    documentNumber: '890456123',
+    verificationDigit: '8',
+  },
+  {
+    name: 'Alejandra Rojas - Diseñadora de Joyas',
+    shortName: 'AR-DJ',
+    documentType: {
+      connect: {
+        code: 'CE',
+      },
+    },
+    documentNumber: '53789412',
+    verificationDigit: '',
+  },
+  {
+    name: 'Fundición Metales Preciosos S.A.S',
+    shortName: 'FMP',
+    documentType: {
+      connect: {
+        code: 'NIT',
+      },
+    },
+    documentNumber: '901654321',
+    verificationDigit: '4',
+  },
+  {
+    name: 'Ricardo Mendoza - Metalurgia Artesanal',
+    shortName: 'RM-MA',
+    documentType: {
+      connect: {
+        code: 'CC',
+      },
+    },
+    documentNumber: '72345678',
+    verificationDigit: '',
+  },
+  {
+    name: 'Oro Puro Internacional Ltda.',
+    shortName: 'OPI',
+    documentType: {
+      connect: {
+        code: 'NIT',
+      },
+    },
+    documentNumber: '830987654',
+    verificationDigit: '1',
+  },
 ];

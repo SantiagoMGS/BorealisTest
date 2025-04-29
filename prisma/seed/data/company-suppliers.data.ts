@@ -74,4 +74,46 @@ export const companySupplierInitialData: CompanySupplierSeed[] = [
     companyName: 'MONA MINAS',
     supplierName: 'Juan Martínez - Minero Artesanal',
   }, // Compartido con QUINTANA
+
+  // 10 nuevos proveedores para COLOMBIAN MINT
+  {
+    companyName: 'COLOMBIAN MINT',
+    supplierName: 'Refinería Nacional de Metales S.A.',
+  },
+  {
+    companyName: 'COLOMBIAN MINT',
+    supplierName: 'Artesanos Unidos del Oro Ltda.',
+  },
+  {
+    companyName: 'COLOMBIAN MINT',
+    supplierName: 'Gabriela Martínez - Importadora de Joyería',
+  },
+  {
+    companyName: 'COLOMBIAN MINT',
+    supplierName: 'Inversiones Mineras El Dorado S.A.S',
+  },
+  {
+    companyName: 'COLOMBIAN MINT',
+    supplierName: 'Andrés Suárez - Comerciante de Metales',
+  },
+  {
+    companyName: 'COLOMBIAN MINT',
+    supplierName: 'Mineros del Amazonas S.A.',
+  },
+  {
+    companyName: 'COLOMBIAN MINT',
+    supplierName: 'Alejandra Rojas - Diseñadora de Joyas',
+  },
+  {
+    companyName: 'COLOMBIAN MINT',
+    supplierName: 'Fundición Metales Preciosos S.A.S',
+  },
+  {
+    companyName: 'COLOMBIAN MINT',
+    supplierName: 'Ricardo Mendoza - Metalurgia Artesanal',
+  },
+  {
+    companyName: 'COLOMBIAN MINT',
+    supplierName: 'Oro Puro Internacional Ltda.',
+  },
 ];

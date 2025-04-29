@@ -22,4 +22,10 @@ export class ReceptionOriginRepositoryImpl extends ReceptionOriginRepository {
       originId,
     );
   }
+
+  async getSuppliersByOriginId(
+    originId: string,
+  ): Promise<Array<{ id: string; name: string }>> {
+    return this.receptionOriginDataSource.getSuppliersByOriginId(originId);
+  }
 }

@@ -16,8 +16,12 @@ import { ResponseInterceptor } from '@core/interceptores/response.interceptor';
 import { JwtAuthGuard } from '@infrastructure/guards/jwt-auth.guard';
 import { PermissionsGuard } from '@infrastructure/guards/permissions.guard';
 import { RequirePermission } from '@core/decorators/require-permission.decorator';
-import { DefaultAnalysisResponseDto } from './dtos';
+import {
+  DefaultAnalysisResponseDto,
+  SupplierByOriginResponseDto,
+} from './dtos';
 import { GetDefaultAnalysisUseCase } from '@domain/use-cases/reception/get-default-analysis.usecase';
+import { GetSuppliersByOriginUseCase } from '@domain/use-cases/reception/get-suppliers-by-origin.usecase';
 
 @ApiTags('Orígenes de Recepción')
 @ApiBearerAuth()
@@ -28,6 +32,7 @@ import { GetDefaultAnalysisUseCase } from '@domain/use-cases/reception/get-defau
 export class ReceptionOriginController {
   constructor(
     private readonly getDefaultAnalysisUseCase: GetDefaultAnalysisUseCase,
+    private readonly getSuppliersByOriginUseCase: GetSuppliersByOriginUseCase,
   ) {}
 
   @Get('default-analysis/:originId')
@@ -50,5 +55,26 @@ export class ReceptionOriginController {
     @Param('originId') originId: string,
   ): Promise<DefaultAnalysisResponseDto[]> {
     return this.getDefaultAnalysisUseCase.execute(originId);
+  }
+
+  @Get('suppliers-by-reception-origin/:originId')
+  @ApiOperation({
+    summary: 'Obtener proveedores por origen de recepción',
+    description:
+      'Devuelve la lista de proveedores asociados a un origen de recepción específico',
+  })
+  @ApiParam({
+    name: 'originId',
+    type: 'string',
+    description: 'ID del origen de recepción',
+  })
+  @ApiOkResponse({
+    description: 'Lista de proveedores obtenida correctamente',
+    type: [SupplierByOriginResponseDto],
+  })
+  async getSuppliersByOrigin(
+    @Param('originId') originId: string,
+  ): Promise<SupplierByOriginResponseDto[]> {
+    return this.getSuppliersByOriginUseCase.execute(originId);
   }
 }
