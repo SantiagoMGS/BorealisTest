@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ReceptionOriginRepository } from '@domain/repositories/reception/reception-origin.repository';
-import { ReceptionOriginDataSourceService } from '@infrastructure/datasource/reception';
 import { ReceptionOrigin } from '@prisma/client';
+import { ReceptionOriginDataSourceService } from '@infrastructure/datasource/reception/reception-origin.datasource.service';
 
 @Injectable()
 export class ReceptionOriginRepositoryImpl extends ReceptionOriginRepository {

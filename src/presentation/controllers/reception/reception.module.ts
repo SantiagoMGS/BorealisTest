@@ -25,7 +25,7 @@ import { DoreReceptionRepository } from '@domain/repositories/reception/dore-rec
     // Sample reception
     CreateReceptionUseCase,
     GetReceptionUseCase,
-    GetDefaultAnalysisUseCase,
+    //GetDefaultAnalysisUseCase,
     //ListReceptionsUseCase,
     ReceptionDataSourceService,
     CompanySupplierDataSourceService,
