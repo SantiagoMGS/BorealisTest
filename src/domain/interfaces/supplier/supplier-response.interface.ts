@@ -11,5 +11,6 @@ export interface ISupplierResponse {
   };
   documentNumber: string;
   verificationDigit: string;
+  shortName: string;
   isActive?: boolean;
 }
