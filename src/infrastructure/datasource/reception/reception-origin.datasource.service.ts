@@ -1,5 +1,10 @@
 import { PrismaService } from '@core/prisma/prisma.service';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { ReceptionOrigin } from '@prisma/client';
 
 @Injectable()
@@ -93,6 +98,12 @@ export class ReceptionOriginDataSourceService {
         },
       },
     });
+
+    if (supplierOrigins.length === 0)
+      throw new HttpException(
+        'No se encontraron proveedores asociados a este origen de recepción',
+        HttpStatus.NO_CONTENT,
+      );
 
     // Mapear los resultados para obtener solo id y nombre
     return supplierOrigins.map((so) => ({

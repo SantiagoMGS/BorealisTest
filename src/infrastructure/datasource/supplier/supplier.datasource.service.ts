@@ -2,6 +2,8 @@ import {
   Injectable,
   ConflictException,
   NotFoundException,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { PrismaService } from '@core/prisma/prisma.service';
 import { ISupplierEntity } from '@domain/entities/supplier';
@@ -10,6 +12,7 @@ import {
   ISupplierResponse,
   IMiningTitleResponse,
 } from '@domain/interfaces/supplier';
+import { MiningTitlePersistenceMapper } from './mappers/mining-title.mapper';
 
 @Injectable()
 export class SupplierDataSourceService {
@@ -161,9 +164,6 @@ export class SupplierDataSourceService {
         updatedBy: userId,
         updatedAt: new Date(),
       },
-      include: {
-        documentType: true, // Incluir los datos del tipo de documento
-      },
     });
   }
 
@@ -183,20 +183,8 @@ export class SupplierDataSourceService {
   }
 
   async findMiningTitles(supplierId: string): Promise<IMiningTitleResponse[]> {
-    // Primero verificar si existe el proveedor
-    const existingSupplier = await this.prisma.supplier.findUnique({
-      where: { id: supplierId },
-    });
+    await this.findById(supplierId);
 
-    if (!existingSupplier) {
-      throw new NotFoundException('Proveedor no encontrado');
-    }
-
-    if (!existingSupplier.isActive) {
-      throw new NotFoundException('Proveedor inactivo');
-    }
-
-    // Buscar todos los títulos mineros del proveedor
     const miningTitles = await this.prisma.supplierMiningTitle.findMany({
       where: { supplierId },
       include: {
@@ -209,23 +197,13 @@ export class SupplierDataSourceService {
       },
     });
 
-    if (miningTitles.length === 0) {
-      throw new NotFoundException(
+    if (miningTitles.length === 0)
+      throw new HttpException(
         'No se encontraron títulos mineros para este proveedor',
+        HttpStatus.NO_CONTENT,
       );
-    }
 
-    return miningTitles.map((miningTitle) => ({
-      id: miningTitle.id,
-      name: miningTitle.name,
-      mineTypeId: miningTitle.mineTypeId,
-      mineTypeName: miningTitle.mineType.name,
-      royaltyPercentage: miningTitle.mineType.royaltyPercentage.toString(),
-      cityId: miningTitle.cityId,
-      cityName: miningTitle.city.name,
-      departmentId: miningTitle.city.departmentId,
-      departmentName: miningTitle.city.department.name,
-    }));
+    return MiningTitlePersistenceMapper.toDomainList(miningTitles);
   }
 
   async findMiningTitle(supplierId: string): Promise<IMiningTitleResponse> {

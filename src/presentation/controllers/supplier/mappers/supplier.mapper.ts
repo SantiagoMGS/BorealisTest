@@ -40,4 +40,13 @@ export class SupplierMapper {
 
     return responseDto;
   }
+
+  /**
+   * Convierte múltiples respuestas del dominio a DTOs de respuesta
+   */
+  static toResponseDtoList(
+    suppliers: ISupplierResponse[],
+  ): SupplierResponseDto[] {
+    return suppliers.map(this.toResponseDto);
+  }
 }
