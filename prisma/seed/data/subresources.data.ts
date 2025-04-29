@@ -147,4 +147,15 @@ export const subresourceInitialData: Prisma.SubresourceCreateInput[] = [
     path: '/providers',
     controller: 'SupplierController',
   },
+  {
+    name: 'Orígenes de Recepción',
+    resource: {
+      connect: {
+        name: 'Orígenes de Recepción',
+      },
+    },
+    icon: 'fa-truck',
+    path: '/reception-origins',
+    controller: 'ReceptionOriginController',
+  },
 ];

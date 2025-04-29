@@ -23,7 +23,7 @@ import { GetDefaultAnalysisUseCase } from '@domain/use-cases/reception/get-defau
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @UseInterceptors(ResponseInterceptor)
-//@RequirePermission(ReceptionOriginController.name)
+@RequirePermission(ReceptionOriginController.name)
 @Controller('reception-origins')
 export class ReceptionOriginController {
   constructor(
@@ -34,12 +34,13 @@ export class ReceptionOriginController {
   @ApiOperation({
     summary: 'Obtener análisis por defecto para un origen de recepción',
     description:
-      'Devuelve la lista de análisis por defecto que se deben realizar para un origen de recepción específico',
+      'Devuelve la lista de análisis por defecto que se deben realizar para un origen de recepción específico. Estos análisis vienen preseleccionados para facilitar el proceso de registro.',
   })
   @ApiParam({
     name: 'originId',
     type: 'string',
-    description: 'ID del origen de recepción',
+    description: 'ID único del origen de recepción (UUID)',
+    example: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
   })
   @ApiOkResponse({
     description: 'Lista de análisis por defecto obtenida correctamente',
