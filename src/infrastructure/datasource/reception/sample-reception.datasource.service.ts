@@ -1,6 +1,8 @@
 import { PrismaService } from '@core/prisma/prisma.service';
 import {
   BadRequestException,
+  HttpException,
+  HttpStatus,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -182,6 +184,12 @@ export class SampleReceptionDataSourceService {
           },
         },
       });
+
+      if (receptions.length === 0)
+        throw new HttpException(
+          'No se encontraron recepciones para este origen de recepción',
+          HttpStatus.NO_CONTENT,
+        );
 
       return receptions.map((reception) => ({
         ...reception,

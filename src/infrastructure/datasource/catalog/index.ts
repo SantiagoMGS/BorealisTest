@@ -1,1 +1,1 @@
-export * from './catalog.datasource';
+export { CatalogDatasource } from './catalog.datasource.service';

@@ -5,6 +5,11 @@ import {
   MaxLength,
   MinLength,
   IsUUID,
+  IsOptional,
+  IsNumber,
+  IsInt,
+  Min,
+  Max,
 } from 'class-validator';
 
 export class CreateSupplierDto {
@@ -56,17 +61,12 @@ export class CreateSupplierDto {
 
   @ApiProperty({
     description: 'Dígito de verificación del documento',
-    example: '1',
+    example: 1,
+    required: false,
   })
-  @IsNotEmpty({ message: 'El dígito de verificación es requerido' })
-  @IsString({
-    message: 'El dígito de verificación debe ser una cadena de texto',
-  })
-  @MinLength(1, {
-    message: 'El dígito de verificación debe tener al menos 1 carácter',
-  })
-  @MaxLength(2, {
-    message: 'El dígito de verificación no puede exceder los 2 caracteres',
-  })
-  verificationDigit!: string;
+  @IsOptional()
+  @IsInt({ message: 'El dígito de verificación debe ser un número entero' })
+  @Min(0, { message: 'El dígito de verificación debe ser mayor o igual a 0' })
+  @Max(9, { message: 'El dígito de verificación debe ser menor o igual a 9' })
+  verificationDigit?: number;
 }

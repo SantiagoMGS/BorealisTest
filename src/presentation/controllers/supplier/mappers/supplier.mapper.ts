@@ -19,7 +19,7 @@ export class SupplierMapper {
   /**
    * Convierte una respuesta del dominio a un DTO de respuesta
    */
-  static toResponseDto(supplier: ISupplierResponse): SupplierResponseDto {
+  static toResponseDto(supplier: any): SupplierResponseDto {
     const responseDto = new SupplierResponseDto();
     responseDto.id = supplier.id;
     responseDto.name = supplier.name;
@@ -44,9 +44,7 @@ export class SupplierMapper {
   /**
    * Convierte múltiples respuestas del dominio a DTOs de respuesta
    */
-  static toResponseDtoList(
-    suppliers: ISupplierResponse[],
-  ): SupplierResponseDto[] {
+  static toResponseDtoList(suppliers: any[]): SupplierResponseDto[] {
     return suppliers.map(this.toResponseDto);
   }
 }

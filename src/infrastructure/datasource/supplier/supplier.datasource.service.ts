@@ -44,6 +44,7 @@ export class SupplierDataSourceService {
           documentType: true,
         },
       });
+
       return supplier;
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -59,18 +60,20 @@ export class SupplierDataSourceService {
   }
 
   async findAll(): Promise<ISupplierResponse[]> {
-    return await this.prisma.supplier.findMany({
+    const suppliers = await this.prisma.supplier.findMany({
       where: { isActive: true },
       include: {
         documentType: true, // Incluir los datos del tipo de documento
       },
     });
+
+    return suppliers;
   }
 
   async findByParams(params: {
     id?: string;
     documentNumber?: string;
-  }): Promise<Supplier> {
+  }): Promise<ISupplierResponse> {
     let supplier: Supplier | null = null;
 
     if (params.id) {
@@ -102,7 +105,7 @@ export class SupplierDataSourceService {
 
   async updateSupplier(
     id: string,
-    supplier: Partial<ISupplierEntity>,
+    supplierData: Partial<ISupplierEntity>,
   ): Promise<ISupplierResponse> {
     try {
       // Primero verificar si existe el proveedor
@@ -119,10 +122,10 @@ export class SupplierDataSourceService {
       }
 
       // Si se está actualizando el documentNumber, verificar que no exista otro con el mismo número
-      if (supplier.documentNumber) {
+      if (supplierData.documentNumber) {
         const supplierWithSameDocument = await this.prisma.supplier.findFirst({
           where: {
-            documentNumber: supplier.documentNumber,
+            documentNumber: supplierData.documentNumber,
             id: { not: id },
             isActive: true,
           },
@@ -135,10 +138,12 @@ export class SupplierDataSourceService {
         }
       }
 
-      return await this.prisma.supplier.update({
+      const updatedSupplier = await this.prisma.supplier.update({
         where: { id },
-        data: supplier,
+        data: supplierData,
       });
+
+      return updatedSupplier;
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2025') {
@@ -157,7 +162,8 @@ export class SupplierDataSourceService {
     if (!supplier.isActive) {
       throw new NotFoundException('Proveedor inactivo');
     }
-    return await this.prisma.supplier.update({
+
+    const deletedSupplier = await this.prisma.supplier.update({
       where: { id },
       data: {
         isActive: false,
@@ -165,6 +171,8 @@ export class SupplierDataSourceService {
         updatedAt: new Date(),
       },
     });
+
+    return deletedSupplier;
   }
 
   async findById(id: string): Promise<ISupplierResponse> {

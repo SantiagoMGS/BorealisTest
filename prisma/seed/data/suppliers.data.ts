@@ -9,7 +9,7 @@ export const supplierInitialData: Prisma.SupplierCreateInput[] = [
         code: 'NIT',
       },
     },
-    verificationDigit: '7',
+    verificationDigit: 7,
     documentNumber: '900123456',
   },
   {
@@ -20,7 +20,7 @@ export const supplierInitialData: Prisma.SupplierCreateInput[] = [
         code: 'CC',
       },
     },
-    verificationDigit: '',
+    verificationDigit: null,
     documentNumber: '79856234',
   },
   {
@@ -31,7 +31,7 @@ export const supplierInitialData: Prisma.SupplierCreateInput[] = [
         code: 'NIT',
       },
     },
-    verificationDigit: '9',
+    verificationDigit: 9,
     documentNumber: '812345678',
   },
   {
@@ -43,7 +43,7 @@ export const supplierInitialData: Prisma.SupplierCreateInput[] = [
       },
     },
     documentNumber: '860234567',
-    verificationDigit: '1',
+    verificationDigit: 1,
   },
   {
     name: 'Sofia Rodriguez - Joyería',
@@ -54,7 +54,7 @@ export const supplierInitialData: Prisma.SupplierCreateInput[] = [
       },
     },
     documentNumber: '52436789',
-    verificationDigit: '',
+    verificationDigit: null,
   },
   {
     name: 'Minerales del Valle S.A.S',
@@ -65,7 +65,7 @@ export const supplierInitialData: Prisma.SupplierCreateInput[] = [
       },
     },
     documentNumber: '901567832',
-    verificationDigit: '3',
+    verificationDigit: 3,
   },
   {
     name: 'Ana Gómez - Artesanías en Oro',
@@ -76,7 +76,7 @@ export const supplierInitialData: Prisma.SupplierCreateInput[] = [
       },
     },
     documentNumber: '43218765',
-    verificationDigit: '',
+    verificationDigit: null,
   },
   {
     name: 'Exportadora de Metales Preciosos Ltda.',
@@ -87,7 +87,7 @@ export const supplierInitialData: Prisma.SupplierCreateInput[] = [
       },
     },
     documentNumber: '830456789',
-    verificationDigit: '5',
+    verificationDigit: 5,
   },
   {
     name: 'Juan Martínez - Minero Artesanal',
@@ -98,7 +98,7 @@ export const supplierInitialData: Prisma.SupplierCreateInput[] = [
       },
     },
     documentNumber: '80765432',
-    verificationDigit: '',
+    verificationDigit: null,
   },
   {
     name: 'Asociación Minera del Chocó',
@@ -109,7 +109,7 @@ export const supplierInitialData: Prisma.SupplierCreateInput[] = [
       },
     },
     documentNumber: '900876543',
-    verificationDigit: '2',
+    verificationDigit: 2,
   },
   {
     name: 'Minerales del Caribe S.A.',
@@ -120,7 +120,7 @@ export const supplierInitialData: Prisma.SupplierCreateInput[] = [
       },
     },
     documentNumber: '825678901',
-    verificationDigit: '8',
+    verificationDigit: 8,
   },
   {
     name: 'Luisa Fernández - Joyería Artesanal',
@@ -131,7 +131,7 @@ export const supplierInitialData: Prisma.SupplierCreateInput[] = [
       },
     },
     documentNumber: '52987654',
-    verificationDigit: '',
+    verificationDigit: null,
   },
   {
     name: 'Consorcio Minero Andino',
@@ -142,7 +142,7 @@ export const supplierInitialData: Prisma.SupplierCreateInput[] = [
       },
     },
     documentNumber: '845678123',
-    verificationDigit: '4',
+    verificationDigit: 4,
   },
   {
     name: 'Pedro Ramírez - Comerciante de Oro',
@@ -153,7 +153,7 @@ export const supplierInitialData: Prisma.SupplierCreateInput[] = [
       },
     },
     documentNumber: '71234567',
-    verificationDigit: '',
+    verificationDigit: null,
   },
   {
     name: 'Gold Mining International Corp.',
@@ -164,7 +164,7 @@ export const supplierInitialData: Prisma.SupplierCreateInput[] = [
       },
     },
     documentNumber: '345678912',
-    verificationDigit: '',
+    verificationDigit: null,
   },
   {
     name: 'Cooperativa Minera de Antioquia',
@@ -175,7 +175,7 @@ export const supplierInitialData: Prisma.SupplierCreateInput[] = [
       },
     },
     documentNumber: '811234987',
-    verificationDigit: '6',
+    verificationDigit: 6,
   },
   {
     name: 'María Valencia - Procesadora de Minerales',
@@ -186,7 +186,7 @@ export const supplierInitialData: Prisma.SupplierCreateInput[] = [
       },
     },
     documentNumber: '40123789',
-    verificationDigit: '',
+    verificationDigit: null,
   },
   {
     name: 'Inversiones Mineras del Sur',
@@ -197,7 +197,7 @@ export const supplierInitialData: Prisma.SupplierCreateInput[] = [
       },
     },
     documentNumber: '900345671',
-    verificationDigit: '9',
+    verificationDigit: 9,
   },
   {
     name: 'Diego Torres - Exportador Independiente',
@@ -208,7 +208,7 @@ export const supplierInitialData: Prisma.SupplierCreateInput[] = [
       },
     },
     documentNumber: '79123456',
-    verificationDigit: '',
+    verificationDigit: null,
   },
   {
     name: 'Metales y Aleaciones S.A.S',
@@ -219,7 +219,7 @@ export const supplierInitialData: Prisma.SupplierCreateInput[] = [
       },
     },
     documentNumber: '901789456',
-    verificationDigit: '3',
+    verificationDigit: 3,
   },
   {
     name: 'Refinería Nacional de Metales S.A.',
@@ -230,7 +230,7 @@ export const supplierInitialData: Prisma.SupplierCreateInput[] = [
       },
     },
     documentNumber: '900456123',
-    verificationDigit: '5',
+    verificationDigit: 5,
   },
   {
     name: 'Artesanos Unidos del Oro Ltda.',
@@ -241,18 +241,95 @@ export const supplierInitialData: Prisma.SupplierCreateInput[] = [
       },
     },
     documentNumber: '823789654',
-    verificationDigit: '2',
+    verificationDigit: 2,
   },
   {
     name: 'Gabriela Martínez - Importadora de Joyería',
     shortName: 'GM-IJ',
     documentType: {
       connect: {
+        code: 'CE',
+      },
+    },
+    documentNumber: '543218765',
+    verificationDigit: null,
+  },
+  {
+    name: 'Comercializadora de Metales Preciosos S.A.',
+    shortName: 'COMEP',
+    documentType: {
+      connect: {
+        code: 'NIT',
+      },
+    },
+    documentNumber: '900234567',
+    verificationDigit: 7,
+  },
+  {
+    name: 'Laura Jiménez - Minera Artesanal',
+    shortName: 'LJ-MA',
+    documentType: {
+      connect: {
         code: 'CC',
       },
     },
-    documentNumber: '43567891',
-    verificationDigit: '',
+    documentNumber: '53218765',
+    verificationDigit: null,
+  },
+  {
+    name: 'Grupo Industrial Minerales S.A.S',
+    shortName: 'GIM',
+    documentType: {
+      connect: {
+        code: 'NIT',
+      },
+    },
+    documentNumber: '901678543',
+    verificationDigit: 8,
+  },
+  {
+    name: 'Roberto Sánchez - Comerciante Mineral',
+    shortName: 'RS-CM',
+    documentType: {
+      connect: {
+        code: 'CC',
+      },
+    },
+    documentNumber: '80123456',
+    verificationDigit: null,
+  },
+  {
+    name: 'Exportadora Colombiana de Oro S.A.',
+    shortName: 'ECO',
+    documentType: {
+      connect: {
+        code: 'NIT',
+      },
+    },
+    documentNumber: '822345678',
+    verificationDigit: 4,
+  },
+  {
+    name: 'Valentina Restrepo - Joyería de Oro',
+    shortName: 'VR-JO',
+    documentType: {
+      connect: {
+        code: 'CC',
+      },
+    },
+    documentNumber: '43876543',
+    verificationDigit: null,
+  },
+  {
+    name: 'Minera El Dorado Ltda.',
+    shortName: 'MED',
+    documentType: {
+      connect: {
+        code: 'NIT',
+      },
+    },
+    documentNumber: '811456789',
+    verificationDigit: 1,
   },
   {
     name: 'Inversiones Mineras El Dorado S.A.S',
@@ -262,8 +339,8 @@ export const supplierInitialData: Prisma.SupplierCreateInput[] = [
         code: 'NIT',
       },
     },
-    documentNumber: '901234789',
-    verificationDigit: '7',
+    documentNumber: '901234567',
+    verificationDigit: 8,
   },
   {
     name: 'Andrés Suárez - Comerciante de Metales',
@@ -273,8 +350,8 @@ export const supplierInitialData: Prisma.SupplierCreateInput[] = [
         code: 'CC',
       },
     },
-    documentNumber: '80234567',
-    verificationDigit: '',
+    documentNumber: '79234561',
+    verificationDigit: null,
   },
   {
     name: 'Mineros del Amazonas S.A.',
@@ -284,19 +361,19 @@ export const supplierInitialData: Prisma.SupplierCreateInput[] = [
         code: 'NIT',
       },
     },
-    documentNumber: '890456123',
-    verificationDigit: '8',
+    documentNumber: '900567891',
+    verificationDigit: 6,
   },
   {
     name: 'Alejandra Rojas - Diseñadora de Joyas',
     shortName: 'AR-DJ',
     documentType: {
       connect: {
-        code: 'CE',
+        code: 'CC',
       },
     },
-    documentNumber: '53789412',
-    verificationDigit: '',
+    documentNumber: '52123456',
+    verificationDigit: null,
   },
   {
     name: 'Fundición Metales Preciosos S.A.S',
@@ -306,8 +383,8 @@ export const supplierInitialData: Prisma.SupplierCreateInput[] = [
         code: 'NIT',
       },
     },
-    documentNumber: '901654321',
-    verificationDigit: '4',
+    documentNumber: '901345678',
+    verificationDigit: 5,
   },
   {
     name: 'Ricardo Mendoza - Metalurgia Artesanal',
@@ -317,8 +394,8 @@ export const supplierInitialData: Prisma.SupplierCreateInput[] = [
         code: 'CC',
       },
     },
-    documentNumber: '72345678',
-    verificationDigit: '',
+    documentNumber: '80567891',
+    verificationDigit: null,
   },
   {
     name: 'Oro Puro Internacional Ltda.',
@@ -328,7 +405,7 @@ export const supplierInitialData: Prisma.SupplierCreateInput[] = [
         code: 'NIT',
       },
     },
-    documentNumber: '830987654',
-    verificationDigit: '1',
+    documentNumber: '901456789',
+    verificationDigit: 9,
   },
 ];
