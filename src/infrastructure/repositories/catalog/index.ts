@@ -1,1 +1,1 @@
-export * from './catalog.repository-impl';
+export * from './catalog.repository-impl.service';

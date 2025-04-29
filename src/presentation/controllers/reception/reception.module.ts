@@ -5,7 +5,7 @@ import { GetDefaultAnalysisUseCase } from '@domain/use-cases/reception/get-defau
 import { GetSuppliersByOriginUseCase } from '@domain/use-cases/reception/get-suppliers-by-origin.usecase';
 //import { ListReceptionsUseCase } from '@domain/use-cases/reception/list-receptions.usecase';
 import { SampleReceptionRepositoryImpl } from '@infrastructure/repositories/reception/sample-reception.repository-impl.service';
-import { ReceptionOriginRepositoryImpl } from '@infrastructure/repositories/reception/reception-origin.repository-impl';
+import { ReceptionOriginRepositoryImpl } from '@infrastructure/repositories/reception/reception-origin.repository-impl.service';
 import {
   SampleReceptionDataSourceService,
   ReceptionOriginDataSourceService,
@@ -14,7 +14,7 @@ import {
 import { StatusDataSourceService } from '@infrastructure/datasource/status';
 import { PrismaModule } from '@core/prisma/prisma.module';
 import { PermissionsModule } from '@core/permissions/permissions.module';
-import { ReceptionSupplierRepositoryImpl } from '@infrastructure/repositories/reception/reception-supplier.repository';
+import { ReceptionSupplierRepositoryImpl } from '@infrastructure/repositories/reception/reception-supplier.repository-impl.service';
 import { SampleReceptionRepository } from '@domain/repositories/reception/sample-reception.repository';
 import { ReceptionOriginRepository } from '@domain/repositories/reception/reception-origin.repository';
 import { CompanySupplierDataSourceService } from '@infrastructure/datasource/company-supplier';
