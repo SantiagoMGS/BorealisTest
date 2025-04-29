@@ -60,6 +60,12 @@ export class SupplierResponseDto {
   verificationDigit?: number | null;
 
   @ApiProperty({
+    description: 'Nombre corto del proveedor',
+    example: 'MSR',
+  })
+  shortName!: string;
+
+  @ApiProperty({
     description: 'Estado del proveedor',
     example: true,
   })

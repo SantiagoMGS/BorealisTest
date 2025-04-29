@@ -36,6 +36,7 @@ export class SupplierMapper {
     }
 
     responseDto.documentNumber = supplier.documentNumber;
+    responseDto.shortName = supplier.shortName;
     responseDto.isActive = supplier.isActive ?? true;
 
     return responseDto;
