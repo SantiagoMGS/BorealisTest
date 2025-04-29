@@ -1,6 +1,6 @@
 import { Prisma } from '@prisma/client';
 
-export const mineTypeInitialData: Prisma.mineTypeCreateInput[] = [
+export const mineTypeInitialData: Prisma.MineTypeCreateInput[] = [
   {
     name: 'Aluvial',
     royaltyPercentage: '6.0000',

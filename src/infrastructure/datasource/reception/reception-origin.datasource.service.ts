@@ -67,4 +67,37 @@ export class ReceptionOriginDataSourceService {
       }),
     );
   }
+
+  /**
+   * Obtiene los proveedores asociados a un origen de recepción específico
+   * @param originId ID del origen de recepción
+   * @returns Lista de proveedores con id y nombre
+   */
+  async getSuppliersByOriginId(
+    originId: string,
+  ): Promise<Array<{ id: string; name: string }>> {
+    // Verificar que el origen existe
+    await this.findById(originId);
+
+    // Obtener los proveedores asociados al origen de recepción
+    const supplierOrigins = await this.prisma.supplierReceptionOrigin.findMany({
+      where: {
+        originId,
+      },
+      select: {
+        supplier: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+
+    // Mapear los resultados para obtener solo id y nombre
+    return supplierOrigins.map((so) => ({
+      id: so.supplier.id,
+      name: so.supplier.name,
+    }));
+  }
 }

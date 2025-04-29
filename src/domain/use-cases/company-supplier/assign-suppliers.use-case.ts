@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CompanySupplierRepositoryImpl } from '@infrastructure/repositories/company-supplier/company-supplier.repository';
+import { CompanySupplierRepositoryImpl } from '@infrastructure/repositories/company-supplier/company-supplier.repository-impl.service';
 import { AssignSuppliersDto } from '@presentation/controllers/company/dtos';
 import { ISuppliersAssignmentResult } from '@domain/interfaces/company-supplier';
 

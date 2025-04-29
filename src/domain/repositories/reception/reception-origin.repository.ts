@@ -19,4 +19,13 @@ export abstract class ReceptionOriginRepository {
   abstract getDefaultAnalysisByOriginId(
     originId: string,
   ): Promise<Array<{ id: string; name: string; shortName: string }>>;
+
+  /**
+   * Obtiene los proveedores asociados a un origen de recepción
+   * @param originId ID del origen de recepción
+   * @returns Lista de proveedores con id y nombre
+   */
+  abstract getSuppliersByOriginId(
+    originId: string,
+  ): Promise<Array<{ id: string; name: string }>>;
 }
