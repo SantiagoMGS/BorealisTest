@@ -168,8 +168,6 @@ export class SupplierDataSourceService {
   }
 
   async findById(id: string): Promise<ISupplierResponse> {
-    console.log('id', id);
-
     const supplier = await this.prisma.supplier.findUnique({
       where: { id },
       include: {
