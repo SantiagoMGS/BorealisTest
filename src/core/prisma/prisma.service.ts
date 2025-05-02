@@ -88,6 +88,24 @@ export class PrismaService
               },
             };
           }
+        } else if (params.model === 'SupplierMiningTitle') {
+          // Para títulos mineros que se relacionan con Supplier
+          params.args.where.supplier = {
+            companies: {
+              some: {
+                companyId: companyId,
+              },
+            },
+          };
+        } else if (params.model === 'SupplierReceptionOrigin') {
+          // Para la relación entre proveedores y orígenes de recepción
+          params.args.where.supplier = {
+            companies: {
+              some: {
+                companyId: companyId,
+              },
+            },
+          };
         }
       }
 
@@ -107,6 +125,8 @@ export class PrismaService
       'Analysis',
       'Barrenado',
       'CompanySupplier',
+      'SupplierMiningTitle',
+      'SupplierReceptionOrigin',
     ];
     return modelsToFilter.includes(model);
   }
