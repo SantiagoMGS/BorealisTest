@@ -168,15 +168,8 @@ export class LabelPrinterService {
         clearTimeout(timeout);
 
         // Convertir el buffer a hexadecimal para debugging
-        console.log(commandBuffer);
 
         const hexData = commandBuffer.toString('hex');
-        this.logger.debug(`Enviando datos HEX: ${hexData}`);
-
-        // Agregar log detallado del ZPL
-        this.logger.log(
-          `Enviando ZPL (${commandBuffer.length} bytes): ${commandBuffer.toString(encoding)}`,
-        );
 
         // Enviar datos con callbacks explícitos de éxito/error
         client.write(commandBuffer, (err) => {
@@ -237,9 +230,6 @@ export class LabelPrinterService {
     const commandBuffer = Buffer.from(zplCommands, encoding);
     this.logger.log(
       `Enviando comandos ZPL personalizados a la impresora (codificación: ${encoding})`,
-    );
-    this.logger.log(
-      `ZPL a enviar (${zplCommands.length} caracteres): ${zplCommands}`,
     );
 
     return this.sendToPrinter(commandBuffer, config, encoding);
@@ -312,7 +302,6 @@ export class LabelPrinterService {
       : this.printerConfig;
 
     // Agregar log para mostrar el ZPL que se enviará byte por byte
-    this.logger.log(`ZPL a enviar byte por byte: ${zplCommands}`);
 
     const client = new net.Socket();
     client.setKeepAlive(true);
