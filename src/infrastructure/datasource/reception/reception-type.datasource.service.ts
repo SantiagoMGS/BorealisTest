@@ -25,4 +25,30 @@ export class ReceptionTypeDataSourceService {
 
     return receptionType;
   }
+
+  /**
+   * Busca un tipo de recepción por su nombre
+   * @param name Nombre del tipo de recepción
+   * @returns El tipo de recepción encontrado
+   * @throws NotFoundException si no se encuentra el tipo de recepción
+   */
+  async findByName(name: string): Promise<ReceptionType> {
+    const receptionType = await this.prisma.receptionType.findFirst({
+      where: {
+        name: {
+          equals: name,
+          mode: 'insensitive',
+        },
+        isActive: true,
+      },
+    });
+
+    if (!receptionType) {
+      throw new NotFoundException(
+        `No se encontró el tipo de recepción con nombre ${name}`,
+      );
+    }
+
+    return receptionType;
+  }
 }

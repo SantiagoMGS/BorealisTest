@@ -5,11 +5,33 @@ import {
   IsDate,
   IsNotEmpty,
   IsNumber,
+  IsObject,
   IsOptional,
   IsString,
   IsUUID,
   ValidateNested,
 } from 'class-validator';
+
+// DTO para las imágenes de doré
+export class CreateDoreImageDto {
+  @ApiProperty({
+    description: 'Formato de la imagen del doré',
+    example: 'image/jpeg',
+    required: true,
+  })
+  @IsString()
+  @IsNotEmpty()
+  format!: string;
+
+  @ApiProperty({
+    description: 'Imagen del doré en formato base64',
+    example: 'data:image/jpeg;base64,/9j/4AAQSkZJR...',
+    required: true,
+  })
+  @IsString()
+  @IsNotEmpty()
+  base64!: string;
+}
 
 // DTO para los ítems de doré
 export class CreateDoreItemDto {
@@ -29,6 +51,16 @@ export class CreateDoreItemDto {
   @IsString()
   @IsOptional()
   observation?: string;
+
+  @ApiProperty({
+    description: 'Imagen del doré',
+    type: CreateDoreImageDto,
+  })
+  @IsObject()
+  @ValidateNested()
+  @Type(() => CreateDoreImageDto)
+  @IsNotEmpty()
+  image!: CreateDoreImageDto;
 }
 
 export class CreateDoreReceptionDto {
@@ -41,20 +73,30 @@ export class CreateDoreReceptionDto {
   supplierId!: string;
 
   @ApiProperty({
-    description: 'ID del tipo de recepción',
-    example: '123e4567-e89b-12d3-a456-426614174000',
-  })
-  @IsUUID()
-  @IsNotEmpty()
-  receptionTypeId!: string;
-
-  @ApiProperty({
     description: 'ID del origen de recepción',
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @IsUUID()
   @IsNotEmpty()
   receptionOriginId!: string;
+
+  @ApiProperty({
+    description: 'ID del título minero',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+    required: false,
+  })
+  @IsUUID()
+  @IsOptional()
+  miningTitleId?: string;
+
+  @ApiProperty({
+    description: 'ID del municipio',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+    required: true,
+  })
+  @IsUUID()
+  @IsNotEmpty()
+  cityId!: string;
 
   @ApiProperty({
     description: 'Fecha de recepción',

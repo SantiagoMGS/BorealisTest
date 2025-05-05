@@ -16,18 +16,23 @@ export interface IDoreEntity {
   receivedWeight: number;
   observation?: string;
   statusId?: string;
+  images: IDoreImageEntity[];
 }
-
+export interface IDoreImageEntity {
+  format: string;
+  base64: string;
+}
 /**
  * Entidad de dominio para recepción
  */
 export interface IReceptionEntity {
   companyId: string;
   supplierId: string;
-  receptionTypeId: string;
   receptionDate: Date;
   batchNumber?: string;
   observation?: string;
+  miningTitleId?: string;
+  cityId: string;
   Samples: ISampleEntity[];
 }
 
@@ -37,10 +42,11 @@ export interface IReceptionEntity {
 export interface IDoreReceptionEntity {
   companyId: string;
   supplierId: string;
-  receptionTypeId: string;
   receptionOriginId: string;
   receptionDate?: Date;
   batchNumber?: string;
   observation?: string;
+  miningTitleId?: string;
+  cityId: string;
   items: IDoreEntity[];
 }

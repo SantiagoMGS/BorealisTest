@@ -33,7 +33,7 @@ import { IAuthUser } from '@domain/entities/auth';
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @UseInterceptors(ResponseInterceptor)
-@RequirePermission(DoreReceptionController.name)
+//@RequirePermission(DoreReceptionController.name)
 @Controller('dore-receptions')
 export class DoreReceptionController {
   constructor(

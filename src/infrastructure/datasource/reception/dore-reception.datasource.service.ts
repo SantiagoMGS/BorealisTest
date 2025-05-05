@@ -32,22 +32,28 @@ export class DoreReceptionDataSourceService {
       // Verificamos que existan todas las entidades relacionadas
       await this.supplierDataSource.findById(reception.supplierId);
       await this.companyDataSource.findById(reception.companyId);
-      await this.receptionTypeDataSource.findById(reception.receptionTypeId);
+
+      // Obtener el tipo de recepción "Doré"
+      const receptionType =
+        await this.receptionTypeDataSource.findByName('Doré');
+      const receptionTypeId = receptionType.id;
+
       await this.receptionOriginDataSource.findById(
         reception.receptionOriginId,
       );
-
       const receivedStatus = await this.statusDataSource.findByName('RECIBIDO');
 
       const createdReception = await this.prisma.reception.create({
         data: {
           companyId: reception.companyId,
           supplierId: reception.supplierId,
-          receptionTypeId: reception.receptionTypeId,
+          receptionTypeId: receptionTypeId,
           receptionOriginId: reception.receptionOriginId,
           receptionDate: reception.receptionDate || new Date(),
           batchNumber: reception.batchNumber,
           observation: reception.observation,
+          cityId: reception.cityId,
+          miningTitleId: reception.miningTitleId,
         },
         include: {
           company: {
@@ -85,6 +91,8 @@ export class DoreReceptionDataSourceService {
             receivedWeight: item.receivedWeight,
             observation: item.observation,
             statusId: receivedStatus.id,
+            base64: item.images[0].base64,
+            format: item.images[0].format,
           },
           include: {
             status: {
@@ -99,6 +107,8 @@ export class DoreReceptionDataSourceService {
         dores.push({
           receivedWeight: dore.receivedWeight,
           observation: dore.observation,
+          base64: dore.base64,
+          format: dore.format,
         });
       }
 
