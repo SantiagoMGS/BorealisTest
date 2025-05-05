@@ -167,10 +167,6 @@ export class LabelPrinterService {
         );
         clearTimeout(timeout);
 
-        // Convertir el buffer a hexadecimal para debugging
-
-        const hexData = commandBuffer.toString('hex');
-
         // Enviar datos con callbacks explícitos de éxito/error
         client.write(commandBuffer, (err) => {
           if (err) {
