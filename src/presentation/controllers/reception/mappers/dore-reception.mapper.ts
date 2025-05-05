@@ -12,14 +12,22 @@ export class DoreReceptionMapper {
     return {
       companyId,
       supplierId: createDto.supplierId,
-      receptionTypeId: createDto.receptionTypeId,
       receptionOriginId: createDto.receptionOriginId,
+      miningTitleId: createDto.miningTitleId,
+      cityId: createDto.cityId,
       receptionDate: createDto.receptionDate || new Date(),
       batchNumber: createDto.batchNumber,
       observation: createDto.observation,
+
       items: createDto.items.map((item) => ({
         receivedWeight: item.receivedWeight,
         observation: item.observation,
+        images: [
+          {
+            format: item.image.format,
+            base64: item.image.base64,
+          },
+        ],
       })),
     };
   }
@@ -52,6 +60,14 @@ export class DoreReceptionMapper {
 
     if (reception.receptionOrigin) {
       responseDto.receptionOrigin = reception.receptionOrigin;
+    }
+
+    if (reception.miningTitle) {
+      responseDto.miningTitle = reception.miningTitle;
+    }
+
+    if (reception.city) {
+      responseDto.city = reception.city;
     }
 
     if (reception.dores) {

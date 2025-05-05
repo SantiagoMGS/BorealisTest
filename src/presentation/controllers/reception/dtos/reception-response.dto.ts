@@ -94,6 +94,18 @@ export class ReceptionResponseDto {
   receptionOrigin?: any;
 
   @ApiProperty({
+    description: 'Datos del título minero',
+    required: false,
+  })
+  miningTitle?: any;
+
+  @ApiProperty({
+    description: 'Datos del municipio',
+    required: false,
+  })
+  city?: any;
+
+  @ApiProperty({
     description: 'Unidades de recepción y sus muestras',
     required: false,
     type: 'array',

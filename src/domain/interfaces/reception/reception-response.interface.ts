@@ -15,5 +15,7 @@ export interface IReceptionResponse {
   supplier?: any;
   receptionType?: any;
   receptionOrigin?: any;
+  miningTitle?: any;
+  city?: any;
   Samples?: any[];
 }
