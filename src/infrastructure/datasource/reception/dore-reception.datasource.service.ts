@@ -10,6 +10,7 @@ import { SupplierDataSourceService } from '@infrastructure/datasource/supplier/s
 import { ReceptionTypeDataSourceService } from './reception-type.datasource.service';
 import { ReceptionOriginDataSourceService } from './reception-origin.datasource.service';
 import { StatusDataSourceService } from '@infrastructure/datasource/status';
+import { IDoreReceptionFilter } from '@domain/repositories/reception';
 
 @Injectable()
 export class DoreReceptionDataSourceService {
@@ -121,6 +122,161 @@ export class DoreReceptionDataSourceService {
       }
       throw new BadRequestException(
         `Error al crear la recepción de doré: ${error.message}`,
+      );
+    }
+  }
+
+  /**
+   * Filtra recepciones de doré por rango de fechas
+   * @param filter Filtros a aplicar (startDate, endDate, supplierId, code)
+   * @returns Lista de recepciones filtradas y proveedores asociados
+   */
+  async findByDateRange(filter: IDoreReceptionFilter): Promise<any> {
+    try {
+      // Construir los filtros para la consulta
+      const whereClause: any = {
+        isActive: true,
+        // Buscar recepciones de tipo doré
+        receptionType: {
+          name: 'Doré', // Asumiendo que hay un tipo de recepción "Doré"
+        },
+      };
+
+      // Agregar filtros de fecha si se proporcionan
+      if (filter.startDate || filter.endDate) {
+        whereClause.receptionDate = {};
+
+        if (filter.startDate) {
+          whereClause.receptionDate.gte = filter.startDate;
+        }
+
+        if (filter.endDate) {
+          whereClause.receptionDate.lte = filter.endDate;
+        }
+      }
+
+      // Filtrar por proveedor si se proporciona
+      if (filter.supplierId) {
+        whereClause.supplierId = filter.supplierId;
+      }
+
+      // Filtrar por código
+      if (filter.code) {
+        // Si hay un campo 'code' en la tabla de recepciones
+        // (como un batchNumber o similar)
+        whereClause.OR = [
+          { batchNumber: { contains: filter.code, mode: 'insensitive' } },
+          {
+            supplier: {
+              name: { contains: filter.code, mode: 'insensitive' },
+            },
+          },
+        ];
+      }
+
+      // Buscar recepciones con los filtros aplicados
+      const receptions = await this.prisma.reception.findMany({
+        where: whereClause,
+        orderBy: {
+          receptionDate: 'desc',
+        },
+        include: {
+          company: {
+            select: {
+              id: true,
+              name: true,
+              shortName: true,
+            },
+          },
+          supplier: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+          receptionType: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+          receptionOrigin: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      });
+
+      // Construir filtro para los dorés
+      const doreWhereClause: any = {
+        isActive: true,
+      };
+
+      // Si hay un código, también filtrar dorés por código
+      if (filter.code) {
+        doreWhereClause.OR = [
+          { code: { equals: parseInt(filter.code, 10) } }, // Si el código del doré es un número
+          { observation: { contains: filter.code, mode: 'insensitive' } },
+        ];
+      }
+
+      // Buscar los dorés filtrados
+      const dores = await this.prisma.dore.findMany({
+        where: doreWhereClause,
+        include: {
+          status: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      });
+
+      // Construir filtro para proveedores
+      let supplierWhereClause: any = {
+        isActive: true,
+      };
+
+      // Si hay un código, filtrar proveedores por nombre
+      if (filter.code) {
+        supplierWhereClause.OR = [
+          { name: { contains: filter.code, mode: 'insensitive' } },
+        ];
+      }
+
+      // Si hay un supplierId, filtrar específicamente ese proveedor
+      if (filter.supplierId) {
+        supplierWhereClause = {
+          id: filter.supplierId,
+          isActive: true,
+        };
+      } else {
+        // Si no hay supplierId, obtener todos los proveedores de las recepciones filtradas
+        const supplierIds = [...new Set(receptions.map((r) => r.supplierId))];
+        if (supplierIds.length > 0) {
+          supplierWhereClause.id = { in: supplierIds };
+        }
+      }
+
+      const suppliers = await this.prisma.supplier.findMany({
+        where: supplierWhereClause,
+        select: {
+          id: true,
+          name: true,
+        },
+      });
+
+      return {
+        receptions,
+        dores,
+        suppliers,
+      };
+    } catch (error: any) {
+      throw new BadRequestException(
+        `Error al filtrar recepciones de doré: ${error.message}`,
       );
     }
   }
