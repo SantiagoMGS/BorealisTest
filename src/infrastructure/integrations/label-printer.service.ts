@@ -1,18 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { PrinterConfigDto, PrintLabelDto } from '@presentation/dtos/printer';
 import * as net from 'net';
-
-interface LabelData {
-  title?: string;
-  lines?: string[];
-  barcode?: string;
-  qrCode?: string;
-}
-
-interface PrinterConfig {
-  ip: string;
-  port: number;
-  timeout?: number;
-}
 
 @Injectable()
 export class LabelPrinterService {
@@ -26,22 +14,11 @@ export class LabelPrinterService {
   };
 
   /**
-   * Actualiza la configuración de la impresora
-   * @param config Nueva configuración
-   */
-  updatePrinterConfig(config: Partial<PrinterConfig>): void {
-    this.printerConfig = { ...this.printerConfig, ...config };
-    this.logger.log(
-      `Configuración de impresora actualizada: ${JSON.stringify(this.printerConfig)}`,
-    );
-  }
-
-  /**
    * Verifica la conexión con la impresora
    * @param config Configuración opcional para la prueba
    * @returns {Promise<boolean>} true si la conexión es exitosa, false en caso contrario
    */
-  async testConnection(config?: Partial<PrinterConfig>): Promise<boolean> {
+  async testConnection(config?: Partial<PrinterConfigDto>): Promise<boolean> {
     const testConfig = config
       ? { ...this.printerConfig, ...config }
       : this.printerConfig;
@@ -75,34 +52,14 @@ export class LabelPrinterService {
     });
   }
 
-  async printTicket(
-    text: string,
-    config?: Partial<PrinterConfig>,
-  ): Promise<void> {
-    // Convertir a comandos ZPL
-    const lines = text.split('\n');
-    const lineCommands = lines.map((line, index) => {
-      const y = 20 + index * 40;
-      // Comando para texto en ZPL
-      return `^FO20,${y}^A0N,30,30^FD${line}^FS`;
-    });
-
-    // Comandos ZPL para iniciar y finalizar etiqueta
-    const zplCommand = ['^XA', '^PW400', '^LL600', ...lineCommands, '^XZ'].join(
-      '\r\n',
-    );
-
-    // Agregar log para mostrar el ZPL generado
-    this.logger.log(`ZPL generado para ticket: ${zplCommand}`);
-
-    const commandBuffer = Buffer.from(zplCommand, 'ascii');
-
-    return this.sendToPrinter(commandBuffer, config);
-  }
-
+  /**
+   * Imprime una etiqueta con información de QR
+   * @param data Datos para la etiqueta (QR y configuración)
+   * @param config Configuración opcional para la impresora
+   */
   async printLabel(
-    data: LabelData,
-    config?: Partial<PrinterConfig>,
+    data: Partial<PrintLabelDto>,
+    config?: Partial<PrinterConfigDto>,
   ): Promise<void> {
     const commands: string[] = ['^XA', '^PW400', '^LL600'];
 
@@ -143,14 +100,18 @@ export class LabelPrinterService {
     // Agregar log para mostrar el ZPL generado
     this.logger.log(`ZPL generado para etiqueta: ${zplCommand}`);
 
-    const commandBuffer = Buffer.from(zplCommand, 'ascii');
-
-    return this.sendToPrinter(commandBuffer, config);
+    // Intentar enviar con el método más robusto para mayor probabilidad de éxito
+    try {
+      return await this.sendZplAlternative(zplCommand, config);
+    } catch (err: any) {
+      this.logger.error(`Error al imprimir etiqueta: ${err.message}`);
+      throw err;
+    }
   }
 
   private async sendToPrinter(
     commandBuffer: Buffer,
-    config?: Partial<PrinterConfig>,
+    config?: Partial<PrinterConfigDto>,
     encoding: BufferEncoding = 'ascii',
   ): Promise<void> {
     const printConfig = config
@@ -269,7 +230,7 @@ export class LabelPrinterService {
    */
   async sendRawZpl(
     zplCommands: string,
-    config?: Partial<PrinterConfig>,
+    config?: Partial<PrinterConfigDto>,
     encoding: BufferEncoding = 'ascii',
   ): Promise<void> {
     // Ya no modificamos el ZPL, se envía exactamente como está para evitar problemas
@@ -285,129 +246,13 @@ export class LabelPrinterService {
   }
 
   /**
-   * Realiza un diagnóstico completo de la comunicación con la impresora
-   * @param config Configuración opcional de la impresora
-   */
-  async diagnosticoPrinter(config?: Partial<PrinterConfig>): Promise<{
-    ping: boolean;
-    conexion: boolean;
-    impresionTest?: boolean;
-    error?: string;
-  }> {
-    const result: {
-      ping: boolean;
-      conexion: boolean;
-      impresionTest?: boolean;
-      error?: string;
-    } = {
-      ping: false,
-      conexion: false,
-    };
-
-    const printConfig = config
-      ? { ...this.printerConfig, ...config }
-      : this.printerConfig;
-
-    try {
-      // Paso 1: Ping
-      const pingResult = await this.pingHost(printConfig.ip);
-      result.ping = pingResult;
-
-      if (!pingResult) {
-        result.error = `No se puede hacer ping a la dirección ${printConfig.ip}`;
-        return result;
-      }
-
-      // Paso 2: Probar conexión al puerto
-      const conexionResult = await this.testConnection(printConfig);
-      result.conexion = conexionResult;
-
-      if (!conexionResult) {
-        result.error = `No se puede conectar al puerto ${printConfig.port} en ${printConfig.ip}`;
-        return result;
-      }
-
-      // Paso 3: Enviar un comando ZPL de prueba simple
-      try {
-        // Comando ZPL más simple posible
-        const simpleZpl = '^XA^FO20,20^FDPrueba^FS^XZ';
-
-        // Agregar log para mostrar el ZPL de prueba
-        this.logger.log(`ZPL de diagnóstico: ${simpleZpl}`);
-
-        // Probar con múltiples codificaciones
-        const encodings: BufferEncoding[] = ['ascii', 'latin1', 'utf8'];
-        let impresionExitosa = false;
-
-        for (const enc of encodings) {
-          try {
-            this.logger.log(
-              `Intentando impresión de prueba con codificación: ${enc}`,
-            );
-            await this.sendRawZpl(simpleZpl, printConfig, enc);
-            impresionExitosa = true;
-            break; // Si funciona, salimos del ciclo
-          } catch (err: any) {
-            this.logger.warn(`Error con codificación ${enc}: ${err.message}`);
-            // Continuamos con la siguiente codificación
-          }
-        }
-
-        result.impresionTest = impresionExitosa;
-
-        if (!impresionExitosa) {
-          result.error = 'No se pudo imprimir con ninguna codificación';
-        }
-      } catch (err: any) {
-        result.impresionTest = false;
-        result.error = `Error en impresión de prueba: ${err.message}`;
-      }
-
-      return result;
-    } catch (err: any) {
-      result.error = `Error general: ${err.message}`;
-      return result;
-    }
-  }
-
-  /**
-   * Realiza un ping al host especificado
-   * @param host Dirección IP o nombre de host
-   * @private
-   */
-  private async pingHost(host: string): Promise<boolean> {
-    return new Promise<boolean>((resolve) => {
-      const socket = new net.Socket();
-
-      socket.setTimeout(1000);
-
-      socket.on('connect', () => {
-        socket.destroy();
-        resolve(true);
-      });
-
-      socket.on('timeout', () => {
-        socket.destroy();
-        resolve(false);
-      });
-
-      socket.on('error', () => {
-        socket.destroy();
-        resolve(false);
-      });
-
-      socket.connect(80, host);
-    });
-  }
-
-  /**
    * Envía comandos ZPL usando un método alternativo que puede ser más compatible
    * @param zplCommands Comandos ZPL a enviar
    * @param config Configuración opcional de la impresora
    */
   async sendZplAlternative(
     zplCommands: string,
-    config?: Partial<PrinterConfig>,
+    config?: Partial<PrinterConfigDto>,
   ): Promise<void> {
     const printConfig = config
       ? { ...this.printerConfig, ...config }
@@ -460,7 +305,7 @@ export class LabelPrinterService {
    */
   private async sendByteByByte(
     zplCommands: string,
-    config?: Partial<PrinterConfig>,
+    config?: Partial<PrinterConfigDto>,
   ): Promise<void> {
     const printConfig = config
       ? { ...this.printerConfig, ...config }
@@ -517,222 +362,5 @@ export class LabelPrinterService {
         }
       });
     });
-  }
-
-  /**
-   * Envía un comando para hacer que la impresora emita un pitido
-   * (útil para verificar si la impresora recibe correctamente los comandos)
-   * @param config Configuración opcional de la impresora
-   */
-  async sendBeep(config?: Partial<PrinterConfig>): Promise<void> {
-    // Comando ZPL para hacer que la impresora emita un pitido
-    const beepCommand = '^XA^SZ2^JMA^XZ';
-    this.logger.log(
-      `Enviando comando de pitido a la impresora: ${beepCommand}`,
-    );
-
-    // Intentar el envío de varias formas
-    try {
-      await this.sendRawZpl(beepCommand, config);
-    } catch (err: any) {
-      this.logger.warn(`Fallo en primer intento de pitido: ${err.message}`);
-      try {
-        // Segundo intento con método alternativo
-        await this.sendByteByByte(beepCommand, config);
-      } catch (err2: any) {
-        this.logger.error(
-          `No se pudo enviar comando de pitido: ${err2.message}`,
-        );
-        throw err2;
-      }
-    }
-  }
-
-  /**
-   * Envía un comando para forzar la calibración de la impresora
-   * @param config Configuración opcional de la impresora
-   */
-  async forcePrinterCalibration(
-    config?: Partial<PrinterConfig>,
-  ): Promise<void> {
-    // Comando ZPL para calibración
-    const calibrationCommand = '^XA^JC^XZ';
-    this.logger.log(
-      `Enviando comando de calibración a la impresora: ${calibrationCommand}`,
-    );
-
-    try {
-      await this.sendRawZpl(calibrationCommand, config);
-    } catch (err: any) {
-      this.logger.warn(
-        `Fallo en primer intento de calibración: ${err.message}`,
-      );
-      try {
-        await this.sendByteByByte(calibrationCommand, config);
-      } catch (err2: any) {
-        this.logger.error(
-          `No se pudo enviar comando de calibración: ${err2.message}`,
-        );
-        throw err2;
-      }
-    }
-  }
-
-  /**
-   * Envía un comando de ZPL extremadamente básico que debería funcionar
-   * en cualquier impresora compatible con ZPL
-   * @param config Configuración opcional de la impresora
-   */
-  async sendBasicTest(config?: Partial<PrinterConfig>): Promise<void> {
-    // Comando ZPL extremadamente básico (sin caracteres especiales ni formateo complejo)
-    const basicCommand = '^XA^FO20,20^A0N,40,40^FDTEST PRINT^FS^XZ';
-    this.logger.log(
-      `Enviando comando de prueba básica a la impresora: ${basicCommand}`,
-    );
-
-    try {
-      // Primero intentar enviarlo normalmente
-      await this.sendRawZpl(basicCommand, config);
-    } catch (err: any) {
-      this.logger.warn(
-        `Fallo en primer intento de prueba básica: ${err.message}`,
-      );
-      try {
-        // Luego probar el método byte por byte
-        await this.sendByteByByte(basicCommand, config);
-      } catch (err2: any) {
-        this.logger.error(
-          `No se pudo enviar comando de prueba básica: ${err2.message}`,
-        );
-        throw err2;
-      }
-    }
-  }
-
-  /**
-   * Envía un comando para hacer un reset suave de la impresora
-   * Útil cuando la impresora deja de responder
-   * @param config Configuración opcional de la impresora
-   */
-  async resetPrinter(config?: Partial<PrinterConfig>): Promise<void> {
-    // Comando ZPL para reset
-    const resetCommand = '^XA^JUS^XZ';
-    this.logger.log(
-      `Enviando comando de reset a la impresora: ${resetCommand}`,
-    );
-
-    try {
-      await this.sendRawZpl(resetCommand, config);
-    } catch (err: any) {
-      this.logger.warn(`Fallo en primer intento de reset: ${err.message}`);
-      try {
-        await this.sendByteByByte(resetCommand, config);
-      } catch (err2: any) {
-        this.logger.error(
-          `No se pudo enviar comando de reset: ${err2.message}`,
-        );
-        throw err2;
-      }
-    }
-  }
-
-  /**
-   * Envía un comando para hacer avanzar el papel (útil para verificar si hay papel)
-   * @param config Configuración opcional de la impresora
-   */
-  async feedPaper(config?: Partial<PrinterConfig>): Promise<void> {
-    // Comando ZPL para avanzar papel
-    const feedCommand = '~PS';
-    this.logger.log(
-      `Enviando comando de avance de papel a la impresora: ${feedCommand}`,
-    );
-
-    try {
-      await this.sendRawZpl(feedCommand, config);
-    } catch (err: any) {
-      this.logger.warn(
-        `Fallo en primer intento de avance de papel: ${err.message}`,
-      );
-      try {
-        await this.sendByteByByte(feedCommand, config);
-      } catch (err2: any) {
-        this.logger.error(
-          `No se pudo enviar comando de avance de papel: ${err2.message}`,
-        );
-        throw err2;
-      }
-    }
-  }
-
-  /**
-   * Envía una serie completa de comandos de diagnóstico en secuencia.
-   * Útil cuando no estamos seguros de qué comando puede ayudar.
-   * @param config Configuración opcional de la impresora
-   */
-  async fullDiagnostic(config?: Partial<PrinterConfig>): Promise<{
-    ping: boolean;
-    connection: boolean;
-    results: Record<string, boolean>;
-  }> {
-    const results: Record<string, boolean> = {
-      reset: false,
-      feed: false,
-      beep: false,
-      calibration: false,
-      basicPrint: false,
-    };
-
-    // Primero verificar conectividad
-    const pingResult = await this.pingHost(config?.ip || this.printerConfig.ip);
-    if (!pingResult) {
-      return { ping: false, connection: false, results };
-    }
-
-    const connectionResult = await this.testConnection(config);
-    if (!connectionResult) {
-      return { ping: true, connection: false, results };
-    }
-
-    // Intentar cada comando en secuencia
-    try {
-      await this.resetPrinter(config);
-      results.reset = true;
-
-      // Esperar un poco después del reset
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      try {
-        await this.feedPaper(config);
-        results.feed = true;
-      } catch (e) {
-        this.logger.warn('Feed de papel falló');
-      }
-
-      try {
-        await this.sendBeep(config);
-        results.beep = true;
-      } catch (e) {
-        this.logger.warn('Comando de beep falló');
-      }
-
-      try {
-        await this.forcePrinterCalibration(config);
-        results.calibration = true;
-      } catch (e) {
-        this.logger.warn('Calibración falló');
-      }
-
-      try {
-        await this.sendBasicTest(config);
-        results.basicPrint = true;
-      } catch (e) {
-        this.logger.warn('Impresión básica falló');
-      }
-
-      return { ping: true, connection: true, results };
-    } catch (err) {
-      this.logger.error('Error en diagnóstico completo');
-      return { ping: true, connection: true, results };
-    }
   }
 }

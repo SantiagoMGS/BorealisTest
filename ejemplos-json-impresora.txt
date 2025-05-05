@@ -1,236 +1,49 @@
-// 1. JSON para probar la conexión con la impresora:
+// ==========================================
+// EJEMPLOS JSON PARA API DE IMPRESORA DE ETIQUETAS
+// ==========================================
+// En todos los ejemplos, reemplaza la IP y puerto con los valores reales de tu impresora
+
+// ==========================================
+// 1. PRUEBA DE CONEXIÓN
+// ==========================================
+
+// 1.1 Probar conexión con la impresora (GET /printer/test-connection)
 {
   "ip": "192.168.1.123", 
   "port": 9100
 }
 
-// 2. JSON para actualizar la configuración de la impresora:
-{
-  "ip": "192.168.1.123",
-  "port": 9100,
-  "timeout": 10000
-}
+// ==========================================
+// 2. IMPRESIÓN DE CÓDIGOS QR
+// ==========================================
 
-// 3. JSON para imprimir una etiqueta de texto simple (igual al ejemplo que funciona):
+// 2.1 Imprimir solo un código QR (POST /printer/print-qr)
 {
-  "text": "Producto: Mango - Precio: $2.50",
+  "qrCode": "https://miempresa.com/producto/12345",
   "printerConfig": {
-    "ip": "192.168.1.123",
-    "port": 9100
+    "ip": "192.168.1.10",
+    "port": 18080
   },
   "skipConnectionTest": true
 }
 
-// 4. JSON para imprimir una etiqueta con múltiples líneas:
+// 2.2 Imprimir QR con verificación previa de conexión
 {
-  "text": "Producto: Mango\nPrecio: $2.50\nCantidad: 5kg",
+  "qrCode": "https://miempresa.com/producto/12345",
   "printerConfig": {
     "ip": "192.168.1.123",
-    "port": 9100
-  }
+    "port": 18080
+  },
+  "skipConnectionTest": false
 }
 
-// 5. JSON para imprimir una etiqueta compleja:
+// 2.3 Imprimir QR con timeout personalizado
 {
-  "title": "PRODUCTO: MANGO",
-  "lines": [
-    "Precio: $2.50/kg",
-    "Cantidad: 5kg",
-    "Total: $12.50"
-  ],
-  "barcode": "7501234567890",
+  "qrCode": "https://miempresa.com/producto/12345",
   "printerConfig": {
     "ip": "192.168.1.123",
-    "port": 9100
-  }
-}
-
-// 6. JSON para imprimir una etiqueta con código QR:
-{
-  "title": "Escanea para más información",
-  "qrCode": "https://miempresa.com/producto/mango",
-  "printerConfig": {
-    "ip": "192.168.1.123",
-    "port": 9100
-  }
-}
-
-// 7. JSON para enviar comandos ZPL personalizados (exactamente los mismos que funcionan en el ensayador):
-{
-  "zpl": "^XA\n^PW400\n^LL600\n^FO20,20^A0N,30,30^FDProducto: Mango - Precio: $2.50^FS\n^XZ",
-  "printerConfig": {
-    "ip": "192.168.1.123",
-    "port": 9100
+    "port": 9100,
+    "timeout": 10000
   },
   "skipConnectionTest": true
-}
-
-// 8. JSON para enviar el ZPL exacto que funciona para etiqueta compleja:
-{
-  "zpl": "^XA\n^PW400\n^LL600\n^FO20,20^A0N,40,40^FDPRODUCTO XYZ-123^FS\n^FO20,80^A0N,30,30^FDSKU: 123456789^FS\n^FO20,120^A0N,30,30^FDFecha: 15/06/2024^FS\n^FO20,160^A0N,30,30^FDUbicación: Almacén A-15^FS\n^FO20,200^BY3^BCN,100,Y,N,N^FD123456789012^FS\n^FO20,320^BQN,2,8^FDMA,https://miempresa.com/producto/123456789^FS\n^XZ",
-  "printerConfig": {
-    "ip": "192.168.1.123",
-    "port": 9100
-  },
-  "skipConnectionTest": true
-}
-
-// 9. Alternativa con saltos de línea CRLF (\r\n) en lugar de LF (\n):
-{
-  "zpl": "^XA\r\n^PW400\r\n^LL600\r\n^FO20,20^A0N,30,30^FDProducto: Mango - Precio: $2.50^FS\r\n^XZ",
-  "printerConfig": {
-    "ip": "192.168.1.123",
-    "port": 9100
-  },
-  "skipConnectionTest": true
-}
-
-// 10. Alternativa sin saltos de línea explícitos:
-{
-  "zpl": "^XA^PW400^LL600^FO20,20^A0N,30,30^FDProducto: Mango - Precio: $2.50^FS^XZ",
-  "printerConfig": {
-    "ip": "192.168.1.123",
-    "port": 9100
-  },
-  "skipConnectionTest": true
-}
-
-// 11. Con codificación latin1 para caracteres especiales:
-{
-  "zpl": "^XA\n^PW400\n^LL600\n^FO20,20^A0N,30,30^FDProducto: Piña - Ubicación: Almacén^FS\n^XZ",
-  "printerConfig": {
-    "ip": "192.168.1.123",
-    "port": 9100
-  },
-  "encoding": "latin1",
-  "skipConnectionTest": true
-}
-
-// 12. Con codificación utf8 para caracteres especiales:
-{
-  "zpl": "^XA\n^PW400\n^LL600\n^FO20,20^A0N,30,30^FDProducto: Piña - Ubicación: Almacén^FS\n^XZ",
-  "printerConfig": {
-    "ip": "192.168.1.123",
-    "port": 9100
-  },
-  "encoding": "utf8",
-  "skipConnectionTest": true
-}
-
-// 13. Diagnóstico de impresora:
-{
-  "ip": "192.168.1.123",
-  "port": 9100,
-  "timeout": 10000
-}
-
-// 14. Imprimir con método alternativo (más compatible):
-{
-  "zpl": "^XA^PW400^LL600^FO20,20^A0N,30,30^FDProducto: Mango - Precio: $2.50^FS^XZ",
-  "printerConfig": {
-    "ip": "192.168.1.123",
-    "port": 9100
-  },
-  "skipConnectionTest": true
-}
-
-// 15. Imprimir etiqueta compleja con método alternativo:
-{
-  "zpl": "^XA\n^PW400\n^LL600\n^FO20,20^A0N,40,40^FDPRODUCTO XYZ-123^FS\n^FO20,80^A0N,30,30^FDSKU: 123456789^FS\n^FO20,120^A0N,30,30^FDFecha: 15/06/2024^FS\n^FO20,160^A0N,30,30^FDUbicación: Almacén A-15^FS\n^FO20,200^BY3^BCN,100,Y,N,N^FD123456789012^FS\n^FO20,320^BQN,2,8^FDMA,https://miempresa.com/producto/123456789^FS\n^XZ",
-  "printerConfig": {
-    "ip": "192.168.1.123",
-    "port": 9100
-  },
-  "skipConnectionTest": true
-}
-
-// 16. Para hacer un diagnóstico completo (prueba todos los comandos):
-// GET /printer/full-diagnostic
-{
-  "ip": "192.168.1.123",
-  "port": 9100,
-  "timeout": 10000
-}
-
-// 17. Para hacer un reset de la impresora:
-// POST /printer/reset
-{
-  "ip": "192.168.1.123",
-  "port": 9100
-}
-
-// 18. Para hacer que la impresora avance papel:
-// POST /printer/feed
-{
-  "ip": "192.168.1.123", 
-  "port": 9100
-}
-
-// 19. Para enviar un comando de pitido (beep):
-// POST /printer/beep
-{
-  "ip": "192.168.1.123",
-  "port": 9100
-}
-
-// 20. Para enviar un comando de calibración:
-// POST /printer/calibrate
-{
-  "ip": "192.168.1.123",
-  "port": 9100
-}
-
-// 21. Para enviar una impresión básica de prueba:
-// POST /printer/test-basic
-{
-  "ip": "192.168.1.123",
-  "port": 9100
-}
-
-// Nota: Usa el endpoint POST /printer/print-raw-zpl para enviar exactamente el mismo ZPL 
-// que sabes que funciona en el ensayador de etiquetas. 
-
-// 22. Probar con puerto alternativo 6101 (común en algunas impresoras):
-// Para cualquiera de los comandos anteriores
-{
-  "ip": "192.168.1.123",
-  "port": 6101
-}
-
-// 23. Probar con puerto LPR 515 (común en impresoras de red):
-{
-  "ip": "192.168.1.123",
-  "port": 515
-}
-
-// 24. Probar con otros puertos comunes:
-// Puerto 9101
-{
-  "ip": "192.168.1.123",
-  "port": 9101
-}
-
-// Puerto 6001
-{
-  "ip": "192.168.1.123",
-  "port": 6001
-}
-
-// 25. Probar con comandos EPL en lugar de ZPL:
-// POST /printer/print-raw-zpl (el endpoint funciona con cualquier tipo de comando)
-{
-  "zpl": "N\nS4\nD15,15,0,1,3,3,N,\"TEST PRINT EPL\"\nP1",
-  "printerConfig": {
-    "ip": "192.168.1.123",
-    "port": 9100
-  }
-}
-
-// 26. Comando EPL básico 2:
-{
-  "zpl": "N\nZB\nQ400,200\nA50,50,0,3,1,1,N,\"TEST EPL BIXOLON\"\nP1",
-  "printerConfig": {
-    "ip": "192.168.1.123",
-    "port": 9100
-  }
 } 
