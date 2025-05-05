@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { DoreReceptionRepository } from '@domain/repositories/reception/dore-reception.repository';
+import {
+  DoreReceptionRepository,
+  IDoreReceptionFilter,
+} from '@domain/repositories/reception/dore-reception.repository';
 import { IDoreReceptionEntity } from '@domain/entities/reception';
 import { DoreReceptionDataSourceService } from '@infrastructure/datasource/reception/dore-reception.datasource.service';
 
@@ -13,5 +16,9 @@ export class DoreReceptionRepositoryImpl extends DoreReceptionRepository {
 
   async createDoreReception(doreReception: IDoreReceptionEntity): Promise<any> {
     return await this.doreReceptionDatasource.createReception(doreReception);
+  }
+
+  async findByDateRange(filter: IDoreReceptionFilter): Promise<any> {
+    return await this.doreReceptionDatasource.findByDateRange(filter);
   }
 }
