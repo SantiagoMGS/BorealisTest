@@ -111,6 +111,31 @@ export class DoreReceptionResponseDto {
   };
 
   @ApiProperty({
+    description: 'Título minero',
+    example: {
+      id: '123e4567-e89b-12d3-a456-426614174000',
+      name: 'Título Minero ABC',
+    },
+  })
+  miningTitle?: {
+    id: string;
+    name: string;
+  };
+
+  @ApiProperty({
+    description: 'Municipio',
+    example: {
+      id: '123e4567-e89b-12d3-a456-426614174000',
+      name: 'Municipio XYZ',
+    },
+  })
+  city?: {
+    id: string;
+    name: string;
+    daneCode: string;
+  };
+
+  @ApiProperty({
     description: 'Items de doré',
     type: [DoreItemResponseDto],
   })

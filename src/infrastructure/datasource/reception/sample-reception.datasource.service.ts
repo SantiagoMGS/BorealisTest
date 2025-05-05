@@ -35,8 +35,10 @@ export class SampleReceptionDataSourceService {
       // Verificar que la compañía existe
       await this.companyDataSource.findById(reception.companyId);
 
-      // Verificar que el tipo de recepción existe
-      await this.receptionTypeDataSource.findById(reception.receptionTypeId);
+      // Obtener el tipo de recepción "Muestras"
+      const receptionType =
+        await this.receptionTypeDataSource.findByName('Muestra');
+      const receptionTypeId = receptionType.id;
 
       // Obtener el estado "RECIBIDO"
       const receivedStatus = await this.statusDataSource.findByName('RECIBIDO');
@@ -79,6 +81,7 @@ export class SampleReceptionDataSourceService {
       const createdReception = await this.prisma.reception.create({
         data: {
           ...receptionData,
+          receptionTypeId, // Usar el ID del tipo determinado
           receptionOriginId, // Requerido por el esquema de la BD
           Samples: {
             create: sampleCreates,
@@ -294,10 +297,6 @@ export class SampleReceptionDataSourceService {
 
       if (reception.supplierId) {
         await this.supplierDataSource.findById(reception.supplierId);
-      }
-
-      if (reception.receptionTypeId) {
-        await this.receptionTypeDataSource.findById(reception.receptionTypeId);
       }
 
       // Obtener el estado "RECIBIDO" para las nuevas muestras

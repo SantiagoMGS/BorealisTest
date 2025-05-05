@@ -13,10 +13,11 @@ export class ReceptionMapper {
     return {
       companyId,
       supplierId: createDto.supplierId,
-      receptionTypeId: createDto.receptionTypeId,
       receptionDate: createDto.receptionDate,
       batchNumber: createDto.batchNumber,
       observation: createDto.observation,
+      miningTitleId: createDto.miningTitleId,
+      cityId: createDto.cityId,
       Samples: createDto.items.map((item) => ({
         receptionOriginId: item.receptionOriginId,
         receivedWeight: item.receivedWeight,
@@ -54,6 +55,14 @@ export class ReceptionMapper {
 
     if (reception.receptionOrigin) {
       responseDto.receptionOrigin = reception.receptionOrigin;
+    }
+
+    if (reception.miningTitle) {
+      responseDto.miningTitle = reception.miningTitle;
+    }
+
+    if (reception.city) {
+      responseDto.city = reception.city;
     }
 
     if (reception.Samples) {
