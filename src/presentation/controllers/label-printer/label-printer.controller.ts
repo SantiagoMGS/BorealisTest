@@ -1,4 +1,3 @@
-import { LabelPrinterService } from '@infrastructure/integrations/label-printer.service';
 import {
   Controller,
   Post,
@@ -8,19 +7,41 @@ import {
   HttpException,
   HttpStatus,
   UseInterceptors,
+  UseGuards,
 } from '@nestjs/common';
-import { PrinterConfigDto, PrintLabelDto } from '@presentation/dtos/printer';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  PrinterConfigDto,
+  PrintReceptionLabelDto,
+} from '@presentation/controllers/label-printer/dtos/printer';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { CustomResponse } from '@core/decorators/custom-response.decorator';
 import { ResponseInterceptor } from '@core/interceptores/response.interceptor';
+import { PrintReceptionLabelUseCase } from '@domain/use-cases/label-printer/print-reception-label.use-case';
+import { TestConnectionUseCase } from '@domain/use-cases/label-printer/test-connection.use-case';
+import { JwtAuthGuard } from '@infrastructure/guards/jwt-auth.guard';
+import { RequirePermission } from '@core/decorators/require-permission.decorator';
+import { PermissionsGuard } from '@infrastructure/guards/permissions.guard';
+import { CurrentUser } from '@core/decorators/current-user.decorator';
+import { IAuthUser } from '@domain/entities/auth';
 
 @ApiTags('Impresora de Etiquetas')
+@ApiBearerAuth()
 @Controller('printer')
 @UseInterceptors(ResponseInterceptor)
+//@RequirePermission(LabelPrinterController.name)
+@UseGuards(JwtAuthGuard) //, PermissionsGuard)
 export class LabelPrinterController {
   private readonly logger = new Logger(LabelPrinterController.name);
 
-  constructor(private readonly labelPrinterService: LabelPrinterService) {}
+  constructor(
+    private readonly printReceptionLabelUseCase: PrintReceptionLabelUseCase,
+    private readonly testConnectionUseCase: TestConnectionUseCase,
+  ) {}
 
   /**
    * Verificar la conexión con la impresora
@@ -37,7 +58,7 @@ export class LabelPrinterController {
   @Get('test-connection')
   async testConnection(@Body() datos?: PrinterConfigDto) {
     try {
-      const result = await this.labelPrinterService.testConnection(datos);
+      const result = await this.testConnectionUseCase.execute(datos);
 
       if (!result) {
         throw new HttpException(
@@ -57,54 +78,36 @@ export class LabelPrinterController {
   }
 
   /**
-   * Imprimir código QR básico
+   * Imprimir etiqueta de recepción con código QR
    */
-  @ApiOperation({ summary: 'Imprimir código QR básico' })
+  @ApiOperation({ summary: 'Imprimir etiqueta de recepción con código QR' })
   @ApiResponse({
     status: 200,
-    description: 'Código QR impreso correctamente',
+    description: 'Etiqueta impresa correctamente',
   })
   @CustomResponse({
-    successMessage: 'Código QR impreso correctamente',
-    errorMessage: 'Error durante la impresión del código QR',
+    successMessage: 'Etiqueta impresa correctamente',
+    errorMessage: 'Error durante la impresión de la etiqueta',
   })
   @Post('print-qr')
-  async printQR(@Body() datos: PrintLabelDto) {
+  async printQR(
+    @Body() printReceptionLabelDto: PrintReceptionLabelDto,
+    @CurrentUser() user: IAuthUser,
+  ) {
     try {
-      // Validación básica
-      if (!datos.qrCode) {
-        throw new HttpException(
-          'El contenido del código QR está vacío',
-          HttpStatus.BAD_REQUEST,
-        );
-      }
+      this.logger.log(
+        `Solicitud de impresión recibida para recepción: ${printReceptionLabelDto.receptionId}`,
+      );
+      console.log(user);
+      const result = await this.printReceptionLabelUseCase.execute(
+        printReceptionLabelDto,
+        user,
+      );
 
-      // Paso 1: Verificar conexión si no se omite
-      if (!datos.skipConnectionTest) {
-        const conexion = await this.labelPrinterService.testConnection(
-          datos.printerConfig,
-        );
-        if (!conexion) {
-          throw new HttpException(
-            'No se pudo establecer conexión con la impresora',
-            HttpStatus.BAD_GATEWAY,
-          );
-        }
-      }
-
-      // Paso 2: Imprimir
-      this.logger.log(`Enviando a imprimir código QR: '${datos.qrCode}'`);
-      await this.labelPrinterService.printLabel(datos, datos.printerConfig);
-
-      this.logger.log('Impresión completada');
-
-      return {
-        success: true,
-        message: 'Código QR impreso correctamente',
-      };
+      return result;
     } catch (error: any) {
       this.logger.error(
-        `Error al imprimir QR: ${error instanceof Error ? error.message : String(error)}`,
+        `Error al imprimir etiqueta: ${error instanceof Error ? error.message : String(error)}`,
       );
 
       throw new HttpException(

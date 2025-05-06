@@ -93,4 +93,18 @@ export class PrintLabelDto {
   @ValidateNested()
   @Type(() => PrinterConfigDto)
   printerConfig?: PrinterConfigDto;
+
+  @ApiProperty({
+    description: 'Nombre de la compañía para mostrar en la etiqueta',
+    example: 'Mi Empresa S.A.',
+    required: false,
+  })
+  @IsOptional()
+  @IsString({
+    message: 'El nombre de la compañía debe ser una cadena de caracteres',
+  })
+  @MaxLength(50, {
+    message: 'El nombre de la compañía no puede exceder 50 caracteres',
+  })
+  companyName?: string;
 }
