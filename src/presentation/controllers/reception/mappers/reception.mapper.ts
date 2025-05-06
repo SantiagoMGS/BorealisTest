@@ -21,7 +21,7 @@ export class ReceptionMapper {
       Samples: createDto.items.map((item) => ({
         receptionOriginId: item.receptionOriginId,
         receivedWeight: item.receivedWeight,
-        dryWeight: item.dryWeight,
+        dryWeight: 0,
         analysisTypeIds: item.analysisTypeIds,
       })),
     };

@@ -11,6 +11,7 @@ import { ReceptionTypeDataSourceService } from './reception-type.datasource.serv
 import { ReceptionOriginDataSourceService } from './reception-origin.datasource.service';
 import { StatusDataSourceService } from '@infrastructure/datasource/status';
 import { IDoreReceptionFilter } from '@domain/repositories/reception';
+import { CityDataSourceService } from '@infrastructure/datasource/city/city.datasource.service';
 
 @Injectable()
 export class DoreReceptionDataSourceService {
@@ -21,6 +22,7 @@ export class DoreReceptionDataSourceService {
     private readonly receptionTypeDataSource: ReceptionTypeDataSourceService,
     private readonly receptionOriginDataSource: ReceptionOriginDataSourceService,
     private readonly statusDataSource: StatusDataSourceService,
+    private readonly cityDataSource: CityDataSourceService,
   ) {}
 
   /**
@@ -32,7 +34,7 @@ export class DoreReceptionDataSourceService {
       // Verificamos que existan todas las entidades relacionadas
       await this.supplierDataSource.findById(reception.supplierId);
       await this.companyDataSource.findById(reception.companyId);
-
+      await this.cityDataSource.findById(reception.cityId);
       // Obtener el tipo de recepción "Doré"
       const receptionType =
         await this.receptionTypeDataSource.findByName('Doré');

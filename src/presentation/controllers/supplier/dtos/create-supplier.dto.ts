@@ -24,18 +24,6 @@ export class CreateSupplierDto {
   name!: string;
 
   @ApiProperty({
-    description: 'Nombre corto del proveedor',
-    example: 'MSR',
-  })
-  @IsNotEmpty({ message: 'El nombre corto del proveedor es requerido' })
-  @IsString({ message: 'El nombre corto debe ser una cadena de texto' })
-  @MinLength(3, { message: 'El nombre corto debe tener al menos 3 caracteres' })
-  @MaxLength(10, {
-    message: 'El nombre corto no puede exceder los 10 caracteres',
-  })
-  shortName!: string;
-
-  @ApiProperty({
     description: 'ID del tipo de documento',
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
@@ -60,8 +48,8 @@ export class CreateSupplierDto {
   documentNumber!: string;
 
   @ApiProperty({
-    description: 'Dígito de verificación del documento',
-    example: 1,
+    description: 'Dígito de verificación (para documentos tipo NIT)',
+    example: 9,
     required: false,
   })
   @IsOptional()
