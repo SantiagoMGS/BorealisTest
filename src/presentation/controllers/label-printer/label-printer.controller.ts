@@ -33,8 +33,8 @@ import { IAuthUser } from '@domain/entities/auth';
 @ApiBearerAuth()
 @Controller('printer')
 @UseInterceptors(ResponseInterceptor)
-//@RequirePermission(LabelPrinterController.name)
-@UseGuards(JwtAuthGuard) //, PermissionsGuard)
+@RequirePermission(LabelPrinterController.name)
+@UseGuards(JwtAuthGuard, PermissionsGuard)
 export class LabelPrinterController {
   private readonly logger = new Logger(LabelPrinterController.name);
 
