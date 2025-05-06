@@ -4,6 +4,7 @@ import {
   NotFoundException,
   HttpException,
   HttpStatus,
+  BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from '@core/prisma/prisma.service';
 import { ISupplierEntity } from '@domain/entities/supplier';
@@ -38,8 +39,17 @@ export class SupplierDataSourceService {
         throw new NotFoundException('Tipo de documento no encontrado');
       }
 
+      if (!supplierData.shortName) {
+        throw new BadRequestException(
+          'El nombre corto del proveedor es requerido',
+        );
+      }
+
       const supplier = await this.prisma.supplier.create({
-        data: supplierData,
+        data: {
+          ...supplierData,
+          shortName: supplierData.shortName,
+        },
         include: {
           documentType: true,
         },
@@ -49,7 +59,21 @@ export class SupplierDataSourceService {
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
-          throw new ConflictException('El número de documento ya existe');
+          // P2002 es el código para violación de restricción unique
+          // Verificar qué campo causó el conflicto
+          const target = (error.meta?.target as string[]) || [];
+
+          if (target.includes('documentNumber')) {
+            throw new ConflictException('El número de documento ya existe');
+          } else if (target.includes('shortName')) {
+            throw new ConflictException(
+              'El nombre corto del proveedor ya existe',
+            );
+          } else {
+            throw new ConflictException(
+              'Ya existe un registro con los datos proporcionados',
+            );
+          }
         }
         if (error.code === 'P2003') {
           throw new NotFoundException('Tipo de documento no encontrado');
@@ -148,6 +172,23 @@ export class SupplierDataSourceService {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2025') {
           throw new NotFoundException('Proveedor no encontrado');
+        }
+        if (error.code === 'P2002') {
+          // P2002 es el código para violación de restricción unique
+          // Verificar qué campo causó el conflicto
+          const target = (error.meta?.target as string[]) || [];
+
+          if (target.includes('documentNumber')) {
+            throw new ConflictException('El número de documento ya existe');
+          } else if (target.includes('shortName')) {
+            throw new ConflictException(
+              'El nombre corto del proveedor ya existe',
+            );
+          } else {
+            throw new ConflictException(
+              'Ya existe un registro con los datos proporcionados',
+            );
+          }
         }
       }
       throw error;

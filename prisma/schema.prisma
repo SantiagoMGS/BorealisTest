@@ -254,7 +254,7 @@ model Supplier {
   updatedBy         String?  @db.Uuid
   documentTypeId    String   @db.Uuid
   verificationDigit Int?
-  shortName         String   @unique
+  shortName         String   @unique @db.Char(6)
 
   companies            CompanySupplier[]
   receptions           Reception[]
