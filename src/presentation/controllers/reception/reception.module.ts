@@ -28,6 +28,7 @@ import { FindDoreReceptionsByDateRangeUseCase } from '@domain/use-cases/receptio
 import { DoreReceptionRepositoryImpl } from '@infrastructure/repositories/reception/dore-reception.repository-impl.service';
 import { DoreReceptionDataSourceService } from '@infrastructure/datasource/reception/dore-reception.datasource.service';
 import { DoreReceptionRepository } from '@domain/repositories/reception/dore-reception.repository';
+import { CityDataSourceService } from '@infrastructure/datasource/city';
 
 @Module({
   imports: [PermissionsModule, PrismaModule, CompanyModule, SupplierModule],
@@ -51,6 +52,7 @@ import { DoreReceptionRepository } from '@domain/repositories/reception/dore-rec
     ReceptionTypeDataSourceService,
     StatusDataSourceService,
     CompanySupplierDataSourceService,
+    CityDataSourceService,
 
     // Implementaciones de repositorios
     ReceptionSupplierRepositoryImpl,

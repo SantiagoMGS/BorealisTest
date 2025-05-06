@@ -11,6 +11,7 @@ import { PermissionsModule } from '@core/permissions/permissions.module';
 import { CompanyModule } from './presentation/controllers/company/company.module';
 import { TenantModule } from '@core/config/tenant.module';
 import { ReceptionModule } from '@presentation/controllers/reception/reception.module';
+
 @Module({
   imports: [
     PrismaModule,
