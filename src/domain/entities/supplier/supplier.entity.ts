@@ -3,7 +3,7 @@ import { DocumentType } from '@prisma/client';
 export interface ISupplierEntity {
   id?: string;
   name: string;
-  shortName: string;
+  shortName?: string;
   documentTypeId: string;
   verificationDigit?: number | null;
   documentNumber: string;
