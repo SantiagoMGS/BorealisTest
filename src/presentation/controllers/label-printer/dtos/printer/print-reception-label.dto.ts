@@ -5,17 +5,22 @@ import {
   IsOptional,
   IsBoolean,
   Min,
+  IsUUID,
+  ValidationOptions,
+  registerDecorator,
+  ValidationArguments,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class PrintReceptionLabelDto {
   @ApiProperty({
-    description: 'ID de la recepción',
+    description: 'ID de la muestra',
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
-  @IsNotEmpty({ message: 'El ID de recepción no puede estar vacío' })
-  @IsString({ message: 'El ID de recepción debe ser una cadena de caracteres' })
-  receptionId!: string;
+  @IsNotEmpty({ message: 'El ID de muestra no puede estar vacío' })
+  @IsString({ message: 'El ID de muestra debe ser una cadena de caracteres' })
+  @IsUUID('4', { message: 'El ID de muestra debe ser un UUID válido' })
+  sampleId!: string;
 
   @ApiProperty({
     description: 'Cantidad de etiquetas a imprimir',

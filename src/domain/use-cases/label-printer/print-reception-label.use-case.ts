@@ -19,7 +19,7 @@ export class PrintReceptionLabelUseCase {
     user: IAuthUser,
   ): Promise<{ success: boolean; message: string }> {
     return await this.labelPrinterRepository.printReceptionLabel({
-      receptionId: dto.receptionId,
+      sampleId: dto.sampleId,
       count: dto.count,
       printerName: dto.printerName,
       skipConnectionTest: dto.skipConnectionTest,

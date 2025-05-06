@@ -8,7 +8,7 @@ export interface ILabelPrinterRepository {
    * Imprime etiquetas para una recepción
    */
   printReceptionLabel(data: {
-    receptionId: string;
+    sampleId: string;
     count: number;
     printerName?: string;
     skipConnectionTest?: boolean;

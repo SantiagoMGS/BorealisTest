@@ -85,6 +85,10 @@ export class LabelPrinterController {
     status: 200,
     description: 'Etiqueta impresa correctamente',
   })
+  @ApiResponse({
+    status: 404,
+    description: 'Muestra no encontrada',
+  })
   @CustomResponse({
     successMessage: 'Etiqueta impresa correctamente',
     errorMessage: 'Error durante la impresión de la etiqueta',
@@ -96,13 +100,24 @@ export class LabelPrinterController {
   ) {
     try {
       this.logger.log(
-        `Solicitud de impresión recibida para recepción: ${printReceptionLabelDto.receptionId}`,
+        `Solicitud de impresión recibida para muestra: ${printReceptionLabelDto.sampleId}`,
       );
-      console.log(user);
+
       const result = await this.printReceptionLabelUseCase.execute(
         printReceptionLabelDto,
         user,
       );
+
+      if (!result.success) {
+        this.logger.warn(`Error en impresión: ${result.message}`);
+
+        // Determinar el código de estado según el mensaje de error
+        if (result.message === 'Muestra no encontrada') {
+          throw new HttpException(result.message, HttpStatus.NOT_FOUND);
+        }
+
+        throw new HttpException(result.message, HttpStatus.BAD_REQUEST);
+      }
 
       return result;
     } catch (error: any) {
@@ -110,8 +125,15 @@ export class LabelPrinterController {
         `Error al imprimir etiqueta: ${error instanceof Error ? error.message : String(error)}`,
       );
 
+      // Si ya es un HttpException, relanzarlo
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
       throw new HttpException(
-        error instanceof Error ? error.message : String(error),
+        error instanceof Error
+          ? error.message
+          : 'Error inesperado durante la impresión',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }

@@ -11,7 +11,7 @@ export class LabelPrinterRepositoryImpl implements ILabelPrinterRepository {
    * Imprime etiquetas para una recepción
    */
   async printReceptionLabel(data: {
-    receptionId: string;
+    sampleId: string;
     count: number;
     printerName?: string;
     skipConnectionTest?: boolean;
