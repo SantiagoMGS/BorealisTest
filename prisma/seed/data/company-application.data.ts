@@ -13,6 +13,6 @@ export const companyApplicationInitialData: Array<{
   },
   {
     companyName: 'COLOMBIAN MINT',
-    applicationNames: ['ADMINISTRACIÓN'],
+    applicationNames: ['ADMINISTRACIÓN', 'LIMS'],
   },
 ];
