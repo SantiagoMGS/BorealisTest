@@ -433,8 +433,6 @@ export class LabelPrinterService {
       '^FO25,110^A0N,16,16^FD' + dateString + ' ' + timeString + '^FS',
     );
 
-    // Línea fial
-
     // Finalizar etiqueta
     commands.push('^XZ');
 
