@@ -12,9 +12,21 @@ import {
   ApiOkResponse,
   ApiBearerAuth,
   ApiParam,
+  ApiExtraModels,
 } from '@nestjs/swagger';
 import { GetCatalogsUseCase } from '@domain/use-cases/catalog';
-import { CatalogResponseDto, CatalogType } from './dtos';
+import {
+  CatalogResponseDto,
+  CatalogType,
+  DocumentTypeDto,
+  SupplierDto,
+  ReceptionTypeDto,
+  AnalysisTypeDto,
+  CityDto,
+  DepartmentDto,
+  DoreReceptionTypeDto,
+  SampleReceptionTypeDto,
+} from './dtos';
 import { ResponseInterceptor } from '@core/interceptores/response.interceptor';
 import { CustomResponse } from '@core/decorators/custom-response.decorator';
 import { JwtAuthGuard } from '@infrastructure/guards/jwt-auth.guard';
@@ -25,6 +37,17 @@ import { CatalogTypeEnum } from '@domain/entities/catalog/catalog.entity';
 @Controller('common')
 @UseInterceptors(ResponseInterceptor)
 @UseGuards(JwtAuthGuard)
+@ApiExtraModels(
+  DocumentTypeDto,
+  SupplierDto,
+  ReceptionTypeDto,
+  AnalysisTypeDto,
+  CityDto,
+  DepartmentDto,
+  DoreReceptionTypeDto,
+  SampleReceptionTypeDto,
+  CatalogResponseDto,
+)
 export class CommonController {
   constructor(private readonly getCatalogsUseCase: GetCatalogsUseCase) {}
 
