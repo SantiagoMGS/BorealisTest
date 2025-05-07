@@ -37,6 +37,166 @@ export class LabelPrinterService {
   constructor(private readonly prisma: PrismaService) {}
 
   /**
+   * Encuentra una muestra por su ID
+   * @param sampleId ID de la muestra
+   * @returns Información de la muestra o null si no existe
+   */
+  async findSampleById(sampleId: string): Promise<any | null> {
+    try {
+      if (!sampleId) {
+        this.logger.error(
+          'Error: sampleId es requerido y no puede ser undefined o vacío',
+        );
+        throw new Error(
+          'El ID de muestra es requerido para buscar una muestra',
+        );
+      }
+
+      return await this.prisma.sample.findUnique({
+        where: { id: sampleId },
+        select: { id: true },
+      });
+    } catch (error: any) {
+      this.logger.error(`Error al buscar muestra: ${error.message}`);
+      throw error;
+    }
+  }
+
+  /**
+   * Obtiene la información de la compañía
+   * @param companyId ID de la compañía
+   * @returns Información de la compañía
+   */
+  async findCompanyById(companyId: string): Promise<CompanyInfo | null> {
+    try {
+      const company = await this.prisma.company.findUnique({
+        where: { id: companyId },
+        select: { id: true, name: true },
+      });
+
+      return company;
+    } catch (error: any) {
+      this.logger.error(`Error al obtener compañía: ${error.message}`);
+      return null;
+    }
+  }
+
+  /**
+   * Obtiene el contador actual para un sampleId determinado
+   * @param sampleId ID de la muestra
+   * @returns Contador actual
+   */
+  async getCurrentSampleCount(sampleId: string): Promise<number> {
+    try {
+      if (!sampleId) {
+        this.logger.error(
+          'Error: sampleId es requerido y no puede ser undefined o vacío',
+        );
+        throw new Error('sampleId es requerido para obtener el contador');
+      }
+
+      this.logger.log(`Consultando contador para muestra: ${sampleId}`);
+
+      // Contar cuántas etiquetas se han impreso para esta muestra
+      const count = await this.prisma.samplePrinterTrace.aggregate({
+        where: { sampleId: sampleId },
+        _sum: { count: true },
+      });
+
+      // Si no hay registros o la suma es null, devolver 0
+      const totalCount = count._sum.count || 0;
+      this.logger.log(
+        `Total acumulado de etiquetas para muestra ${sampleId}: ${totalCount}`,
+      );
+
+      return totalCount;
+    } catch (error: any) {
+      this.logger.error(
+        `Error al obtener contador de muestra ${sampleId}: ${error.message}`,
+      );
+      throw error;
+    }
+  }
+
+  /**
+   * Registra la impresión de una muestra en la base de datos
+   * @param sampleId ID de la muestra
+   * @param printerName Nombre de la impresora
+   * @param count Cantidad de etiquetas impresas
+   * @returns Resultado de la operación
+   */
+  async saveTrace(
+    sampleId: string,
+    printerName: string,
+    count: number,
+  ): Promise<PrintResult> {
+    try {
+      this.logger.log(
+        `Registrando impresión: muestra=${sampleId}, impresora=${printerName}, cantidad=${count}`,
+      );
+
+      // Verificar que la muestra existe
+      const sample = await this.prisma.sample.findUnique({
+        where: { id: sampleId },
+        select: { id: true },
+      });
+
+      if (!sample) {
+        this.logger.warn(
+          `No se pudo registrar impresión: muestra ${sampleId} no encontrada`,
+        );
+        return {
+          success: false,
+          message: 'Muestra no encontrada',
+        };
+      }
+
+      // Obtener el ID de la impresora
+      const printer = await this.prisma.printer.findFirst({
+        where: {
+          printerName: printerName,
+          isActive: true,
+        },
+        select: { id: true },
+      });
+
+      if (!printer) {
+        this.logger.warn(
+          `No se pudo registrar impresión: impresora ${printerName} no encontrada`,
+        );
+        return {
+          success: false,
+          message: `No se pudo encontrar la impresora especificada`,
+        };
+      }
+
+      // Registrar la impresión
+      const traceCreated = await this.prisma.samplePrinterTrace.create({
+        data: {
+          sampleId: sample.id,
+          printerId: printer.id,
+          count: count,
+        },
+      });
+
+      this.logger.log(
+        `Impresión registrada con éxito: ID=${traceCreated.id}, etiquetas=${count}`,
+      );
+
+      return {
+        success: true,
+        message: `Traza de impresión registrada correctamente (${count} etiquetas)`,
+      };
+    } catch (error: any) {
+      this.logger.error(`Error al registrar impresión: ${error.message}`);
+      return {
+        success: false,
+        message: `Error al registrar la traza de impresión`,
+      };
+    }
+  }
+
+  /**
    * Imprime etiquetas de recepción
    * @param data Datos para la impresión (ID de muestra, cantidad, configuración)
    * @returns Resultado de la operación
@@ -47,69 +207,15 @@ export class LabelPrinterService {
     printerName?: string;
     skipConnectionTest?: boolean;
     companyId: string;
+    companyName: string;
   }): Promise<PrintResult> {
     try {
       this.logger.log(`Iniciando impresión para muestra: ${data.sampleId}`);
 
-      // 1. Validar datos de entrada
-      if (!data.sampleId) {
-        this.logger.warn('No se proporcionó el ID de muestra');
-        return {
-          success: false,
-          message: 'El ID de muestra es requerido para la impresión',
-        };
-      }
-
-      if (!data.companyId) {
-        this.logger.warn('No se proporcionó el ID de la compañía');
-        return {
-          success: false,
-          message: 'El ID de la compañía es requerido para la impresión',
-        };
-      }
-
-      // 2. Verificar que la muestra existe
-      let sample;
-      try {
-        sample = await this.prisma.sample.findUnique({
-          where: { id: data.sampleId },
-          select: { id: true },
-        });
-      } catch (error: any) {
-        // Capturar errores de base de datos
-        this.logger.warn(`Error al buscar muestra: ${error.message}`);
-        return {
-          success: false,
-          message: 'Muestra no encontrada',
-        };
-      }
-
-      if (!sample) {
-        this.logger.warn(`Muestra no encontrada: ${data.sampleId}`);
-        return {
-          success: false,
-          message: 'Muestra no encontrada',
-        };
-      }
-
-      // 3. Obtener información de la compañía
-      let company;
-      try {
-        company = await this.getCompanyInfo(data.companyId);
-      } catch (error: any) {
-        this.logger.warn(
-          `Error al obtener información de la compañía: ${error.message}`,
-        );
-        return {
-          success: false,
-          message: `No se pudo obtener la información de la compañía`,
-        };
-      }
-
-      // 4. Obtener configuración de la impresora
+      // 1. Obtener configuración de la impresora
       let printerConfig;
       if (data.printerName) {
-        printerConfig = await this.getPrinterConfig(data.printerName);
+        printerConfig = await this.getPrinterByName(data.printerName);
         if (!printerConfig) {
           this.logger.warn(`No se encontró la impresora: ${data.printerName}`);
           return {
@@ -119,8 +225,8 @@ export class LabelPrinterService {
         }
       }
 
-      // 5. Verificar conexión si es necesario
-      if (!data.skipConnectionTest) {
+      // 2. Verificar conexión si es necesario
+      if (!data.skipConnectionTest && printerConfig) {
         try {
           const connected = await this.testConnection(printerConfig);
           if (!connected) {
@@ -138,21 +244,41 @@ export class LabelPrinterService {
         }
       }
 
-      // 6. Preparar datos para la impresión
-      const printData = this.preparePrintData(
-        data.sampleId,
-        data.skipConnectionTest,
-        printerConfig,
-      );
-
-      // 7. Imprimir las etiquetas
+      // 3. Obtener el contador actual desde la base de datos
+      let baseCount = 0;
       try {
-        await this.printAllLabels(
-          printData,
-          company.name,
-          printerConfig,
-          data.count,
+        baseCount = await this.getCurrentSampleCount(data.sampleId);
+        this.logger.log(
+          `Contador actual para muestra ${data.sampleId}: ${baseCount}`,
         );
+      } catch (error: any) {
+        this.logger.error(`Error al obtener contador: ${error.message}`);
+        return {
+          success: false,
+          message: `Error al obtener el contador de etiquetas: ${error.message}`,
+        };
+      }
+
+      // 4. Preparar datos para la impresión
+      const printData: PrintLabelDto = {
+        qrCode: data.sampleId,
+      };
+
+      // 5. Imprimir las etiquetas
+      try {
+        // Aquí está la corrección - cada llamada a printLabel imprime 2 etiquetas
+        // Por lo tanto, incrementamos de 2 en 2 y calculamos el número real de llamadas
+        const callsNeeded = Math.ceil(data.count / 2);
+
+        for (let i = 0; i < callsNeeded; i++) {
+          const currentSeq = baseCount + i * 2 + 1;
+          await this.printLabel(
+            printData,
+            data.companyName,
+            printerConfig,
+            currentSeq,
+          );
+        }
       } catch (error: any) {
         this.logger.error(`Error al imprimir etiquetas: ${error.message}`);
         return {
@@ -161,23 +287,22 @@ export class LabelPrinterService {
         };
       }
 
-      // 8. Registrar impresión en la base de datos si se proporcionó nombre de impresora
+      // 6. Registrar impresión en la base de datos si se proporcionó nombre de impresora
       if (data.printerName) {
         try {
+          // Es importante registrar el número exacto de etiquetas que se solicitaron
           const traceResult = await this.saveTrace(
             data.sampleId,
             data.printerName,
-            data.count,
+            data.count, // Usamos la cantidad exacta solicitada
           );
           if (!traceResult.success) {
             this.logger.warn(
               `No se pudo registrar la traza: ${traceResult.message}`,
             );
-            // No retornamos error por esto, continuamos con el flujo
           }
         } catch (error: any) {
           this.logger.warn(`Error al registrar traza: ${error.message}`);
-          // No retornamos error, solo registramos la advertencia
         }
       }
 
@@ -198,78 +323,6 @@ export class LabelPrinterService {
   }
 
   /**
-   * Obtiene el contador actual para un sampleId determinado
-   */
-  private async getCurrentSampleCount(
-    sampleId: string | undefined,
-  ): Promise<number> {
-    try {
-      if (!sampleId) {
-        return 0;
-      }
-
-      // Contar cuántas etiquetas se han impreso para esta muestra
-      const count = await this.prisma.samplePrinterTrace.aggregate({
-        where: { sampleId: sampleId },
-        _sum: { count: true },
-      });
-
-      return count._sum.count || 0;
-    } catch (error: any) {
-      this.logger.error(
-        `Error al obtener contador de muestra: ${error.message}`,
-      );
-      return 0;
-    }
-  }
-
-  /**
-   * Obtiene la información de la compañía
-   */
-  private async getCompanyInfo(companyId: string): Promise<CompanyInfo> {
-    try {
-      const company = await this.prisma.company.findUnique({
-        where: { id: companyId },
-        select: { id: true, name: true },
-      });
-
-      if (!company) {
-        this.logger.warn(`Compañía no encontrada: ${companyId}`);
-        throw new HttpException(`Compañía no encontrada`, HttpStatus.NOT_FOUND);
-      }
-
-      return company;
-    } catch (error: any) {
-      // Si el error es por un formato de UUID inválido, dar un mensaje amigable
-      this.logger.error(`Error al obtener compañía: ${error.message}`);
-
-      // Si ya es una HttpException, relanzarla
-      if (error instanceof HttpException) {
-        throw error;
-      }
-
-      throw new HttpException(`Compañía no encontrada`, HttpStatus.NOT_FOUND);
-    }
-  }
-
-  /**
-   * Obtiene la configuración de la impresora
-   */
-  private async getPrinterConfig(
-    printerName?: string,
-  ): Promise<PrinterConfigDto | undefined> {
-    if (!printerName) return undefined;
-
-    const printerConfig = await this.getPrinterByName(printerName);
-    if (!printerConfig) {
-      this.logger.warn(`Impresora no encontrada: ${printerName}`);
-      throw new Error(`Impresora "${printerName}" no encontrada.`);
-    }
-
-    return printerConfig;
-  }
-
-  /**
    * Verifica la conexión con la impresora
    */
   private async verifyPrinterConnection(
@@ -278,53 +331,6 @@ export class LabelPrinterService {
     const conexion = await this.testConnection(printerConfig);
     if (!conexion) {
       throw new Error('No se pudo establecer conexión con la impresora');
-    }
-  }
-
-  /**
-   * Prepara los datos para la impresión
-   */
-  private preparePrintData(
-    sampleId: string,
-    skipConnectionTest?: boolean,
-    printerConfig?: PrinterConfigDto,
-  ): PrintLabelDto {
-    this.logger.log(`Preparando impresión para muestra: ${sampleId}`);
-
-    const printData: PrintLabelDto = {
-      qrCode: sampleId,
-      skipConnectionTest: skipConnectionTest,
-    };
-
-    if (printerConfig) {
-      printData.printerConfig = printerConfig;
-    }
-
-    return printData;
-  }
-
-  /**
-   * Imprime todas las etiquetas solicitadas
-   */
-  private async printAllLabels(
-    printData: PrintLabelDto,
-    companyName: string,
-    printerConfig?: PrinterConfigDto,
-    count: number = 1,
-  ): Promise<void> {
-    this.logger.log(`Iniciando impresión de ${count} etiqueta(s)`);
-
-    // Obtener el contador actual para este sampleId
-    const baseCount = await this.getCurrentSampleCount(printData.qrCode);
-
-    for (let i = 0; i < count; i++) {
-      const currentCount = baseCount + i + 1;
-      await this.printLabel(
-        printData,
-        companyName,
-        printerConfig,
-        currentCount,
-      );
     }
   }
 
@@ -407,85 +413,6 @@ export class LabelPrinterService {
   }
 
   /**
-   * Registra la impresión de una muestra en la base de datos
-   * @param sampleId ID de la muestra
-   * @param printerName Nombre de la impresora
-   * @param count Cantidad de etiquetas impresas
-   * @returns Resultado de la operación
-   */
-  async saveTrace(
-    sampleId: string,
-    printerName: string,
-    count: number,
-  ): Promise<PrintResult> {
-    try {
-      // Verificar que la muestra existe
-      let sample;
-      try {
-        sample = await this.prisma.sample.findUnique({
-          where: { id: sampleId },
-          select: { id: true },
-        });
-      } catch (error: any) {
-        // Capturar errores de base de datos
-        this.logger.warn(`Error al buscar muestra: ${error.message}`);
-        return {
-          success: false,
-          message: 'Muestra no encontrada',
-        };
-      }
-
-      if (!sample) {
-        this.logger.warn(`No se encontró la muestra con ID: ${sampleId}`);
-        return {
-          success: false,
-          message: 'Muestra no encontrada',
-        };
-      }
-
-      // Obtener el ID de la impresora
-      const printer = await this.prisma.printer.findFirst({
-        where: {
-          printerName: printerName,
-          isActive: true,
-        },
-        select: { id: true },
-      });
-
-      if (!printer) {
-        this.logger.warn(
-          `No se pudo obtener el ID de la impresora ${printerName}`,
-        );
-        return {
-          success: false,
-          message: `No se pudo encontrar la impresora especificada`,
-        };
-      }
-
-      // Registrar la impresión
-      await this.prisma.samplePrinterTrace.create({
-        data: {
-          sampleId: sample.id,
-          printerId: printer.id,
-          count,
-        },
-      });
-
-      this.logger.log(`Impresión registrada correctamente`);
-      return {
-        success: true,
-        message: `Traza de impresión registrada correctamente`,
-      };
-    } catch (error: any) {
-      this.logger.error(`Error al registrar impresión: ${error.message}`);
-      return {
-        success: false,
-        message: `Error al registrar la traza de impresión`,
-      };
-    }
-  }
-
-  /**
    * Imprime una etiqueta con información de QR
    * @param data Datos para la etiqueta (QR y configuración)
    * @param companyName Nombre de la compañía
@@ -498,30 +425,25 @@ export class LabelPrinterService {
     config?: Partial<PrinterConfigDto>,
     sequenceNumber?: number,
   ): Promise<void> {
-    // Configuración de la etiqueta ZPL para tamaño 50x25mm
+    // Configuración de la etiqueta ZPL para tamaño 50x25mm en 2 columnas
     const commands: string[] = [
       '^XA', // Inicio de etiqueta
-      '^PW380', // Ancho de impresión reducido: ~47.5mm (380 dots @ 203dpi)
-      '^LL180', // Largo de etiqueta reducido: ~22.5mm (180 dots @ 203dpi)
-      '^CF0,16,16', // Fuente predeterminada más pequeña
-      '^FO5,5^GB370,170,2^FS', // Marco exterior para toda la etiqueta (margen de 5 puntos)
+      '^PW800', // Ancho total para 2 etiquetas (2x50mm = 100mm = 800 dots @ 203dpi)
+      '^LL200', // Largo de etiqueta: 25mm (200 dots @ 203dpi)
+      '^CF0,14,14', // Fuente predeterminada más pequeña
     ];
 
-    // Encabezado con el nombre de la compañía
-    commands.push('^FO25,20^A0N,18,18^FD' + companyName + '^FS');
-    commands.push('^FO15,40^GB350,2,2^FS'); // Línea separadora
+    // Etiqueta en la primera columna (izquierda) - centrada
+    commands.push('^FO20,20^A0N,16,16^FB360,1,0,C^FD' + companyName + '^FS'); // Nombre compañía centrado
+    commands.push('^FO20,40^GB360,1,1^FS'); // Línea separadora
 
-    // QR Code más pequeño y ajustado al espacio disponible
-    if (data.qrCode) {
-      commands.push('^FO260,55^BQN,2,3^FDMA,' + data.qrCode + '^FS'); // QR con tamaño original
-    }
-
-    // Mostrar contador de impresión
+    // Datos de la etiqueta izquierda
     if (sequenceNumber) {
-      commands.push('^FO25,70^A0N,16,16^FDEtiqueta: ' + sequenceNumber + '^FS');
+      commands.push(
+        '^FO20,60^A0N,14,14^FB180,1,0,C^FDEtiqueta: ' + sequenceNumber + '^FS',
+      );
     }
-
-    commands.push('^FO25,90^A0N,16,16^FD' + 'Fecha de Recepción:' + '^FS');
+    commands.push('^FO20,80^A0N,14,14^FB180,1,0,C^FDFecha:^FS');
 
     // Fecha y hora en formato compacto
     const now = new Date();
@@ -536,8 +458,43 @@ export class LabelPrinterService {
     });
 
     commands.push(
-      '^FO25,110^A0N,16,16^FD' + dateString + ' ' + timeString + '^FS',
+      '^FO20,100^A0N,14,14^FB180,1,0,C^FD' +
+        dateString +
+        ' ' +
+        timeString +
+        '^FS',
     );
+
+    // QR Code para primera etiqueta
+    if (data.qrCode) {
+      commands.push('^FO260,60^BQN,2,3^FDMA,' + data.qrCode + '^FS');
+    }
+
+    // Etiqueta en la segunda columna (derecha) - centrada
+    commands.push('^FO420,20^A0N,16,16^FB360,1,0,C^FD' + companyName + '^FS'); // Nombre compañía centrado
+    commands.push('^FO420,40^GB360,1,1^FS'); // Línea separadora
+
+    // Datos de la etiqueta derecha (con contador incrementado)
+    if (sequenceNumber) {
+      commands.push(
+        '^FO420,60^A0N,14,14^FB180,1,0,C^FDEtiqueta: ' +
+          (sequenceNumber + 1) +
+          '^FS',
+      );
+    }
+    commands.push('^FO420,80^A0N,14,14^FB180,1,0,C^FDFecha:^FS');
+    commands.push(
+      '^FO420,100^A0N,14,14^FB180,1,0,C^FD' +
+        dateString +
+        ' ' +
+        timeString +
+        '^FS',
+    );
+
+    // QR Code para segunda etiqueta
+    if (data.qrCode) {
+      commands.push('^FO660,60^BQN,2,3^FDMA,' + data.qrCode + '^FS');
+    }
 
     // Finalizar etiqueta
     commands.push('^XZ');

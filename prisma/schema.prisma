@@ -354,13 +354,13 @@ model Reception {
   receptionOriginId String               @db.Uuid
   receptionTypeId   String               @db.Uuid
   miningTitleId     String?              @db.Uuid
-  cityId            String               @db.Uuid
+  cityId            String?              @db.Uuid
   company           Company              @relation(fields: [companyId], references: [id], onDelete: Cascade)
   receptionOrigin   ReceptionOrigin      @relation(fields: [receptionOriginId], references: [id])
   receptionType     ReceptionType        @relation(fields: [receptionTypeId], references: [id])
   supplier          Supplier             @relation(fields: [supplierId], references: [id], onDelete: Cascade)
   miningTitle       SupplierMiningTitle? @relation(fields: [miningTitleId], references: [id])
-  city              City                 @relation(fields: [cityId], references: [id])
+  city              City?                @relation(fields: [cityId], references: [id])
   Samples           Sample[]
 
   @@index([companyId])

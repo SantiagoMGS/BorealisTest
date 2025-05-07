@@ -77,14 +77,42 @@ export class SampleReceptionDataSourceService {
         };
       });
 
+      // Preparamos los datos de la recepción
+      const receptionCreateData: any = {
+        ...receptionData,
+        receptionTypeId, // Usar el ID del tipo determinado
+        receptionOriginId, // Requerido por el esquema de la BD
+        Samples: {
+          create: sampleCreates,
+        },
+      };
       // Creamos la recepción con sus unidades de recepción asociadas
       const createdReception = await this.prisma.reception.create({
         data: {
-          ...receptionData,
-          receptionTypeId, // Usar el ID del tipo determinado
-          receptionOriginId, // Requerido por el esquema de la BD
-          Samples: {
-            create: sampleCreates,
+          ...receptionCreateData,
+          // Agregar relación explícita con compañía
+          company: {
+            connect: {
+              id: reception.companyId,
+            },
+          },
+          // Agregar relación explícita con proveedor
+          supplier: {
+            connect: {
+              id: reception.supplierId,
+            },
+          },
+          // Agregar relación explícita con origen de recepción
+          receptionOrigin: {
+            connect: {
+              id: receptionOriginId,
+            },
+          },
+          // Agregar relación explícita con tipo de recepción
+          receptionType: {
+            connect: {
+              id: receptionTypeId,
+            },
           },
         },
         include: {
@@ -435,6 +463,45 @@ export class SampleReceptionDataSourceService {
         error instanceof Error ? error.message : 'Error desconocido';
       throw new BadRequestException(
         `Error al eliminar la recepción: ${errorMessage}`,
+      );
+    }
+  }
+
+  async findSampleById(id: string): Promise<any> {
+    try {
+      const sample = await this.prisma.sample.findUnique({
+        where: { id },
+        include: {
+          reception: {
+            include: {
+              company: true,
+              supplier: true,
+              receptionType: true,
+            },
+          },
+          receptionOrigin: true,
+          status: true,
+          requiredAnalyses: {
+            include: {
+              analysisType: true,
+            },
+          },
+        },
+      });
+
+      if (!sample) {
+        throw new NotFoundException(`No se encontró la muestra con ID ${id}`);
+      }
+
+      return sample;
+    } catch (error: unknown) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      const errorMessage =
+        error instanceof Error ? error.message : 'Error desconocido';
+      throw new BadRequestException(
+        `Error al obtener la muestra: ${errorMessage}`,
       );
     }
   }
