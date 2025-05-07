@@ -31,20 +31,26 @@ export class SampleReceptionDataSourceService {
     try {
       // Verificar que el proveedor existe y obtener su shortName
       await this.supplierDataSource.findById(reception.supplierId);
+      console.log('supplier', reception.supplierId);
 
       // Verificar que la compañía existe
       await this.companyDataSource.findById(reception.companyId);
+      console.log('company', reception.companyId);
 
       // Obtener el tipo de recepción "Muestras"
       const receptionType =
         await this.receptionTypeDataSource.findByName('Muestra');
+      console.log('receptionType', receptionType);
       const receptionTypeId = receptionType.id;
 
       // Obtener el estado "RECIBIDO"
       const receivedStatus = await this.statusDataSource.findByName('RECIBIDO');
+      console.log('receivedStatus', receivedStatus);
 
       // Extraemos las unidades de recepción
       const { Samples, ...receptionData } = reception;
+      console.log('receptionData', receptionData);
+      console.log('Samples', Samples);
 
       // Validamos que los orígenes de recepción existan
       const validatedSamples = [];

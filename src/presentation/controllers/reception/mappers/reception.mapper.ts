@@ -16,8 +16,7 @@ export class ReceptionMapper {
       receptionDate: createDto.receptionDate,
       batchNumber: createDto.batchNumber,
       observation: createDto.observation,
-      miningTitleId: createDto.miningTitleId,
-      cityId: createDto.cityId,
+
       Samples: createDto.items.map((item) => ({
         receptionOriginId: item.receptionOriginId,
         receivedWeight: item.receivedWeight,
