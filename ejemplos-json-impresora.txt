@@ -1,0 +1,49 @@
+// ==========================================
+// EJEMPLOS JSON PARA API DE IMPRESORA DE ETIQUETAS
+// ==========================================
+// En todos los ejemplos, reemplaza la IP y puerto con los valores reales de tu impresora
+
+// ==========================================
+// 1. PRUEBA DE CONEXIÓN
+// ==========================================
+
+// 1.1 Probar conexión con la impresora (GET /printer/test-connection)
+{
+  "ip": "192.168.1.123", 
+  "port": 9100
+}
+
+// ==========================================
+// 2. IMPRESIÓN DE CÓDIGOS QR
+// ==========================================
+
+// 2.1 Imprimir solo un código QR (POST /printer/print-qr)
+{
+  "qrCode": "https://miempresa.com/producto/12345",
+  "printerConfig": {
+    "ip": "192.168.1.10",
+    "port": 18080
+  },
+  "skipConnectionTest": true
+}
+
+// 2.2 Imprimir QR con verificación previa de conexión
+{
+  "qrCode": "https://miempresa.com/producto/12345",
+  "printerConfig": {
+    "ip": "192.168.1.123",
+    "port": 18080
+  },
+  "skipConnectionTest": false
+}
+
+// 2.3 Imprimir QR con timeout personalizado
+{
+  "qrCode": "https://miempresa.com/producto/12345",
+  "printerConfig": {
+    "ip": "192.168.1.123",
+    "port": 9100,
+    "timeout": 10000
+  },
+  "skipConnectionTest": true
+} 

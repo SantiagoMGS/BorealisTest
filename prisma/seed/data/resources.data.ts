@@ -94,4 +94,14 @@ export const resourceInitialData: Prisma.ResourceCreateInput[] = [
       },
     },
   },
+  {
+    name: 'Impresoras',
+    icon: 'fa-printer',
+    path: '/printers',
+    application: {
+      connect: {
+        name: 'ADMINISTRACIÓN',
+      },
+    },
+  },
 ];

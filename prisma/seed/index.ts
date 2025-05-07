@@ -27,3 +27,4 @@ export { seedMineTypes } from './seed-mine-types';
 export { seedSupplierMiningTitles } from './seed-supplier-mining-titles';
 export { seedStatus } from './seed-status';
 export { seedDefaultAnalysisOrigins } from './seed-default-analysis-origins';
+export { seedPrinters } from './seed-printers';

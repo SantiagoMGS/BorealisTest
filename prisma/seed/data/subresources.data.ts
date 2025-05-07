@@ -158,4 +158,15 @@ export const subresourceInitialData: Prisma.SubresourceCreateInput[] = [
     path: '/reception-origins',
     controller: 'ReceptionOriginController',
   },
+  {
+    name: 'Impresoras de Etiquetas',
+    resource: {
+      connect: {
+        name: 'Impresoras',
+      },
+    },
+    icon: 'fa-printer',
+    path: '/label-printers',
+    controller: 'LabelPrinterController',
+  },
 ];
