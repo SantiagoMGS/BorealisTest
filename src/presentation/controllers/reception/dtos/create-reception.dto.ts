@@ -58,24 +58,6 @@ export class CreateReceptionDto {
   supplierId!: string;
 
   @ApiProperty({
-    description: 'ID del título minero',
-    example: '123e4567-e89b-12d3-a456-426614174000',
-    required: false,
-  })
-  @IsUUID()
-  @IsOptional()
-  miningTitleId?: string;
-
-  @ApiProperty({
-    description: 'ID del municipio',
-    example: '123e4567-e89b-12d3-a456-426614174000',
-    required: true,
-  })
-  @IsUUID()
-  @IsNotEmpty()
-  cityId!: string;
-
-  @ApiProperty({
     description: 'Fecha de recepción',
     example: '2023-10-15T14:30:00Z',
   })

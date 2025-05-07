@@ -12,6 +12,31 @@ import {
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
+/**
+ * Validador personalizado para múltiplos de un número
+ */
+function IsMultipleOf(multiple: number, validationOptions?: ValidationOptions) {
+  return function (object: Object, propertyName: string) {
+    registerDecorator({
+      name: 'isMultipleOf',
+      target: object.constructor,
+      propertyName: propertyName,
+      options: validationOptions,
+      constraints: [multiple],
+      validator: {
+        validate(value: any, args: ValidationArguments) {
+          const [multiple] = args.constraints;
+          return typeof value === 'number' && value % multiple === 0;
+        },
+        defaultMessage(args: ValidationArguments) {
+          const [multiple] = args.constraints;
+          return `$property debe ser múltiplo de ${multiple}`;
+        },
+      },
+    });
+  };
+}
+
 export class PrintReceptionLabelDto {
   @ApiProperty({
     description: 'ID de la muestra',
@@ -23,12 +48,15 @@ export class PrintReceptionLabelDto {
   sampleId!: string;
 
   @ApiProperty({
-    description: 'Cantidad de etiquetas a imprimir',
+    description: 'Cantidad de etiquetas a imprimir (debe ser múltiplo de 2)',
     example: 2,
-    default: 1,
+    default: 2,
   })
   @IsInt({ message: 'La cantidad debe ser un número entero' })
-  @Min(1, { message: 'La cantidad debe ser al menos 1' })
+  @Min(2, { message: 'La cantidad debe ser al menos 2' })
+  @IsMultipleOf(2, {
+    message: 'La cantidad debe ser un número par (múltiplo de 2)',
+  })
   count!: number;
 
   @ApiProperty({

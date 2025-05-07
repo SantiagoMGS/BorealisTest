@@ -5,6 +5,21 @@ import {
 
 export interface ILabelPrinterRepository {
   /**
+   * Busca una muestra por su ID
+   */
+  findSampleById(sampleId: string): Promise<any | null>;
+
+  /**
+   * Busca una compañía por su ID
+   */
+  findCompanyById(companyId: string): Promise<any | null>;
+
+  /**
+   * Obtiene el contador actual de etiquetas para una muestra
+   */
+  getCurrentSampleCount(sampleId: string): Promise<number>;
+
+  /**
    * Imprime etiquetas para una recepción
    */
   printReceptionLabel(data: {
@@ -12,6 +27,7 @@ export interface ILabelPrinterRepository {
     count: number;
     printerName?: string;
     skipConnectionTest?: boolean;
+    companyId: string;
   }): Promise<{ success: boolean; message: string }>;
 
   /**
@@ -23,4 +39,13 @@ export interface ILabelPrinterRepository {
    * Obtiene la configuración de una impresora por su nombre
    */
   getPrinterByName(printerName: string): Promise<PrinterConfigDto | undefined>;
+
+  /**
+   * Registra la impresión en la base de datos
+   */
+  saveTrace(
+    sampleId: string,
+    printerName: string,
+    count: number,
+  ): Promise<{ success: boolean; message: string }>;
 }

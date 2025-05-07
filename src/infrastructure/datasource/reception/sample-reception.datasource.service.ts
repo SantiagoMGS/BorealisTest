@@ -31,9 +31,11 @@ export class SampleReceptionDataSourceService {
     try {
       // Verificar que el proveedor existe y obtener su shortName
       await this.supplierDataSource.findById(reception.supplierId);
+      console.log('supplier', reception.supplierId);
 
       // Verificar que la compañía existe
       await this.companyDataSource.findById(reception.companyId);
+      console.log('company', reception.companyId);
 
       // Obtener el tipo de recepción "Muestras"
       const receptionType =
@@ -69,23 +71,71 @@ export class SampleReceptionDataSourceService {
         const sample_code = baseCode + index;
 
         return {
-          receptionOriginId: sample.receptionOriginId,
+          receptionOrigin: {
+            connect: {
+              id: sample.receptionOriginId,
+            },
+          },
           receivedWeight: sample.receivedWeight,
           dryWeight: sample.dryWeight,
           code: sample_code,
-          statusId: receivedStatus.id, // Asignamos el estado "RECIBIDO"
+          status: {
+            connect: {
+              id: receivedStatus.id,
+            },
+          },
         };
       });
 
       // Creamos la recepción con sus unidades de recepción asociadas
       const createdReception = await this.prisma.reception.create({
         data: {
-          ...receptionData,
-          receptionTypeId, // Usar el ID del tipo determinado
-          receptionOriginId, // Requerido por el esquema de la BD
+          receptionDate: reception.receptionDate,
+          batchNumber: reception.batchNumber,
+          observation: reception.observation,
+          isActive: true,
+          company: {
+            connect: {
+              id: reception.companyId,
+            },
+          },
+          supplier: {
+            connect: {
+              id: reception.supplierId,
+            },
+          },
+          receptionOrigin: {
+            connect: {
+              id: receptionOriginId,
+            },
+          },
+          receptionType: {
+            connect: {
+              id: receptionTypeId,
+            },
+          },
           Samples: {
             create: sampleCreates,
           },
+          // Relaciones opcionales
+          ...(reception.cityId
+            ? {
+                city: {
+                  connect: {
+                    id: reception.cityId,
+                  },
+                },
+              }
+            : {}),
+          ...(reception.miningTitleId
+            ? {
+                miningTitle: {
+                  connect: {
+                    id: reception.miningTitleId,
+                  },
+                },
+              }
+            : {}),
         },
         include: {
           company: true,
@@ -435,6 +485,45 @@ export class SampleReceptionDataSourceService {
         error instanceof Error ? error.message : 'Error desconocido';
       throw new BadRequestException(
         `Error al eliminar la recepción: ${errorMessage}`,
+      );
+    }
+  }
+
+  async findSampleById(id: string): Promise<any> {
+    try {
+      const sample = await this.prisma.sample.findUnique({
+        where: { id },
+        include: {
+          reception: {
+            include: {
+              company: true,
+              supplier: true,
+              receptionType: true,
+            },
+          },
+          receptionOrigin: true,
+          status: true,
+          requiredAnalyses: {
+            include: {
+              analysisType: true,
+            },
+          },
+        },
+      });
+
+      if (!sample) {
+        throw new NotFoundException(`No se encontró la muestra con ID ${id}`);
+      }
+
+      return sample;
+    } catch (error: unknown) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      const errorMessage =
+        error instanceof Error ? error.message : 'Error desconocido';
+      throw new BadRequestException(
+        `Error al obtener la muestra: ${errorMessage}`,
       );
     }
   }

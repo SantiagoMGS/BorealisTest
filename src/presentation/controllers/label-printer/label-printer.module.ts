@@ -7,6 +7,14 @@ import { TestConnectionUseCase } from '@domain/use-cases/label-printer/test-conn
 import { PrismaService } from '@core/prisma/prisma.service';
 import { PermissionsModule } from '@core/permissions/permissions.module';
 import { PrismaModule } from '@core/prisma/prisma.module';
+import { CompanyRepositoryImpl } from '@infrastructure/repositories/company-supplier/company.repository-impl.service';
+import { SampleReceptionRepositoryImpl } from '@infrastructure/repositories/reception/sample-reception.repository-impl.service';
+import { CompanyDataSourceService } from '@infrastructure/datasource/company/company.datasource.service';
+import { SampleReceptionDataSourceService } from '@infrastructure/datasource/reception/sample-reception.datasource.service';
+import { SupplierDataSourceService } from '@infrastructure/datasource/supplier/supplier.datasource.service';
+import { ReceptionTypeDataSourceService } from '@infrastructure/datasource/reception/reception-type.datasource.service';
+import { ReceptionOriginDataSourceService } from '@infrastructure/datasource/reception/reception-origin.datasource.service';
+import { StatusDataSourceService } from '@infrastructure/datasource/status';
 
 @Module({
   imports: [PermissionsModule, PrismaModule],
@@ -14,10 +22,18 @@ import { PrismaModule } from '@core/prisma/prisma.module';
   providers: [
     // Datasource
     LabelPrinterService,
+    CompanyDataSourceService,
+    SampleReceptionDataSourceService,
+    SupplierDataSourceService,
+    ReceptionTypeDataSourceService,
+    ReceptionOriginDataSourceService,
+    StatusDataSourceService,
     PrismaService,
 
     // Repository
     LabelPrinterRepositoryImpl,
+    CompanyRepositoryImpl,
+    SampleReceptionRepositoryImpl,
 
     // Use Cases
     PrintReceptionLabelUseCase,

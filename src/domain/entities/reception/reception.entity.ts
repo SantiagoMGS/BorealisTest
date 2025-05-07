@@ -32,7 +32,7 @@ export interface IReceptionEntity {
   batchNumber?: string;
   observation?: string;
   miningTitleId?: string;
-  cityId: string;
+  cityId?: string;
   Samples: ISampleEntity[];
 }
 
