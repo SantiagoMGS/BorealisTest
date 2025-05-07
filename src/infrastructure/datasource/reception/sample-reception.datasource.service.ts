@@ -40,17 +40,13 @@ export class SampleReceptionDataSourceService {
       // Obtener el tipo de recepción "Muestras"
       const receptionType =
         await this.receptionTypeDataSource.findByName('Muestra');
-      console.log('receptionType', receptionType);
       const receptionTypeId = receptionType.id;
 
       // Obtener el estado "RECIBIDO"
       const receivedStatus = await this.statusDataSource.findByName('RECIBIDO');
-      console.log('receivedStatus', receivedStatus);
 
       // Extraemos las unidades de recepción
       const { Samples, ...receptionData } = reception;
-      console.log('receptionData', receptionData);
-      console.log('Samples', Samples);
 
       // Validamos que los orígenes de recepción existan
       const validatedSamples = [];
@@ -75,51 +71,71 @@ export class SampleReceptionDataSourceService {
         const sample_code = baseCode + index;
 
         return {
-          receptionOriginId: sample.receptionOriginId,
+          receptionOrigin: {
+            connect: {
+              id: sample.receptionOriginId,
+            },
+          },
           receivedWeight: sample.receivedWeight,
           dryWeight: sample.dryWeight,
           code: sample_code,
-          statusId: receivedStatus.id, // Asignamos el estado "RECIBIDO"
+          status: {
+            connect: {
+              id: receivedStatus.id,
+            },
+          },
         };
       });
 
-      // Preparamos los datos de la recepción
-      const receptionCreateData: any = {
-        ...receptionData,
-        receptionTypeId, // Usar el ID del tipo determinado
-        receptionOriginId, // Requerido por el esquema de la BD
-        Samples: {
-          create: sampleCreates,
-        },
-      };
       // Creamos la recepción con sus unidades de recepción asociadas
       const createdReception = await this.prisma.reception.create({
         data: {
-          ...receptionCreateData,
-          // Agregar relación explícita con compañía
+          receptionDate: reception.receptionDate,
+          batchNumber: reception.batchNumber,
+          observation: reception.observation,
+          isActive: true,
           company: {
             connect: {
               id: reception.companyId,
             },
           },
-          // Agregar relación explícita con proveedor
           supplier: {
             connect: {
               id: reception.supplierId,
             },
           },
-          // Agregar relación explícita con origen de recepción
           receptionOrigin: {
             connect: {
               id: receptionOriginId,
             },
           },
-          // Agregar relación explícita con tipo de recepción
           receptionType: {
             connect: {
               id: receptionTypeId,
             },
           },
+          Samples: {
+            create: sampleCreates,
+          },
+          // Relaciones opcionales
+          ...(reception.cityId
+            ? {
+                city: {
+                  connect: {
+                    id: reception.cityId,
+                  },
+                },
+              }
+            : {}),
+          ...(reception.miningTitleId
+            ? {
+                miningTitle: {
+                  connect: {
+                    id: reception.miningTitleId,
+                  },
+                },
+              }
+            : {}),
         },
         include: {
           company: true,
