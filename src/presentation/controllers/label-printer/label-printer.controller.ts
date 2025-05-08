@@ -23,6 +23,7 @@ import { CustomResponse } from '@core/decorators/custom-response.decorator';
 import { ResponseInterceptor } from '@core/interceptores/response.interceptor';
 import { PrintReceptionLabelUseCase } from '@domain/use-cases/label-printer/print-reception-label.use-case';
 import { TestConnectionUseCase } from '@domain/use-cases/label-printer/test-connection.use-case';
+import { GetPrintersUseCase } from '@domain/use-cases/label-printer/get-printers.use-case';
 import { JwtAuthGuard } from '@infrastructure/guards/jwt-auth.guard';
 import { RequirePermission } from '@core/decorators/require-permission.decorator';
 import { PermissionsGuard } from '@infrastructure/guards/permissions.guard';
@@ -41,7 +42,43 @@ export class LabelPrinterController {
   constructor(
     private readonly printReceptionLabelUseCase: PrintReceptionLabelUseCase,
     private readonly testConnectionUseCase: TestConnectionUseCase,
+    private readonly getPrintersUseCase: GetPrintersUseCase,
   ) {}
+
+  /**
+   * Obtener todas las impresoras disponibles
+   */
+  @ApiOperation({ summary: 'Obtener todas las impresoras disponibles' })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de impresoras disponibles',
+  })
+  @CustomResponse({
+    successMessage: 'Impresoras obtenidas correctamente',
+    errorMessage: 'Error al obtener las impresoras',
+  })
+  @Get()
+  async getPrinters(@CurrentUser() user: IAuthUser) {
+    try {
+      this.logger.log(
+        `Solicitando lista de impresoras para compañía: ${user.companyId}`,
+      );
+
+      const printers = await this.getPrintersUseCase.execute(user);
+
+      return {
+        success: true,
+        data: printers,
+        message: 'Impresoras obtenidas correctamente',
+      };
+    } catch (error: any) {
+      this.logger.error(`Error al obtener impresoras: ${error.message}`);
+      throw new HttpException(
+        'Error al obtener las impresoras',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
 
   /**
    * Verificar la conexión con la impresora

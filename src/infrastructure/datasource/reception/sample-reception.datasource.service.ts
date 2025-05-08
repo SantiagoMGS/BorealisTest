@@ -13,6 +13,7 @@ import { SupplierDataSourceService } from '@infrastructure/datasource/supplier/s
 import { ReceptionTypeDataSourceService } from './reception-type.datasource.service';
 import { ReceptionOriginDataSourceService } from './reception-origin.datasource.service';
 import { StatusDataSourceService } from '@infrastructure/datasource/status';
+import { UpdateSampleFilter } from '@domain/repositories/reception/sample-reception.repository';
 
 @Injectable()
 export class SampleReceptionDataSourceService {
@@ -77,7 +78,6 @@ export class SampleReceptionDataSourceService {
             },
           },
           receivedWeight: sample.receivedWeight,
-          dryWeight: sample.dryWeight,
           code: sample_code,
           status: {
             connect: {
@@ -353,21 +353,51 @@ export class SampleReceptionDataSourceService {
       const receivedStatus = await this.statusDataSource.findByName('RECIBIDO');
 
       // Si hay unidades de recepción para actualizar, las validamos
-      const { Samples, ...receptionData } = reception;
+      const {
+        Samples,
+        companyId,
+        supplierId,
+        miningTitleId,
+        cityId,
+        ...otherFields
+      } = reception;
 
-      if (Samples && Samples.length > 0) {
-        // Validamos que los orígenes de recepción existan
-        for (const sample of Samples) {
-          await this.receptionOriginDataSource.findById(
-            sample.receptionOriginId,
-          );
-        }
+      // Ignoramos campos que no son parte del modelo
+      const { analysisTypeIds, receivedWeight, ...receptionData } =
+        otherFields as any;
+
+      // Preparar los datos de actualización con las relaciones adecuadas
+      const updateData: any = { ...receptionData };
+
+      // Añadir relaciones si se proporcionaron IDs
+      if (companyId) {
+        updateData.company = {
+          connect: { id: companyId },
+        };
+      }
+
+      if (supplierId) {
+        updateData.supplier = {
+          connect: { id: supplierId },
+        };
+      }
+
+      if (miningTitleId) {
+        updateData.miningTitle = {
+          connect: { id: miningTitleId },
+        };
+      }
+
+      if (cityId) {
+        updateData.city = {
+          connect: { id: cityId },
+        };
       }
 
       // Actualizamos solo los datos de la recepción principal
       const updatedReception = await this.prisma.reception.update({
         where: { id },
-        data: receptionData,
+        data: updateData,
         include: {
           company: true,
           supplier: true,
@@ -402,7 +432,6 @@ export class SampleReceptionDataSourceService {
               receptionId: id,
               receptionOriginId: unit.receptionOriginId,
               receivedWeight: unit.receivedWeight,
-              dryWeight: unit.dryWeight,
               code: baseCode + i,
               statusId: receivedStatus.id, // Todas las nuevas muestras inician con estado "RECIBIDO"
             },
@@ -524,6 +553,142 @@ export class SampleReceptionDataSourceService {
         error instanceof Error ? error.message : 'Error desconocido';
       throw new BadRequestException(
         `Error al obtener la muestra: ${errorMessage}`,
+      );
+    }
+  }
+
+  async updateSamplesByFilter(
+    filter: UpdateSampleFilter,
+    updateData: Partial<IReceptionEntity>,
+  ): Promise<IReceptionResponse[]> {
+    try {
+      const { companyId, supplierId, analysisTypeIds, receivedWeight } = filter;
+
+      // Validar los parámetros del filtro
+      if (companyId) {
+        await this.companyDataSource.findById(companyId);
+      }
+
+      if (supplierId) {
+        await this.supplierDataSource.findById(supplierId);
+      }
+
+      // Construir la consulta para encontrar recepciones que coincidan con los criterios
+      let where: any = { isActive: true };
+
+      if (companyId) {
+        where.companyId = companyId;
+      }
+
+      if (supplierId) {
+        where.supplierId = supplierId;
+      }
+
+      // Primero encontramos las recepciones que coinciden con los criterios
+      const receptions = await this.prisma.reception.findMany({
+        where,
+        include: {
+          Samples: {
+            include: {
+              requiredAnalyses: true,
+              receptionOrigin: true,
+            },
+          },
+        },
+      });
+
+      if (receptions.length === 0) {
+        throw new NotFoundException(
+          'No se encontraron recepciones que coincidan con los criterios de búsqueda',
+        );
+      }
+
+      // Filtrar las muestras que coinciden con los criterios adicionales
+      const filteredReceptionIds: string[] = [];
+
+      for (const reception of receptions) {
+        let matched = false;
+
+        // Filtrar por tipo de análisis si se especificó
+        if (analysisTypeIds && analysisTypeIds.length > 0) {
+          for (const sample of reception.Samples) {
+            // Verificar si la muestra tiene algún análisis requerido que coincida con los tipos especificados
+            const matchingAnalyses = sample.requiredAnalyses.filter(
+              (analysis) => analysisTypeIds.includes(analysis.analysisTypeId),
+            );
+
+            if (matchingAnalyses.length > 0) {
+              matched = true;
+              break;
+            }
+          }
+        } else {
+          matched = true; // No hay filtro de tipo de análisis, todas coinciden
+        }
+
+        // Filtrar por peso si se especificó
+        if (matched && (receivedWeight !== undefined) !== undefined) {
+          matched = false; // Resetear para verificar peso
+
+          for (const sample of reception.Samples) {
+            let weightMatched = true;
+
+            if (
+              receivedWeight !== undefined &&
+              Number(sample.receivedWeight) !== receivedWeight
+            ) {
+              weightMatched = false;
+            }
+
+            if (weightMatched) {
+              matched = true;
+              break;
+            }
+          }
+        }
+
+        if (matched) {
+          filteredReceptionIds.push(reception.id);
+        }
+      }
+
+      if (filteredReceptionIds.length === 0) {
+        throw new NotFoundException(
+          'No se encontraron muestras que coincidan con los criterios de búsqueda',
+        );
+      }
+
+      // Actualizar las recepciones encontradas
+      const updatedReceptions: IReceptionResponse[] = [];
+
+      for (const id of filteredReceptionIds) {
+        // Solo pasamos los campos que realmente queremos actualizar
+        const updatePayload: Partial<IReceptionEntity> = {};
+
+        // Añadimos solo los campos que están en updateData y son relevantes
+        if (updateData.observation !== undefined) {
+          updatePayload.observation = updateData.observation;
+        }
+
+        if (updateData.batchNumber !== undefined) {
+          updatePayload.batchNumber = updateData.batchNumber;
+        }
+
+        // Si hay otros campos a actualizar, los añades aquí
+
+        const updatedReception = await this.updateReception(id, updatePayload);
+        updatedReceptions.push(updatedReception);
+      }
+
+      return updatedReceptions;
+    } catch (error: unknown) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      const errorMessage =
+        error instanceof Error ? error.message : 'Error desconocido';
+      throw new BadRequestException(
+        `Error al actualizar las muestras: ${errorMessage}`,
       );
     }
   }

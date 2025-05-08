@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { SampleReceptionRepository } from '@domain/repositories/reception/sample-reception.repository';
+import {
+  SampleReceptionRepository,
+  UpdateSampleFilter,
+} from '@domain/repositories/reception/sample-reception.repository';
 import { IReceptionResponse } from '@domain/interfaces/reception';
 import { IReceptionEntity } from '@domain/entities/reception/reception.entity';
 import { SampleReceptionDataSourceService } from '@infrastructure/datasource/reception/sample-reception.datasource.service';
@@ -44,6 +47,16 @@ export class SampleReceptionRepositoryImpl
     reception: Partial<IReceptionEntity>,
   ): Promise<IReceptionResponse> {
     return this.sampleReceptionDataSource.updateReception(id, reception);
+  }
+
+  async updateSamplesByFilter(
+    filter: UpdateSampleFilter,
+    updateData: Partial<IReceptionEntity>,
+  ): Promise<IReceptionResponse[]> {
+    return this.sampleReceptionDataSource.updateSamplesByFilter(
+      filter,
+      updateData,
+    );
   }
 
   async deleteReception(id: string): Promise<void> {
