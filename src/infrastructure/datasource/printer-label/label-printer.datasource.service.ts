@@ -602,4 +602,47 @@ export class LabelPrinterService {
       });
     });
   }
+
+  /**
+   * Obtiene todas las impresoras disponibles para una compañía
+   * @param companyId ID de la compañía
+   * @returns Lista de impresoras disponibles
+   */
+  async getPrinters(companyId: string): Promise<any[]> {
+    try {
+      this.logger.log(`Consultando impresoras para compañía: ${companyId}`);
+
+      // Obtener impresoras filtradas por compañía
+      const printers = await this.prisma.printer.findMany({
+        where: {
+          companyId: companyId,
+          isActive: true,
+        },
+        select: {
+          id: true,
+          printerName: true,
+          ip: true,
+          port: true,
+          isActive: true,
+          company: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+        orderBy: {
+          printerName: 'asc',
+        },
+      });
+
+      this.logger.log(
+        `Se encontraron ${printers.length} impresoras disponibles`,
+      );
+      return printers;
+    } catch (error: any) {
+      this.logger.error(`Error al obtener impresoras: ${error.message}`);
+      return [];
+    }
+  }
 }

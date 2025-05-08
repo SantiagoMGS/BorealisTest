@@ -94,4 +94,13 @@ export class LabelPrinterRepositoryImpl implements ILabelPrinterRepository {
       count,
     );
   }
+
+  /**
+   * Obtiene todas las impresoras disponibles para una compañía
+   * @param companyId ID de la compañía
+   * @returns Lista de impresoras disponibles
+   */
+  async getPrinters(companyId: string): Promise<any[]> {
+    return await this.labelPrinterDataSource.getPrinters(companyId);
+  }
 }
