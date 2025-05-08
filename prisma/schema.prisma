@@ -377,7 +377,6 @@ model Sample {
   receptionId       String                   @db.Uuid
   receptionOriginId String                   @db.Uuid
   receivedWeight    Decimal
-  dryWeight         Decimal
   code              Int                      @unique
   statusId          String                   @db.Uuid
   barrenado         Barrenado[]

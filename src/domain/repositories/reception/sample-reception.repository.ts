@@ -1,6 +1,13 @@
 import { IReceptionEntity } from '@domain/entities/reception/reception.entity';
 import { IReceptionResponse } from '@domain/interfaces/reception';
 
+export interface UpdateSampleFilter {
+  companyId?: string;
+  supplierId?: string;
+  analysisTypeIds?: string[];
+  receivedWeight?: number;
+}
+
 export abstract class SampleReceptionRepository {
   abstract createReception(
     reception: IReceptionEntity,
@@ -23,6 +30,11 @@ export abstract class SampleReceptionRepository {
     id: string,
     reception: Partial<IReceptionEntity>,
   ): Promise<IReceptionResponse>;
+
+  abstract updateSamplesByFilter(
+    filter: UpdateSampleFilter,
+    updateData: Partial<IReceptionEntity>,
+  ): Promise<IReceptionResponse[]>;
 
   abstract deleteReception(id: string): Promise<void>;
 }

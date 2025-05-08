@@ -5,7 +5,6 @@ export interface ISampleEntity {
   code?: number;
   receptionOriginId: string;
   receivedWeight: number;
-  dryWeight: number;
   analysisTypeIds?: string[];
 }
 
