@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Param,
+  ParseUUIDPipe,
   Post,
   Query,
   UseGuards,
@@ -22,6 +23,7 @@ import {
 import { DoreReceptionMapper } from './mappers';
 import { CreateDoreReceptionUseCase } from '@domain/use-cases/reception/create-dore-reception.usecase';
 import { FindDoreReceptionsByDateRangeUseCase } from '@domain/use-cases/reception/find-dore-receptions-by-date-range.usecase';
+import { GetNextBatchNumberUseCase } from '@domain/use-cases/reception/get-next-batch-number.usecase';
 import { PermissionsGuard } from '@infrastructure/guards/permissions.guard';
 import { JwtAuthGuard } from '@infrastructure/guards/jwt-auth.guard';
 import { ResponseInterceptor } from '@core/interceptores/response.interceptor';
@@ -39,6 +41,7 @@ export class DoreReceptionController {
   constructor(
     private readonly createDoreReceptionUseCase: CreateDoreReceptionUseCase,
     private readonly findDoreReceptionsByDateRangeUseCase: FindDoreReceptionsByDateRangeUseCase,
+    private readonly getNextBatchNumberUseCase: GetNextBatchNumberUseCase,
   ) {}
 
   @Post()
@@ -71,5 +74,20 @@ export class DoreReceptionController {
     @Query() filterDto: FilterDoreReceptionDto,
   ): Promise<any> {
     return await this.findDoreReceptionsByDateRangeUseCase.execute(filterDto);
+  }
+
+  @Get('supplier/:supplierId/next-batch-number')
+  @ApiOperation({
+    summary: 'Obtener el siguiente número de lote para un proveedor',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Número de lote siguiente',
+    type: String,
+  })
+  async getNextBatchNumber(
+    @Param('supplierId', ParseUUIDPipe) supplierId: string,
+  ): Promise<string> {
+    return await this.getNextBatchNumberUseCase.execute(supplierId);
   }
 }

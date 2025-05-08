@@ -3,6 +3,7 @@ import { CreateReceptionUseCase } from '@domain/use-cases/reception/create-sampl
 import { GetReceptionUseCase } from '@domain/use-cases/reception/get-sample-reception.usecase';
 import { GetDefaultAnalysisUseCase } from '@domain/use-cases/reception/get-default-analysis.usecase';
 import { GetSuppliersByOriginUseCase } from '@domain/use-cases/reception/get-suppliers-by-origin.usecase';
+import { GetNextBatchNumberUseCase } from '@domain/use-cases/reception/get-next-batch-number.usecase';
 //import { ListReceptionsUseCase } from '@domain/use-cases/reception/list-receptions.usecase';
 import { SampleReceptionRepositoryImpl } from '@infrastructure/repositories/reception/sample-reception.repository-impl.service';
 import { ReceptionOriginRepositoryImpl } from '@infrastructure/repositories/reception/reception-origin.repository-impl.service';
@@ -29,6 +30,7 @@ import { DoreReceptionRepositoryImpl } from '@infrastructure/repositories/recept
 import { DoreReceptionDataSourceService } from '@infrastructure/datasource/reception/dore-reception.datasource.service';
 import { DoreReceptionRepository } from '@domain/repositories/reception/dore-reception.repository';
 import { CityDataSourceService } from '@infrastructure/datasource/city';
+import { SupplierRepository } from '@domain/repositories/supplier';
 
 @Module({
   imports: [PermissionsModule, PrismaModule, CompanyModule, SupplierModule],
@@ -72,6 +74,7 @@ import { CityDataSourceService } from '@infrastructure/datasource/city';
     // Dore reception
     CreateDoreReceptionUseCase,
     FindDoreReceptionsByDateRangeUseCase,
+    GetNextBatchNumberUseCase,
     DoreReceptionDataSourceService,
     DoreReceptionRepositoryImpl,
     {

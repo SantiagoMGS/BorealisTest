@@ -282,4 +282,44 @@ export class DoreReceptionDataSourceService {
       );
     }
   }
+
+  /**
+   * Obtiene el último número de lote para un proveedor específico con un prefijo dado
+   * @param supplierId ID del proveedor
+   * @param prefix Prefijo del lote (formato: [shortName]-D-[año])
+   * @returns Último número de lote encontrado o null si no existe
+   */
+  async findLastBatchNumberBySupplierId(
+    supplierId: string,
+    prefix: string,
+  ): Promise<string | null> {
+    try {
+      // Buscar las recepciones de doré del proveedor especificado con el prefijo dado
+      const receptions = await this.prisma.reception.findMany({
+        where: {
+          supplierId,
+          batchNumber: {
+            startsWith: prefix,
+          },
+          receptionType: {
+            name: 'Doré',
+          },
+          isActive: true,
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+        take: 1,
+      });
+
+      if (receptions.length === 0) {
+        return null;
+      }
+
+      return receptions[0].batchNumber;
+    } catch (error) {
+      console.error('Error al buscar el último número de lote:', error);
+      return null;
+    }
+  }
 }

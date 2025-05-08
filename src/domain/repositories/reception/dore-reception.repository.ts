@@ -29,4 +29,15 @@ export abstract class DoreReceptionRepository {
    * @returns Lista de recepciones filtradas y proveedores asociados
    */
   abstract findByDateRange(filter: IDoreReceptionFilter): Promise<any>;
+
+  /**
+   * Obtiene el último número de lote para un proveedor específico en el año actual
+   * @param supplierId ID del proveedor
+   * @param prefix Prefijo del lote (formato: [shortName]-D-[año])
+   * @returns Último número de lote encontrado o null si no existe
+   */
+  abstract findLastBatchNumberBySupplierId(
+    supplierId: string,
+    prefix: string,
+  ): Promise<string | null>;
 }

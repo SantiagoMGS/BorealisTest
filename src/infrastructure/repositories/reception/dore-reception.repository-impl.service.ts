@@ -21,4 +21,14 @@ export class DoreReceptionRepositoryImpl extends DoreReceptionRepository {
   async findByDateRange(filter: IDoreReceptionFilter): Promise<any> {
     return await this.doreReceptionDatasource.findByDateRange(filter);
   }
+
+  async findLastBatchNumberBySupplierId(
+    supplierId: string,
+    prefix: string,
+  ): Promise<string | null> {
+    return await this.doreReceptionDatasource.findLastBatchNumberBySupplierId(
+      supplierId,
+      prefix,
+    );
+  }
 }
