@@ -65,8 +65,6 @@ export class SampleReceptionController {
       createReceptionDto,
       user.companyId!,
     );
-    console.log('receptionEntity', receptionEntity);
-    console.log('user', user);
     const reception =
       await this.createReceptionUseCase.execute(receptionEntity);
     return ReceptionMapper.toResponseDto(reception);
