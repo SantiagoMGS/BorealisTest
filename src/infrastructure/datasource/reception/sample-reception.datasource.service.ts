@@ -32,11 +32,9 @@ export class SampleReceptionDataSourceService {
     try {
       // Verificar que el proveedor existe y obtener su shortName
       await this.supplierDataSource.findById(reception.supplierId);
-      console.log('supplier', reception.supplierId);
 
       // Verificar que la compañía existe
       await this.companyDataSource.findById(reception.companyId);
-      console.log('company', reception.companyId);
 
       // Obtener el tipo de recepción "Muestras"
       const receptionType =
