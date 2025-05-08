@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { CreateReceptionUseCase } from '@domain/use-cases/reception/create-sample-reception.usecase';
 import { GetReceptionUseCase } from '@domain/use-cases/reception/get-sample-reception.usecase';
+import { UpdateSampleReceptionUseCase } from '@domain/use-cases/reception/update-sample-reception.usecase';
+import { DeleteSampleReceptionUseCase } from '@domain/use-cases/reception/delete-sample-reception.usecase';
 import { GetDefaultAnalysisUseCase } from '@domain/use-cases/reception/get-default-analysis.usecase';
 import { GetSuppliersByOriginUseCase } from '@domain/use-cases/reception/get-suppliers-by-origin.usecase';
 import { GetNextBatchNumberUseCase } from '@domain/use-cases/reception/get-next-batch-number.usecase';
@@ -44,6 +46,8 @@ import { SupplierRepository } from '@domain/repositories/supplier';
     // Sample reception
     CreateReceptionUseCase,
     GetReceptionUseCase,
+    UpdateSampleReceptionUseCase,
+    DeleteSampleReceptionUseCase,
     GetDefaultAnalysisUseCase,
     GetSuppliersByOriginUseCase,
     //ListReceptionsUseCase,

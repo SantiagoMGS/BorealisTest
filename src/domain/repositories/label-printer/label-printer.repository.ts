@@ -48,4 +48,9 @@ export interface ILabelPrinterRepository {
     printerName: string,
     count: number,
   ): Promise<{ success: boolean; message: string }>;
+
+  /**
+   * Obtiene todas las impresoras disponibles para una compañía
+   */
+  getPrinters(companyId: string): Promise<any[]>;
 }

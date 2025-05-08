@@ -4,6 +4,7 @@ import { LabelPrinterService } from '@infrastructure/datasource/printer-label/la
 import { LabelPrinterRepositoryImpl } from '@infrastructure/repositories/label-printer/label-printer.repository-impl.service';
 import { PrintReceptionLabelUseCase } from '@domain/use-cases/label-printer/print-reception-label.use-case';
 import { TestConnectionUseCase } from '@domain/use-cases/label-printer/test-connection.use-case';
+import { GetPrintersUseCase } from '@domain/use-cases/label-printer/get-printers.use-case';
 import { PrismaService } from '@core/prisma/prisma.service';
 import { PermissionsModule } from '@core/permissions/permissions.module';
 import { PrismaModule } from '@core/prisma/prisma.module';
@@ -38,6 +39,7 @@ import { StatusDataSourceService } from '@infrastructure/datasource/status';
     // Use Cases
     PrintReceptionLabelUseCase,
     TestConnectionUseCase,
+    GetPrintersUseCase,
   ],
   exports: [LabelPrinterService],
 })
