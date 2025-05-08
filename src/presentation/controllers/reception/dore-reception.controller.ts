@@ -15,11 +15,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import {
-  CreateDoreReceptionDto,
-  DoreReceptionResponseDto,
-  FilterDoreReceptionDto,
-} from './dtos';
+import { CreateDoreReceptionDto, DoreReceptionResponseDto } from './dtos';
 import { DoreReceptionMapper } from './mappers';
 import { CreateDoreReceptionUseCase } from '@domain/use-cases/reception/create-dore-reception.usecase';
 import { FindDoreReceptionsByDateRangeUseCase } from '@domain/use-cases/reception/find-dore-receptions-by-date-range.usecase';
@@ -62,18 +58,6 @@ export class DoreReceptionController {
     const reception =
       await this.createDoreReceptionUseCase.execute(receptionEntity);
     return DoreReceptionMapper.toResponseDto(reception);
-  }
-
-  @Get('filter')
-  @ApiOperation({ summary: 'Filtrar recepciones de doré por rango de fechas' })
-  @ApiResponse({
-    status: 200,
-    description: 'Recepciones filtradas y proveedores asociados',
-  })
-  async findByDateRange(
-    @Query() filterDto: FilterDoreReceptionDto,
-  ): Promise<any> {
-    return await this.findDoreReceptionsByDateRangeUseCase.execute(filterDto);
   }
 
   @Get('supplier/:supplierId/next-batch-number')
