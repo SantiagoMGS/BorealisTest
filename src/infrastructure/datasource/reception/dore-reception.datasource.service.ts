@@ -1,5 +1,7 @@
 import {
   BadRequestException,
+  HttpException,
+  HttpStatus,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -12,6 +14,7 @@ import { ReceptionOriginDataSourceService } from './reception-origin.datasource.
 import { StatusDataSourceService } from '@infrastructure/datasource/status';
 import { IDoreReceptionFilter } from '@domain/repositories/reception';
 import { CityDataSourceService } from '@infrastructure/datasource/city/city.datasource.service';
+import { IDoreDropdownData } from '@domain/repositories/reception/dore-reception.repository';
 
 @Injectable()
 export class DoreReceptionDataSourceService {
@@ -321,5 +324,104 @@ export class DoreReceptionDataSourceService {
       console.error('Error al buscar el último número de lote:', error);
       return null;
     }
+  }
+
+  /**
+   * Obtiene datos para llenar los dropdowns del frontend
+   * @param startDate Fecha inicial para filtrar
+   * @param endDate Fecha final para filtrar
+   * @returns Datos para los dropdowns (proveedores, dorés, números de lote, orígenes)
+   */
+  async getDropdownData(
+    startDate: Date,
+    endDate: Date,
+  ): Promise<IDoreDropdownData> {
+    // Obtener el tipo de recepción "Doré"
+    const receptionType = await this.receptionTypeDataSource.findByName('Doré');
+    const receptionTypeId = receptionType.id;
+
+    // Filtro base para recepciones
+    const whereClause = {
+      receptionTypeId,
+      receptionDate: {
+        gte: startDate,
+        lte: endDate,
+      },
+      isActive: true,
+    };
+
+    // 1. Obtener proveedores que tienen recepciones en el rango
+    const receptionSuppliers = await this.prisma.reception.findMany({
+      where: whereClause,
+      select: {
+        supplier: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+      distinct: ['supplierId'],
+    });
+
+    // 2. Obtener números de lote
+    const batchNumbers = await this.prisma.reception.findMany({
+      where: whereClause,
+      select: {
+        batchNumber: true,
+      },
+      distinct: ['batchNumber'],
+    });
+
+    // 3. Obtener orígenes de recepción que se han usado en recepciones dentro del rango
+    const receptionOrigins = await this.prisma.reception.findMany({
+      where: whereClause,
+      include: {
+        receptionOrigin: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+      distinct: ['receptionOriginId'],
+    });
+
+    // 4. Obtener dorés en el mismo rango de fechas que las recepciones
+    const dores = await this.prisma.dore.findMany({
+      where: {
+        isActive: true,
+        createdAt: {
+          gte: startDate,
+          lte: endDate,
+        },
+      },
+      select: {
+        id: true,
+        code: true,
+      },
+      orderBy: {
+        code: 'asc',
+      },
+    });
+
+    if (
+      receptionOrigins.length === 0 &&
+      receptionSuppliers.length === 0 &&
+      dores.length === 0 &&
+      batchNumbers.length === 0
+    ) {
+      throw new HttpException('No content', HttpStatus.NO_CONTENT);
+    }
+
+    // Construir y retornar la respuesta
+    return {
+      suppliers: receptionSuppliers.map((r) => r.supplier),
+      dore: dores,
+      batchNumbers: batchNumbers
+        .filter((b) => b.batchNumber !== null)
+        .map((b) => b.batchNumber as string),
+      receptionOrigins: receptionOrigins.map((r) => r.receptionOrigin),
+    };
   }
 }

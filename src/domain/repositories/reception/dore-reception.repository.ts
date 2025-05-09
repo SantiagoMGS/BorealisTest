@@ -11,6 +11,16 @@ export interface IDoreReceptionFilter {
 }
 
 /**
+ * Interfaz para la respuesta de datos de dropdown
+ */
+export interface IDoreDropdownData {
+  suppliers: Array<{ id: string; name: string }>;
+  dore: Array<{ id: string; code: number }>;
+  batchNumbers: string[];
+  receptionOrigins: Array<{ id: string; name: string }>;
+}
+
+/**
  * Repositorio para la gestión de recepciones de doré
  */
 export abstract class DoreReceptionRepository {
@@ -40,4 +50,15 @@ export abstract class DoreReceptionRepository {
     supplierId: string,
     prefix: string,
   ): Promise<string | null>;
+
+  /**
+   * Obtiene datos para llenar los dropdowns del frontend
+   * @param startDate Fecha inicial para filtrar
+   * @param endDate Fecha final para filtrar
+   * @returns Datos para los dropdowns (proveedores, dorés, números de lote, orígenes)
+   */
+  abstract getDropdownData(
+    startDate: Date,
+    endDate: Date,
+  ): Promise<IDoreDropdownData>;
 }

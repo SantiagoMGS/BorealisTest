@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import {
   DoreReceptionRepository,
+  IDoreDropdownData,
   IDoreReceptionFilter,
 } from '@domain/repositories/reception/dore-reception.repository';
 import { IDoreReceptionEntity } from '@domain/entities/reception';
@@ -29,6 +30,16 @@ export class DoreReceptionRepositoryImpl extends DoreReceptionRepository {
     return await this.doreReceptionDatasource.findLastBatchNumberBySupplierId(
       supplierId,
       prefix,
+    );
+  }
+
+  async getDropdownData(
+    startDate: Date,
+    endDate: Date,
+  ): Promise<IDoreDropdownData> {
+    return await this.doreReceptionDatasource.getDropdownData(
+      startDate,
+      endDate,
     );
   }
 }

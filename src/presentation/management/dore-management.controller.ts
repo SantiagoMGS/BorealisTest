@@ -1,10 +1,5 @@
 import { RequirePermission } from '@core/decorators/require-permission.decorator';
 import { ResponseInterceptor } from '@core/interceptores/response.interceptor';
-import {
-  CreateDoreReceptionUseCase,
-  FindDoreReceptionsByDateRangeUseCase,
-} from '@domain/use-cases/reception';
-import { GetNextBatchNumberUseCase } from '@domain/use-cases/reception/get-next-batch-number.usecase';
 import { JwtAuthGuard } from '@infrastructure/guards/jwt-auth.guard';
 import { PermissionsGuard } from '@infrastructure/guards/permissions.guard';
 import {
@@ -20,6 +15,9 @@ import {
   ApiOperation,
   ApiResponse,
 } from '@nestjs/swagger';
+import { GetDoreDropdownDataUseCase } from '@domain/use-cases/reception';
+import { GetDoreDropdownDataDto } from './dtos/get-dore-dropdown-data.dto';
+import { DoreDropdownResponseDto } from './dtos/dore-dropdown-response.dto';
 
 @ApiTags('Gestion Recepciones de Doré')
 @ApiBearerAuth()
@@ -28,14 +26,29 @@ import {
 @RequirePermission(DoreManagementController.name)
 @Controller('dore-receptions')
 export class DoreManagementController {
-  constructor() {}
-  @Get('filter')
-  @ApiOperation({ summary: 'Filtrar recepciones de doré por rango de fechas' })
+  constructor(
+    private readonly getDoreDropdownDataUseCase: GetDoreDropdownDataUseCase,
+  ) {}
+
+  @Get('dropdown-data')
+  @ApiOperation({
+    summary: 'Obtener datos para poblar los dropdowns de la UI de doré',
+    description:
+      'Devuelve listas de proveedores, dorés, números de lote y orígenes de recepción',
+  })
   @ApiResponse({
     status: 200,
-    description: 'Recepciones filtradas y proveedores asociados',
+    description: 'Datos obtenidos correctamente',
+    type: DoreDropdownResponseDto,
   })
-  async findByDateRange(): Promise<any> {
-    return '';
+  async getDropdownData(
+    @Query() queryParams: GetDoreDropdownDataDto,
+  ): Promise<DoreDropdownResponseDto> {
+    // Establecer fechas por defecto si no se proporcionan
+    const startDate =
+      queryParams.startDate || new Date(new Date().getFullYear(), 0, 1);
+    const endDate = queryParams.endDate || new Date();
+
+    return await this.getDoreDropdownDataUseCase.execute(startDate, endDate);
   }
 }
