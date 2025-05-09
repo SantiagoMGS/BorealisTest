@@ -42,7 +42,7 @@ import {
   DoreDropdownResponseDto,
   DoreReceptionPaginatedResponseDto,
 )
-@Controller('dore-receptions')
+@Controller('dore-management')
 export class DoreManagementController {
   constructor(
     private readonly getDoreDropdownDataUseCase: GetDoreDropdownDataUseCase,
