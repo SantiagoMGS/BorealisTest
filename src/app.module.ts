@@ -13,7 +13,7 @@ import { TenantModule } from '@core/config/tenant.module';
 import { ReceptionModule } from '@presentation/controllers/reception/reception.module';
 import { LabelPrinterModule } from './presentation/controllers/label-printer/label-printer.module';
 import { ManagementModule } from './presentation/controllers/management/management.module';
-
+import { AnalysesModule } from './presentation/controllers/analyses/analyses.module';
 @Module({
   imports: [
     PrismaModule,
@@ -29,6 +29,7 @@ import { ManagementModule } from './presentation/controllers/management/manageme
     ReceptionModule,
     LabelPrinterModule,
     ManagementModule,
+    AnalysesModule,
   ],
   providers: [JwtStrategy],
 })

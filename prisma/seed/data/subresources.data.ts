@@ -169,4 +169,16 @@ export const subresourceInitialData: Prisma.SubresourceCreateInput[] = [
     path: '/administration/label-printers',
     controller: 'LabelPrinterController',
   },
+  // Subrecursos para ANÁLISIS
+  {
+    name: 'Detección de Humedad',
+    resource: {
+      connect: {
+        name: 'Análisis',
+      },
+    },
+    icon: 'fa-truck',
+    path: 'analyses/dh-analyses',
+    controller: 'DHAnalyses',
+  },
 ];
