@@ -481,6 +481,7 @@ model AnalysisType {
   description       String?
   isActive          Boolean                     @default(true)
   shortName         String                      @unique
+  analysisResult    Json
   analyses          Analysis[]
   requiredIn        SampleRequiredAnalysis[]
   defaultForOrigins DefaultAnalysisTypeOrigin[]
@@ -496,7 +497,6 @@ model Analysis {
   sampleId       String       @db.Uuid
   resultValue    Json
   analysisDate   DateTime
-  analysisResult Json
   isActive       Boolean      @default(true)
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
