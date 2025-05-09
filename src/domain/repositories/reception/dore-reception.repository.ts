@@ -1,4 +1,5 @@
 import { IDoreReceptionEntity } from '@domain/entities/reception';
+import { IDoreReceptionResponse } from '@domain/interfaces/reception';
 
 /**
  * Interfaz para los filtros de búsqueda de recepciones de doré
@@ -31,7 +32,7 @@ export abstract class DoreReceptionRepository {
    */
   abstract createDoreReception(
     doreReception: IDoreReceptionEntity,
-  ): Promise<any>;
+  ): Promise<IDoreReceptionResponse>;
 
   /**
    * Filtra recepciones de doré por rango de fechas

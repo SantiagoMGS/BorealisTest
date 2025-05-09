@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '@core/prisma/prisma.service';
 import { IDoreReceptionEntity } from '@domain/entities/reception';
+import { IDoreReceptionResponse } from '@domain/interfaces/reception';
 import { CompanyDataSourceService } from '@infrastructure/datasource/company/company.datasource.service';
 import { SupplierDataSourceService } from '@infrastructure/datasource/supplier/supplier.datasource.service';
 import { ReceptionTypeDataSourceService } from './reception-type.datasource.service';
@@ -32,7 +33,9 @@ export class DoreReceptionDataSourceService {
    * @param reception Datos de la recepción
    * @returns La recepción creada con sus items
    */
-  async createReception(reception: IDoreReceptionEntity): Promise<any> {
+  async createReception(
+    reception: IDoreReceptionEntity,
+  ): Promise<IDoreReceptionResponse> {
     try {
       // Verificamos que existan todas las entidades relacionadas
       await this.supplierDataSource.findById(reception.supplierId);

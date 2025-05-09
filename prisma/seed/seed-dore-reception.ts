@@ -1,14 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { Logger } from '@nestjs/common';
 import { doreReceptionData } from './data/dore-reception.data';
-import { GetNextBatchNumberUseCase } from '@domain/use-cases/reception/get-next-batch-number.usecase';
-import { SupplierRepository } from '@domain/repositories/supplier';
-import { DoreReceptionRepository } from '@domain/repositories/reception/dore-reception.repository';
-import { ISupplierResponse } from '@domain/interfaces/supplier';
-import {
-  IDoreReceptionFilter,
-  IDoreDropdownData,
-} from '@domain/repositories/reception/dore-reception.repository';
 
 /**
  * Siembra datos iniciales de recepciones de doré en la base de datos
@@ -19,95 +11,6 @@ export async function seedDoreReceptions(prisma: PrismaClient) {
 
   try {
     logger.log('Iniciando sembrado de recepciones de doré...');
-
-    // Crear implementaciones temporales de los repositorios para el caso de uso
-    const supplierRepository: SupplierRepository = {
-      findById: async (id: string): Promise<ISupplierResponse> => {
-        const supplier = await prisma.supplier.findUnique({
-          where: { id },
-        });
-
-        if (!supplier) {
-          throw new Error(`Proveedor con ID ${id} no encontrado`);
-        }
-
-        return {
-          id: supplier.id,
-          name: supplier.name,
-          documentTypeId: supplier.documentTypeId,
-          documentNumber: supplier.documentNumber,
-          shortName: supplier.shortName || '',
-          verificationDigit: supplier.verificationDigit,
-          isActive: supplier.isActive,
-        };
-      },
-      // Implementamos los métodos abstractos requeridos con implementaciones mínimas
-      findAll: async (): Promise<ISupplierResponse[]> => [],
-      createSupplier: async () => ({
-        id: '',
-        name: '',
-        documentTypeId: '',
-        documentNumber: '',
-        shortName: '',
-      }),
-      update: async () => ({
-        id: '',
-        name: '',
-        documentTypeId: '',
-        documentNumber: '',
-        shortName: '',
-      }),
-      delete: async () => ({
-        id: '',
-        name: '',
-        documentTypeId: '',
-        documentNumber: '',
-        shortName: '',
-      }),
-      findByParams: async () => ({
-        id: '',
-        name: '',
-        documentTypeId: '',
-        documentNumber: '',
-        shortName: '',
-      }),
-      findMiningTitles: async () => [],
-    };
-
-    const doreReceptionRepository: DoreReceptionRepository = {
-      findLastBatchNumberBySupplierId: async (
-        supplierId: string,
-        prefix: string,
-      ): Promise<string | null> => {
-        const lastReception = await prisma.reception.findFirst({
-          where: {
-            supplierId,
-            batchNumber: {
-              startsWith: prefix,
-            },
-          },
-          orderBy: {
-            batchNumber: 'desc',
-          },
-        });
-        return lastReception?.batchNumber || null;
-      },
-      // Implementamos los métodos abstractos requeridos con implementaciones mínimas
-      createDoreReception: async () => ({}),
-      findByDateRange: async () => ({}),
-      getDropdownData: async (): Promise<IDoreDropdownData> => ({
-        suppliers: [],
-        dore: [],
-        batchNumbers: [],
-        receptionOrigins: [],
-      }),
-    };
-
-    // Crear el caso de uso
-    const getNextBatchNumberUseCase = new GetNextBatchNumberUseCase(
-      supplierRepository,
-      doreReceptionRepository,
-    );
 
     // Obtener el estado "RECIBIDO"
     const receivedStatus = await prisma.status.findUnique({
@@ -220,8 +123,9 @@ export async function seedDoreReceptions(prisma: PrismaClient) {
         }
       }
 
-      // Generar el siguiente número de lote para el proveedor
-      const batchNumber = await getNextBatchNumberUseCase.execute(supplier.id);
+      // Asignar directamente un número de lote formato ABC-D-2023-001
+      const currentYear = new Date().getFullYear();
+      const batchNumber = `${company.shortName}-D-${currentYear}-001`;
 
       // Crear la recepción
       const reception = await prisma.reception.create({
@@ -231,7 +135,7 @@ export async function seedDoreReceptions(prisma: PrismaClient) {
           receptionTypeId: receptionType.id,
           receptionOriginId: receptionOrigin.id,
           receptionDate: receptionData.receptionDate,
-          batchNumber: batchNumber, // Usar el número de lote generado
+          batchNumber: batchNumber,
           observation: receptionData.observation,
           cityId: city.id,
           miningTitleId,
