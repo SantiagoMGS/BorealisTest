@@ -31,7 +31,6 @@ import {
   seedDoreReceptions,
 } from './seed/index';
 
-// Inicializar cliente Prisma
 const prisma = new PrismaClient();
 const logger = new Logger('DatabaseSeed');
 
@@ -41,7 +40,6 @@ async function main() {
     logger.log('🌱 Iniciando proceso de sembrado de datos...');
 
     // Ejecutar semillas en orden
-    // Semillas para configurar el sistema
     await seedCountries(prisma);
     await seedDepartments(prisma);
     await seedCities(prisma);

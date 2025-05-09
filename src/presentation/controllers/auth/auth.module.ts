@@ -20,7 +20,6 @@ import { LoginRepositoryImplService } from '@infrastructure/repositories/auth/lo
 import { TokenService } from '@infrastructure/services/token/token.service';
 import { PrismaService } from '@core/prisma/prisma.service';
 
-// Token de inyección para ITokenPort
 export const TOKEN_PORT = 'TOKEN_PORT';
 
 @Module({

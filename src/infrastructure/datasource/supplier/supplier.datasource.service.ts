@@ -174,7 +174,6 @@ export class SupplierDataSourceService {
           throw new NotFoundException('Proveedor no encontrado');
         }
         if (error.code === 'P2002') {
-          // P2002 es el código para violación de restricción unique
           // Verificar qué campo causó el conflicto
           const target = (error.meta?.target as string[]) || [];
 

@@ -12,7 +12,6 @@ export class TokenService implements ITokenPort {
   constructor(private readonly jwtService: JwtService) {}
 
   generateTokens(payload: TokenPayload): TokenResponse {
-    // Firmar el access token
     const accessToken = this.jwtService.sign(payload);
 
     // Firmar el refresh token con diferente expiración

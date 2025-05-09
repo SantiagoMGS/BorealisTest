@@ -37,7 +37,7 @@ export interface IDoreReceptionResponse {
 
   // Dorés asociados a la recepción
   dores: Array<{
-    receivedWeight: number | any; // Acepta Decimal de Prisma
+    receivedWeight: number | any;
     observation?: string | null;
     base64: string;
     format: string;
