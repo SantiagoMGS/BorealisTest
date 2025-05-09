@@ -32,12 +32,19 @@ import { CustomResponse } from '@core/decorators/custom-response.decorator';
 import { JwtAuthGuard } from '@infrastructure/guards/jwt-auth.guard';
 import { CatalogMapper } from './mappers/catalog.mapper';
 import { CatalogTypeEnum } from '@domain/entities/catalog/catalog.entity';
+import {
+  ApiResponseDto,
+  getResponseSchema,
+  getArrayResponseSchema,
+  getPrimitiveArrayResponseSchema,
+} from '@shared/dtos/api-response.dto';
 
 @ApiTags('Catálogos')
 @Controller('common')
 @UseInterceptors(ResponseInterceptor)
 @UseGuards(JwtAuthGuard)
 @ApiExtraModels(
+  ApiResponseDto,
   DocumentTypeDto,
   SupplierDto,
   ReceptionTypeDto,
@@ -56,18 +63,10 @@ export class CommonController {
   @ApiBearerAuth()
   @ApiOkResponse({
     description: 'Tipos de catálogos obtenidos correctamente',
-    schema: {
-      type: 'object',
-      properties: {
-        data: {
-          type: 'array',
-          items: {
-            type: 'string',
-            enum: Object.values(CatalogTypeEnum),
-          },
-        },
-      },
-    },
+    ...getPrimitiveArrayResponseSchema({
+      type: 'string',
+      enum: Object.values(CatalogTypeEnum),
+    }),
   })
   @CustomResponse({
     successMessage: 'Tipos de catálogos obtenidos correctamente',
@@ -87,7 +86,7 @@ export class CommonController {
   })
   @ApiOkResponse({
     description: 'Catálogo obtenido correctamente',
-    type: CatalogResponseDto,
+    ...getResponseSchema(CatalogResponseDto),
   })
   @CustomResponse({
     successMessage: 'Catálogo obtenido correctamente',

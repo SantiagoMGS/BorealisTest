@@ -29,7 +29,7 @@ import { AssignSuppliersUseCase } from '@domain/use-cases/company-supplier/assig
 import { AssignSuppliersDto, SuppliersAssignmentResultDto } from './dtos';
 import { CurrentUser } from '@core/decorators/current-user.decorator';
 
-@ApiTags('Proveedores de la Empresa')
+@ApiTags('Compañías')
 @ApiBearerAuth()
 @Controller('company')
 @UseInterceptors(ResponseInterceptor)

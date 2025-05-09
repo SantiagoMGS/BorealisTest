@@ -8,20 +8,38 @@ import {
   Body,
   HttpCode,
   HttpStatus,
+  UseInterceptors,
 } from '@nestjs/common';
 import { CurrentUser } from '@core/decorators/current-user.decorator';
 import { JwtAuthGuard } from '@infrastructure/guards/jwt-auth.guard';
 import { GetPermissionsByCompanyUseCase } from '@domain/use-cases/user/get-permissions-by-company.use-case';
 import { PermissionsByCompanyResponseDto } from './dtos/permissions-response.dto';
-import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+  ApiExtraModels,
+} from '@nestjs/swagger';
 import { CustomResponse } from '@core/decorators/custom-response.decorator';
 import { CreateUserUseCase } from '@domain/use-cases/user/create-user.use-case';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserResponseDto } from './dto/user-response.dto';
 import { IAuthUser } from '@domain/entities/auth';
+import { ResponseInterceptor } from '@core/interceptores/response.interceptor';
+import {
+  ApiResponseDto,
+  getResponseSchema,
+} from '@shared/dtos/api-response.dto';
 
 @ApiTags('Usuarios')
 @Controller('user')
+@UseInterceptors(ResponseInterceptor)
+@ApiExtraModels(
+  ApiResponseDto,
+  UserResponseDto,
+  PermissionsByCompanyResponseDto,
+)
 export class UserController {
   constructor(
     private readonly getPermissionsByCompanyUseCase: GetPermissionsByCompanyUseCase,
@@ -35,7 +53,7 @@ export class UserController {
   @ApiResponse({
     status: 201,
     description: 'Usuario creado correctamente',
-    type: UserResponseDto,
+    ...getResponseSchema(UserResponseDto),
   })
   @ApiResponse({ status: 400, description: 'Datos inválidos' })
   @ApiResponse({ status: 409, description: 'El correo ya está registrado' })
@@ -56,7 +74,11 @@ export class UserController {
   @Get('profile')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Obtener perfil del usuario actual' })
-  @ApiResponse({ status: 200, description: 'Perfil del usuario' })
+  @ApiResponse({
+    status: 200,
+    description: 'Perfil del usuario',
+    ...getResponseSchema(UserResponseDto),
+  })
   @CustomResponse({
     successMessage: 'Perfil del usuario obtenido correctamente',
   })
@@ -78,7 +100,7 @@ export class UserController {
   @ApiResponse({
     status: 200,
     description: 'Permisos del usuario para la compañía',
-    type: PermissionsByCompanyResponseDto,
+    ...getResponseSchema(PermissionsByCompanyResponseDto),
   })
   @ApiResponse({ status: 400, description: 'ID de compañía inválido' })
   @ApiResponse({ status: 403, description: 'No tiene acceso a esta compañía' })

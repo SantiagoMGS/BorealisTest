@@ -7,6 +7,11 @@ import {
 } from '@domain/interfaces/supplier';
 import { SupplierDataSourceService } from '@infrastructure/datasource/supplier';
 import { SupplierMapper } from '@presentation/controllers/supplier/mappers/supplier.mapper';
+import {
+  IPaginatedData,
+  IPaginationOptions,
+} from '@shared/interfaces/pagination.interfaces';
+import { PaginationHelper } from '@shared/utils/pagination.helper';
 
 @Injectable()
 export class SupplierRepositoryImpl implements SupplierRepository {
@@ -22,6 +27,19 @@ export class SupplierRepositoryImpl implements SupplierRepository {
   async findAll(): Promise<ISupplierResponse[]> {
     const suppliers = await this.supplierDataSource.findAll();
     return suppliers.map(SupplierMapper.toResponseDto);
+  }
+
+  async findAllPaginated(
+    options: IPaginationOptions,
+  ): Promise<IPaginatedData<ISupplierResponse>> {
+    const { suppliers, total } =
+      await this.supplierDataSource.findAllPaginated(options);
+    const mappedSuppliers = suppliers.map(SupplierMapper.toResponseDto);
+    return PaginationHelper.createPaginatedResponseFromItems(
+      mappedSuppliers,
+      total,
+      options,
+    );
   }
 
   async findByParams(params: {

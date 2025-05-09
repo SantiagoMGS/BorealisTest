@@ -14,8 +14,13 @@ import {
   ApiOperation,
   ApiResponse,
   ApiTags,
+  ApiExtraModels,
 } from '@nestjs/swagger';
-import { CreateDoreReceptionDto, DoreReceptionResponseDto } from './dtos';
+import {
+  CreateDoreReceptionDto,
+  DoreReceptionResponseDto,
+  BatchNumberResponseDto,
+} from './dtos';
 import { DoreReceptionMapper } from './mappers';
 import { CreateDoreReceptionUseCase } from '@domain/use-cases/reception/create-dore-reception.usecase';
 import { GetNextBatchNumberUseCase } from '@domain/use-cases/reception/get-next-batch-number.usecase';
@@ -25,12 +30,21 @@ import { ResponseInterceptor } from '@core/interceptores/response.interceptor';
 import { RequirePermission } from '@core/decorators/require-permission.decorator';
 import { CurrentUser } from '@core/decorators/current-user.decorator';
 import { IAuthUser } from '@domain/entities/auth';
+import {
+  ApiResponseDto,
+  getResponseSchema,
+} from '@shared/dtos/api-response.dto';
 
 @ApiTags('Recepciones de Doré')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @UseInterceptors(ResponseInterceptor)
 @RequirePermission(DoreReceptionController.name)
+@ApiExtraModels(
+  ApiResponseDto,
+  DoreReceptionResponseDto,
+  BatchNumberResponseDto,
+)
 @Controller('dore-receptions')
 export class DoreReceptionController {
   constructor(
@@ -43,7 +57,7 @@ export class DoreReceptionController {
   @ApiResponse({
     status: 201,
     description: 'Recepción de doré creada exitosamente',
-    type: DoreReceptionResponseDto,
+    ...getResponseSchema(DoreReceptionResponseDto),
   })
   async createDoreReception(
     @Body() createDoreReceptionDto: CreateDoreReceptionDto,
@@ -65,11 +79,13 @@ export class DoreReceptionController {
   @ApiResponse({
     status: 200,
     description: 'Número de lote siguiente',
-    type: String,
+    ...getResponseSchema(BatchNumberResponseDto),
   })
   async getNextBatchNumber(
     @Param('supplierId', ParseUUIDPipe) supplierId: string,
-  ): Promise<string> {
-    return await this.getNextBatchNumberUseCase.execute(supplierId);
+  ): Promise<{ batchNumber: string }> {
+    const nextBatchNumber =
+      await this.getNextBatchNumberUseCase.execute(supplierId);
+    return { batchNumber: nextBatchNumber };
   }
 }

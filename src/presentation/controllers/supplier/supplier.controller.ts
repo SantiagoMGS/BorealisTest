@@ -10,6 +10,7 @@ import {
   Delete,
   HttpException,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -22,6 +23,7 @@ import {
   ApiResponse,
   ApiParam,
   ApiNoContentResponse,
+  ApiExtraModels,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '@infrastructure/guards/jwt-auth.guard';
 import { CreateSupplierUseCase } from '@domain/use-cases/supplier';
@@ -29,8 +31,8 @@ import {
   CreateSupplierDto,
   SupplierResponseDto,
   UpdateSupplierDto,
-  SupplierMiningTitlesResponseDto,
   MiningTitleResponseDto,
+  SupplierPaginatedResponseDto,
 } from './dtos';
 import { ErrorResponseDto } from '../auth/dtos';
 import { SupplierMapper, MiningTitleMapper } from './mappers';
@@ -46,6 +48,13 @@ import { DeleteSupplierUseCase } from '@domain/use-cases/supplier/delete-supplie
 import { RequirePermission } from '@core/decorators/require-permission.decorator';
 import { PermissionsGuard } from '@infrastructure/guards/permissions.guard';
 import { FindMiningTitlesUseCase } from '@domain/use-cases/supplier/find-mining-title.use-case';
+import {
+  ApiResponseDto,
+  getResponseSchema,
+  getArrayResponseSchema,
+} from '@shared/dtos/api-response.dto';
+import { Paginated } from '@core/decorators/paginated.decorator';
+import { PaginationDto } from '@shared/dtos/paginator.dto';
 
 @ApiTags('Proveedores')
 @ApiBearerAuth()
@@ -53,6 +62,13 @@ import { FindMiningTitlesUseCase } from '@domain/use-cases/supplier/find-mining-
 @UseInterceptors(ResponseInterceptor)
 @RequirePermission(SupplierController.name)
 @UseGuards(JwtAuthGuard, PermissionsGuard)
+@ApiExtraModels(
+  ApiResponseDto,
+  SupplierResponseDto,
+  MiningTitleResponseDto,
+  SupplierPaginatedResponseDto,
+  ErrorResponseDto,
+)
 export class SupplierController {
   constructor(
     private readonly createSupplierUseCase: CreateSupplierUseCase,
@@ -74,7 +90,7 @@ export class SupplierController {
   })
   @ApiCreatedResponse({
     description: 'Proveedor creado exitosamente',
-    type: SupplierResponseDto,
+    ...getResponseSchema(SupplierResponseDto),
   })
   @ApiBadRequestResponse({
     description: 'Datos inválidos',
@@ -106,19 +122,25 @@ export class SupplierController {
 
   // Obtener todos los proveedores
   @Get()
+  @Paginated()
   @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: 'Obtener todos los proveedores' })
+  @ApiOperation({ summary: 'Obtener todos los proveedores (paginado)' })
   @ApiResponse({
     status: 200,
-    description: 'Perfil de los proveedores',
-    type: [SupplierResponseDto],
+    description: 'Lista paginada de proveedores',
+    ...getResponseSchema(SupplierPaginatedResponseDto),
   })
   @CustomResponse({
     successMessage: 'Proveedores obtenidos exitosamente',
   })
-  async findAll(): Promise<SupplierResponseDto[]> {
-    const suppliers = await this.findAllSupplierUseCase.execute();
-    return SupplierMapper.toResponseDtoList(suppliers);
+  async findAll(@Query() paginationDto: PaginationDto) {
+    // Asegurar valores por defecto para page y limit
+    const options = {
+      page: paginationDto.page || 1,
+      limit: paginationDto.limit || 10,
+      withDeleted: paginationDto.withDeleted || false,
+    };
+    return await this.findAllSupplierUseCase.executePaginated(options);
   }
 
   @Get(':id')
@@ -134,7 +156,7 @@ export class SupplierController {
   @ApiResponse({
     status: 200,
     description: 'Proveedor encontrado',
-    type: SupplierResponseDto,
+    ...getResponseSchema(SupplierResponseDto),
   })
   @CustomResponse({
     successMessage: 'Proveedor encontrado exitosamente',
@@ -162,7 +184,7 @@ export class SupplierController {
   @ApiResponse({
     status: 200,
     description: 'Proveedor actualizado exitosamente',
-    type: SupplierResponseDto,
+    ...getResponseSchema(SupplierResponseDto),
   })
   @ApiBadRequestResponse({
     description: 'Datos inválidos',
@@ -195,7 +217,7 @@ export class SupplierController {
   @ApiResponse({
     status: 200,
     description: 'Proveedor eliminado exitosamente',
-    type: SupplierResponseDto,
+    ...getResponseSchema(SupplierResponseDto),
   })
   @ApiBadRequestResponse({
     description: 'Datos inválidos',
@@ -229,7 +251,7 @@ export class SupplierController {
   @ApiResponse({
     status: 200,
     description: 'Títulos mineros encontrados',
-    type: [MiningTitleResponseDto],
+    ...getArrayResponseSchema(MiningTitleResponseDto),
   })
   @ApiNoContentResponse({
     description: 'No se encontraron títulos mineros para el proveedor',

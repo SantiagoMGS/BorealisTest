@@ -5,3 +5,4 @@ export * from './create-dore-reception.dto';
 export * from './dore-reception-response.dto';
 export * from './supplier-by-origin-response.dto';
 export * from './update-sample.dto';
+export * from './batch-number-response.dto';
