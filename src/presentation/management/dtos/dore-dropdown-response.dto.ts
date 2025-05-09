@@ -42,7 +42,7 @@ export class ReceptionOriginDto {
   name!: string;
 }
 
-export class DoreDropdownResponseDto {
+export class DoreDropdownDataDto {
   @ApiProperty({
     description: 'Lista de proveedores',
     type: [SupplierDto],
@@ -66,4 +66,12 @@ export class DoreDropdownResponseDto {
     type: [ReceptionOriginDto],
   })
   receptionOrigins!: ReceptionOriginDto[];
+}
+
+export class DoreDropdownResponseDto {
+  @ApiProperty({
+    description: 'Datos de respuesta',
+    type: DoreDropdownDataDto,
+  })
+  data!: DoreDropdownDataDto;
 }

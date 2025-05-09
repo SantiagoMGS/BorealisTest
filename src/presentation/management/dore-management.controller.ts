@@ -17,7 +17,10 @@ import {
 } from '@nestjs/swagger';
 import { GetDoreDropdownDataUseCase } from '@domain/use-cases/reception';
 import { GetDoreDropdownDataDto } from './dtos/get-dore-dropdown-data.dto';
-import { DoreDropdownResponseDto } from './dtos/dore-dropdown-response.dto';
+import {
+  DoreDropdownDataDto,
+  DoreDropdownResponseDto,
+} from './dtos/dore-dropdown-response.dto';
 
 @ApiTags('Gestion Recepciones de Doré')
 @ApiBearerAuth()
@@ -44,11 +47,14 @@ export class DoreManagementController {
   async getDropdownData(
     @Query() queryParams: GetDoreDropdownDataDto,
   ): Promise<DoreDropdownResponseDto> {
-    // Establecer fechas por defecto si no se proporcionan
-    const startDate =
-      queryParams.startDate || new Date(new Date().getFullYear(), 0, 1);
-    const endDate = queryParams.endDate || new Date();
+    // Obtener los datos para los dropdowns
+    const dropdownData = await this.getDoreDropdownDataUseCase.execute(
+      queryParams.startDate,
+      queryParams.endDate,
+    );
 
-    return await this.getDoreDropdownDataUseCase.execute(startDate, endDate);
+    return {
+      data: dropdownData,
+    };
   }
 }
