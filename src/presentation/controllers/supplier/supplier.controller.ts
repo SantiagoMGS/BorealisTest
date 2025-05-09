@@ -110,6 +110,7 @@ export class SupplierController {
     const result = await this.createSupplierUseCase.execute(
       supplierEntity,
       user.id,
+      user.companyId,
     );
 
     // Convertir resultado a DTO de respuesta

@@ -11,9 +11,12 @@ import { DeleteSupplierUseCase } from '@domain/use-cases/supplier/delete-supplie
 import { FindMiningTitlesUseCase } from '@domain/use-cases/supplier/find-mining-title.use-case';
 import { PermissionsModule } from '@core/permissions/permissions.module';
 import { ShortNameGeneratorService } from '@infrastructure/services/supplier/shortname-generator.service';
+import { CompanyModule } from '../company/company.module';
+import { ICompanySupplierRepository } from '@domain/repositories/company-supplier/company-supplier.repository';
+import { CompanySupplierRepositoryImpl } from '@infrastructure/repositories/company-supplier/company-supplier.repository-impl.service';
 
 @Module({
-  imports: [PermissionsModule],
+  imports: [PermissionsModule, CompanyModule],
   controllers: [SupplierController],
   providers: [
     CreateSupplierUseCase,
@@ -27,6 +30,10 @@ import { ShortNameGeneratorService } from '@infrastructure/services/supplier/sho
     {
       provide: SupplierRepository,
       useClass: SupplierRepositoryImpl,
+    },
+    {
+      provide: ICompanySupplierRepository,
+      useExisting: CompanySupplierRepositoryImpl,
     },
   ],
   exports: [SupplierRepository, SupplierDataSourceService],

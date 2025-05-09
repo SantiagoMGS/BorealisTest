@@ -3,17 +3,20 @@ import { ISupplierEntity } from '@domain/entities/supplier';
 import { ISupplierResponse } from '@domain/interfaces/supplier';
 import { SupplierRepository } from '@domain/repositories/supplier';
 import { ShortNameGeneratorService } from '@infrastructure/services/supplier/shortname-generator.service';
+import { ICompanySupplierRepository } from '@domain/repositories/company-supplier/company-supplier.repository';
 
 @Injectable()
 export class CreateSupplierUseCase {
   constructor(
     private readonly supplierRepository: SupplierRepository,
     private readonly shortNameGeneratorService: ShortNameGeneratorService,
+    private readonly companySupplierRepository: ICompanySupplierRepository,
   ) {}
 
   async execute(
     supplierData: ISupplierEntity,
     userId?: string,
+    companyId?: string,
   ): Promise<ISupplierResponse> {
     // Asignamos el creador si se proporciona el ID del usuario
     if (userId) {
@@ -27,6 +30,17 @@ export class CreateSupplierUseCase {
       supplierData.documentNumber,
     );
 
-    return this.supplierRepository.createSupplier(supplierData);
+    // Crear el proveedor
+    const createdSupplier =
+      await this.supplierRepository.createSupplier(supplierData);
+
+    // Si se proporciona el ID de la compañía, asignar el proveedor a la compañía
+    if (companyId) {
+      await this.companySupplierRepository.assignSuppliers(companyId, [
+        createdSupplier.id,
+      ]);
+    }
+
+    return createdSupplier;
   }
 }
