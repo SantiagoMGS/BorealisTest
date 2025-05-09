@@ -28,3 +28,4 @@ export { seedSupplierMiningTitles } from './seed-supplier-mining-titles';
 export { seedStatus } from './seed-status';
 export { seedDefaultAnalysisOrigins } from './seed-default-analysis-origins';
 export { seedPrinters } from './seed-printers';
+export { seedDoreReceptions } from './seed-dore-reception';

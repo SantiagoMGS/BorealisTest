@@ -93,6 +93,7 @@ export class DoreReceptionDataSourceService {
       for (const item of reception.items) {
         const dore = await this.prisma.dore.create({
           data: {
+            receptionId: createdReception.id,
             receivedWeight: item.receivedWeight,
             observation: item.observation,
             statusId: receivedStatus.id,
