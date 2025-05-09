@@ -3,12 +3,19 @@ import {
   ISupplierResponse,
   IMiningTitleResponse,
 } from '@domain/interfaces/supplier';
+import {
+  IPaginatedData,
+  IPaginationOptions,
+} from '@shared/interfaces/pagination.interfaces';
 
 export abstract class SupplierRepository {
   abstract createSupplier(
     supplierData: ISupplierEntity,
   ): Promise<ISupplierResponse>;
   abstract findAll(): Promise<ISupplierResponse[]>;
+  abstract findAllPaginated(
+    options: IPaginationOptions,
+  ): Promise<IPaginatedData<ISupplierResponse>>;
   abstract findByParams(params: {
     id?: string;
     documentNumber?: string;

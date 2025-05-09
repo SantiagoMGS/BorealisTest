@@ -14,6 +14,7 @@ import {
   IMiningTitleResponse,
 } from '@domain/interfaces/supplier';
 import { MiningTitlePersistenceMapper } from './mappers/mining-title.mapper';
+import { IPaginationOptions } from '@shared/interfaces/pagination.interfaces';
 
 @Injectable()
 export class SupplierDataSourceService {
@@ -92,6 +93,40 @@ export class SupplierDataSourceService {
     });
 
     return suppliers;
+  }
+
+  /**
+   * Obtiene una lista paginada de proveedores
+   * @param options Opciones de paginación
+   * @returns Objetos que contiene los proveedores paginados y el total
+   */
+  async findAllPaginated(
+    options: IPaginationOptions,
+  ): Promise<{ suppliers: ISupplierResponse[]; total: number }> {
+    const { page, limit } = options;
+
+    // Calcular el número de elementos a saltar
+    const skip = (page - 1) * limit;
+
+    // Obtener el total de proveedores
+    const total = await this.prisma.supplier.count({
+      where: { isActive: true },
+    });
+
+    // Obtener los proveedores paginados
+    const suppliers = await this.prisma.supplier.findMany({
+      where: { isActive: true },
+      include: {
+        documentType: true,
+      },
+      skip,
+      take: limit,
+      orderBy: {
+        name: 'asc',
+      },
+    });
+
+    return { suppliers, total };
   }
 
   async findByParams(params: {

@@ -10,6 +10,7 @@ import {
   Delete,
   HttpException,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -52,6 +53,8 @@ import {
   getResponseSchema,
   getArrayResponseSchema,
 } from '@shared/dtos/api-response.dto';
+import { Paginated } from '@core/decorators/paginated.decorator';
+import { PaginationDto } from '@shared/dtos/paginator.dto';
 
 @ApiTags('Proveedores')
 @ApiBearerAuth()
@@ -119,19 +122,25 @@ export class SupplierController {
 
   // Obtener todos los proveedores
   @Get()
+  @Paginated()
   @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: 'Obtener todos los proveedores' })
+  @ApiOperation({ summary: 'Obtener todos los proveedores (paginado)' })
   @ApiResponse({
     status: 200,
-    description: 'Perfil de los proveedores',
+    description: 'Lista paginada de proveedores',
     ...getArrayResponseSchema(SupplierResponseDto),
   })
   @CustomResponse({
     successMessage: 'Proveedores obtenidos exitosamente',
   })
-  async findAll(): Promise<SupplierResponseDto[]> {
-    const suppliers = await this.findAllSupplierUseCase.execute();
-    return SupplierMapper.toResponseDtoList(suppliers);
+  async findAll(@Query() paginationDto: PaginationDto) {
+    // Asegurar valores por defecto para page y limit
+    const options = {
+      page: paginationDto.page || 1,
+      limit: paginationDto.limit || 10,
+      withDeleted: paginationDto.withDeleted || false,
+    };
+    return await this.findAllSupplierUseCase.executePaginated(options);
   }
 
   @Get(':id')
