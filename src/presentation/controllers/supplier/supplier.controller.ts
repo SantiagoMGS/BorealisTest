@@ -145,7 +145,7 @@ export class SupplierController {
     return await this.findAllSupplierUseCase.executePaginated(options);
   }
 
-  @Get(':id')
+  @Get(':param')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
     summary: 'Obtener un proveedor por ID o número de documento',
@@ -163,10 +163,8 @@ export class SupplierController {
   @CustomResponse({
     successMessage: 'Proveedor encontrado',
   })
-  async findById(@Param('id') id: string): Promise<SupplierResponseDto> {
-    // No es la mejor práctica tener la regex directamente en el controlador
-    // TODO: Mover esta validación a un servicio de utilidad o usar una librería como 'uuid'
-    const params = id ? { id } : { documentNumber: id };
+  async findById(@Param('param') param: string): Promise<SupplierResponseDto> {
+    const params = isUUID(param) ? { id: param } : { documentNumber: param };
 
     const supplier = await this.findSupplierUseCase.execute(params);
     return SupplierMapper.toResponseDto(supplier);
