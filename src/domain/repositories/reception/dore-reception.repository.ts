@@ -1,14 +1,20 @@
 import { IDoreReceptionEntity } from '@domain/entities/reception';
 import { IDoreReceptionResponse } from '@domain/interfaces/reception';
+import {
+  IPaginatedData,
+  IPaginationOptions,
+} from '@shared/interfaces/pagination.interfaces';
 
 /**
  * Interfaz para los filtros de búsqueda de recepciones de doré
  */
-export interface IDoreReceptionFilter {
-  startDate?: Date;
-  endDate?: Date;
-  supplierId?: string;
-  code?: string;
+export interface IDoreReceptionFilter extends IPaginationOptions {
+  startDate: Date;
+  endDate: Date;
+  supplierIds?: string[];
+  receptionOriginIds?: string[];
+  doreIds?: string[];
+  batchNumbers?: string[];
 }
 
 /**
@@ -35,11 +41,13 @@ export abstract class DoreReceptionRepository {
   ): Promise<IDoreReceptionResponse>;
 
   /**
-   * Filtra recepciones de doré por rango de fechas
-   * @param filter Filtros a aplicar (startDate, endDate)
-   * @returns Lista de recepciones filtradas y proveedores asociados
+   * Obtiene recepciones de doré con filtros y paginación
+   * @param filter Filtros extendidos y opciones de paginación
+   * @returns Datos paginados de recepciones
    */
-  abstract findByDateRange(filter: IDoreReceptionFilter): Promise<any>;
+  abstract findByFilters(
+    filter: IDoreReceptionFilter,
+  ): Promise<IPaginatedData<IDoreReceptionResponse>>;
 
   /**
    * Obtiene el último número de lote para un proveedor específico en el año actual

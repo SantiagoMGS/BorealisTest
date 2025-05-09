@@ -16,6 +16,8 @@ import { StatusDataSourceService } from '@infrastructure/datasource/status';
 import { IDoreReceptionFilter } from '@domain/repositories/reception';
 import { CityDataSourceService } from '@infrastructure/datasource/city/city.datasource.service';
 import { IDoreDropdownData } from '@domain/repositories/reception/dore-reception.repository';
+import { IPaginatedData } from '@shared/interfaces/pagination.interfaces';
+import { PaginationHelper } from '@shared/utils/pagination.helper';
 
 @Injectable()
 export class DoreReceptionDataSourceService {
@@ -131,161 +133,6 @@ export class DoreReceptionDataSourceService {
       }
       throw new BadRequestException(
         `Error al crear la recepción de doré: ${error.message}`,
-      );
-    }
-  }
-
-  /**
-   * Filtra recepciones de doré por rango de fechas
-   * @param filter Filtros a aplicar (startDate, endDate, supplierId, code)
-   * @returns Lista de recepciones filtradas y proveedores asociados
-   */
-  async findByDateRange(filter: IDoreReceptionFilter): Promise<any> {
-    try {
-      // Construir los filtros para la consulta
-      const whereClause: any = {
-        isActive: true,
-        // Buscar recepciones de tipo doré
-        receptionType: {
-          name: 'Doré', // Asumiendo que hay un tipo de recepción "Doré"
-        },
-      };
-
-      // Agregar filtros de fecha si se proporcionan
-      if (filter.startDate || filter.endDate) {
-        whereClause.receptionDate = {};
-
-        if (filter.startDate) {
-          whereClause.receptionDate.gte = filter.startDate;
-        }
-
-        if (filter.endDate) {
-          whereClause.receptionDate.lte = filter.endDate;
-        }
-      }
-
-      // Filtrar por proveedor si se proporciona
-      if (filter.supplierId) {
-        whereClause.supplierId = filter.supplierId;
-      }
-
-      // Filtrar por código
-      if (filter.code) {
-        // Si hay un campo 'code' en la tabla de recepciones
-        // (como un batchNumber o similar)
-        whereClause.OR = [
-          { batchNumber: { contains: filter.code, mode: 'insensitive' } },
-          {
-            supplier: {
-              name: { contains: filter.code, mode: 'insensitive' },
-            },
-          },
-        ];
-      }
-
-      // Buscar recepciones con los filtros aplicados
-      const receptions = await this.prisma.reception.findMany({
-        where: whereClause,
-        orderBy: {
-          receptionDate: 'desc',
-        },
-        include: {
-          company: {
-            select: {
-              id: true,
-              name: true,
-              shortName: true,
-            },
-          },
-          supplier: {
-            select: {
-              id: true,
-              name: true,
-            },
-          },
-          receptionType: {
-            select: {
-              id: true,
-              name: true,
-            },
-          },
-          receptionOrigin: {
-            select: {
-              id: true,
-              name: true,
-            },
-          },
-        },
-      });
-
-      // Construir filtro para los dorés
-      const doreWhereClause: any = {
-        isActive: true,
-      };
-
-      // Si hay un código, también filtrar dorés por código
-      if (filter.code) {
-        doreWhereClause.OR = [
-          { code: { equals: parseInt(filter.code, 10) } }, // Si el código del doré es un número
-          { observation: { contains: filter.code, mode: 'insensitive' } },
-        ];
-      }
-
-      // Buscar los dorés filtrados
-      const dores = await this.prisma.dore.findMany({
-        where: doreWhereClause,
-        include: {
-          status: {
-            select: {
-              id: true,
-              name: true,
-            },
-          },
-        },
-      });
-
-      // Construir filtro para proveedores
-      let supplierWhereClause: any = {
-        isActive: true,
-      };
-
-      // Si hay un código, filtrar proveedores por nombre
-      if (filter.code) {
-        supplierWhereClause.OR = [
-          { name: { contains: filter.code, mode: 'insensitive' } },
-        ];
-      }
-
-      // Si hay un supplierId, filtrar específicamente ese proveedor
-      if (filter.supplierId) {
-        supplierWhereClause = {
-          id: filter.supplierId,
-          isActive: true,
-        };
-      } else {
-        // Si no hay supplierId, obtener todos los proveedores de las recepciones filtradas
-        const supplierIds = [...new Set(receptions.map((r) => r.supplierId))];
-        if (supplierIds.length > 0) {
-          supplierWhereClause.id = { in: supplierIds };
-        }
-      }
-
-      const suppliers = await this.prisma.supplier.findMany({
-        where: supplierWhereClause,
-        select: {
-          id: true,
-          name: true,
-        },
-      });
-
-      return {
-        receptions,
-        dores,
-        suppliers,
-      };
-    } catch (error: any) {
-      throw new BadRequestException(
-        `Error al filtrar recepciones de doré: ${error.message}`,
       );
     }
   }
@@ -427,5 +274,165 @@ export class DoreReceptionDataSourceService {
         .map((b) => b.batchNumber as string),
       receptionOrigins: receptionOrigins.map((r) => r.receptionOrigin),
     };
+  }
+
+  /**
+   * Obtiene recepciones de doré con filtros avanzados y paginación
+   * @param filter Filtros extendidos y opciones de paginación
+   * @returns Datos paginados de recepciones
+   */
+  async findByFilters(
+    filter: IDoreReceptionFilter,
+  ): Promise<IPaginatedData<IDoreReceptionResponse>> {
+    try {
+      // Construir los filtros para la consulta
+      const whereClause: any = {
+        isActive: true,
+      };
+
+      // Obtener el tipo de recepción "Doré"
+      const receptionType =
+        await this.receptionTypeDataSource.findByName('Doré');
+      whereClause.receptionTypeId = receptionType.id;
+
+      // Filtrar por rango de fechas
+      if (filter.startDate || filter.endDate) {
+        whereClause.receptionDate = {};
+
+        if (filter.startDate) {
+          whereClause.receptionDate.gte = filter.startDate;
+        }
+
+        if (filter.endDate) {
+          whereClause.receptionDate.lte = filter.endDate;
+        }
+      }
+
+      // Filtrar por proveedores
+      if (filter.supplierIds && filter.supplierIds.length > 0) {
+        whereClause.supplierId = { in: filter.supplierIds };
+      }
+
+      // Filtrar por orígenes de recepción
+      if (filter.receptionOriginIds && filter.receptionOriginIds.length > 0) {
+        whereClause.receptionOriginId = { in: filter.receptionOriginIds };
+      }
+
+      // Filtrar por números de lote
+      if (filter.batchNumbers && filter.batchNumbers.length > 0) {
+        whereClause.batchNumber = { in: filter.batchNumbers };
+      }
+
+      // Calcular total de registros para la paginación
+      const totalItems = await this.prisma.reception.count({
+        where: whereClause,
+      });
+
+      // Calcular skip y take para la paginación
+      const skip = (filter.page - 1) * filter.limit;
+      const take = filter.limit;
+
+      // Buscar recepciones con los filtros aplicados y paginación
+      const receptions = await this.prisma.reception.findMany({
+        where: whereClause,
+        skip,
+        take,
+        orderBy: {
+          receptionDate: 'desc',
+        },
+        include: {
+          company: {
+            select: {
+              id: true,
+              name: true,
+              shortName: true,
+            },
+          },
+          supplier: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+          receptionType: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+          receptionOrigin: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+          // Incluir dorés asociados a la recepción
+          dore: {
+            select: {
+              id: true,
+              code: true,
+              receivedWeight: true,
+              finalWeight: true,
+              goldLaw: true,
+              goldWeight: true,
+              silverLaw: true,
+              silverWeight: true,
+              goldBalance: true,
+              silverBalance: true,
+              approvedLaw: true,
+              observation: true,
+              base64: true,
+              format: true,
+              status: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      // Si hay filtro por doreIds, filtramos las recepciones que tengan esos dorés
+      if (filter.doreIds && filter.doreIds.length > 0) {
+        const doreReceptions = await this.prisma.dore.findMany({
+          where: {
+            id: { in: filter.doreIds },
+            isActive: true,
+          },
+          select: {
+            receptionId: true,
+          },
+        });
+
+        const receptionIds = [
+          ...new Set(doreReceptions.map((d) => d.receptionId)),
+        ];
+
+        // Filtramos las recepciones que coincidan con los IDs de dore
+        const filteredReceptions = receptions.filter((reception) =>
+          receptionIds.includes(reception.id),
+        );
+
+        // Crear el objeto de respuesta paginada
+        return PaginationHelper.createPaginatedResponseFromItems(
+          filteredReceptions as unknown as IDoreReceptionResponse[],
+          filteredReceptions.length,
+          filter,
+        );
+      }
+
+      // Crear el objeto de respuesta paginada
+      return PaginationHelper.createPaginatedResponseFromItems(
+        receptions as unknown as IDoreReceptionResponse[],
+        totalItems,
+        filter,
+      );
+    } catch (error: any) {
+      throw new BadRequestException(
+        `Error al filtrar recepciones de doré: ${error.message}`,
+      );
+    }
   }
 }

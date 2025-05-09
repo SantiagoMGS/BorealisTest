@@ -27,7 +27,6 @@ import { CompanyModule } from '../company/company.module';
 import { SupplierModule } from '../supplier/supplier.module';
 import { DoreReceptionController } from './dore-reception.controller';
 import { CreateDoreReceptionUseCase } from '@domain/use-cases/reception/create-dore-reception.usecase';
-import { FindDoreReceptionsByDateRangeUseCase } from '@domain/use-cases/reception/find-dore-receptions-by-date-range.usecase';
 import { DoreReceptionRepositoryImpl } from '@infrastructure/repositories/reception/dore-reception.repository-impl.service';
 import { DoreReceptionDataSourceService } from '@infrastructure/datasource/reception/dore-reception.datasource.service';
 import { DoreReceptionRepository } from '@domain/repositories/reception/dore-reception.repository';
@@ -77,7 +76,6 @@ import { SupplierRepository } from '@domain/repositories/supplier';
 
     // Dore reception
     CreateDoreReceptionUseCase,
-    FindDoreReceptionsByDateRangeUseCase,
     GetNextBatchNumberUseCase,
     DoreReceptionDataSourceService,
     DoreReceptionRepositoryImpl,

@@ -18,7 +18,6 @@ import {
 import { CreateDoreReceptionDto, DoreReceptionResponseDto } from './dtos';
 import { DoreReceptionMapper } from './mappers';
 import { CreateDoreReceptionUseCase } from '@domain/use-cases/reception/create-dore-reception.usecase';
-import { FindDoreReceptionsByDateRangeUseCase } from '@domain/use-cases/reception/find-dore-receptions-by-date-range.usecase';
 import { GetNextBatchNumberUseCase } from '@domain/use-cases/reception/get-next-batch-number.usecase';
 import { PermissionsGuard } from '@infrastructure/guards/permissions.guard';
 import { JwtAuthGuard } from '@infrastructure/guards/jwt-auth.guard';
@@ -36,7 +35,6 @@ import { IAuthUser } from '@domain/entities/auth';
 export class DoreReceptionController {
   constructor(
     private readonly createDoreReceptionUseCase: CreateDoreReceptionUseCase,
-    private readonly findDoreReceptionsByDateRangeUseCase: FindDoreReceptionsByDateRangeUseCase,
     private readonly getNextBatchNumberUseCase: GetNextBatchNumberUseCase,
   ) {}
 

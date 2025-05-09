@@ -15,12 +15,17 @@ import {
   ApiOperation,
   ApiResponse,
 } from '@nestjs/swagger';
-import { GetDoreDropdownDataUseCase } from '@domain/use-cases/reception';
-import { GetDoreDropdownDataDto } from './dtos/get-dore-dropdown-data.dto';
 import {
-  DoreDropdownDataDto,
+  GetDoreDropdownDataUseCase,
+  FindDoreReceptionsByFiltersUseCase,
+} from '@domain/use-cases/reception';
+import {
+  GetDoreDropdownDataDto,
   DoreDropdownResponseDto,
-} from './dtos/dore-dropdown-response.dto';
+  FindDoreReceptionsByFiltersDto,
+  DoreReceptionPaginatedResponseDto,
+} from './dtos';
+import { Paginated } from '@core/decorators/paginated.decorator';
 
 @ApiTags('Gestion Recepciones de Doré')
 @ApiBearerAuth()
@@ -31,6 +36,7 @@ import {
 export class DoreManagementController {
   constructor(
     private readonly getDoreDropdownDataUseCase: GetDoreDropdownDataUseCase,
+    private readonly findDoreReceptionsByFiltersUseCase: FindDoreReceptionsByFiltersUseCase,
   ) {}
 
   @Get('dropdown-data')
@@ -56,5 +62,30 @@ export class DoreManagementController {
     return {
       data: dropdownData,
     };
+  }
+
+  @Get('find-by-filters')
+  @Paginated()
+  @ApiOperation({
+    summary: 'Buscar recepciones de doré aplicando filtros',
+    description:
+      'Devuelve una lista paginada de recepciones de doré que cumplen con los filtros especificados',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Recepciones encontradas correctamente',
+    type: DoreReceptionPaginatedResponseDto,
+  })
+  async findByFilters(@Query() filterParams: FindDoreReceptionsByFiltersDto) {
+    return await this.findDoreReceptionsByFiltersUseCase.execute({
+      page: filterParams.page || 1,
+      limit: filterParams.limit || 10,
+      startDate: filterParams.startDate,
+      endDate: filterParams.endDate,
+      supplierIds: filterParams.supplierIds,
+      receptionOriginIds: filterParams.receptionOriginIds,
+      doreIds: filterParams.doreIds,
+      batchNumbers: filterParams.batchNumbers,
+    });
   }
 }

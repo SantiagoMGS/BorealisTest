@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import {
   DoreReceptionRepository,
   IDoreDropdownData,
@@ -7,7 +7,6 @@ import {
 @Injectable()
 export class GetDoreDropdownDataUseCase {
   constructor(
-    @Inject('DoreReceptionRepository')
     private readonly doreReceptionRepository: DoreReceptionRepository,
   ) {}
 
