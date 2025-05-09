@@ -22,6 +22,7 @@ import {
   ApiResponse,
   ApiParam,
   ApiNoContentResponse,
+  ApiExtraModels,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '@infrastructure/guards/jwt-auth.guard';
 import { CreateSupplierUseCase } from '@domain/use-cases/supplier';
@@ -46,6 +47,11 @@ import { DeleteSupplierUseCase } from '@domain/use-cases/supplier/delete-supplie
 import { RequirePermission } from '@core/decorators/require-permission.decorator';
 import { PermissionsGuard } from '@infrastructure/guards/permissions.guard';
 import { FindMiningTitlesUseCase } from '@domain/use-cases/supplier/find-mining-title.use-case';
+import {
+  ApiResponseDto,
+  getResponseSchema,
+  getArrayResponseSchema,
+} from '@shared/dtos/api-response.dto';
 
 @ApiTags('Proveedores')
 @ApiBearerAuth()
@@ -53,6 +59,12 @@ import { FindMiningTitlesUseCase } from '@domain/use-cases/supplier/find-mining-
 @UseInterceptors(ResponseInterceptor)
 @RequirePermission(SupplierController.name)
 @UseGuards(JwtAuthGuard, PermissionsGuard)
+@ApiExtraModels(
+  ApiResponseDto,
+  SupplierResponseDto,
+  MiningTitleResponseDto,
+  ErrorResponseDto,
+)
 export class SupplierController {
   constructor(
     private readonly createSupplierUseCase: CreateSupplierUseCase,
@@ -74,7 +86,7 @@ export class SupplierController {
   })
   @ApiCreatedResponse({
     description: 'Proveedor creado exitosamente',
-    type: SupplierResponseDto,
+    ...getResponseSchema(SupplierResponseDto),
   })
   @ApiBadRequestResponse({
     description: 'Datos inválidos',
@@ -111,7 +123,7 @@ export class SupplierController {
   @ApiResponse({
     status: 200,
     description: 'Perfil de los proveedores',
-    type: [SupplierResponseDto],
+    ...getArrayResponseSchema(SupplierResponseDto),
   })
   @CustomResponse({
     successMessage: 'Proveedores obtenidos exitosamente',
@@ -134,7 +146,7 @@ export class SupplierController {
   @ApiResponse({
     status: 200,
     description: 'Proveedor encontrado',
-    type: SupplierResponseDto,
+    ...getResponseSchema(SupplierResponseDto),
   })
   @CustomResponse({
     successMessage: 'Proveedor encontrado exitosamente',
@@ -162,7 +174,7 @@ export class SupplierController {
   @ApiResponse({
     status: 200,
     description: 'Proveedor actualizado exitosamente',
-    type: SupplierResponseDto,
+    ...getResponseSchema(SupplierResponseDto),
   })
   @ApiBadRequestResponse({
     description: 'Datos inválidos',
@@ -195,7 +207,7 @@ export class SupplierController {
   @ApiResponse({
     status: 200,
     description: 'Proveedor eliminado exitosamente',
-    type: SupplierResponseDto,
+    ...getResponseSchema(SupplierResponseDto),
   })
   @ApiBadRequestResponse({
     description: 'Datos inválidos',
@@ -229,7 +241,7 @@ export class SupplierController {
   @ApiResponse({
     status: 200,
     description: 'Títulos mineros encontrados',
-    type: [MiningTitleResponseDto],
+    ...getArrayResponseSchema(MiningTitleResponseDto),
   })
   @ApiNoContentResponse({
     description: 'No se encontraron títulos mineros para el proveedor',

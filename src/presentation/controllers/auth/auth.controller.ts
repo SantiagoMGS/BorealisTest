@@ -15,13 +15,14 @@ import {
   ApiOkResponse,
   ApiUnauthorizedResponse,
   ApiBearerAuth,
+  ApiExtraModels,
 } from '@nestjs/swagger';
 import {
   LoginUseCase,
   LogoutUseCase,
   SetCompanyUseCase,
 } from '@domain/use-cases/auth';
-import { LoginDto, SetCompanyDto } from './dtos';
+import { LoginDto, SetCompanyDto, LogoutResponseDto } from './dtos';
 import { LoginResponseDto, SetCompanyResponseDto } from './dtos';
 import { ErrorResponseDto } from '@shared/models/error-response.dto';
 import { ResponseInterceptor } from '@core/interceptores/response.interceptor';
@@ -29,10 +30,21 @@ import { CustomResponse } from '@core/decorators/custom-response.decorator';
 import { Request } from 'express';
 import { JwtAuthGuard } from '@infrastructure/guards/jwt-auth.guard';
 import { LoginMapper } from './mappers/login.mapper';
+import {
+  ApiResponseDto,
+  getResponseSchema,
+} from '@shared/dtos/api-response.dto';
 
 @ApiTags('Autenticación')
 @Controller('auth')
 @UseInterceptors(ResponseInterceptor)
+@ApiExtraModels(
+  ApiResponseDto,
+  LoginResponseDto,
+  SetCompanyResponseDto,
+  LogoutResponseDto,
+  ErrorResponseDto,
+)
 export class AuthController {
   constructor(
     private readonly loginUseCase: LoginUseCase,
@@ -49,7 +61,7 @@ export class AuthController {
   })
   @ApiOkResponse({
     description: 'Usuario autenticado correctamente',
-    type: LoginResponseDto,
+    ...getResponseSchema(LoginResponseDto),
   })
   @ApiUnauthorizedResponse({
     description: 'Credenciales incorrectas',
@@ -79,11 +91,12 @@ export class AuthController {
   @ApiBearerAuth()
   @ApiOkResponse({
     description: 'Sesión cerrada correctamente',
+    ...getResponseSchema(LogoutResponseDto),
   })
   @CustomResponse({
     successMessage: 'Sesión cerrada correctamente',
   })
-  async logout(@Req() req: Request): Promise<{ success: boolean }> {
+  async logout(@Req() req: Request): Promise<LogoutResponseDto> {
     const success = await this.logoutUseCase.execute(req);
     return { success };
   }
@@ -99,7 +112,7 @@ export class AuthController {
   })
   @ApiOkResponse({
     description: 'Compañía establecida correctamente',
-    type: SetCompanyResponseDto,
+    ...getResponseSchema(SetCompanyResponseDto),
   })
   @CustomResponse({
     successMessage: 'Compañía establecida correctamente',
