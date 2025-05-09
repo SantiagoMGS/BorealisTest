@@ -37,8 +37,6 @@ export class ApiResponseDto<T> {
 
   @ApiProperty({
     description: 'Datos de la respuesta',
-    type: 'object',
-    additionalProperties: {},
   })
   data!: T;
 }

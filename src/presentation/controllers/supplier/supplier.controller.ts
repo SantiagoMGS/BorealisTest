@@ -31,8 +31,8 @@ import {
   CreateSupplierDto,
   SupplierResponseDto,
   UpdateSupplierDto,
-  SupplierMiningTitlesResponseDto,
   MiningTitleResponseDto,
+  SupplierPaginatedResponseDto,
 } from './dtos';
 import { ErrorResponseDto } from '../auth/dtos';
 import { SupplierMapper, MiningTitleMapper } from './mappers';
@@ -66,6 +66,7 @@ import { PaginationDto } from '@shared/dtos/paginator.dto';
   ApiResponseDto,
   SupplierResponseDto,
   MiningTitleResponseDto,
+  SupplierPaginatedResponseDto,
   ErrorResponseDto,
 )
 export class SupplierController {
@@ -113,7 +114,6 @@ export class SupplierController {
     const result = await this.createSupplierUseCase.execute(
       supplierEntity,
       user.id,
-      user.companyId,
     );
 
     // Convertir resultado a DTO de respuesta
@@ -128,7 +128,7 @@ export class SupplierController {
   @ApiResponse({
     status: 200,
     description: 'Lista paginada de proveedores',
-    ...getArrayResponseSchema(SupplierResponseDto),
+    ...getResponseSchema(SupplierPaginatedResponseDto),
   })
   @CustomResponse({
     successMessage: 'Proveedores obtenidos exitosamente',
