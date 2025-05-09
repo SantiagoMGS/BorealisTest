@@ -69,9 +69,8 @@ export class DoreManagementController {
       queryParams.endDate,
     );
 
-    return {
-      data: dropdownData,
-    };
+    // Retornar directamente los datos sin anidar
+    return dropdownData;
   }
 
   @Get('find-by-filters')

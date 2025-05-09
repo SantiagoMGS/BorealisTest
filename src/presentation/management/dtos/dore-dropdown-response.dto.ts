@@ -42,7 +42,8 @@ export class ReceptionOriginDto {
   name!: string;
 }
 
-export class DoreDropdownDataDto {
+// Este DTO representa la estructura que devuelve el caso de uso directamente
+export class DoreDropdownResponseDto {
   @ApiProperty({
     description: 'Lista de proveedores',
     type: [SupplierDto],
@@ -66,12 +67,4 @@ export class DoreDropdownDataDto {
     type: [ReceptionOriginDto],
   })
   receptionOrigins!: ReceptionOriginDto[];
-}
-
-export class DoreDropdownResponseDto {
-  @ApiProperty({
-    description: 'Datos de respuesta',
-    type: DoreDropdownDataDto,
-  })
-  data!: DoreDropdownDataDto;
 }
