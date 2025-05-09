@@ -4,6 +4,7 @@ import { ISupplierResponse } from '@domain/interfaces/supplier';
 import { SupplierRepository } from '@domain/repositories/supplier';
 import { ShortNameGeneratorService } from '@infrastructure/services/supplier/shortname-generator.service';
 import { ICompanySupplierRepository } from '@domain/repositories/company-supplier/company-supplier.repository';
+import { IAuthUser } from '@domain/entities/auth';
 
 @Injectable()
 export class CreateSupplierUseCase {
