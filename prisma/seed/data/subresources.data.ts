@@ -25,7 +25,7 @@ export const subresourceInitialData: Prisma.SubresourceCreateInput[] = [
     controller: 'SampleReceptionController',
   },
   {
-    name: 'Listar Recepción Doré',
+    name: 'Gestionar Recepción Doré',
     resource: {
       connect: {
         name: 'Gestión',
@@ -33,7 +33,7 @@ export const subresourceInitialData: Prisma.SubresourceCreateInput[] = [
     },
     icon: 'clipboard-list',
     path: 'lims/list-dore-receptions',
-    controller: 'ListDoreReceptionController',
+    controller: 'DoreManagementController',
   },
   {
     name: 'Listar Recepción Muestras',

@@ -12,6 +12,7 @@ import { CompanyModule } from './presentation/controllers/company/company.module
 import { TenantModule } from '@core/config/tenant.module';
 import { ReceptionModule } from '@presentation/controllers/reception/reception.module';
 import { LabelPrinterModule } from './presentation/controllers/label-printer/label-printer.module';
+import { ManagementModule } from './presentation/management/management.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { LabelPrinterModule } from './presentation/controllers/label-printer/lab
     CompanyModule,
     ReceptionModule,
     LabelPrinterModule,
+    ManagementModule,
   ],
   providers: [JwtStrategy],
 })

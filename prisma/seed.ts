@@ -28,6 +28,7 @@ import {
   seedStatus,
   seedDefaultAnalysisOrigins,
   seedPrinters,
+  seedDoreReceptions,
 } from './seed/index';
 
 // Inicializar cliente Prisma
@@ -70,6 +71,7 @@ async function main() {
     await seedStatus(prisma); // Estados
     await seedDefaultAnalysisOrigins(prisma); // Análisis por defecto
     await seedPrinters(prisma); // Impresoras
+    await seedDoreReceptions(prisma); // Recepciones de doré
 
     logger.log('✅ ¡Proceso de sembrado completado con éxito!');
   } catch (error: unknown) {
