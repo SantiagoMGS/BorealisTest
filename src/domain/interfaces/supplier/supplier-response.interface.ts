@@ -3,8 +3,7 @@ import { DocumentType } from '@prisma/client';
 export interface ISupplierResponse {
   id: string;
   name: string;
-  documentTypeId: string;
-  documentType?: {
+  documentType: {
     id: string;
     name: string;
     code: string;
