@@ -296,13 +296,12 @@ model MeasurementUnit {
 }
 
 model ReceptionType {
-  id                  String                       @id @default(uuid()) @db.Uuid
-  name                String                       @unique
-  description         String?
-  isActive            Boolean                      @default(true)
-  validOrigins        ReceptionTypeOrigin[]
-  validSubSampleTypes ReceptionTypeSubSampleType[]
-  receptions          Reception[]
+  id           String                @id @default(uuid()) @db.Uuid
+  name         String                @unique
+  description  String?
+  isActive     Boolean               @default(true)
+  validOrigins ReceptionTypeOrigin[]
+  receptions   Reception[]
 
   @@map("reception_types")
 }
@@ -380,13 +379,13 @@ model Sample {
   receivedWeight    Decimal
   code              Int                      @unique
   statusId          String                   @db.Uuid
-  barrenado         Barrenado[]
   reception         Reception                @relation(fields: [receptionId], references: [id], onDelete: Cascade)
   receptionOrigin   ReceptionOrigin          @relation(fields: [receptionOriginId], references: [id])
   status            Status                   @relation(fields: [statusId], references: [id])
   subSamples        SubSample[]
   requiredAnalyses  SampleRequiredAnalysis[]
   traces            SamplePrinterTrace[]
+  Analysis          Analysis[]
 
   @@index([receptionId])
   @@index([receptionOriginId])
@@ -404,7 +403,7 @@ model SampleRequiredAnalysis {
 }
 
 model Dore {
-  receptionId String @db.Uuid
+  receptionId    String   @db.Uuid
   id             String   @id @default(uuid()) @db.Uuid
   code           Int      @unique @default(autoincrement())
   receivedWeight Decimal  @default(0) @db.Decimal(10, 4)
@@ -427,7 +426,7 @@ model Dore {
   updatedBy      String?  @db.Uuid
   status         Status   @relation(fields: [statusId], references: [id])
 
-  reception      Reception @relation(fields: [receptionId], references: [id], onDelete: Cascade)
+  reception Reception @relation(fields: [receptionId], references: [id], onDelete: Cascade)
 
   @@index([code])
   @@index([statusId])
@@ -444,32 +443,15 @@ model Status {
   @@map("status")
 }
 
-model ReceptionTypeSubSampleType {
-  receptionTypeId String        @db.Uuid
-  subSampleTypeId String        @db.Uuid
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-  createdBy       String?       @db.Uuid
-  updatedBy       String?       @db.Uuid
-  receptionType   ReceptionType @relation(fields: [receptionTypeId], references: [id], onDelete: Cascade)
-  subSampleType   SubSampleType @relation(fields: [subSampleTypeId], references: [id], onDelete: Cascade)
-
-  @@id([receptionTypeId, subSampleTypeId])
-  @@index([receptionTypeId])
-  @@index([subSampleTypeId])
-  @@map("reception_type_sub_sample_types")
-}
-
 model SubSampleType {
-  id          String                       @id @default(uuid()) @db.Uuid
-  name        String                       @unique
+  id          String      @id @default(uuid()) @db.Uuid
+  name        String      @unique
   description String?
-  isActive    Boolean                      @default(true)
-  createdAt   DateTime                     @default(now())
-  updatedAt   DateTime                     @updatedAt
-  createdBy   String?                      @db.Uuid
-  updatedBy   String?                      @db.Uuid
-  validTypes  ReceptionTypeSubSampleType[]
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  createdBy   String?     @db.Uuid
+  updatedBy   String?     @db.Uuid
   subSamples  SubSample[]
 
   @@index([name])
@@ -486,28 +468,11 @@ model SubSample {
   createdBy       String?       @db.Uuid
   updatedBy       String?       @db.Uuid
   subSampleTypeId String        @db.Uuid
-  analyses        Analysis[]
   Sample          Sample        @relation(fields: [SampleId], references: [id], onDelete: Cascade)
   subSampleType   SubSampleType @relation(fields: [subSampleTypeId], references: [id])
 
   @@index([SampleId])
   @@map("sub_samples")
-}
-
-model Barrenado {
-  id            String   @id @default(uuid()) @db.Uuid
-  SampleId      String   @db.Uuid
-  totalWeight   Decimal
-  balanceWeight Decimal
-  isActive      Boolean  @default(true)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  createdBy     String?  @db.Uuid
-  updatedBy     String?  @db.Uuid
-  Sample        Sample   @relation(fields: [SampleId], references: [id], onDelete: Cascade)
-
-  @@index([SampleId])
-  @@map("barrenados")
 }
 
 model AnalysisType {
@@ -528,7 +493,7 @@ model AnalysisType {
 model Analysis {
   id             String       @id @default(uuid()) @db.Uuid
   analysisTypeId String       @db.Uuid
-  subSampleId    String       @db.Uuid
+  sampleId       String       @db.Uuid
   resultValue    Json
   analysisDate   DateTime
   analysisResult Json
@@ -538,10 +503,10 @@ model Analysis {
   createdBy      String?      @db.Uuid
   updatedBy      String?      @db.Uuid
   analysisType   AnalysisType @relation(fields: [analysisTypeId], references: [id], onDelete: Cascade)
-  subSample      SubSample    @relation(fields: [subSampleId], references: [id], onDelete: Cascade)
+  sample         Sample       @relation(fields: [sampleId], references: [id], onDelete: Cascade)
 
   @@index([analysisTypeId])
-  @@index([subSampleId])
+  @@index([sampleId])
   @@map("analyses")
 }
 
