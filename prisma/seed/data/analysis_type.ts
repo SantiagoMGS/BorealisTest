@@ -1,6 +1,5 @@
 import { Prisma } from '@prisma/client';
 
-// Definir un tipo personalizado sin el campo resultSchema que ya no existe en el esquema
 type AnalysisTypeData = {
   name: string;
   shortName: string;

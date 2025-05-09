@@ -5,7 +5,6 @@ export const companyInitialData: Prisma.CompanyCreateInput[] = [
     name: 'QUINTANA',
     shortName: 'QU',
     branding: {
-      // Para relaciones anidadas, usamos 'create' en lugar de asignar directamente
       create: {
         logo: 'https://www.borealis.com/wp-content/uploads/2023/01/Borealis-Logo-Black.png',
         primaryColor: '#e9be88',

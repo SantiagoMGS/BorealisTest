@@ -137,9 +137,7 @@ export class UserRepository {
 ```typescript
 import { PaginationHelper, IPaginationOptions } from '../shared';
 
-const allItems = [
-  /* array con todos los elementos */
-];
+const allItems = [];
 const options: IPaginationOptions = { page: 2, limit: 10 };
 
 // Crea una respuesta paginada automáticamente

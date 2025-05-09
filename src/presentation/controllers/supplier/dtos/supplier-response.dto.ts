@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsUUID } from 'class-validator';
 
 export class DocumentTypeDto {
   @ApiProperty({
@@ -25,6 +26,8 @@ export class SupplierResponseDto {
     description: 'ID único del proveedor',
     example: '029d5411-4b62-48bd-bc0b-0e995c174a95',
   })
+  @IsUUID()
+  @IsNotEmpty()
   id!: string;
 
   @ApiProperty({

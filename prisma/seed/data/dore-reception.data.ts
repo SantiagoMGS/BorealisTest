@@ -1,7 +1,5 @@
 import { Prisma } from '@prisma/client';
 
-// Estructura que combina recepciones con sus dorés correspondientes
-// Cada recepción tiene un array con los dorés que le pertenecen
 export const doreReceptionData = [
   {
     // Recepción 1
