@@ -19,7 +19,6 @@ export class GetPrintersUseCase {
     try {
       this.logger.log(`Obteniendo impresoras para compañía: ${user.companyId}`);
 
-      // Obtener impresoras filtradas por compañía
       const printers = await this.labelPrinterRepository.getPrinters(
         user.companyId!,
       );

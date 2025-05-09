@@ -12,7 +12,6 @@ export async function seedDoreReceptions(prisma: PrismaClient) {
   try {
     logger.log('Iniciando sembrado de recepciones de doré...');
 
-    // Obtener el estado "RECIBIDO"
     const receivedStatus = await prisma.status.findUnique({
       where: { name: 'RECIBIDO' },
     });
@@ -165,7 +164,7 @@ export async function seedDoreReceptions(prisma: PrismaClient) {
             base64: doreData.base64,
             format: doreData.format,
             statusId: receivedStatus.id,
-            receptionId: reception.id, // Vincular a la recepción recién creada
+            receptionId: reception.id,
           },
         });
 

@@ -42,7 +42,6 @@ import { SupplierRepository } from '@domain/repositories/supplier';
   ],
   providers: [
     // Casos de uso
-    // Sample reception
     CreateReceptionUseCase,
     GetReceptionUseCase,
     UpdateSampleReceptionUseCase,

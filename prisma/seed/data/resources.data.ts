@@ -1,6 +1,5 @@
 import { Prisma } from '@prisma/client';
 
-// Definimos los recursos utilizando directamente el tipo de Prisma
 export const resourceInitialData: Prisma.ResourceCreateInput[] = [
   // Recursos para LIMS
   {

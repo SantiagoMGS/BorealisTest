@@ -32,7 +32,7 @@ async function bootstrap() {
       new ValidationPipe({
         whitelist: true,
         forbidNonWhitelisted: true,
-        transform: true, // 🔹 Convierte automáticamente los datos de entrada al tipo esperado (útil para DTOs)
+        transform: true,
       }),
     );
 

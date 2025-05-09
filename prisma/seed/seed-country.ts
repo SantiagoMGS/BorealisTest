@@ -17,7 +17,6 @@ export const seedCountries = async (prisma: PrismaClient) => {
       return;
     }
 
-    // Crear países desde los datos iniciales
     const results = await Promise.all(
       countryInitialData.map(async (countryData) => {
         return prisma.country

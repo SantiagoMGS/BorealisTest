@@ -1,4 +1,3 @@
-// Exportaciones para autenticación y sistema base
 export { seedUsers } from './seed-users';
 export { seedRoles } from './seed-roles';
 export { seedRolePermissions } from './seed-role-permissions';
@@ -13,7 +12,6 @@ export { seedCities } from './seed-city';
 export { seedCountries } from './seed-country';
 export { seedDepartments } from './seed-department';
 
-// Exportaciones para módulo de laboratorio
 export { seedDocumentTypes } from './seed-document-types';
 export { seedSuppliers } from './seed-suppliers';
 export { seedCompanySuppliers } from './seed-company-suppliers';
