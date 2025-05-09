@@ -164,8 +164,9 @@ export class SupplierController {
     successMessage: 'Proveedor encontrado',
   })
   async findById(@Param('id') id: string): Promise<SupplierResponseDto> {
-    // Usar IsUUID de class-validator en lugar de regex manual
-    const params = isUUID(id) ? { id } : { documentNumber: id };
+    // No es la mejor práctica tener la regex directamente en el controlador
+    // TODO: Mover esta validación a un servicio de utilidad o usar una librería como 'uuid'
+    const params = id ? { id } : { documentNumber: id };
 
     const supplier = await this.findSupplierUseCase.execute(params);
     return SupplierMapper.toResponseDto(supplier);

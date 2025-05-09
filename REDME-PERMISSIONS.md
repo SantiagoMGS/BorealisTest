@@ -147,7 +147,6 @@ Asegúrate de importar el `PermissionsModule` en los módulos donde se utilizar�
 ```typescript
 @Module({
   imports: [PermissionsModule],
-  // ...
 })
 export class TuModulo {}
 ```
@@ -160,9 +159,7 @@ export class TuModulo {}
 @Controller('recursos')
 @RequirePermission(RecursosController.name)
 @UseGuards(JwtAuthGuard, PermissionsGuard)
-export class RecursosController {
-  // ...
-}
+export class RecursosController {}
 ```
 
 #### A nivel de método (solo afecta a un método específico)
@@ -173,9 +170,7 @@ export class RecursosController {
   @Get()
   @RequirePermission(RecursosController.name)
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  findAll() {
-    // ...
-  }
+  findAll() {}
 }
 ```
 
@@ -185,9 +180,7 @@ export class RecursosController {
 @Controller('recursos')
 @RequirePermission('RecursoPersonalizado')
 @UseGuards(JwtAuthGuard, PermissionsGuard)
-export class RecursosController {
-  // ...
-}
+export class RecursosController {}
 ```
 
 ### 3. Asegurar que el token JWT incluya roleId y companyId
@@ -236,11 +229,9 @@ Esto mejora significativamente el rendimiento al evitar consultas repetidas a la
 1. **Configurar el módulo**:
 
 ```typescript
-// supplier.module.ts
 @Module({
   imports: [PermissionsModule],
   controllers: [SupplierController],
-  // ...
 })
 export class SupplierModule {}
 ```
@@ -248,30 +239,24 @@ export class SupplierModule {}
 2. **Aplicar decoradores y guards**:
 
 ```typescript
-// supplier.controller.ts
 @ApiTags('Proveedores')
 @Controller('suppliers')
 @RequirePermission(SupplierController.name)
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 export class SupplierController {
-  // ...
-
   @Post()
   async create(@Body() createDto: CreateDto) {
     // Este método requiere permiso CREATE (nivel 2)
-    // ...
   }
 
   @Get()
   async findAll() {
     // Este método requiere permiso READ (nivel 1)
-    // ...
   }
 
   @Delete(':id')
   async remove(@Param('id') id: string) {
     // Este método requiere permiso DELETE (nivel 4)
-    // ...
   }
 }
 ```

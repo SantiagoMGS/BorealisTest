@@ -347,7 +347,6 @@ export class SampleReceptionDataSourceService {
         await this.supplierDataSource.findById(reception.supplierId);
       }
 
-      // Obtener el estado "RECIBIDO" para las nuevas muestras
       const receivedStatus = await this.statusDataSource.findByName('RECIBIDO');
 
       // Si hay unidades de recepción para actualizar, las validamos

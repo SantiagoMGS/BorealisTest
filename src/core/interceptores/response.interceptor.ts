@@ -1,4 +1,3 @@
-// interceptors/response.interceptor.ts
 import {
   Injectable,
   NestInterceptor,

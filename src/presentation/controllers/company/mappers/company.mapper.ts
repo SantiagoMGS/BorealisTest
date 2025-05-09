@@ -9,7 +9,7 @@ export class CompanyMapper {
       id: company.id,
       name: company.name,
       shortName: company.shortName,
-      role: '', // Este valor debe ser proporcionado por el contexto
+      role: '',
       branding: company.branding
         ? {
             logo: company.branding.logo,
