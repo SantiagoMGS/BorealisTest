@@ -379,6 +379,11 @@ model Sample {
   receivedWeight    Decimal
   code              Int                      @unique
   statusId          String                   @db.Uuid
+  createdAt         DateTime                 @default(now())
+  updatedAt         DateTime                 @updatedAt
+  createdBy         String?                  @db.Uuid
+  updatedBy         String?                  @db.Uuid
+
   reception         Reception                @relation(fields: [receptionId], references: [id], onDelete: Cascade)
   receptionOrigin   ReceptionOrigin          @relation(fields: [receptionOriginId], references: [id])
   status            Status                   @relation(fields: [statusId], references: [id])

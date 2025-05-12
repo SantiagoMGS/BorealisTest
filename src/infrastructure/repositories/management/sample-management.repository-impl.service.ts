@@ -1,3 +1,4 @@
+import { IDropdownData } from '@domain/interfaces/management/sample-management.interface';
 import { SampleManagementRepository } from '@domain/repositories/management/sample-management.repository';
 import { SampleManagementDataSourceService } from '@infrastructure/datasource/managemen/sample-management.datasource.service';
 import { SampleReceptionDataSourceService } from '@infrastructure/datasource/reception';
@@ -11,7 +12,10 @@ export class SampleManagementRepositoryImpl extends SampleManagementRepository {
     super();
   }
 
-  async getDropdownData(startDate: Date, endDate: Date): Promise<any> {
+  async getDropdownData(
+    startDate: Date,
+    endDate: Date,
+  ): Promise<IDropdownData> {
     return await this.sampleManagementDataSource.getDropdownData(
       startDate,
       endDate,
