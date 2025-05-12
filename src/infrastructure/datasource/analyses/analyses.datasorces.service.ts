@@ -98,7 +98,6 @@ export class AnalysesDatasourceService {
       // Extraer el sampleId del objeto o string
       const sampleId = (analysis.sampleId as any)?.value || analysis.sampleId;
       const analysisDate = analysis.analysisDate as Date;
-      console.log('analysisDate procesado:', analysisDate);
 
       // Verificar la muestra y su relación con la empresa
       const sample = await this.sampleDataSource.findById(sampleId);
