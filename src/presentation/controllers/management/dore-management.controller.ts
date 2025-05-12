@@ -16,12 +16,9 @@ import {
   ApiResponse,
   ApiExtraModels,
 } from '@nestjs/swagger';
+import { FindDoreReceptionsByFiltersUseCase } from '@domain/use-cases/reception';
 import {
-  GetDoreDropdownDataUseCase,
-  FindDoreReceptionsByFiltersUseCase,
-} from '@domain/use-cases/reception';
-import {
-  GetDoreDropdownDataDto,
+  DropdownDataDto,
   DoreDropdownResponseDto,
   FindDoreReceptionsByFiltersDto,
   DoreReceptionPaginatedResponseDto,
@@ -31,6 +28,9 @@ import {
   ApiResponseDto,
   getResponseSchema,
 } from '@shared/dtos/api-response.dto';
+import { GetDoreDropdownDataUseCase } from '@domain/use-cases/management';
+import { IDoreManagementResponse } from '@domain/interfaces/management/dore-management.interface';
+import { IPaginatedData } from '@shared/index';
 
 @ApiTags('Gestion Recepciones de Doré')
 @ApiBearerAuth()
@@ -61,7 +61,7 @@ export class DoreManagementController {
     ...getResponseSchema(DoreDropdownResponseDto),
   })
   async getDropdownData(
-    @Query() queryParams: GetDoreDropdownDataDto,
+    @Query() queryParams: DropdownDataDto,
   ): Promise<DoreDropdownResponseDto> {
     // Obtener los datos para los dropdowns
     const dropdownData = await this.getDoreDropdownDataUseCase.execute(
@@ -85,7 +85,9 @@ export class DoreManagementController {
     description: 'Recepciones encontradas correctamente',
     ...getResponseSchema(DoreReceptionPaginatedResponseDto),
   })
-  async findByFilters(@Query() filterParams: FindDoreReceptionsByFiltersDto) {
+  async findByFilters(
+    @Query() filterParams: FindDoreReceptionsByFiltersDto,
+  ): Promise<IPaginatedData<IDoreManagementResponse>> {
     return await this.findDoreReceptionsByFiltersUseCase.execute({
       page: filterParams.page || 1,
       limit: filterParams.limit || 10,

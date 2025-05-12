@@ -1,15 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class SupplierDto {
+export class SupplierDropDownDto {
   @ApiProperty({
     description: 'ID del proveedor',
-    example: '123e4567-e89b-12d3-a456-426614174000',
+    example: 'cddfc129-2111-4c06-b019-633c828f1fba',
   })
   id!: string;
 
   @ApiProperty({
     description: 'Nombre del proveedor',
-    example: 'Proveedor XYZ',
+    example: 'Sofia Rodriguez - Joyería',
   })
   name!: string;
 }
@@ -17,13 +17,13 @@ export class SupplierDto {
 export class DoreDto {
   @ApiProperty({
     description: 'ID del doré',
-    example: '123e4567-e89b-12d3-a456-426614174000',
+    example: '8ee8dc58-2c10-487b-96dc-21c5ff6310f8',
   })
   id!: string;
 
   @ApiProperty({
     description: 'Código del doré',
-    example: 12345,
+    example: 30000,
   })
   code!: number;
 }
@@ -31,34 +31,33 @@ export class DoreDto {
 export class ReceptionOriginDto {
   @ApiProperty({
     description: 'ID del origen de recepción',
-    example: '123e4567-e89b-12d3-a456-426614174000',
+    example: 'f2f825a2-5613-4915-84ea-d56d405d839c',
   })
   id!: string;
 
   @ApiProperty({
     description: 'Nombre del origen de recepción',
-    example: 'Planta XYZ',
+    example: 'Joyería Desuso',
   })
   name!: string;
 }
 
-// Este DTO representa la estructura que devuelve el caso de uso directamente
 export class DoreDropdownResponseDto {
   @ApiProperty({
     description: 'Lista de proveedores',
-    type: [SupplierDto],
+    type: [SupplierDropDownDto],
   })
-  suppliers!: SupplierDto[];
+  suppliers!: SupplierDropDownDto[];
 
   @ApiProperty({
     description: 'Lista de dorés',
     type: [DoreDto],
   })
-  dore!: DoreDto[];
+  dores!: DoreDto[];
 
   @ApiProperty({
     description: 'Lista de números de lote',
-    example: ['ABC-D-2023-001', 'ABC-D-2023-002'],
+    example: ['CM-D-2025-001', 'CM-D-2025-002'],
   })
   batchNumbers!: string[];
 
