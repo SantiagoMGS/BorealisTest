@@ -110,8 +110,8 @@ export const subresourceInitialData: Prisma.SubresourceCreateInput[] = [
         name: 'Usuarios',
       },
     },
-    icon: 'user',
-    path: '/user',
+    icon: 'fa-user',
+    path: '/administration/users',
     controller: 'UsersController',
   },
   {
@@ -121,8 +121,8 @@ export const subresourceInitialData: Prisma.SubresourceCreateInput[] = [
         name: 'Compañías',
       },
     },
-    icon: 'building',
-    path: '/companies',
+    icon: 'fa-building',
+    path: '/administration/companies',
     controller: 'CompanyController',
   },
   {
@@ -132,8 +132,8 @@ export const subresourceInitialData: Prisma.SubresourceCreateInput[] = [
         name: 'Aplicaciones',
       },
     },
-    icon: 'application',
-    path: '/applications',
+    icon: 'fa-cogs',
+    path: 'administration/applications',
     controller: 'ApplicationsController',
   },
   {
@@ -143,21 +143,21 @@ export const subresourceInitialData: Prisma.SubresourceCreateInput[] = [
         name: 'Proveedores',
       },
     },
-    icon: 'truck',
-    path: '/suppliers',
+    icon: 'fa-user-tie',
+    path: '/administration/suppliers',
     controller: 'SupplierController',
   },
-  {
-    name: 'Orígenes de Recepción',
-    resource: {
-      connect: {
-        name: 'Orígenes de Recepción',
-      },
-    },
-    icon: 'fa-truck',
-    path: '/reception-origins',
-    controller: 'ReceptionOriginController',
-  },
+  //{
+  //  name: 'Orígenes de Recepción',
+  //  resource: {
+  //    connect: {
+  //      name: 'Orígenes de Recepción',
+  //    },
+  //  },
+  //  icon: 'fa-truck',
+  //  path: '/administration/reception-origins',
+  //  controller: 'ReceptionOriginController',
+  //},
   {
     name: 'Impresoras de Etiquetas',
     resource: {
@@ -166,7 +166,7 @@ export const subresourceInitialData: Prisma.SubresourceCreateInput[] = [
       },
     },
     icon: 'fa-printer',
-    path: '/label-printers',
+    path: '/administration/label-printers',
     controller: 'LabelPrinterController',
   },
   // Subrecursos para ANÁLISIS

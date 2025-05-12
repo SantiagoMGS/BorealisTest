@@ -133,30 +133,23 @@ export class SupplierDataSourceService {
     id?: string;
     documentNumber?: string;
   }): Promise<ISupplierResponse> {
-    let supplier: Supplier | null = null;
+    let where: Prisma.SupplierWhereInput = { isActive: true };
 
     if (params.id) {
-      supplier = await this.prisma.supplier.findUnique({
-        where: { id: params.id },
-        include: {
-          documentType: true, // Incluir los datos del tipo de documento
-        },
-      });
+      where.id = params.id;
     } else if (params.documentNumber) {
-      supplier = await this.prisma.supplier.findFirst({
-        where: { documentNumber: params.documentNumber },
-        include: {
-          documentType: true, // Incluir los datos del tipo de documento
-        },
-      });
+      where.documentNumber = params.documentNumber;
     }
+
+    const supplier = await this.prisma.supplier.findFirst({
+      where,
+      include: {
+        documentType: true,
+      },
+    });
 
     if (!supplier) {
       throw new NotFoundException('Proveedor no encontrado');
-    }
-
-    if (!supplier.isActive) {
-      throw new NotFoundException('Proveedor inactivo');
     }
 
     return supplier;
@@ -200,6 +193,9 @@ export class SupplierDataSourceService {
       const updatedSupplier = await this.prisma.supplier.update({
         where: { id },
         data: supplierData,
+        include: {
+          documentType: true,
+        },
       });
 
       return updatedSupplier;
@@ -244,6 +240,9 @@ export class SupplierDataSourceService {
         isActive: false,
         updatedBy: userId,
         updatedAt: new Date(),
+      },
+      include: {
+        documentType: true,
       },
     });
 

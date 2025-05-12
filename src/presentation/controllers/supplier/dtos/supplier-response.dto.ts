@@ -26,7 +26,6 @@ export class SupplierResponseDto {
     description: 'ID único del proveedor',
     example: '029d5411-4b62-48bd-bc0b-0e995c174a95',
   })
-  @IsUUID()
   @IsNotEmpty()
   id!: string;
 
@@ -37,16 +36,10 @@ export class SupplierResponseDto {
   name!: string;
 
   @ApiProperty({
-    description: 'ID del tipo de documento',
-    example: '029d5411-4b62-48bd-bc0b-0e995c174a95',
-  })
-  documentTypeId!: string;
-
-  @ApiProperty({
     description: 'Tipo de documento del proveedor',
     type: DocumentTypeDto,
   })
-  documentType?: DocumentTypeDto;
+  documentType!: DocumentTypeDto;
 
   @ApiProperty({
     description: 'Número de documento del proveedor',

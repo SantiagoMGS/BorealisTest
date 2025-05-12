@@ -55,6 +55,7 @@ import {
 } from '@shared/dtos/api-response.dto';
 import { Paginated } from '@core/decorators/paginated.decorator';
 import { PaginationDto } from '@shared/dtos/paginator.dto';
+import { isUUID } from 'class-validator';
 
 @ApiTags('Proveedores')
 @ApiBearerAuth()
@@ -110,10 +111,11 @@ export class SupplierController {
     // Convertir DTO a entidad de dominio
     const supplierEntity = SupplierMapper.toEntity(createSupplierDto);
 
-    // Ejecutar caso de uso
+    // Ejecutar caso de uso, pasando el ID del usuario y el ID de la compañía actual
     const result = await this.createSupplierUseCase.execute(
       supplierEntity,
       user.id,
+      user.companyId,
     );
 
     // Convertir resultado a DTO de respuesta
@@ -143,7 +145,7 @@ export class SupplierController {
     return await this.findAllSupplierUseCase.executePaginated(options);
   }
 
-  @Get(':id')
+  @Get(':param')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
     summary: 'Obtener un proveedor por ID o número de documento',
@@ -159,10 +161,10 @@ export class SupplierController {
     ...getResponseSchema(SupplierResponseDto),
   })
   @CustomResponse({
-    successMessage: 'Proveedor encontrado exitosamente',
+    successMessage: 'Proveedor encontrado',
   })
-  async findById(@Param('id') id: string): Promise<SupplierResponseDto> {
-    const params = id ? { id } : { documentNumber: id };
+  async findById(@Param('param') param: string): Promise<SupplierResponseDto> {
+    const params = isUUID(param) ? { id: param } : { documentNumber: param };
 
     const supplier = await this.findSupplierUseCase.execute(params);
     return SupplierMapper.toResponseDto(supplier);
