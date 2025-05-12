@@ -10,6 +10,7 @@ import {
 import { IManagementFilter } from '@domain/interfaces/management';
 import { IPaginatedData } from '@shared/interfaces/pagination.interfaces';
 import { PaginationHelper } from '@shared/utils/pagination.helper';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class SampleManagementDataSourceService {
@@ -27,104 +28,79 @@ export class SampleManagementDataSourceService {
       supplierIds,
       receptionOriginIds,
       sampleIds,
-      page,
-      limit,
+      page = 1,
+      limit = 10,
     } = filter;
 
-    // Construir filtros para la consulta
-    const whereClause: any = {
+    const sampleReceptionTypeId = await this.getSampleReceptionTypeId();
+
+    console.log(sampleReceptionTypeId);
+
+    const where: Prisma.ReceptionWhereInput = {
       createdAt: {
         gte: startDate,
         lte: endDate,
       },
+      receptionTypeId: sampleReceptionTypeId,
+      ...(supplierIds?.length && {
+        supplierId: { in: supplierIds },
+      }),
+      ...(receptionOriginIds?.length && {
+        receptionOriginId: { in: receptionOriginIds },
+      }),
+      ...(sampleIds?.length && {
+        Samples: {
+          some: {
+            id: { in: sampleIds },
+          },
+        },
+      }),
     };
 
-    // Añadir filtro por IDs de muestras si se proporcionan
-    if (sampleIds && sampleIds.length > 0) {
-      whereClause.id = { in: sampleIds };
-    }
-
-    // Añadir filtro por orígenes de recepción si se proporcionan
-    if (receptionOriginIds && receptionOriginIds.length > 0) {
-      whereClause.receptionOriginId = { in: receptionOriginIds };
-    }
-
-    // Añadir filtro por proveedores si se proporcionan
-    // Nota: Esto requiere buscar primero las recepciones asociadas a estos proveedores
-    let receptionIds: string[] | undefined;
-    if (supplierIds && supplierIds.length > 0) {
-      const sampleReceptionTypeId = await this.getSampleReceptionTypeId();
-
-      const receptions = await this.prisma.reception.findMany({
-        where: {
-          supplierId: { in: supplierIds },
-          receptionTypeId: sampleReceptionTypeId,
-        },
-        select: { id: true },
-      });
-
-      receptionIds = receptions.map((reception) => reception.id);
-
-      if (receptionIds.length > 0) {
-        whereClause.receptionId = { in: receptionIds };
-      } else if (supplierIds.length > 0) {
-        // Si se especificaron proveedores pero no hay recepciones, forzar resultado vacío
-        return {
-          items: [],
-          meta: {
-            page,
-            limit,
-            total: 0,
-            totalPages: 0,
-            hasNextPage: false,
-            hasPreviousPage: false,
+    const [total, data] = await Promise.all([
+      this.prisma.reception.count({ where }),
+      this.prisma.reception.findMany({
+        where,
+        skip: (page - 1) * limit,
+        take: limit,
+        include: {
+          Samples: {
+            select: {
+              id: true,
+              code: true,
+              receivedWeight: true,
+            },
           },
-        };
-      }
-    }
-
-    // Obtener el conteo total de registros que coinciden con los filtros
-    const totalItems = await this.prisma.sample.count({
-      where: whereClause,
-    });
-
-    // Aplicar paginación y obtener datos
-    const samples = await this.prisma.sample.findMany({
-      where: whereClause,
-      include: {
-        receptionOrigin: {
-          select: {
-            id: true,
-            name: true,
+          supplier: {
+            select: {
+              id: true,
+              name: true,
+            },
           },
-        },
-        reception: {
-          select: {
-            id: true,
-            batchNumber: true,
-            receptionDate: true,
-            supplier: {
-              select: {
-                id: true,
-                name: true,
-              },
+          receptionOrigin: {
+            select: {
+              id: true,
+              name: true,
             },
           },
         },
-      },
-      skip: (page - 1) * limit,
-      take: limit,
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
+        orderBy: {
+          receptionDate: 'desc',
+        },
+      }),
+    ]);
 
-    // Usar PaginationHelper para crear la respuesta paginada
-    return PaginationHelper.createPaginatedResponseFromItems(
-      samples,
-      totalItems,
-      { page, limit },
-    );
+    return {
+      items: data,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+        hasNextPage: page < Math.ceil(total / limit),
+        hasPreviousPage: page > 1,
+      },
+    };
   }
 
   /**

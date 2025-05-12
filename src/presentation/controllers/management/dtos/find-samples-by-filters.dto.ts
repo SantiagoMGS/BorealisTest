@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Type, Transform } from 'class-transformer';
 import { IsDate, IsOptional, IsArray, IsUUID } from 'class-validator';
 import { PaginationDto } from '@shared/dtos/paginator.dto';
 
@@ -31,6 +31,12 @@ export class FindSampleByFiltersDto extends PaginationDto {
   @IsOptional()
   @IsArray()
   @IsUUID(4, { each: true })
+  @Transform(({ value }) => {
+    if (!Array.isArray(value)) {
+      return value ? [value] : [];
+    }
+    return value;
+  })
   supplierIds?: string[];
 
   @ApiProperty({
@@ -42,6 +48,12 @@ export class FindSampleByFiltersDto extends PaginationDto {
   @IsOptional()
   @IsArray()
   @IsUUID(4, { each: true })
+  @Transform(({ value }) => {
+    if (!Array.isArray(value)) {
+      return value ? [value] : [];
+    }
+    return value;
+  })
   receptionOriginIds?: string[];
 
   @ApiProperty({
@@ -53,5 +65,11 @@ export class FindSampleByFiltersDto extends PaginationDto {
   @IsOptional()
   @IsArray()
   @IsUUID(4, { each: true })
+  @Transform(({ value }) => {
+    if (!Array.isArray(value)) {
+      return value ? [value] : [];
+    }
+    return value;
+  })
   sampleIds?: string[];
 }

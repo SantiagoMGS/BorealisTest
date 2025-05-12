@@ -19,7 +19,6 @@ import {
   ApiResponseDto,
   getResponseSchema,
 } from '@shared/dtos/api-response.dto';
-import { PaginatedResult } from '@shared/dtos/paginator.dto';
 import { FindSampleByFiltersDto } from './dtos/find-samples-by-filters.dto';
 import { FindSamplesByFiltersUseCase } from '@domain/use-cases/management/find-samples-by-filters.usecase';
 import { JwtAuthGuard } from '@infrastructure/guards/jwt-auth.guard';
