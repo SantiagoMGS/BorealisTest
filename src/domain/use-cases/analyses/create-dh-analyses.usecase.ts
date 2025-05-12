@@ -4,7 +4,7 @@ import { IAnalysisEntity } from '@domain/entities/analyses/analyses.entity';
 import { IAnalysisResponse } from '@domain/interfaces/analyses/analyses.response.interfaces';
 
 @Injectable()
-export class CreateAnalysesUseCase {
+export class CreateDHAnalysesUseCase {
   constructor(private readonly analysesRepository: AnalysesRepository) {}
 
   async execute(

@@ -6,4 +6,8 @@ export abstract class AnalysesRepository {
     analysis: IAnalysisEntity,
     companyId: string,
   ): Promise<IAnalysisResponse>;
+  abstract createXRFAnalyses(
+    analysis: IAnalysisEntity,
+    companyId: string,
+  ): Promise<IAnalysisResponse>;
 }

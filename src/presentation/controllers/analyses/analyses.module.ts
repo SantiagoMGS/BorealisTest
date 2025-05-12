@@ -9,9 +9,10 @@ import { SupplierDataSourceService } from '@infrastructure/datasource/supplier/s
 import { ReceptionTypeDataSourceService } from '@infrastructure/datasource/reception/reception-type.datasource.service';
 import { StatusDataSourceService } from '@infrastructure/datasource/status/status.datasource.service';
 import { AnalysesRepositoryImpl } from '@infrastructure/repositories/analyses/analyses.repository-imp.services';
-import { CreateAnalysesUseCase } from '@domain/use-cases/analyses/create-analyses.usecase';
+import { CreateDHAnalysesUseCase } from '@domain/use-cases/analyses/create-dh-analyses.usecase';
 import { AnalysesRepository } from '@domain/repositories/analyses/analyses.repository';
 import { AnalysisTypeDatasourceService } from '@infrastructure/datasource/analysis-type/analysis-type.datasorce.service';
+import { CreateXRFAnalysesUseCase } from '@domain/use-cases/analyses/create-xrf-analyses.usecase';
 @Module({
   imports: [PrismaModule],
   controllers: [AnalysesController],
@@ -24,11 +25,12 @@ import { AnalysisTypeDatasourceService } from '@infrastructure/datasource/analys
     ReceptionTypeDataSourceService,
     StatusDataSourceService,
     AnalysisTypeDatasourceService,
+    CreateXRFAnalysesUseCase,
+    CreateDHAnalysesUseCase,
     {
       provide: AnalysesRepository,
       useClass: AnalysesRepositoryImpl,
     },
-    CreateAnalysesUseCase,
   ],
 })
 export class AnalysesModule {}

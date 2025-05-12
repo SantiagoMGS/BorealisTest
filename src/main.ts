@@ -10,6 +10,7 @@ import {
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
 import { Reflector } from '@nestjs/core';
+import fastifyMultipart from '@fastify/multipart';
 
 async function bootstrap() {
   const logger = new Logger('BorealisMain');
@@ -17,16 +18,18 @@ async function bootstrap() {
     // **Configuración de Fastify**
     const fastifyAdapter = new FastifyAdapter();
 
-    fastifyAdapter
-      .getInstance()
-      .addHook('onSend', (request, reply, payload, done) => {
-        done(null, payload);
-      });
-
     const app = await NestFactory.create<NestFastifyApplication>(
       AppModule,
       fastifyAdapter,
     );
+
+    // Configurar multipart
+    await app.register(fastifyMultipart, {
+      attachFieldsToBody: true,
+      limits: {
+        fileSize: 10 * 1024 * 1024, // 10MB límite de tamaño de archivo
+      },
+    });
 
     app.useGlobalPipes(
       new ValidationPipe({
