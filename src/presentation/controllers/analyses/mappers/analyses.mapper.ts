@@ -27,13 +27,10 @@ export class AnalysesMapper {
         throw new BadRequestException('La fecha de análisis no es válida');
       }
 
-      // Procesar el contenido del archivo y mantener la fecha del análisis
       const resultValue = this.parseXRFContent(analysis.resultValue);
 
-      // Asegurarnos de que cada resultado tenga una fecha válida
       const validatedResults = resultValue.map((result) => {
         if (!result.time || isNaN(result.time.getTime())) {
-          // Si la fecha de la lectura no es válida, usar la fecha del análisis
           result.time = new Date(analysisDate);
         }
         return result;
@@ -55,29 +52,25 @@ export class AnalysesMapper {
 
   private static parseXRFContent(content: string): ResultValueXRF[] {
     try {
-      // Normalizar saltos de línea
       const normalizedContent = content
         .replace(/\r\n/g, '\n')
         .replace(/\r/g, '\n');
       const lines = normalizedContent.split('\n');
 
-      // La primera línea contiene los encabezados
       const headers = lines[0].split('\t').map((h) => h.trim().toLowerCase());
 
-      // Procesar todas las líneas de datos (excluyendo la cabecera)
       const results: ResultValueXRF[] = [];
       let validLinesCount = 0;
 
       for (let i = 1; i < lines.length; i++) {
         if (!lines[i].trim()) {
-          continue; // Saltar líneas vacías
+          continue;
         }
 
         const dataLine = lines[i].split('\t');
 
         validLinesCount++;
 
-        // Mapeo de nombres de columnas
         const columnMap: Record<string, string> = {
           'reading no': 'readingNo',
           'reading.no': 'readingNo',
@@ -106,7 +99,6 @@ export class AnalysesMapper {
 
         const result: Record<string, string> = {};
 
-        // Mapear los valores con sus encabezados
         headers.forEach((header, index) => {
           if (dataLine[index]) {
             const mappedName = columnMap[header] || header;
@@ -118,7 +110,6 @@ export class AnalysesMapper {
           }
         });
 
-        // Mapear los campos al formato esperado
         const mappedResult: Partial<ResultValueXRF> = {
           readingNo:
             result['readingNo'] || result['reading no'] || dataLine[0] || '',
@@ -180,7 +171,6 @@ export class AnalysesMapper {
       );
     }
 
-    // Crear el objeto base con valores por defecto
     const baseResult: ResultValueXRF = {
       readingNo: data.readingNo!,
       time: data.time instanceof Date ? data.time : new Date(data.time!),

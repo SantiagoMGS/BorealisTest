@@ -21,7 +21,6 @@ export class CreateXRFAnalysesUseCase {
     companyId: string,
   ): Promise<IAnalysisResponse> {
     try {
-      // Procesar y validar la fecha
       const dateValue =
         (analysisData.analysisDate as any)?.value || analysisData.analysisDate;
       const analysisDate = new Date(dateValue);
@@ -31,7 +30,6 @@ export class CreateXRFAnalysesUseCase {
         );
       }
 
-      // Validar extensión del archivo
       const validExtensions = ['.txt', '.csv', '.xls', '.xlsx'];
       const hasValidExtension = validExtensions.some((ext) =>
         analysisData.file.filename?.toLowerCase().endsWith(ext),
@@ -43,33 +41,27 @@ export class CreateXRFAnalysesUseCase {
         );
       }
 
-      // Procesar el archivo
       const fileContent = await this.processFile(analysisData.file);
 
-      // Extraer el sampleId
       const sampleId =
         (analysisData.sampleId as any)?.value || analysisData.sampleId;
 
-      // Usar el mapper para crear la entidad
       const analysisEntity = AnalysesMapper.toEntityXRF({
         sampleId,
         analysisDate: analysisDate.toISOString(),
         resultValue: fileContent,
       });
 
-      // Verificar que resultValue es un array
       if (!Array.isArray(analysisEntity.resultValue)) {
         throw new BadRequestException('Formato de datos XRF inválido');
       }
 
-      // Crear un solo análisis con todos los resultados
       const analysis: IAnalysisEntity = {
         sampleId: analysisEntity.sampleId,
         analysisDate: analysisEntity.analysisDate,
-        resultValue: analysisEntity.resultValue, // Guardamos todo el array de resultados
+        resultValue: analysisEntity.resultValue,
       };
 
-      // Crear el análisis en la base de datos
       return await this.analysesRepository.createXRFAnalyses(
         analysis,
         companyId,
@@ -99,7 +91,6 @@ export class CreateXRFAnalysesUseCase {
       const worksheet = workbook.Sheets[firstSheetName];
       fileContent = XLSX.utils.sheet_to_csv(worksheet, { FS: '\t' });
     } else {
-      // Para archivos de texto
       const encodings: BufferEncoding[] = ['utf8', 'latin1', 'ascii'];
       for (const encoding of encodings) {
         fileContent = fileBuffer.toString(encoding);

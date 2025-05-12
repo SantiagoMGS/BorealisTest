@@ -25,7 +25,6 @@ export class AnalysesDatasourceService {
     companyId: string,
   ): Promise<IAnalysisResponse> {
     try {
-      // Verificamos que existan todas las entidades relacionadas
       const analysisType =
         await this.analysisTypeDatasource.findByShortName('DH');
 
@@ -39,13 +38,11 @@ export class AnalysesDatasourceService {
       }
       const sample = await this.sampleDataSource.findById(analysis.sampleId);
 
-      // Convertimos los valores a números para asegurar el cálculo correcto
       const receivedWeight = Number(sample.receivedWeight);
       const dryWeight = Number((analysis.resultValue as any).dryWeigth);
 
       const humidityPercentage = (1 - dryWeight / receivedWeight) * 100;
 
-      // Normalizamos el objeto resultValue
       const normalizedResultValue = {
         dryWeight,
         humidityPercentage: parseFloat(humidityPercentage.toFixed(4)),
@@ -95,18 +92,15 @@ export class AnalysesDatasourceService {
         throw new NotFoundException('No existe el tipo de análisis XRF');
       }
 
-      // Extraer el sampleId del objeto o string
       const sampleId = (analysis.sampleId as any)?.value || analysis.sampleId;
       const analysisDate = analysis.analysisDate as Date;
 
-      // Verificar la muestra y su relación con la empresa
       const sample = await this.sampleDataSource.findById(sampleId);
 
       if (!sample) {
         throw new NotFoundException('No existe la muestra');
       }
 
-      // Crear el análisis usando el sampleId procesado
       const createdAnalysis = await this.prisma.analysis.create({
         data: {
           sampleId: sampleId,
