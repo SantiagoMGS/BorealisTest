@@ -16,12 +16,9 @@ import {
   ApiResponse,
   ApiExtraModels,
 } from '@nestjs/swagger';
+import { FindDoreReceptionsByFiltersUseCase } from '@domain/use-cases/reception';
 import {
-  GetDoreDropdownDataUseCase,
-  FindDoreReceptionsByFiltersUseCase,
-} from '@domain/use-cases/reception';
-import {
-  GetDoreDropdownDataDto,
+  DropdownDataDto,
   DoreDropdownResponseDto,
   FindDoreReceptionsByFiltersDto,
   DoreReceptionPaginatedResponseDto,
@@ -31,6 +28,7 @@ import {
   ApiResponseDto,
   getResponseSchema,
 } from '@shared/dtos/api-response.dto';
+import { GetDoreDropdownDataUseCase } from '@domain/use-cases/manegement';
 
 @ApiTags('Gestion Recepciones de Doré')
 @ApiBearerAuth()
@@ -61,7 +59,7 @@ export class DoreManagementController {
     ...getResponseSchema(DoreDropdownResponseDto),
   })
   async getDropdownData(
-    @Query() queryParams: GetDoreDropdownDataDto,
+    @Query() queryParams: DropdownDataDto,
   ): Promise<DoreDropdownResponseDto> {
     // Obtener los datos para los dropdowns
     const dropdownData = await this.getDoreDropdownDataUseCase.execute(

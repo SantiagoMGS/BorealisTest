@@ -1,0 +1,20 @@
+import { SampleManagementRepository } from '@domain/repositories/management/sample-management.repository';
+import { SampleManagementDataSourceService } from '@infrastructure/datasource/managemen/sample-management.datasource.service';
+import { SampleReceptionDataSourceService } from '@infrastructure/datasource/reception';
+import { Injectable } from '@nestjs/common';
+
+@Injectable()
+export class SampleManagementRepositoryImpl extends SampleManagementRepository {
+  constructor(
+    private readonly sampleManagementDataSource: SampleManagementDataSourceService,
+  ) {
+    super();
+  }
+
+  async getDropdownData(startDate: Date, endDate: Date): Promise<any> {
+    return await this.sampleManagementDataSource.getDropdownData(
+      startDate,
+      endDate,
+    );
+  }
+}
