@@ -28,7 +28,7 @@ import {
   ApiResponseDto,
   getResponseSchema,
 } from '@shared/dtos/api-response.dto';
-import { GetDoreDropdownDataUseCase } from '@domain/use-cases/manegement';
+import { GetDoreDropdownDataUseCase } from '@domain/use-cases/management';
 
 @ApiTags('Gestion Recepciones de Doré')
 @ApiBearerAuth()

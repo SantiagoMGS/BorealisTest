@@ -7,6 +7,9 @@ import {
   ISample,
   ISupplier,
 } from '@domain/interfaces/management/sample-management.interface';
+import { IManagementFilter } from '@domain/interfaces/management';
+import { IPaginatedData } from '@shared/interfaces/pagination.interfaces';
+import { PaginationHelper } from '@shared/utils/pagination.helper';
 
 @Injectable()
 export class SampleManagementDataSourceService {
@@ -16,6 +19,113 @@ export class SampleManagementDataSourceService {
     private readonly prisma: PrismaService,
     private readonly receptionTypeDataSource: ReceptionTypeDataSourceService,
   ) {}
+
+  async findByFilters(filter: IManagementFilter): Promise<IPaginatedData<any>> {
+    const {
+      startDate,
+      endDate,
+      supplierIds,
+      receptionOriginIds,
+      sampleIds,
+      page,
+      limit,
+    } = filter;
+
+    // Construir filtros para la consulta
+    const whereClause: any = {
+      createdAt: {
+        gte: startDate,
+        lte: endDate,
+      },
+    };
+
+    // Añadir filtro por IDs de muestras si se proporcionan
+    if (sampleIds && sampleIds.length > 0) {
+      whereClause.id = { in: sampleIds };
+    }
+
+    // Añadir filtro por orígenes de recepción si se proporcionan
+    if (receptionOriginIds && receptionOriginIds.length > 0) {
+      whereClause.receptionOriginId = { in: receptionOriginIds };
+    }
+
+    // Añadir filtro por proveedores si se proporcionan
+    // Nota: Esto requiere buscar primero las recepciones asociadas a estos proveedores
+    let receptionIds: string[] | undefined;
+    if (supplierIds && supplierIds.length > 0) {
+      const sampleReceptionTypeId = await this.getSampleReceptionTypeId();
+
+      const receptions = await this.prisma.reception.findMany({
+        where: {
+          supplierId: { in: supplierIds },
+          receptionTypeId: sampleReceptionTypeId,
+        },
+        select: { id: true },
+      });
+
+      receptionIds = receptions.map((reception) => reception.id);
+
+      if (receptionIds.length > 0) {
+        whereClause.receptionId = { in: receptionIds };
+      } else if (supplierIds.length > 0) {
+        // Si se especificaron proveedores pero no hay recepciones, forzar resultado vacío
+        return {
+          items: [],
+          meta: {
+            page,
+            limit,
+            total: 0,
+            totalPages: 0,
+            hasNextPage: false,
+            hasPreviousPage: false,
+          },
+        };
+      }
+    }
+
+    // Obtener el conteo total de registros que coinciden con los filtros
+    const totalItems = await this.prisma.sample.count({
+      where: whereClause,
+    });
+
+    // Aplicar paginación y obtener datos
+    const samples = await this.prisma.sample.findMany({
+      where: whereClause,
+      include: {
+        receptionOrigin: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        reception: {
+          select: {
+            id: true,
+            batchNumber: true,
+            receptionDate: true,
+            supplier: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
+      },
+      skip: (page - 1) * limit,
+      take: limit,
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    // Usar PaginationHelper para crear la respuesta paginada
+    return PaginationHelper.createPaginatedResponseFromItems(
+      samples,
+      totalItems,
+      { page, limit },
+    );
+  }
 
   /**
    * Obtiene datos para llenar los dropdowns del frontend

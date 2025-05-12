@@ -1,3 +1,4 @@
+import { IManagementFilter } from '@domain/interfaces/management';
 import { ISampleDropdownData } from '@domain/interfaces/management/sample-management.interface';
 import { SampleManagementRepository } from '@domain/repositories/management/sample-management.repository';
 import { SampleManagementDataSourceService } from '@infrastructure/datasource/management/sample-management.datasource.service';
@@ -20,5 +21,9 @@ export class SampleManagementRepositoryImpl extends SampleManagementRepository {
       startDate,
       endDate,
     );
+  }
+
+  async findByFilters(filter: IManagementFilter): Promise<any> {
+    return await this.sampleManagementDataSource.findByFilters(filter);
   }
 }

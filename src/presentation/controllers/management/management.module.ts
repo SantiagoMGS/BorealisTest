@@ -13,8 +13,11 @@ import { CityDataSourceService } from '@infrastructure/datasource/city/city.data
 import { PermissionsModule } from '@core/permissions/permissions.module';
 import { DoreReceptionRepository } from '@domain/repositories/reception/dore-reception.repository';
 import { SampleManagementController } from './sample-management.controller';
-import { GetDoreDropdownDataUseCase } from '@domain/use-cases/manegement';
-import { GetSampleDropdownDataUseCase } from '@domain/use-cases/manegement/get-sample-dropdown-data.usecase';
+import {
+  FindSamplesByFiltersUseCase,
+  GetDoreDropdownDataUseCase,
+  GetSampleDropdownDataUseCase,
+} from '@domain/use-cases/management';
 import { SampleManagementRepository } from '@domain/repositories/management/sample-management.repository';
 import { SampleManagementRepositoryImpl } from '@infrastructure/repositories/management/sample-management.repository-impl.service';
 import { SampleManagementDataSourceService } from '@infrastructure/datasource/management/sample-management.datasource.service';
@@ -29,6 +32,7 @@ import { DoreManagementDataSourceService } from '@infrastructure/datasource/mana
     GetDoreDropdownDataUseCase,
     FindDoreReceptionsByFiltersUseCase,
     GetSampleDropdownDataUseCase,
+    FindSamplesByFiltersUseCase,
     // Repositorios
     {
       provide: DoreManagementRepository,
