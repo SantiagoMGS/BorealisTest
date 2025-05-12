@@ -5,7 +5,7 @@ import { Injectable } from '@nestjs/common';
 @Injectable()
 export class GetSampleDropdownDataUseCase {
   constructor(
-    private readonly sampleReceptionRepository: SampleManagementRepository,
+    private readonly sampleManagementRepository: SampleManagementRepository,
   ) {}
 
   /**
@@ -15,7 +15,7 @@ export class GetSampleDropdownDataUseCase {
    * @returns Datos para poblar los dropdowns en la UI
    */
   async execute(startDate: Date, endDate: Date): Promise<ISampleDropdownData> {
-    return await this.sampleReceptionRepository.getDropdownData(
+    return await this.sampleManagementRepository.getDropdownData(
       startDate,
       endDate,
     );

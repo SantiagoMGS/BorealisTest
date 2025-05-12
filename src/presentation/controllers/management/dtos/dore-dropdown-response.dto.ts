@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class SupplierDto {
+export class SupplierDropDownDto {
   @ApiProperty({
     description: 'ID del proveedor',
     example: '123e4567-e89b-12d3-a456-426614174000',
@@ -37,24 +37,23 @@ export class ReceptionOriginDto {
 
   @ApiProperty({
     description: 'Nombre del origen de recepción',
-    example: 'Planta XYZ',
+    example: 'Minería de Subsistencia',
   })
   name!: string;
 }
 
-// Este DTO representa la estructura que devuelve el caso de uso directamente
 export class DoreDropdownResponseDto {
   @ApiProperty({
     description: 'Lista de proveedores',
-    type: [SupplierDto],
+    type: [SupplierDropDownDto],
   })
-  suppliers!: SupplierDto[];
+  suppliers!: SupplierDropDownDto[];
 
   @ApiProperty({
     description: 'Lista de dorés',
     type: [DoreDto],
   })
-  dore!: DoreDto[];
+  dores!: DoreDto[];
 
   @ApiProperty({
     description: 'Lista de números de lote',

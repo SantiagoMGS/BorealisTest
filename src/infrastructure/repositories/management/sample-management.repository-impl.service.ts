@@ -1,6 +1,6 @@
 import { ISampleDropdownData } from '@domain/interfaces/management/sample-management.interface';
 import { SampleManagementRepository } from '@domain/repositories/management/sample-management.repository';
-import { SampleManagementDataSourceService } from '@infrastructure/datasource/managemen/sample-management.datasource.service';
+import { SampleManagementDataSourceService } from '@infrastructure/datasource/management/sample-management.datasource.service';
 import { SampleReceptionDataSourceService } from '@infrastructure/datasource/reception';
 import { Injectable } from '@nestjs/common';
 

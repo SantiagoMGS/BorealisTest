@@ -17,7 +17,10 @@ import { GetDoreDropdownDataUseCase } from '@domain/use-cases/manegement';
 import { GetSampleDropdownDataUseCase } from '@domain/use-cases/manegement/get-sample-dropdown-data.usecase';
 import { SampleManagementRepository } from '@domain/repositories/management/sample-management.repository';
 import { SampleManagementRepositoryImpl } from '@infrastructure/repositories/management/sample-management.repository-impl.service';
-import { SampleManagementDataSourceService } from '@infrastructure/datasource/managemen/sample-management.datasource.service';
+import { SampleManagementDataSourceService } from '@infrastructure/datasource/management/sample-management.datasource.service';
+import { DoreManagementRepository } from '@domain/repositories/management/dore-management.repository';
+import { DoreManagementRepositoryImpl } from '@infrastructure/repositories/management/dore-management.repository-impl.service';
+import { DoreManagementDataSourceService } from '@infrastructure/datasource/management/dore-management.datasource.service';
 @Module({
   imports: [PermissionsModule],
   controllers: [DoreManagementController, SampleManagementController],
@@ -28,12 +31,20 @@ import { SampleManagementDataSourceService } from '@infrastructure/datasource/ma
     GetSampleDropdownDataUseCase,
     // Repositorios
     {
+      provide: DoreManagementRepository,
+      useClass: DoreManagementRepositoryImpl,
+    },
+    {
       provide: DoreReceptionRepository,
       useClass: DoreReceptionRepositoryImpl,
     },
     {
       provide: SampleManagementRepository,
       useClass: SampleManagementRepositoryImpl,
+    },
+    {
+      provide: DoreManagementDataSourceService,
+      useClass: DoreManagementDataSourceService,
     },
 
     // Datasources

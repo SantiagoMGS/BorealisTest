@@ -1,13 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import {
-  DoreReceptionRepository,
-  IDoreDropdownData,
-} from '@domain/repositories/reception/dore-reception.repository';
+import { IDoreDropdownData } from '@domain/interfaces/management/dore-management.interface';
+import { DoreManagementRepository } from '@domain/repositories/management/dore-management.repository';
 
 @Injectable()
 export class GetDoreDropdownDataUseCase {
   constructor(
-    private readonly doreReceptionRepository: DoreReceptionRepository,
+    private readonly doreManagementRepository: DoreManagementRepository,
   ) {}
 
   /**
@@ -17,7 +15,7 @@ export class GetDoreDropdownDataUseCase {
    * @returns Datos para poblar los dropdowns en la UI
    */
   async execute(startDate: Date, endDate: Date): Promise<IDoreDropdownData> {
-    return await this.doreReceptionRepository.getDropdownData(
+    return await this.doreManagementRepository.getDropdownData(
       startDate,
       endDate,
     );

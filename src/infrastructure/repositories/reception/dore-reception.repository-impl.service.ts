@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import {
   DoreReceptionRepository,
-  IDoreDropdownData,
   IDoreReceptionFilter,
 } from '@domain/repositories/reception/dore-reception.repository';
 import { IDoreReceptionEntity } from '@domain/entities/reception';
 import { DoreReceptionDataSourceService } from '@infrastructure/datasource/reception/dore-reception.datasource.service';
 import { IPaginatedData } from '@shared/interfaces/pagination.interfaces';
 import { IDoreReceptionResponse } from '@domain/interfaces/reception';
+import { IDoreDropdownData } from '@domain/interfaces/management/dore-management.interface';
 
 @Injectable()
 export class DoreReceptionRepositoryImpl extends DoreReceptionRepository {
@@ -34,16 +34,6 @@ export class DoreReceptionRepositoryImpl extends DoreReceptionRepository {
     return await this.doreReceptionDatasource.findLastBatchNumberBySupplierId(
       supplierId,
       prefix,
-    );
-  }
-
-  async getDropdownData(
-    startDate: Date,
-    endDate: Date,
-  ): Promise<IDoreDropdownData> {
-    return await this.doreReceptionDatasource.getDropdownData(
-      startDate,
-      endDate,
     );
   }
 }
