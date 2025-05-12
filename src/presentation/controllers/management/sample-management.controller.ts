@@ -13,7 +13,7 @@ import {
   getResponseSchema,
 } from '@shared/dtos/api-response.dto';
 
-@ApiTags('Sample Management')
+@ApiTags('Gestión de muestras')
 @Controller('sample-management')
 @ApiExtraModels(ApiResponseDto, SampleDropdownDataDto)
 export class SampleManagementController {
