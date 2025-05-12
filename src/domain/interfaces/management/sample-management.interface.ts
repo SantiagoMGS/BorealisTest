@@ -13,7 +13,7 @@ export interface IReceptionOrigin {
   name: string;
 }
 
-export interface IDropdownData {
+export interface ISampleDropdownData {
   suppliers: ISupplier[];
   samples: ISample[];
   receptionOrigins: IReceptionOrigin[];

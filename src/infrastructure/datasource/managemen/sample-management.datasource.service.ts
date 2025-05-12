@@ -2,7 +2,7 @@ import { PrismaService } from '@core/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
 import { ReceptionTypeDataSourceService } from '../reception';
 import {
-  IDropdownData,
+  ISampleDropdownData,
   IReceptionOrigin,
   ISample,
   ISupplier,
@@ -18,7 +18,7 @@ export class SampleManagementDataSourceService {
   async getDropdownData(
     startDate: Date,
     endDate: Date,
-  ): Promise<IDropdownData> {
+  ): Promise<ISampleDropdownData> {
     const suppliers = await this.getAvailableSuppliers(startDate, endDate);
     const samples = await this.getAvailableSamples(startDate, endDate);
     const receptionOrigins = await this.getAvailableReceptionOrigins(
