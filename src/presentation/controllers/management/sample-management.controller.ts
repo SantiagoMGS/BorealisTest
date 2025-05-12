@@ -26,7 +26,13 @@ import { PermissionsGuard } from '@infrastructure/guards/permissions.guard';
 import { ResponseInterceptor } from '@core/interceptores/response.interceptor';
 import { RequirePermission } from '@core/decorators/require-permission.decorator';
 import { Paginated } from '@core/decorators/paginated.decorator';
-import { SamplePaginatedResponseDto } from './dtos/sample-paginated-response.dto';
+import {
+  SamplePaginatedResponseDto,
+  SampleReceptionItemDto,
+  SampleDetailDto,
+  SampleSupplierInfoDto,
+  SampleReceptionOriginInfoDto,
+} from './dtos/sample-paginated-response.dto';
 
 @ApiTags('Gestión de muestras')
 @ApiBearerAuth()
@@ -38,6 +44,10 @@ import { SamplePaginatedResponseDto } from './dtos/sample-paginated-response.dto
   ApiResponseDto,
   SampleDropdownDataDto,
   SamplePaginatedResponseDto,
+  SampleReceptionItemDto,
+  SampleDetailDto,
+  SampleSupplierInfoDto,
+  SampleReceptionOriginInfoDto,
 )
 export class SampleManagementController {
   constructor(
