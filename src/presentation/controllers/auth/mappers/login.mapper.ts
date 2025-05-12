@@ -14,6 +14,8 @@ export class LoginMapper {
   static toResponseDto(entity: ILoginResponse): LoginResponseDto {
     return {
       id: entity.id,
+      name: entity.name,
+      email: entity.email,
       companies: entity.companies,
       tokens: entity.tokens,
     };

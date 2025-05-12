@@ -4,19 +4,27 @@ import { AUTH_MESSAGE } from '@shared/constants/auth-message';
 import * as bcrypt from 'bcrypt';
 import { ILoginEntity } from '@domain/entities/auth/login.entity';
 import { ICompanyResponse } from '@domain/interfaces/auth/login-response.interface';
+import { UserDataSourceService } from '../user/user.datasource.service';
 
 @Injectable()
 export class LoginDataSourceService {
   private readonly logger = new Logger(LoginDataSourceService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly userdataSource: UserDataSourceService,
+  ) {}
 
-  async login(
-    loginData: ILoginEntity,
-  ): Promise<{ id: string; companies: ICompanyResponse[] }> {
+  async login(loginData: ILoginEntity): Promise<{
+    id: string;
+    companies: ICompanyResponse[];
+    name: string;
+    email: string;
+  }> {
     try {
       const user = await this.prisma.user.findUnique({
         where: { email: loginData.email },
+
         include: {
           companies: {
             where: {
@@ -36,7 +44,6 @@ export class LoginDataSourceService {
       if (!user) {
         throw new UnauthorizedException(AUTH_MESSAGE.CREDENTIALS_INCORRECT);
       }
-
       // Comparar contraseña con bcrypt
       const isPasswordValid = await bcrypt.compare(
         loginData.password,
@@ -57,11 +64,13 @@ export class LoginDataSourceService {
         isActive,
         createdAt,
         updatedAt,
-        name,
-        email,
+
         ...userData
       } = user;
-
+      const dataUser = await this.userdataSource.getUserById(user.id);
+      if (!dataUser) {
+        throw new UnauthorizedException(AUTH_MESSAGE.USER_NOT_FOUND);
+      }
       // Formatear las compañías
       const formattedCompanies = user.companies.map((uc) => {
         const { company, ...ucData } = uc;
