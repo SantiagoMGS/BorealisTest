@@ -11,7 +11,7 @@ import { StatusDataSourceService } from '@infrastructure/datasource/status/statu
 import { AnalysesRepositoryImpl } from '@infrastructure/repositories/analyses/analyses.repository-imp.services';
 import { CreateAnalysesUseCase } from '@domain/use-cases/analyses/create-analyses.usecase';
 import { AnalysesRepository } from '@domain/repositories/analyses/analyses.repository';
-
+import { AnalysisTypeDatasourceService } from '@infrastructure/datasource/analysis-type/analysis-type.datasorce.service';
 @Module({
   imports: [PrismaModule],
   controllers: [AnalysesController],
@@ -23,6 +23,7 @@ import { AnalysesRepository } from '@domain/repositories/analyses/analyses.repos
     SupplierDataSourceService,
     ReceptionTypeDataSourceService,
     StatusDataSourceService,
+    AnalysisTypeDatasourceService,
     {
       provide: AnalysesRepository,
       useClass: AnalysesRepositoryImpl,

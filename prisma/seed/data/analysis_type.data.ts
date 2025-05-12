@@ -5,13 +5,7 @@ type AnalysisTypeData = {
   shortName: string;
   description?: string | null;
   isActive?: boolean;
-  analysisResult?: {
-    type: string;
-    properties: {
-      value: { type: string };
-      unit: { type: string };
-    };
-  };
+  analysisResult?: object;
 };
 
 export const analysisTypeInitialData: AnalysisTypeData[] = [
@@ -22,10 +16,8 @@ export const analysisTypeInitialData: AnalysisTypeData[] = [
       'Análisis por fluorescencia de rayos X para identificación rápida de elementos',
     analysisResult: {
       type: 'object',
-      properties: {
-        value: { type: 'number' },
-        unit: { type: 'string' },
-      },
+      value: { type: 'number' },
+      unit: { type: 'string' },
     },
   },
   {
@@ -134,8 +126,8 @@ export const analysisTypeInitialData: AnalysisTypeData[] = [
     analysisResult: {
       type: 'object',
       properties: {
-        value: { type: 'number' },
-        unit: { type: 'string' },
+        dryWeight: { type: 'number' },
+        humidityPercentage: { type: 'number' },
       },
     },
   },
