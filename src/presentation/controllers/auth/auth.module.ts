@@ -19,6 +19,7 @@ import { SessionRepositoryImpl } from '@infrastructure/repositories/auth/session
 import { LoginRepositoryImplService } from '@infrastructure/repositories/auth/login.repository-impl.service';
 import { TokenService } from '@infrastructure/services/token/token.service';
 import { PrismaService } from '@core/prisma/prisma.service';
+import { UserDataSourceService } from '@infrastructure/datasource/user/user.datasource.service';
 
 export const TOKEN_PORT = 'TOKEN_PORT';
 
@@ -78,6 +79,7 @@ export const TOKEN_PORT = 'TOKEN_PORT';
     // Servicios de infraestructura
     LoginDataSourceService,
     AuthSessionDataSourceService,
+    UserDataSourceService,
 
     // Repositorios
     {

@@ -92,6 +92,18 @@ export class LoginResponseDto implements ILoginResponse {
   id!: string;
 
   @ApiProperty({
+    description: 'Nombre del usuario',
+    example: 'Juan Pérez',
+  })
+  name!: string;
+
+  @ApiProperty({
+    description: 'Correo electrónico del usuario',
+    example: 'usuario@example.com',
+  })
+  email!: string;
+
+  @ApiProperty({
     description: 'Compañías a las que tiene acceso el usuario',
     type: [CompanyResponseDto],
   })
