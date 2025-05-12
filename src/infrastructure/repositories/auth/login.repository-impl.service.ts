@@ -27,7 +27,10 @@ export class LoginRepositoryImplService implements LoginRepository {
 
     // Retornar usuario con tokens
     return {
-      ...user,
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      companies: user.companies,
       tokens,
     };
   }

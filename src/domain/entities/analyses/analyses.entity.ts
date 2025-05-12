@@ -1,10 +1,9 @@
 export interface IAnalysisEntity {
   sampleId: string;
-  analysisTypeId: string;
   analysisDate: Date;
-  resultValue: ResultValue;
+  resultValue: ResultValueDH;
 }
 
-export interface ResultValue {
-  [key: string]: string;
+export interface ResultValueDH {
+  dryWeight: number;
 }

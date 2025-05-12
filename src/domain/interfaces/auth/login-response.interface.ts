@@ -20,6 +20,8 @@ export interface ITokens {
 
 export interface ILoginResponse {
   id: string;
+  name: string;
+  email: string;
   companies: ICompanyResponse[];
   tokens: ITokens;
 }

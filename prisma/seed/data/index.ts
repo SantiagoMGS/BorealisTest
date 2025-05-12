@@ -1,5 +1,5 @@
 export { actionInitialData } from './actions.data';
-export { analysisTypeInitialData } from './analysis_type';
+export { analysisTypeInitialData } from './analysis_type.data';
 export { applicationInitialData } from './applications.data';
 export { cityInitialData } from './cities.data';
 export { companyApplicationInitialData } from './company-application.data';

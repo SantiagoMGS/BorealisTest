@@ -9,6 +9,7 @@ import {
 import { SampleReceptionDataSourceService } from '../reception';
 import { CompanyDataSourceService } from '@infrastructure/datasource/company/company.datasource.service';
 import { Prisma } from '@prisma/client';
+import { AnalysisTypeDatasourceService } from '../analysis-type/analysis-type.datasorce.service';
 
 @Injectable()
 export class AnalysesDatasourceService {
@@ -16,6 +17,7 @@ export class AnalysesDatasourceService {
     private readonly prisma: PrismaService,
     private readonly sampleDataSource: SampleReceptionDataSourceService,
     private readonly companyDataSource: CompanyDataSourceService,
+    private readonly analysisTypeDatasource: AnalysisTypeDatasourceService,
   ) {}
 
   async createDHAnalyses(
@@ -24,11 +26,8 @@ export class AnalysesDatasourceService {
   ): Promise<IAnalysisResponse> {
     try {
       // Verificamos que existan todas las entidades relacionadas
-      const analysisType = await this.prisma.analysisType.findUnique({
-        where: {
-          id: analysis.analysisTypeId,
-        },
-      });
+      const analysisType =
+        await this.analysisTypeDatasource.findByShortName('DH');
 
       if (!analysisType) {
         throw new NotFoundException('No existe el tipo de análisis');
@@ -38,11 +37,25 @@ export class AnalysesDatasourceService {
       if (!company) {
         throw new NotFoundException('No existe la empresa');
       }
+      const sample = await this.sampleDataSource.findById(analysis.sampleId);
+
+      // Convertimos los valores a números para asegurar el cálculo correcto
+      const receivedWeight = Number(sample.receivedWeight);
+      const dryWeight = Number((analysis.resultValue as any).dryWeigth);
+
+      const humidityPercentage = (1 - dryWeight / receivedWeight) * 100;
+
+      // Normalizamos el objeto resultValue
+      const normalizedResultValue = {
+        dryWeight,
+        humidityPercentage: parseFloat(humidityPercentage.toFixed(4)),
+      };
 
       const createdAnalysis = await this.prisma.analysis.create({
         data: {
           ...analysis,
-          resultValue: JSON.stringify(analysis.resultValue),
+          analysisTypeId: analysisType.id,
+          resultValue: JSON.stringify(normalizedResultValue),
         },
       });
 
@@ -63,7 +76,7 @@ export class AnalysesDatasourceService {
       }
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2003') {
-          throw new NotFoundException('Referenced entity not found');
+          throw new NotFoundException('No existe la muestra relacionada');
         }
       }
       console.error('Error al crear el análisis:', error);

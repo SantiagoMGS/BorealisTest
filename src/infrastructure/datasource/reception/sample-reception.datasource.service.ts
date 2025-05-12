@@ -6,7 +6,10 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { IReceptionEntity } from '@domain/entities/reception/reception.entity';
+import {
+  IReceptionEntity,
+  ISampleEntity,
+} from '@domain/entities/reception/reception.entity';
 import { IReceptionResponse } from '@domain/interfaces/reception';
 import { CompanyDataSourceService } from '@infrastructure/datasource/company/company.datasource.service';
 import { SupplierDataSourceService } from '@infrastructure/datasource/supplier/supplier.datasource.service';
@@ -14,7 +17,7 @@ import { ReceptionTypeDataSourceService } from './reception-type.datasource.serv
 import { ReceptionOriginDataSourceService } from './reception-origin.datasource.service';
 import { StatusDataSourceService } from '@infrastructure/datasource/status';
 import { UpdateSampleFilter } from '@domain/repositories/reception/sample-reception.repository';
-
+import { Sample } from '@prisma/client';
 @Injectable()
 export class SampleReceptionDataSourceService {
   constructor(
@@ -515,7 +518,7 @@ export class SampleReceptionDataSourceService {
     }
   }
 
-  async findSampleById(id: string): Promise<any> {
+  async findSampleById(id: string): Promise<Sample> {
     try {
       const sample = await this.prisma.sample.findUnique({
         where: { id },
@@ -688,5 +691,18 @@ export class SampleReceptionDataSourceService {
         `Error al actualizar las muestras: ${errorMessage}`,
       );
     }
+  }
+  async findById(id: string): Promise<ISampleEntity> {
+    const sample = await this.prisma.sample.findUnique({
+      where: { id },
+    });
+    if (!sample) {
+      throw new NotFoundException(`No se encontró la muestra con ID ${id}`);
+    }
+    return {
+      code: sample.code,
+      receivedWeight: Number(sample.receivedWeight),
+      receptionOriginId: sample.receptionOriginId,
+    };
   }
 }
