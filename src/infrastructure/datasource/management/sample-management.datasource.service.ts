@@ -1,5 +1,5 @@
 import { PrismaService } from '@core/prisma/prisma.service';
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ReceptionTypeDataSourceService } from '../reception';
 import {
   ISampleDropdownData,
@@ -10,27 +10,56 @@ import {
 
 @Injectable()
 export class SampleManagementDataSourceService {
+  private sampleReceptionTypeId: string | null = null;
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly receptionTypeDataSource: ReceptionTypeDataSourceService,
   ) {}
 
+  /**
+   * Obtiene datos para llenar los dropdowns del frontend
+   * @param startDate Fecha inicial para filtrar
+   * @param endDate Fecha final para filtrar
+   * @returns Datos para los dropdowns (proveedores, muestras, orígenes)
+   */
   async getDropdownData(
     startDate: Date,
     endDate: Date,
   ): Promise<ISampleDropdownData> {
-    const suppliers = await this.getAvailableSuppliers(startDate, endDate);
-    const samples = await this.getAvailableSamples(startDate, endDate);
-    const receptionOrigins = await this.getAvailableReceptionOrigins(
-      startDate,
-      endDate,
-    );
+    const sampleReceptionTypeId = await this.getSampleReceptionTypeId();
+
+    const [suppliers, samples, receptionOrigins] = await Promise.all([
+      this.getAvailableSuppliers(startDate, endDate, sampleReceptionTypeId),
+      this.getAvailableSamples(startDate, endDate),
+      this.getAvailableReceptionOrigins(startDate, endDate),
+    ]);
+
+    if (
+      receptionOrigins.length === 0 &&
+      suppliers.length === 0 &&
+      samples.length === 0
+    ) {
+      throw new HttpException('No content', HttpStatus.NO_CONTENT);
+    }
 
     return {
       suppliers,
       samples,
       receptionOrigins,
     };
+  }
+
+  /**
+   * Obtiene y cachea el ID del tipo de recepción "Muestra"
+   */
+  private async getSampleReceptionTypeId(): Promise<string> {
+    if (!this.sampleReceptionTypeId) {
+      const receptionType =
+        await this.receptionTypeDataSource.findByName('Muestra');
+      this.sampleReceptionTypeId = receptionType.id;
+    }
+    return this.sampleReceptionTypeId;
   }
 
   private async getAvailableReceptionOrigins(
@@ -53,6 +82,11 @@ export class SampleManagementDataSourceService {
         },
       },
       distinct: ['receptionOriginId'],
+      orderBy: {
+        receptionOrigin: {
+          name: 'asc',
+        },
+      },
     });
 
     return receptionOrigins.map(
@@ -64,7 +98,7 @@ export class SampleManagementDataSourceService {
     startDate: Date,
     endDate: Date,
   ): Promise<ISample[]> {
-    const samples = await this.prisma.sample.findMany({
+    return this.prisma.sample.findMany({
       where: {
         createdAt: {
           gte: startDate,
@@ -75,19 +109,17 @@ export class SampleManagementDataSourceService {
         id: true,
         code: true,
       },
+      orderBy: {
+        code: 'asc',
+      },
     });
-
-    return samples;
   }
 
   private async getAvailableSuppliers(
     startDate: Date,
     endDate: Date,
+    sampleReceptionTypeId: string,
   ): Promise<ISupplier[]> {
-    const sampleReceptionTypeId = (
-      await this.receptionTypeDataSource.findByName('Muestra')
-    ).id;
-
     const suppliers = await this.prisma.reception.findMany({
       where: {
         createdAt: {
@@ -105,6 +137,11 @@ export class SampleManagementDataSourceService {
         },
       },
       distinct: ['supplierId'],
+      orderBy: {
+        supplier: {
+          name: 'asc',
+        },
+      },
     });
 
     return suppliers.map((reception) => reception.supplier);
