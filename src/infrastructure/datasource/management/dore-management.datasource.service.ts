@@ -10,6 +10,8 @@ import {
 
 @Injectable()
 export class DoreManagementDataSourceService {
+  private doreReceptionTypeId: string | null = null;
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly receptionTypeDataSource: ReceptionTypeDataSourceService,
@@ -25,16 +27,19 @@ export class DoreManagementDataSourceService {
     startDate: Date,
     endDate: Date,
   ): Promise<IDoreDropdownData> {
-    const suppliers = await this.getAvailableSuppliers(startDate, endDate);
-    const batchNumbers = await this.getAvailableBatchNumbers(
-      startDate,
-      endDate,
-    );
-    const receptionOrigins = await this.getAvailableReceptionOrigins(
-      startDate,
-      endDate,
-    );
-    const dores = await this.getAvailableDores(startDate, endDate);
+    const doreReceptionTypeId = await this.getDoreReceptionTypeId();
+
+    const [suppliers, batchNumbers, receptionOrigins, dores] =
+      await Promise.all([
+        this.getAvailableSuppliers(startDate, endDate, doreReceptionTypeId),
+        this.getAvailableBatchNumbers(startDate, endDate, doreReceptionTypeId),
+        this.getAvailableReceptionOrigins(
+          startDate,
+          endDate,
+          doreReceptionTypeId,
+        ),
+        this.getAvailableDores(startDate, endDate),
+      ]);
 
     if (
       receptionOrigins.length === 0 &&
@@ -53,14 +58,23 @@ export class DoreManagementDataSourceService {
     };
   }
 
+  /**
+   * Obtiene y cachea el ID del tipo de recepción "Doré"
+   */
+  private async getDoreReceptionTypeId(): Promise<string> {
+    if (!this.doreReceptionTypeId) {
+      const receptionType =
+        await this.receptionTypeDataSource.findByName('Doré');
+      this.doreReceptionTypeId = receptionType.id;
+    }
+    return this.doreReceptionTypeId;
+  }
+
   private async getAvailableReceptionOrigins(
     startDate: Date,
     endDate: Date,
+    doreReceptionTypeId: string,
   ): Promise<IReceptionOrigin[]> {
-    const doreReceptionTypeId = (
-      await this.receptionTypeDataSource.findByName('Doré')
-    ).id;
-
     const receptionOrigins = await this.prisma.reception.findMany({
       where: {
         receptionTypeId: doreReceptionTypeId,
@@ -87,7 +101,7 @@ export class DoreManagementDataSourceService {
     startDate: Date,
     endDate: Date,
   ): Promise<IDore[]> {
-    const dores = await this.prisma.dore.findMany({
+    return this.prisma.dore.findMany({
       where: {
         isActive: true,
         createdAt: {
@@ -103,18 +117,13 @@ export class DoreManagementDataSourceService {
         code: 'asc',
       },
     });
-
-    return dores;
   }
 
   private async getAvailableSuppliers(
     startDate: Date,
     endDate: Date,
+    doreReceptionTypeId: string,
   ): Promise<ISupplier[]> {
-    const doreReceptionTypeId = (
-      await this.receptionTypeDataSource.findByName('Doré')
-    ).id;
-
     const suppliers = await this.prisma.reception.findMany({
       where: {
         createdAt: {
@@ -145,11 +154,8 @@ export class DoreManagementDataSourceService {
   private async getAvailableBatchNumbers(
     startDate: Date,
     endDate: Date,
+    doreReceptionTypeId: string,
   ): Promise<string[]> {
-    const doreReceptionTypeId = (
-      await this.receptionTypeDataSource.findByName('Doré')
-    ).id;
-
     const batchNumbers = await this.prisma.reception.findMany({
       where: {
         createdAt: {
