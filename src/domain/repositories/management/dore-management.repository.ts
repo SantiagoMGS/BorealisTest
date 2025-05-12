@@ -1,4 +1,10 @@
-import { IDoreDropdownData } from '@domain/interfaces/management/dore-management.interface';
+import { IDoreReceptionResponse } from '@domain/interfaces';
+import {
+  IDoreDropdownData,
+  IDoreManagementResponse,
+} from '@domain/interfaces/management/dore-management.interface';
+import { IPaginatedData } from '@shared/index';
+import { IManagementFilter } from '@domain/interfaces/management';
 
 /**
  * Interfaz para el repositorio de gestión de doré
@@ -14,4 +20,13 @@ export abstract class DoreManagementRepository {
     startDate: Date,
     endDate: Date,
   ): Promise<IDoreDropdownData>;
+
+  /**
+   * Obtiene recepciones de doré con filtros y paginación
+   * @param filter Filtros extendidos y opciones de paginación
+   * @returns Datos paginados de recepciones
+   */
+  abstract findByFilters(
+    filter: IManagementFilter,
+  ): Promise<IPaginatedData<IDoreManagementResponse>>;
 }

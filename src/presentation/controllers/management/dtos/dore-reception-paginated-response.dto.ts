@@ -1,155 +1,68 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { PaginationMeta, Paginated } from '@shared/dtos/paginator.dto';
+import { PaginationMeta } from '@shared/dtos/paginator.dto';
 
-class DoreItemDto {
-  @ApiProperty({ example: '123e4567-e89b-12d3-a456-426614174000' })
+class DoreStatusDto {
+  @ApiProperty({ example: 'e24cfd09-01e4-400a-adb9-013b2917c34b' })
   id!: string;
 
-  @ApiProperty({ example: 1001 })
+  @ApiProperty({ example: 'RECIBIDO' })
+  name!: string;
+}
+
+class DoreItemSimplifiedDto {
+  @ApiProperty({ example: '8ee8dc58-2c10-487b-96dc-21c5ff6310f8' })
+  id!: string;
+
+  @ApiProperty({ example: 30000 })
   code!: number;
 
-  @ApiProperty({ example: 1000.5 })
-  receivedWeight!: number;
+  @ApiProperty({ example: '1250.75' })
+  receivedWeight!: string | number;
 
-  @ApiProperty({ example: 980.2 })
-  finalWeight!: number;
+  @ApiProperty({ type: DoreStatusDto })
+  status!: DoreStatusDto;
+}
 
-  @ApiProperty({ example: 85.5 })
-  goldLaw!: number;
+class SupplierDto {
+  @ApiProperty({ example: 'cddfc129-2111-4c06-b019-633c828f1fba' })
+  id!: string;
 
-  @ApiProperty({ example: 850.5 })
-  goldWeight!: number;
+  @ApiProperty({ example: 'Sofia Rodriguez - Joyería' })
+  name!: string;
+}
 
-  @ApiProperty({ example: 12.3 })
-  silverLaw!: number;
+class ReceptionOriginDto {
+  @ApiProperty({ example: 'f2f825a2-5613-4915-84ea-d56d405d839c' })
+  id!: string;
 
-  @ApiProperty({ example: 123.0 })
-  silverWeight!: number;
-
-  @ApiProperty({ example: 840.2 })
-  goldBalance!: number;
-
-  @ApiProperty({ example: 120.1 })
-  silverBalance!: number;
-
-  @ApiProperty({ example: true })
-  approvedLaw!: boolean;
-
-  @ApiProperty({ example: 'Observaciones del doré', required: false })
-  observation?: string;
-
-  @ApiProperty({ example: 'base64string', required: false })
-  base64!: string;
-
-  @ApiProperty({ example: 'jpg' })
-  format!: string;
-
-  @ApiProperty({
-    example: {
-      id: '123e4567-e89b-12d3-a456-426614174000',
-      name: 'RECIBIDO',
-    },
-  })
-  status!: {
-    id: string;
-    name: string;
-  };
+  @ApiProperty({ example: 'Joyería Desuso' })
+  name!: string;
 }
 
 export class DoreReceptionItemDto {
-  @ApiProperty({ example: '123e4567-e89b-12d3-a456-426614174000' })
+  @ApiProperty({ example: '4134b10f-af1e-4613-9974-69583b855300' })
   id!: string;
 
-  @ApiProperty({ example: '123e4567-e89b-12d3-a456-426614174000' })
-  companyId!: string;
+  @ApiProperty({ example: 'CM-D-2025-001' })
+  batchNumber!: string | null;
 
-  @ApiProperty({ example: '123e4567-e89b-12d3-a456-426614174000' })
-  supplierId!: string;
-
-  @ApiProperty({ example: '123e4567-e89b-12d3-a456-426614174000' })
-  receptionTypeId!: string;
-
-  @ApiProperty({ example: '123e4567-e89b-12d3-a456-426614174000' })
-  receptionOriginId!: string;
-
-  @ApiProperty({ example: '2023-10-15T14:30:00Z' })
+  @ApiProperty({ example: '2025-04-05T00:00:00.000Z' })
   receptionDate!: Date;
 
-  @ApiProperty({ example: 'L20231015-001', required: false })
-  batchNumber?: string;
-
-  @ApiProperty({ example: 'Material en buenas condiciones', required: false })
-  observation?: string;
-
   @ApiProperty({
-    example: '123e4567-e89b-12d3-a456-426614174000',
+    example: 'Piezas de joyería de oro para fundición, excelente calidad',
     required: false,
   })
-  cityId?: string;
+  observation?: string | null;
 
-  @ApiProperty({
-    example: '123e4567-e89b-12d3-a456-426614174000',
-    required: false,
-  })
-  miningTitleId?: string;
+  @ApiProperty({ type: [DoreItemSimplifiedDto] })
+  dore!: DoreItemSimplifiedDto[];
 
-  @ApiProperty({ example: true })
-  isActive!: boolean;
+  @ApiProperty({ type: SupplierDto })
+  supplier!: SupplierDto;
 
-  @ApiProperty({ example: '2023-10-15T14:30:00Z' })
-  createdAt!: Date;
-
-  @ApiProperty({ example: '2023-10-15T14:30:00Z' })
-  updatedAt!: Date;
-
-  @ApiProperty({
-    example: {
-      id: '123e4567-e89b-12d3-a456-426614174000',
-      name: 'Empresa ABC',
-      shortName: 'ABC',
-    },
-  })
-  company?: {
-    id: string;
-    name: string;
-    shortName: string;
-  };
-
-  @ApiProperty({
-    example: {
-      id: '123e4567-e89b-12d3-a456-426614174000',
-      name: 'Proveedor XYZ',
-    },
-  })
-  supplier?: {
-    id: string;
-    name: string;
-  };
-
-  @ApiProperty({
-    example: {
-      id: '123e4567-e89b-12d3-a456-426614174000',
-      name: 'Doré',
-    },
-  })
-  receptionType?: {
-    id: string;
-    name: string;
-  };
-
-  @ApiProperty({
-    example: {
-      id: '123e4567-e89b-12d3-a456-426614174000',
-      name: 'Mina',
-    },
-  })
-  receptionOrigin?: {
-    id: string;
-    name: string;
-  };
-
-  @ApiProperty({ type: [DoreItemDto] })
-  dore!: DoreItemDto[];
+  @ApiProperty({ type: ReceptionOriginDto })
+  receptionOrigin!: ReceptionOriginDto;
 }
 
 export class DoreReceptionPaginatedResponseDto {

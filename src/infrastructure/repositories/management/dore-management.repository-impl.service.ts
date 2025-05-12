@@ -1,8 +1,13 @@
-import { IDoreDropdownData } from '@domain/interfaces/management/dore-management.interface';
+import { IDoreReceptionResponse } from '@domain/interfaces';
+import { IManagementFilter } from '@domain/interfaces/management';
+import {
+  IDoreDropdownData,
+  IDoreManagementResponse,
+} from '@domain/interfaces/management/dore-management.interface';
 import { DoreManagementRepository } from '@domain/repositories/management/dore-management.repository';
 import { DoreManagementDataSourceService } from '@infrastructure/datasource/management/dore-management.datasource.service';
-import { DoreReceptionDataSourceService } from '@infrastructure/datasource/reception/dore-reception.datasource.service';
 import { Injectable } from '@nestjs/common';
+import { IPaginatedData } from '@shared/index';
 
 @Injectable()
 export class DoreManagementRepositoryImpl extends DoreManagementRepository {
@@ -20,5 +25,11 @@ export class DoreManagementRepositoryImpl extends DoreManagementRepository {
       startDate,
       endDate,
     );
+  }
+
+  async findByFilters(
+    filter: IManagementFilter,
+  ): Promise<IPaginatedData<IDoreManagementResponse>> {
+    return await this.doreManagementDataSource.findByFilters(filter);
   }
 }

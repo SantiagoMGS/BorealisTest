@@ -29,6 +29,8 @@ import {
   getResponseSchema,
 } from '@shared/dtos/api-response.dto';
 import { GetDoreDropdownDataUseCase } from '@domain/use-cases/management';
+import { IDoreManagementResponse } from '@domain/interfaces/management/dore-management.interface';
+import { IPaginatedData } from '@shared/index';
 
 @ApiTags('Gestion Recepciones de Doré')
 @ApiBearerAuth()
@@ -83,7 +85,9 @@ export class DoreManagementController {
     description: 'Recepciones encontradas correctamente',
     ...getResponseSchema(DoreReceptionPaginatedResponseDto),
   })
-  async findByFilters(@Query() filterParams: FindDoreReceptionsByFiltersDto) {
+  async findByFilters(
+    @Query() filterParams: FindDoreReceptionsByFiltersDto,
+  ): Promise<IPaginatedData<IDoreManagementResponse>> {
     return await this.findDoreReceptionsByFiltersUseCase.execute({
       page: filterParams.page || 1,
       limit: filterParams.limit || 10,

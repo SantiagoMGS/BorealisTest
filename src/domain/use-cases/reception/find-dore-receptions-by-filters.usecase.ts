@@ -1,15 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import {
-  DoreReceptionRepository,
-  IDoreReceptionFilter,
-} from '@domain/repositories/reception';
 import { IPaginatedData } from '@shared/interfaces/pagination.interfaces';
-import { IDoreReceptionResponse } from '@domain/interfaces/reception';
+import { DoreManagementRepository } from '@domain/repositories/management/dore-management.repository';
+import { IManagementFilter } from '@domain/interfaces/management';
+import { IDoreManagementResponse } from '@domain/interfaces/management/dore-management.interface';
 
 @Injectable()
 export class FindDoreReceptionsByFiltersUseCase {
   constructor(
-    private readonly doreReceptionRepository: DoreReceptionRepository,
+    private readonly doreManagementRepository: DoreManagementRepository,
   ) {}
 
   /**
@@ -18,8 +16,8 @@ export class FindDoreReceptionsByFiltersUseCase {
    * @returns Datos paginados de recepciones
    */
   async execute(
-    filter: IDoreReceptionFilter,
-  ): Promise<IPaginatedData<IDoreReceptionResponse>> {
-    return await this.doreReceptionRepository.findByFilters(filter);
+    filter: IManagementFilter,
+  ): Promise<IPaginatedData<IDoreManagementResponse>> {
+    return await this.doreManagementRepository.findByFilters(filter);
   }
 }
