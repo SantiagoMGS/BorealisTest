@@ -1,9 +1,12 @@
 import { IManagementFilter } from '@domain/interfaces/management';
-import { ISampleDropdownData } from '@domain/interfaces/management/sample-management.interface';
+import {
+  ISampleDropdownData,
+  ISampleManagementResponse,
+} from '@domain/interfaces/management/sample-management.interface';
 import { SampleManagementRepository } from '@domain/repositories/management/sample-management.repository';
 import { SampleManagementDataSourceService } from '@infrastructure/datasource/management/sample-management.datasource.service';
-import { SampleReceptionDataSourceService } from '@infrastructure/datasource/reception';
 import { Injectable } from '@nestjs/common';
+import { IPaginatedData, PaginationHelper } from '@shared/index';
 
 @Injectable()
 export class SampleManagementRepositoryImpl extends SampleManagementRepository {
@@ -23,7 +26,16 @@ export class SampleManagementRepositoryImpl extends SampleManagementRepository {
     );
   }
 
-  async findByFilters(filter: IManagementFilter): Promise<any> {
-    return await this.sampleManagementDataSource.findByFilters(filter);
+  async findByFilters(
+    filter: IManagementFilter,
+  ): Promise<IPaginatedData<ISampleManagementResponse>> {
+    const { data, total } =
+      await this.sampleManagementDataSource.findByFilters(filter);
+    const { page, limit } = filter;
+
+    return PaginationHelper.createPaginatedResponseFromItems(data, total, {
+      page,
+      limit,
+    });
   }
 }

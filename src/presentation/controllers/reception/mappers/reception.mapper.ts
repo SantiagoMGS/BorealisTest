@@ -17,7 +17,7 @@ export class ReceptionMapper {
       batchNumber: createDto.batchNumber,
       observation: createDto.observation,
 
-      Samples: createDto.items.map((item) => ({
+      samples: createDto.items.map((item) => ({
         receptionOriginId: item.receptionOriginId,
         receivedWeight: item.receivedWeight,
         analysisTypeIds: item.analysisTypeIds,
@@ -25,9 +25,6 @@ export class ReceptionMapper {
     };
   }
 
-  /**
-   * Convierte una respuesta del dominio a un DTO de respuesta
-   */
   static toResponseDto(reception: IReceptionResponse): ReceptionResponseDto {
     const responseDto = new ReceptionResponseDto();
     responseDto.id = reception.id;
@@ -38,7 +35,6 @@ export class ReceptionMapper {
     responseDto.createdAt = reception.createdAt;
     responseDto.updatedAt = reception.updatedAt;
 
-    // Mapeo de relaciones si existen
     if (reception.company) {
       responseDto.company = reception.company;
     }
@@ -63,8 +59,8 @@ export class ReceptionMapper {
       responseDto.city = reception.city;
     }
 
-    if (reception.Samples) {
-      responseDto.Samples = reception.Samples;
+    if (reception.samples) {
+      responseDto.samples = reception.samples;
     }
 
     return responseDto;

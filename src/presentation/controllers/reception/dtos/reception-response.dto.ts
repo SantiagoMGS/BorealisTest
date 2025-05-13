@@ -110,5 +110,5 @@ export class ReceptionResponseDto {
     required: false,
     type: 'array',
   })
-  Samples?: any[];
+  samples?: any[];
 }

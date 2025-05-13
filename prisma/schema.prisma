@@ -360,7 +360,7 @@ model Reception {
   supplier          Supplier             @relation(fields: [supplierId], references: [id], onDelete: Cascade)
   miningTitle       SupplierMiningTitle? @relation(fields: [miningTitleId], references: [id])
   city              City?                @relation(fields: [cityId], references: [id])
-  Samples           Sample[]
+  samples           Sample[]
   dore              Dore[]
 
   @@index([companyId])

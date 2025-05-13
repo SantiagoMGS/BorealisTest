@@ -14,7 +14,7 @@ import {
   ISupplier,
 } from '@domain/interfaces/management/dore-management.interface';
 import { IDoreReceptionResponse } from '@domain/interfaces';
-import { IPaginatedData, PaginationHelper } from '@shared/index';
+import { IPaginatedData } from '@shared/index';
 import { IManagementFilter } from '@domain/interfaces/management';
 import { Prisma } from '@prisma/client';
 
@@ -184,11 +184,11 @@ export class DoreManagementDataSourceService {
   /**
    * Obtiene recepciones de doré con filtros avanzados y paginación
    * @param filter Filtros extendidos y opciones de paginación
-   * @returns Datos paginados de recepciones
+   * @returns Datos de recepciones y total para paginación
    */
   async findByFilters(
     filter: IManagementFilter,
-  ): Promise<IPaginatedData<IDoreManagementResponse>> {
+  ): Promise<{ data: IDoreManagementResponse[]; total: number }> {
     const {
       startDate,
       endDate,
@@ -258,16 +258,6 @@ export class DoreManagementDataSourceService {
       }),
     ]);
 
-    return {
-      items: data,
-      meta: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-        hasNextPage: page < Math.ceil(total / limit),
-        hasPreviousPage: page > 1,
-      },
-    };
+    return { data, total };
   }
 }

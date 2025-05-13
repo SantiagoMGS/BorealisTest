@@ -11,3 +11,4 @@ export {
   SampleReceptionOriginInfoDto,
   SampleReceptionItemDto,
 } from './sample-paginated-response.dto';
+export { SampleDropdownDataDto as SampleDropdownResponseDto } from './sample-management-response.dto';
