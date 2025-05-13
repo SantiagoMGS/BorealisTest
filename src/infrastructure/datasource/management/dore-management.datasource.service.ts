@@ -69,9 +69,6 @@ export class DoreManagementDataSourceService {
     };
   }
 
-  /**
-   * Obtiene y cachea el ID del tipo de recepción "Doré"
-   */
   private async getDoreReceptionTypeId(): Promise<string> {
     if (!this.doreReceptionTypeId) {
       const receptionType =
