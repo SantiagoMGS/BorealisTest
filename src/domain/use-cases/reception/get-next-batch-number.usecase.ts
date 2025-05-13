@@ -9,12 +9,6 @@ export class GetNextBatchNumberUseCase {
     private readonly doreReceptionRepository: DoreReceptionRepository,
   ) {}
 
-  /**
-   * Genera el siguiente número de lote para un proveedor
-   * Formato: [supplierShortName]-D-[añoActual]-[consecutivo]
-   * @param supplierId ID del proveedor
-   * @returns Número de lote generado
-   */
   async execute(supplierId: string): Promise<string> {
     const supplier = await this.supplierRepository.findById(supplierId);
 

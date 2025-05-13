@@ -10,9 +10,6 @@ import {
   SampleReceptionTypeEntity,
 } from '@domain/entities/catalog/catalog.entity';
 
-/**
- * Interfaz para operaciones de lectura de catálogos
- */
 export interface ICatalogReadRepository {
   getByType<
     T extends

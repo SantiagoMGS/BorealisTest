@@ -14,9 +14,6 @@ type MiningTitleWithRelations = SupplierMiningTitle & {
 };
 
 export class MiningTitlePersistenceMapper {
-  /**
-   * Convierte una entidad de persistencia a una interfaz del dominio
-   */
   static toDomain(miningTitle: MiningTitleWithRelations): IMiningTitleResponse {
     return {
       id: miningTitle.id,
@@ -31,9 +28,6 @@ export class MiningTitlePersistenceMapper {
     };
   }
 
-  /**
-   * Convierte múltiples entidades de persistencia a interfaces del dominio
-   */
   static toDomainList(
     miningTitles: MiningTitleWithRelations[],
   ): IMiningTitleResponse[] {

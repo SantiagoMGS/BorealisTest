@@ -15,16 +15,11 @@ type ErrorResult = {
 
 type Result = SuccessResult | ErrorResult;
 
-/**
- * Datos iniciales de orígenes de recepción
- * Ej. Cabeza, Cola, Secado, Aluvial, Joyería, Subsistencia, etc.
- */
 export const seedReceptionOrigins = async (prisma: PrismaClient) => {
   const logger = new Logger('SeedReceptionOrigins');
   try {
     logger.log('Iniciando sembrado de orígenes de recepción...');
 
-    // Verificar si ya existen orígenes de recepción para evitar duplicados
     const receptionOriginCount = await prisma.receptionOrigin.count();
 
     if (receptionOriginCount > 0) {
@@ -34,7 +29,6 @@ export const seedReceptionOrigins = async (prisma: PrismaClient) => {
       return;
     }
 
-    // Crear orígenes de recepción desde los datos iniciales
     const results = await Promise.all(
       receptionOriginInitialData.map(async (receptionOriginData) => {
         return prisma.receptionOrigin
@@ -58,7 +52,6 @@ export const seedReceptionOrigins = async (prisma: PrismaClient) => {
       }),
     );
 
-    // Contar resultados
     const successfulOrigins = results.filter(
       (r): r is SuccessResult => r.success,
     );
@@ -77,7 +70,6 @@ export const seedReceptionOrigins = async (prisma: PrismaClient) => {
       });
     }
 
-    // Mostrar los orígenes de recepción creados
     successfulOrigins.forEach((result) => {
       logger.log(
         `Origen de recepción creado: ${result.receptionOrigin.name} - ${result.receptionOrigin.description}`,

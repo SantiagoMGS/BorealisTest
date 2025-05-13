@@ -6,12 +6,6 @@ import { Status } from '@prisma/client';
 export class StatusDataSourceService {
   constructor(private readonly prisma: PrismaService) {}
 
-  /**
-   * Busca un estado por su nombre
-   * @param name Nombre del estado
-   * @returns El estado encontrado
-   * @throws NotFoundException si no se encuentra el estado
-   */
   async findByName(name: string): Promise<Status> {
     const status = await this.prisma.status.findUnique({
       where: { name },

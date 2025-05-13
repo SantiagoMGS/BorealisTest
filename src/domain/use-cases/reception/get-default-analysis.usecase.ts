@@ -8,9 +8,6 @@ export class GetDefaultAnalysisUseCase {
     private readonly receptionOriginRepository: ReceptionOriginRepository,
   ) {}
 
-  /**
-   * Obtiene los análisis por defecto para un origen de recepción
-   */
   async execute(originId: string): Promise<DefaultAnalysisResponseDto[]> {
     const analyses =
       await this.receptionOriginRepository.getDefaultAnalysisByOriginId(

@@ -2,16 +2,11 @@ import { PrismaClient } from '@prisma/client';
 import { printerInitialData } from './data/printers.data';
 import { Logger } from '@nestjs/common';
 
-/**
- * Función para sembrar impresoras en la base de datos
- * @param prisma Cliente de Prisma
- */
 export const seedPrinters = async (prisma: PrismaClient) => {
   const logger = new Logger('SeedPrinters');
   try {
     logger.log('Iniciando sembrado de impresoras...');
 
-    // Verificar si ya existen impresoras para evitar duplicados
     const printerCount = await prisma.printer.count();
 
     if (printerCount > 0) {
@@ -21,7 +16,6 @@ export const seedPrinters = async (prisma: PrismaClient) => {
       return;
     }
 
-    // Verificar que existan las compañías para las impresoras
     for (const printerData of printerInitialData) {
       const companyName = (printerData.company as any).connect.name;
       const company = await prisma.company.findUnique({
@@ -36,7 +30,6 @@ export const seedPrinters = async (prisma: PrismaClient) => {
       }
     }
 
-    // Crear impresoras desde los datos iniciales
     const results = await Promise.all(
       printerInitialData.map(async (printerData) => {
         return prisma.printer
@@ -53,7 +46,6 @@ export const seedPrinters = async (prisma: PrismaClient) => {
       }),
     );
 
-    // Contar resultados
     const successfulPrinters = results.filter((r) => r.success) as Array<{
       success: true;
       printer: any;
@@ -75,7 +67,6 @@ export const seedPrinters = async (prisma: PrismaClient) => {
       });
     }
 
-    // Mostrar las impresoras creadas
     successfulPrinters.forEach((result) => {
       if (result.printer) {
         logger.log(

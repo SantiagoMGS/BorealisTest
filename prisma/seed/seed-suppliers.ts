@@ -2,19 +2,10 @@ import { PrismaClient } from '@prisma/client';
 import { supplierInitialData } from './data/suppliers.data';
 import { Logger } from '@nestjs/common';
 
-/**
- * Genera un shortName de 6 caracteres para un proveedor:
- * - 2 primeras letras del nombre del proveedor
- * - 4 últimos dígitos del número de documento
- */
 function generateShortName(name: string, documentNumber: string): string {
-  // Extraer las 2 primeras letras del nombre (convertidas a mayúsculas)
-  // Si el nombre tiene menos de 2 letras, completar con 'X'
   const cleanName = name.replace(/[^a-zA-Z]/g, '');
   const namePrefix = cleanName.substring(0, 2).padEnd(2, 'X').toUpperCase();
 
-  // Extraer los 4 últimos caracteres del documento
-  // Si el documento tiene menos de 4 caracteres, completar con '0' al inicio
   const documentSuffix = documentNumber.slice(-4).padStart(4, '0');
 
   return namePrefix + documentSuffix;
@@ -25,7 +16,6 @@ export const seedSuppliers = async (prisma: PrismaClient) => {
   try {
     logger.log('Iniciando sembrado de proveedores...');
 
-    // Verificar si ya existen proveedores para evitar duplicados
     const supplierCount = await prisma.supplier.count();
 
     if (supplierCount > 0) {
@@ -35,16 +25,13 @@ export const seedSuppliers = async (prisma: PrismaClient) => {
       return;
     }
 
-    // Crear proveedores desde los datos iniciales, generando el shortName automáticamente
     const results = await Promise.all(
       supplierInitialData.map(async (supplierData) => {
-        // Generar el shortName automáticamente según las reglas
         const shortName = generateShortName(
           supplierData.name,
           supplierData.documentNumber,
         );
 
-        // Reemplazar el shortName original con el generado automáticamente
         return prisma.supplier
           .create({
             data: {
@@ -62,7 +49,6 @@ export const seedSuppliers = async (prisma: PrismaClient) => {
       }),
     );
 
-    // Contar resultados
     const successfulSuppliers = results.filter((r) => r.success) as Array<{
       success: true;
       supplier: any;
@@ -86,7 +72,6 @@ export const seedSuppliers = async (prisma: PrismaClient) => {
       });
     }
 
-    // Mostrar los proveedores creados
     successfulSuppliers.forEach((result) => {
       if (result.supplier) {
         logger.log(

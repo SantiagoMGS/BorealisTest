@@ -3,9 +3,6 @@ import { IReceptionResponse } from '@domain/interfaces/reception';
 import { CreateReceptionDto, ReceptionResponseDto } from '../dtos';
 
 export class ReceptionMapper {
-  /**
-   * Convierte un DTO de creación a una entidad de dominio
-   */
   static toEntity(
     createDto: CreateReceptionDto,
     companyId: string,

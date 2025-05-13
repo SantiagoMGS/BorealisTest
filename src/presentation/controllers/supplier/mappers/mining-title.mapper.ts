@@ -2,9 +2,6 @@ import { IMiningTitleResponse } from '@domain/interfaces/supplier';
 import { MiningTitleResponseDto } from '../dtos';
 
 export class MiningTitleMapper {
-  /**
-   * Convierte una respuesta del dominio a un DTO de respuesta
-   */
   static toResponseDto(
     miningTitle: IMiningTitleResponse,
   ): MiningTitleResponseDto {
@@ -22,9 +19,6 @@ export class MiningTitleMapper {
     return responseDto;
   }
 
-  /**
-   * Convierte múltiples respuestas del dominio a DTOs de respuesta
-   */
   static toResponseDtoList(
     miningTitles: IMiningTitleResponse[],
   ): MiningTitleResponseDto[] {

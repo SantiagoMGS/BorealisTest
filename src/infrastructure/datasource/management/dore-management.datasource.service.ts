@@ -27,12 +27,6 @@ export class DoreManagementDataSourceService {
     private readonly receptionTypeDataSource: ReceptionTypeDataSourceService,
   ) {}
 
-  /**
-   * Obtiene datos para llenar los dropdowns del frontend
-   * @param startDate Fecha inicial para filtrar
-   * @param endDate Fecha final para filtrar
-   * @returns Datos para los dropdowns (proveedores, dorés, números de lote, orígenes)
-   */
   async getDropdownData(
     startDate: Date,
     endDate: Date,
@@ -195,11 +189,6 @@ export class DoreManagementDataSourceService {
     return batchNumbers.map((reception) => reception.batchNumber as string);
   }
 
-  /**
-   * Obtiene recepciones de doré con filtros avanzados y paginación
-   * @param filter Filtros extendidos y opciones de paginación
-   * @returns Datos de recepciones y total para paginación
-   */
   async findByFilters(
     filter: IManagementFilter,
   ): Promise<{ data: IDoreManagementResponse[]; total: number }> {

@@ -17,9 +17,6 @@ import { CatalogDatasource } from '@infrastructure/datasource/catalog';
 export class CatalogRepositoryImpl implements ICatalogReadRepository {
   constructor(private readonly catalogDatasource: CatalogDatasource) {}
 
-  /**
-   * Obtiene elementos de catálogo según su tipo
-   */
   async getByType<
     T extends
       | DocumentTypeEntity

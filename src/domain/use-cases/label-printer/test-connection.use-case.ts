@@ -8,11 +8,6 @@ export class TestConnectionUseCase {
     private readonly labelPrinterRepository: LabelPrinterRepositoryImpl,
   ) {}
 
-  /**
-   * Ejecuta el caso de uso para probar la conexión con la impresora
-   * @param config Configuración opcional de la impresora
-   * @returns true si la conexión es exitosa, false en caso contrario
-   */
   async execute(config?: Partial<PrinterConfigDto>): Promise<boolean> {
     return await this.labelPrinterRepository.testConnection(config);
   }

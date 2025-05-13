@@ -6,7 +6,6 @@ import {
 } from '@presentation/controllers/label-printer/dtos/printer';
 import * as net from 'net';
 
-// Interfaces para definir tipos de datos y resultados
 interface PrinterConfig {
   ip: string;
   port: number;
@@ -27,7 +26,6 @@ interface CompanyInfo {
 export class LabelPrinterService {
   private readonly logger = new Logger(LabelPrinterService.name);
 
-  // Configuración por defecto de la impresora
   private readonly printerConfig: PrinterConfig = {
     ip: '192.168.1.123',
     port: 9100,
@@ -36,11 +34,6 @@ export class LabelPrinterService {
 
   constructor(private readonly prisma: PrismaService) {}
 
-  /**
-   * Encuentra una muestra por su ID
-   * @param sampleId ID de la muestra
-   * @returns Información de la muestra o null si no existe
-   */
   async findSampleById(sampleId: string): Promise<any | null> {
     try {
       if (!sampleId) {
@@ -62,11 +55,6 @@ export class LabelPrinterService {
     }
   }
 
-  /**
-   * Obtiene la información de la compañía
-   * @param companyId ID de la compañía
-   * @returns Información de la compañía
-   */
   async findCompanyById(companyId: string): Promise<CompanyInfo | null> {
     try {
       const company = await this.prisma.company.findUnique({
@@ -81,11 +69,6 @@ export class LabelPrinterService {
     }
   }
 
-  /**
-   * Obtiene el contador actual para un sampleId determinado
-   * @param sampleId ID de la muestra
-   * @returns Contador actual
-   */
   async getCurrentSampleCount(sampleId: string): Promise<number> {
     try {
       if (!sampleId) {
@@ -118,13 +101,6 @@ export class LabelPrinterService {
     }
   }
 
-  /**
-   * Registra la impresión de una muestra en la base de datos
-   * @param sampleId ID de la muestra
-   * @param printerName Nombre de la impresora
-   * @param count Cantidad de etiquetas impresas
-   * @returns Resultado de la operación
-   */
   async saveTrace(
     sampleId: string,
     printerName: string,
@@ -196,11 +172,6 @@ export class LabelPrinterService {
     }
   }
 
-  /**
-   * Imprime etiquetas de recepción
-   * @param data Datos para la impresión (ID de muestra, cantidad, configuración)
-   * @returns Resultado de la operación
-   */
   async printReceptionLabel(data: {
     sampleId: string;
     count: number;
@@ -322,9 +293,7 @@ export class LabelPrinterService {
     }
   }
 
-  /**
-   * Verifica la conexión con la impresora
-   */
+  // Este metodo no se está usando, curiositoooooo
   private async verifyPrinterConnection(
     printerConfig?: PrinterConfigDto,
   ): Promise<void> {
@@ -334,18 +303,12 @@ export class LabelPrinterService {
     }
   }
 
-  /**
-   * Obtiene la configuración de una impresora por su nombre
-   * @param printerName Nombre de la impresora
-   * @returns Configuración de la impresora
-   */
   async getPrinterByName(
     printerName: string,
   ): Promise<PrinterConfigDto | undefined> {
     try {
       this.logger.log(`Buscando impresora con nombre: ${printerName}`);
 
-      // Buscar la impresora en la base de datos
       const printer = await this.prisma.printer.findFirst({
         where: {
           printerName: printerName,
@@ -358,7 +321,6 @@ export class LabelPrinterService {
         return undefined;
       }
 
-      // Mapear los datos de la base de datos al DTO
       const printerConfig: PrinterConfigDto = {
         ip: printer.ip,
         port: parseInt(printer.port, 10),
@@ -373,11 +335,6 @@ export class LabelPrinterService {
     }
   }
 
-  /**
-   * Verifica la conexión con la impresora
-   * @param config Configuración opcional para la prueba
-   * @returns {Promise<boolean>} true si la conexión es exitosa, false en caso contrario
-   */
   async testConnection(config?: Partial<PrinterConfigDto>): Promise<boolean> {
     const testConfig = config
       ? { ...this.printerConfig, ...config }
@@ -412,13 +369,6 @@ export class LabelPrinterService {
     });
   }
 
-  /**
-   * Imprime una etiqueta con información de QR
-   * @param data Datos para la etiqueta (QR y configuración)
-   * @param companyName Nombre de la compañía
-   * @param config Configuración opcional para la impresora
-   * @param sequenceNumber Número secuencial de la etiqueta
-   */
   async printLabel(
     data: Partial<PrintLabelDto>,
     companyName: string,
@@ -510,12 +460,6 @@ export class LabelPrinterService {
     }
   }
 
-  /**
-   * Envía datos a la impresora
-   * @param commandBuffer Buffer con comandos a enviar
-   * @param config Configuración opcional de impresora
-   * @private
-   */
   private async sendToPrinter(
     commandBuffer: Buffer,
     config?: Partial<PrinterConfigDto>,
@@ -603,11 +547,6 @@ export class LabelPrinterService {
     });
   }
 
-  /**
-   * Obtiene todas las impresoras disponibles para una compañía
-   * @param companyId ID de la compañía
-   * @returns Lista de impresoras disponibles
-   */
   async getPrinters(companyId: string): Promise<any[]> {
     try {
       this.logger.log(`Consultando impresoras para compañía: ${companyId}`);

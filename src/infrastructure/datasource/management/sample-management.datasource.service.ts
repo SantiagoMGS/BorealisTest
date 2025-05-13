@@ -92,12 +92,6 @@ export class SampleManagementDataSourceService {
     return { data, total };
   }
 
-  /**
-   * Obtiene datos para llenar los dropdowns del frontend
-   * @param startDate Fecha inicial para filtrar
-   * @param endDate Fecha final para filtrar
-   * @returns Datos para los dropdowns (proveedores, muestras, orígenes)
-   */
   async getDropdownData(
     startDate: Date,
     endDate: Date,
@@ -125,9 +119,6 @@ export class SampleManagementDataSourceService {
     };
   }
 
-  /**
-   * Obtiene y cachea el ID del tipo de recepción "Muestra"
-   */
   private async getSampleReceptionTypeId(): Promise<string> {
     if (!this.sampleReceptionTypeId) {
       const receptionType =

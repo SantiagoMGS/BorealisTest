@@ -2,10 +2,6 @@ import { PrismaClient } from '@prisma/client';
 import { Logger } from '@nestjs/common';
 import { doreReceptionData } from './data/dore-reception.data';
 
-/**
- * Siembra datos iniciales de recepciones de doré en la base de datos
- * @param prisma Instancia del cliente Prisma
- */
 export async function seedDoreReceptions(prisma: PrismaClient) {
   const logger = new Logger('DoreReceptionSeed');
 
@@ -20,7 +16,6 @@ export async function seedDoreReceptions(prisma: PrismaClient) {
       throw new Error('El estado RECIBIDO no existe en la base de datos');
     }
 
-    // Verificar si ya existen recepciones de doré
     const existingReceptions = await prisma.reception.count({
       where: {
         receptionType: {
@@ -39,12 +34,10 @@ export async function seedDoreReceptions(prisma: PrismaClient) {
     let receptionsCreated = 0;
     let doresCreated = 0;
 
-    // Procesar cada par de recepción y sus dorés
     for (const item of doreReceptionData) {
       const receptionData = item.reception;
       const doresData = item.dores;
 
-      // Obtener compañía
       const company = await prisma.company.findUnique({
         where: { name: receptionData.company.connect.name },
       });
@@ -56,7 +49,6 @@ export async function seedDoreReceptions(prisma: PrismaClient) {
         continue;
       }
 
-      // Obtener proveedor
       const supplier = await prisma.supplier.findFirst({
         where: { name: receptionData.supplier.connect.name },
       });
@@ -68,7 +60,6 @@ export async function seedDoreReceptions(prisma: PrismaClient) {
         continue;
       }
 
-      // Obtener tipo de recepción
       const receptionType = await prisma.receptionType.findUnique({
         where: { name: receptionData.receptionType.connect.name },
       });
@@ -80,7 +71,6 @@ export async function seedDoreReceptions(prisma: PrismaClient) {
         continue;
       }
 
-      // Obtener origen de recepción
       const receptionOrigin = await prisma.receptionOrigin.findUnique({
         where: { name: receptionData.receptionOrigin.connect.name },
       });
@@ -92,7 +82,6 @@ export async function seedDoreReceptions(prisma: PrismaClient) {
         continue;
       }
 
-      // Obtener ciudad por nombre
       const city = await prisma.city.findFirst({
         where: {
           name: receptionData.cityName,
@@ -106,7 +95,6 @@ export async function seedDoreReceptions(prisma: PrismaClient) {
         continue;
       }
 
-      // Obtener título minero (si existe)
       let miningTitleId = undefined;
       if (receptionData.miningTitle) {
         const miningTitle = await prisma.supplierMiningTitle.findUnique({
@@ -122,11 +110,9 @@ export async function seedDoreReceptions(prisma: PrismaClient) {
         }
       }
 
-      // Asignar directamente un número de lote formato ABC-D-2023-001
       const currentYear = new Date().getFullYear();
       const batchNumber = `${company.shortName}-D-${currentYear}-001`;
 
-      // Crear la recepción
       const reception = await prisma.reception.create({
         data: {
           companyId: company.id,
@@ -147,7 +133,6 @@ export async function seedDoreReceptions(prisma: PrismaClient) {
         `Recepción creada: ${reception.id} - Lote: ${reception.batchNumber}`,
       );
 
-      // Crear los dorés asociados a esta recepción
       for (const doreData of doresData) {
         const dore = await prisma.dore.create({
           data: {

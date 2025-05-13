@@ -15,16 +15,11 @@ type ErrorResult = {
 
 type Result = SuccessResult | ErrorResult;
 
-/**
- * Datos iniciales de tipos de recepción
- * Ej. Doré, Muestras, Mineral, Concentrado
- */
 export const seedReceptionTypes = async (prisma: PrismaClient) => {
   const logger = new Logger('SeedReceptionTypes');
   try {
     logger.log('Iniciando sembrado de tipos de recepción...');
 
-    // Verificar si ya existen tipos de recepción para evitar duplicados
     const receptionTypeCount = await prisma.receptionType.count();
 
     if (receptionTypeCount > 0) {
@@ -34,7 +29,6 @@ export const seedReceptionTypes = async (prisma: PrismaClient) => {
       return;
     }
 
-    // Crear tipos de recepción desde los datos iniciales
     const results = await Promise.all(
       receptionTypeInitialData.map(async (receptionTypeData) => {
         return prisma.receptionType
@@ -58,7 +52,6 @@ export const seedReceptionTypes = async (prisma: PrismaClient) => {
       }),
     );
 
-    // Contar resultados
     const successfulTypes = results.filter(
       (r): r is SuccessResult => r.success,
     );
@@ -77,7 +70,6 @@ export const seedReceptionTypes = async (prisma: PrismaClient) => {
       });
     }
 
-    // Mostrar los tipos de recepción creados
     successfulTypes.forEach((result) => {
       logger.log(
         `Tipo de recepción creado: ${result.receptionType.name} - ${result.receptionType.description}`,

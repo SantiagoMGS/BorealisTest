@@ -20,25 +20,17 @@ export class PrintReceptionLabelUseCase {
     private readonly companyDataSource: CompanyDataSourceService,
   ) {}
 
-  /**
-   * Ejecuta el caso de uso para imprimir etiquetas de recepción
-   * @param dto Datos para la impresión
-   * @returns Resultado de la operación
-   */
   async execute(
     dto: PrintReceptionLabelDto,
     user: IAuthUser,
   ): Promise<{ success: boolean; message: string }> {
     try {
-      // Verificar que la compañía existe
       const company = await this.companyDataSource.findById(user.companyId!);
 
-      // Verificar que la muestra existe
       const sample = await this.sampleReceptionDataSource.findSampleById(
         dto.sampleId,
       );
 
-      // 3. Verificar la impresora si se proporciona
       if (dto.printerName) {
         const printerConfig =
           await this.labelPrinterRepository.getPrinterByName(dto.printerName);
@@ -49,7 +41,6 @@ export class PrintReceptionLabelUseCase {
           };
         }
 
-        // Probar conexión si es necesario
         if (!dto.skipConnectionTest) {
           const isConnected =
             await this.labelPrinterRepository.testConnection(printerConfig);
@@ -65,7 +56,6 @@ export class PrintReceptionLabelUseCase {
         }
       }
 
-      // 4. Solicitar la impresión al repositorio
       const printResult = await this.labelPrinterRepository.printReceptionLabel(
         {
           sampleId: dto.sampleId,
@@ -77,7 +67,6 @@ export class PrintReceptionLabelUseCase {
         },
       );
 
-      // 5. Retornar resultado
       return printResult;
     } catch (error: any) {
       this.logger.error(`Error en caso de uso de impresión: ${error.message}`);
