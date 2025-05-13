@@ -1,7 +1,7 @@
 export interface IAnalysisEntity {
   sampleId: string;
   analysisDate: Date;
-  resultValue: ResultValueDH | ResultValueXRF[];
+  resultValue: ResultValueDH | ResultValueXRF[] | ResultValueLW;
 }
 
 export interface ResultValueDH {
@@ -110,4 +110,8 @@ export interface ResultValueXRF {
   clError: string;
   mg: string;
   mgError: string;
+}
+
+export interface ResultValueLW {
+  time: number;
 }

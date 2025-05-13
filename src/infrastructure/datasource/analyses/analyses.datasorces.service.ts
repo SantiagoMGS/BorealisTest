@@ -130,4 +130,47 @@ export class AnalysesDatasourceService {
       throw new BadRequestException('Error al crear el análisis XRF');
     }
   }
+
+  async createLWAnalysis(
+    analysis: IAnalysisEntity,
+    companyId: string,
+  ): Promise<IAnalysisResponse> {
+    try {
+      const analysisType =
+        await this.analysisTypeDatasource.findByShortName('LW');
+
+      if (!analysisType) {
+        throw new NotFoundException('No existe el tipo de análisis LW');
+      }
+
+      const sample = await this.sampleDataSource.findById(analysis.sampleId);
+
+      if (!sample) {
+        throw new NotFoundException('No existe la muestra');
+      }
+
+      const createdAnalysis = await this.prisma.analysis.create({
+        data: {
+          ...analysis,
+          analysisTypeId: analysisType.id,
+          resultValue: JSON.stringify(analysis.resultValue),
+        },
+      });
+
+      return {
+        id: createdAnalysis.id,
+        sampleId: createdAnalysis.sampleId,
+        analysisTypeId: createdAnalysis.analysisTypeId,
+        analysisDate: createdAnalysis.analysisDate,
+
+        resultValue:
+          typeof createdAnalysis.resultValue === 'string'
+            ? JSON.parse(createdAnalysis.resultValue)
+            : createdAnalysis.resultValue,
+      };
+    } catch (error) {
+      console.error('Error al crear el análisis LW:', error);
+      throw new BadRequestException('Error al crear el análisis LW');
+    }
+  }
 }

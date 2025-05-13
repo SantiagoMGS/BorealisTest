@@ -1,56 +1,84 @@
-import { CurrentUser } from '@core/decorators/current-user.decorator';
-import { IAnalysisEntity } from '@domain/entities/analyses/analyses.entity';
-import { IAuthUser } from '@domain/entities/auth/auth-user.entity';
-import { IAnalysisResponse } from '@domain/interfaces/analyses/analyses.response.interfaces';
 import {
   Controller,
   Post,
   Body,
   UseGuards,
+  UseInterceptors,
   HttpStatus,
   Req,
   BadRequestException,
 } from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBody,
+  ApiCreatedResponse,
+  ApiBadRequestResponse,
+  ApiUnauthorizedResponse,
+  ApiBearerAuth,
+  ApiConsumes,
+  ApiResponse,
+} from '@nestjs/swagger';
+import { CurrentUser } from '@core/decorators/current-user.decorator';
+import { IAnalysisEntity } from '@domain/entities/analyses/analyses.entity';
+import { IAuthUser } from '@domain/entities/auth/auth-user.entity';
+import { IAnalysisResponse } from '@domain/interfaces/analyses/analyses.response.interfaces';
 import { AnalysesMapper } from './mappers/analyses.mapper';
 import { JwtAuthGuard } from '@infrastructure/guards/jwt-auth.guard';
-import {
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-  ApiConsumes,
-  ApiBody,
-} from '@nestjs/swagger';
 import { RequirePermission } from '@core/decorators/require-permission.decorator';
 import { CreateDHAnalysesUseCase } from '@domain/use-cases/analyses/create-dh-analyses.usecase';
 import { CreateDHAnalysesDto } from './dtos/create-dh-analyses.dto';
 import { CreateXRFAnalysesUseCase } from '@domain/use-cases/analyses/create-xrf-analyses.usecase';
 import { CreateXRFAnalysesDto } from './dtos/create-xrf-analyses.dto';
 import { FastifyRequest } from 'fastify';
-import * as XLSX from 'xlsx';
-
+import { ResponseInterceptor } from '@core/interceptores/response.interceptor';
+import { PermissionsGuard } from '@infrastructure/guards/permissions.guard';
+import { CustomResponse } from '@core/decorators/custom-response.decorator';
+import { ErrorResponseDto } from '@shared/models/error-response.dto';
+import { CreateLWAnalysesDto } from './dtos/create-lw-analyses.dto';
+import { createLWAnalysisUseCase } from '@domain/use-cases/analyses/create-lw-analyses-use-case';
+import { LWResponse } from './dtos/response-lw-analyses.dto';
+import { DHResponse } from './dtos/response-dh-analyses.dto';
+import { XRFResponse } from './dtos/response-xrf-analyses.dto';
 @Controller('analyses')
-@UseGuards(JwtAuthGuard)
-@ApiTags('Analyses')
+@UseGuards(JwtAuthGuard, PermissionsGuard)
+@UseInterceptors(ResponseInterceptor)
+@ApiTags('Análisis')
+@ApiBearerAuth()
 export class AnalysesController {
   constructor(
     private readonly createDHAnalysisUseCase: CreateDHAnalysesUseCase,
     private readonly createXRFAnalysisUseCase: CreateXRFAnalysesUseCase,
+    private readonly createLWAnalysisUseCase: createLWAnalysisUseCase,
   ) {}
 
   @Post('dh-analyses')
   @RequirePermission('DHAnalyses')
-  @ApiOperation({ summary: 'Create a new DH analysis' })
-  @ApiResponse({
-    status: HttpStatus.CREATED,
-    description: 'Analysis created successfully',
+  @ApiOperation({
+    summary: 'Crear nuevo análisis DH',
+    description:
+      'Crea un nuevo análisis de tipo Diamond Hole (DH) en el sistema',
+  })
+  @ApiBody({
+    type: CreateDHAnalysesDto,
+    description: 'Datos necesarios para crear el análisis DH',
+    required: true,
   })
   @ApiResponse({
-    status: HttpStatus.NOT_FOUND,
-    description: 'Company, Analysis Type or Sample not found',
+    status: 201,
+    description: 'Análisis DH creado correctamente',
+    type: DHResponse,
   })
-  @ApiResponse({
-    status: HttpStatus.BAD_REQUEST,
-    description: 'Invalid analysis data',
+  @ApiBadRequestResponse({
+    description: 'Datos de análisis inválidos',
+    type: ErrorResponseDto,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'No autorizado - Token JWT inválido o expirado',
+    type: ErrorResponseDto,
+  })
+  @CustomResponse({
+    successMessage: 'Análisis DH creado exitosamente',
   })
   async createDHAnalysis(
     @Body() analysis: CreateDHAnalysesDto,
@@ -65,32 +93,49 @@ export class AnalysesController {
 
   @Post('xrf-analyses')
   @RequirePermission('XRFAnalyses')
-  @ApiOperation({ summary: 'Create a new XRF analysis' })
+  @ApiOperation({
+    summary: 'Crear nuevo análisis XRF',
+    description:
+      'Crea un nuevo análisis de tipo X-Ray Fluorescence (XRF) en el sistema a partir de un archivo',
+  })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
       type: 'object',
+      required: ['sampleId', 'analysisDate', 'file'],
       properties: {
-        sampleId: { type: 'string', format: 'uuid' },
-        analysisDate: { type: 'string', format: 'date' },
+        sampleId: {
+          type: 'string',
+          format: 'uuid',
+          description: 'ID de la muestra a analizar',
+        },
+        analysisDate: {
+          type: 'string',
+          format: 'date',
+          description: 'Fecha en que se realizó el análisis (YYYY-MM-DD)',
+        },
         file: {
           type: 'string',
           format: 'binary',
+          description: 'Archivo con los datos del análisis XRF',
         },
       },
     },
   })
-  @ApiResponse({
-    status: HttpStatus.CREATED,
-    description: 'Analysis created successfully',
+  @ApiCreatedResponse({
+    description: 'Análisis XRF creado exitosamente',
+    type: XRFResponse,
   })
-  @ApiResponse({
-    status: HttpStatus.NOT_FOUND,
-    description: 'Company, Analysis Type or Sample not found',
+  @ApiBadRequestResponse({
+    description: 'Datos de análisis o archivo inválidos',
+    type: ErrorResponseDto,
   })
-  @ApiResponse({
-    status: HttpStatus.BAD_REQUEST,
-    description: 'Invalid analysis data',
+  @ApiUnauthorizedResponse({
+    description: 'No autorizado - Token JWT inválido o expirado',
+    type: ErrorResponseDto,
+  })
+  @CustomResponse({
+    successMessage: 'Análisis XRF creado exitosamente',
   })
   async createXRFAnalysis(
     @Req() request: FastifyRequest,
@@ -98,5 +143,44 @@ export class AnalysesController {
   ): Promise<IAnalysisResponse> {
     const body = request.body as CreateXRFAnalysesDto;
     return this.createXRFAnalysisUseCase.execute(body, user.companyId!);
+  }
+
+  @Post('lw-analyses')
+  @RequirePermission('LWAnalyses')
+  @ApiOperation({
+    summary: 'Crear nuevo análisis LW',
+    description:
+      'Crea un nuevo análisis de tipo Lineal Weight (LW) en el sistema',
+  })
+  @ApiBody({
+    type: CreateLWAnalysesDto,
+    description: 'Datos necesarios para crear el análisis LW',
+    required: true,
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Análisis LW creado correctamente',
+    type: LWResponse,
+  })
+  @ApiBadRequestResponse({
+    description: 'Datos de análisis inválidos',
+    type: ErrorResponseDto,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'No autorizado - Token JWT inválido o expirado',
+    type: ErrorResponseDto,
+  })
+  @CustomResponse({
+    successMessage: 'Análisis LW creado exitosamente',
+  })
+  async createLWAnalysis(
+    @Body() analysis: CreateLWAnalysesDto,
+    @CurrentUser() user: IAuthUser,
+  ): Promise<IAnalysisResponse> {
+    const analysisEntity = AnalysesMapper.toEntityLW(analysis);
+    return this.createLWAnalysisUseCase.execute(
+      analysisEntity,
+      user.companyId!,
+    );
   }
 }
