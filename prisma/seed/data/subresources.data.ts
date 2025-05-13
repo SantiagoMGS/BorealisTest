@@ -181,4 +181,26 @@ export const subresourceInitialData: Prisma.SubresourceCreateInput[] = [
     path: 'analyses/dh-analyses',
     controller: 'DHAnalyses',
   },
+  {
+    name: 'XRF',
+    resource: {
+      connect: {
+        name: 'Análisis',
+      },
+    },
+    icon: 'fa-truck',
+    path: 'analyses/xrf-analyses',
+    controller: 'XRFAnalyses',
+  },
+  {
+    name: 'Leachwell',
+    resource: {
+      connect: {
+        name: 'Análisis',
+      },
+    },
+    icon: 'fa-truck',
+    path: 'analyses/lw-analyses',
+    controller: 'LWAnalyses',
+  },
 ];

@@ -4,6 +4,7 @@ import {
 } from '@domain/entities/analyses/analyses.entity';
 import { CreateDHAnalysesDto } from '../dtos/create-dh-analyses.dto';
 import { BadRequestException } from '@nestjs/common';
+import { CreateLWAnalysesDto } from '../dtos/create-lw-analyses.dto';
 
 interface XRFAnalysisData {
   sampleId: string;
@@ -276,5 +277,13 @@ export class AnalysesMapper {
     };
 
     return baseResult;
+  }
+
+  static toEntityLW(analysis: CreateLWAnalysesDto): IAnalysisEntity {
+    return {
+      sampleId: analysis.sampleId,
+      analysisDate: new Date(analysis.analysisDate),
+      resultValue: analysis.resultValue,
+    };
   }
 }

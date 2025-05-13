@@ -26,4 +26,11 @@ export class AnalysesRepositoryImpl extends AnalysesRepository {
   ): Promise<IAnalysisResponse> {
     return await this.analysesDatasource.createXRFAnalyses(analysis, companyId);
   }
+
+  async createLWAnalysis(
+    analysis: IAnalysisEntity,
+    companyId: string,
+  ): Promise<IAnalysisResponse> {
+    return await this.analysesDatasource.createLWAnalysis(analysis, companyId);
+  }
 }

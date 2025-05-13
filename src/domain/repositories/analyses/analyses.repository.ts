@@ -10,4 +10,8 @@ export abstract class AnalysesRepository {
     analysis: IAnalysisEntity,
     companyId: string,
   ): Promise<IAnalysisResponse>;
+  abstract createLWAnalysis(
+    analysis: IAnalysisEntity,
+    companyId: string,
+  ): Promise<IAnalysisResponse>;
 }
