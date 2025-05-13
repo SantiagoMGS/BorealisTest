@@ -6,7 +6,8 @@ import {
 import { DoreManagementRepository } from '@domain/repositories/management/dore-management.repository';
 import { DoreManagementDataSourceService } from '@infrastructure/datasource/management/dore-management.datasource.service';
 import { Injectable } from '@nestjs/common';
-import { IPaginatedData, PaginationHelper } from '@shared/index';
+import { IPaginatedData } from '@shared/interfaces/pagination.interfaces';
+import { PaginationHelper } from '@shared/utils/pagination.helper';
 
 @Injectable()
 export class DoreManagementRepositoryImpl extends DoreManagementRepository {

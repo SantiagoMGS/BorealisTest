@@ -6,7 +6,8 @@ import {
 import { SampleManagementRepository } from '@domain/repositories/management/sample-management.repository';
 import { SampleManagementDataSourceService } from '@infrastructure/datasource/management/sample-management.datasource.service';
 import { Injectable } from '@nestjs/common';
-import { IPaginatedData, PaginationHelper } from '@shared/index';
+import { IPaginatedData } from '@shared/interfaces/pagination.interfaces';
+import { PaginationHelper } from '@shared/utils/pagination.helper';
 
 @Injectable()
 export class SampleManagementRepositoryImpl extends SampleManagementRepository {

@@ -5,7 +5,6 @@ import { LabelPrinterRepositoryImpl } from '@infrastructure/repositories/label-p
 import { PrintReceptionLabelUseCase } from '@domain/use-cases/label-printer/print-reception-label.use-case';
 import { TestConnectionUseCase } from '@domain/use-cases/label-printer/test-connection.use-case';
 import { GetPrintersUseCase } from '@domain/use-cases/label-printer/get-printers.use-case';
-import { PrismaService } from '@core/prisma/prisma.service';
 import { PermissionsModule } from '@core/permissions/permissions.module';
 import { PrismaModule } from '@core/prisma/prisma.module';
 import { CompanyRepositoryImpl } from '@infrastructure/repositories/company-supplier/company.repository-impl.service';
@@ -29,7 +28,6 @@ import { StatusDataSourceService } from '@infrastructure/datasource/status';
     ReceptionTypeDataSourceService,
     ReceptionOriginDataSourceService,
     StatusDataSourceService,
-    PrismaService,
 
     // Repository
     LabelPrinterRepositoryImpl,
