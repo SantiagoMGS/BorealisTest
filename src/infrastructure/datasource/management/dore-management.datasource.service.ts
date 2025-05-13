@@ -115,6 +115,7 @@ export class DoreManagementDataSourceService {
     startDate: Date,
     endDate: Date,
   ): Promise<IDore[]> {
+    const doreReceptionTypeId = await this.getDoreReceptionTypeId();
     let dore = await this.prisma.reception.findMany({
       where: {
         isActive: true,
@@ -122,6 +123,7 @@ export class DoreManagementDataSourceService {
           gte: startDate,
           lte: endDate,
         },
+        receptionTypeId: doreReceptionTypeId,
       },
       select: {
         dore: {

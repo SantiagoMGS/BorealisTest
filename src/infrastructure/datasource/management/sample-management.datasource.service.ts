@@ -56,8 +56,6 @@ export class SampleManagementDataSourceService {
       }),
     };
 
-    console.log(where);
-
     const [total, data] = await Promise.all([
       this.prisma.reception.count({ where }),
       this.prisma.reception.findMany({
@@ -143,12 +141,14 @@ export class SampleManagementDataSourceService {
     startDate: Date,
     endDate: Date,
   ): Promise<IReceptionOrigin[]> {
-    const receptionOrigins = await this.prisma.sample.findMany({
+    const sampleReceptionTypeId = await this.getSampleReceptionTypeId();
+    const receptionOrigins = await this.prisma.reception.findMany({
       where: {
-        createdAt: {
+        receptionDate: {
           gte: startDate,
           lte: endDate,
         },
+        receptionTypeId: sampleReceptionTypeId,
       },
       select: {
         receptionOrigin: {
@@ -175,21 +175,26 @@ export class SampleManagementDataSourceService {
     startDate: Date,
     endDate: Date,
   ): Promise<ISample[]> {
-    return this.prisma.sample.findMany({
+    const sampleReceptionTypeId = await this.getSampleReceptionTypeId();
+    let samples = await this.prisma.reception.findMany({
       where: {
-        createdAt: {
+        receptionDate: {
           gte: startDate,
           lte: endDate,
         },
+        receptionTypeId: sampleReceptionTypeId,
       },
       select: {
-        id: true,
-        code: true,
-      },
-      orderBy: {
-        code: 'asc',
+        samples: {
+          select: {
+            id: true,
+            code: true,
+          },
+        },
       },
     });
+
+    return samples.flatMap((r) => r.samples);
   }
 
   private async getAvailableSuppliers(
