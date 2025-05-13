@@ -16,6 +16,7 @@ async function bootstrap() {
   const logger = new Logger('BorealisMain');
   try {
     // **Configuración de Fastify**
+    // Comentario
     const fastifyAdapter = new FastifyAdapter();
 
     const app = await NestFactory.create<NestFastifyApplication>(
