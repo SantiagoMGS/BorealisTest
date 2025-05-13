@@ -1,9 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { SupplierResponseDto } from './supplier-response.dto';
 
-/**
- * Clase para mostrar la información de paginación en Swagger
- */
 export class PaginationMetaDto {
   @ApiProperty({ example: 1 })
   page!: number;
@@ -24,9 +21,6 @@ export class PaginationMetaDto {
   hasPreviousPage!: boolean;
 }
 
-/**
- * DTO para representar una respuesta paginada de proveedores
- */
 export class SupplierPaginatedResponseDto {
   @ApiProperty({
     description: 'Lista de proveedores',

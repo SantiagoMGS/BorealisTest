@@ -21,9 +21,6 @@ import {
 } from '@domain/entities/catalog/catalog.entity';
 
 export class CatalogMapper {
-  /**
-   * Factory que devuelve el mapper adecuado según el tipo de catálogo
-   */
   static getMapper(type: CatalogTypeEnum): any {
     const mappers = {
       [CatalogTypeEnum.DOCUMENT_TYPES]: this.documentTypeToDto,

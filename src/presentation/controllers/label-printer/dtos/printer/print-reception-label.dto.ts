@@ -12,9 +12,6 @@ import {
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-/**
- * Validador personalizado para múltiplos de un número
- */
 function IsMultipleOf(multiple: number, validationOptions?: ValidationOptions) {
   return function (object: Object, propertyName: string) {
     registerDecorator({

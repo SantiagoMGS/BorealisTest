@@ -10,11 +10,6 @@ export class GetPrintersUseCase {
     private readonly labelPrinterRepository: LabelPrinterRepositoryImpl,
   ) {}
 
-  /**
-   * Ejecuta el caso de uso para obtener las impresoras disponibles
-   * @param user Usuario autenticado con información de compañía
-   * @returns Lista de impresoras disponibles
-   */
   async execute(user: IAuthUser): Promise<any[]> {
     try {
       this.logger.log(`Obteniendo impresoras para compañía: ${user.companyId}`);

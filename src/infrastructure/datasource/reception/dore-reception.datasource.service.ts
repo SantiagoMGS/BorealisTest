@@ -27,21 +27,17 @@ export class DoreReceptionDataSourceService {
     private readonly cityDataSource: CityDataSourceService,
   ) {}
 
-  /**
-   * @param reception Datos de la recepción
-   * @returns La recepción creada con sus items
-   */
   async createReception(
     reception: IDoreReceptionEntity,
   ): Promise<IDoreReceptionResponse> {
     try {
-      // Verificamos que existan todas las entidades relacionadas
       await this.supplierDataSource.findById(reception.supplierId);
       await this.companyDataSource.findById(reception.companyId);
       await this.cityDataSource.findById(reception.cityId);
-      // Obtener el tipo de recepción "Doré"
+
       const receptionType =
         await this.receptionTypeDataSource.findByName('Doré');
+
       const receptionTypeId = receptionType.id;
 
       await this.receptionOriginDataSource.findById(
@@ -133,18 +129,11 @@ export class DoreReceptionDataSourceService {
     }
   }
 
-  /**
-   * Obtiene el último número de lote para un proveedor específico con un prefijo dado
-   * @param supplierId ID del proveedor
-   * @param prefix Prefijo del lote (formato: [shortName]-D-[año])
-   * @returns Último número de lote encontrado o null si no existe
-   */
   async findLastBatchNumberBySupplierId(
     supplierId: string,
     prefix: string,
   ): Promise<string | null> {
     try {
-      // Buscar las recepciones de doré del proveedor especificado con el prefijo dado
       const receptions = await this.prisma.reception.findMany({
         where: {
           supplierId,

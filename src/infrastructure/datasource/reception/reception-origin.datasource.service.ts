@@ -11,12 +11,6 @@ import { ReceptionOrigin } from '@prisma/client';
 export class ReceptionOriginDataSourceService {
   constructor(private readonly prisma: PrismaService) {}
 
-  /**
-   * Busca un origen de recepción por su ID
-   * @param id ID del origen de recepción
-   * @returns El origen de recepción encontrado
-   * @throws NotFoundException si no se encuentra el origen de recepción
-   */
   async findById(id: string): Promise<ReceptionOrigin> {
     const origin = await this.prisma.receptionOrigin.findUnique({
       where: { id },
@@ -31,14 +25,9 @@ export class ReceptionOriginDataSourceService {
     return origin;
   }
 
-  /**
-   * Obtiene los análisis por defecto asociados a un origen de recepción
-   */
   async getDefaultAnalysisByOriginId(originId: string) {
-    // Primero verificamos que el origen existe
     const origin = await this.findById(originId);
 
-    // Obtener los análisis por defecto desde la base de datos
     const defaultAnalysis =
       await this.prisma.defaultAnalysisTypeOrigin.findMany({
         where: {
@@ -55,12 +44,10 @@ export class ReceptionOriginDataSourceService {
         },
       });
 
-    // Si no hay análisis por defecto, devolver arreglo vacío
     if (defaultAnalysis.length === 0) {
       return [];
     }
 
-    // Transformar los resultados al formato esperado
     return defaultAnalysis.map(
       (item: {
         analysisType: { id: string; name: string; shortName: string };
@@ -73,18 +60,11 @@ export class ReceptionOriginDataSourceService {
     );
   }
 
-  /**
-   * Obtiene los proveedores asociados a un origen de recepción específico
-   * @param originId ID del origen de recepción
-   * @returns Lista de proveedores con id y nombre
-   */
   async getSuppliersByOriginId(
     originId: string,
   ): Promise<Array<{ id: string; name: string }>> {
-    // Verificar que el origen existe
     await this.findById(originId);
 
-    // Obtener los proveedores asociados al origen de recepción
     const supplierOrigins = await this.prisma.supplierReceptionOrigin.findMany({
       where: {
         originId,
@@ -105,7 +85,6 @@ export class ReceptionOriginDataSourceService {
         HttpStatus.NO_CONTENT,
       );
 
-    // Mapear los resultados para obtener solo id y nombre
     return supplierOrigins.map((so) => ({
       id: so.supplier.id,
       name: so.supplier.name,

@@ -1,6 +1,3 @@
-/**
- * Representa la entidad de usuario para el dominio
- */
 export interface IUserEntity {
   id?: string;
   name: string;

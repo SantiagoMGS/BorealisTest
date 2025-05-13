@@ -56,8 +56,6 @@ export class SampleManagementDataSourceService {
       }),
     };
 
-    console.log(where);
-
     const [total, data] = await Promise.all([
       this.prisma.reception.count({ where }),
       this.prisma.reception.findMany({
@@ -94,12 +92,6 @@ export class SampleManagementDataSourceService {
     return { data, total };
   }
 
-  /**
-   * Obtiene datos para llenar los dropdowns del frontend
-   * @param startDate Fecha inicial para filtrar
-   * @param endDate Fecha final para filtrar
-   * @returns Datos para los dropdowns (proveedores, muestras, orígenes)
-   */
   async getDropdownData(
     startDate: Date,
     endDate: Date,
@@ -127,9 +119,6 @@ export class SampleManagementDataSourceService {
     };
   }
 
-  /**
-   * Obtiene y cachea el ID del tipo de recepción "Muestra"
-   */
   private async getSampleReceptionTypeId(): Promise<string> {
     if (!this.sampleReceptionTypeId) {
       const receptionType =
@@ -143,12 +132,14 @@ export class SampleManagementDataSourceService {
     startDate: Date,
     endDate: Date,
   ): Promise<IReceptionOrigin[]> {
-    const receptionOrigins = await this.prisma.sample.findMany({
+    const sampleReceptionTypeId = await this.getSampleReceptionTypeId();
+    const receptionOrigins = await this.prisma.reception.findMany({
       where: {
-        createdAt: {
+        receptionDate: {
           gte: startDate,
           lte: endDate,
         },
+        receptionTypeId: sampleReceptionTypeId,
       },
       select: {
         receptionOrigin: {
@@ -175,21 +166,26 @@ export class SampleManagementDataSourceService {
     startDate: Date,
     endDate: Date,
   ): Promise<ISample[]> {
-    return this.prisma.sample.findMany({
+    const sampleReceptionTypeId = await this.getSampleReceptionTypeId();
+    let samples = await this.prisma.reception.findMany({
       where: {
-        createdAt: {
+        receptionDate: {
           gte: startDate,
           lte: endDate,
         },
+        receptionTypeId: sampleReceptionTypeId,
       },
       select: {
-        id: true,
-        code: true,
-      },
-      orderBy: {
-        code: 'asc',
+        samples: {
+          select: {
+            id: true,
+            code: true,
+          },
+        },
       },
     });
+
+    return samples.flatMap((r) => r.samples);
   }
 
   private async getAvailableSuppliers(

@@ -7,11 +7,6 @@ export class GetSuppliersByOriginUseCase {
     private readonly receptionOriginRepository: ReceptionOriginRepository,
   ) {}
 
-  /**
-   * Obtiene la lista de proveedores asociados a un origen de recepción específico
-   * @param originId ID del origen de recepción
-   * @returns Lista de proveedores con id y nombre
-   */
   async execute(
     originId: string,
   ): Promise<Array<{ id: string; name: string }>> {

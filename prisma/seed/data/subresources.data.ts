@@ -31,8 +31,8 @@ export const subresourceInitialData: Prisma.SubresourceCreateInput[] = [
         name: 'Gestión',
       },
     },
-    icon: 'clipboard-list',
-    path: 'lims/list-dore-receptions',
+    icon: 'fa-list-check',
+    path: 'lims/gestion-dore',
     controller: 'DoreManagementController',
   },
   {
@@ -42,8 +42,8 @@ export const subresourceInitialData: Prisma.SubresourceCreateInput[] = [
         name: 'Gestión',
       },
     },
-    icon: 'clipboard-list',
-    path: 'lims/list-sample-receptions',
+    icon: 'fa-list-check',
+    path: 'lims/gestion-muestras',
     controller: 'SampleManagementController',
   },
   {

@@ -19,9 +19,6 @@ export class GetCatalogsUseCase {
     private readonly catalogRepository: ICatalogReadRepository,
   ) {}
 
-  /**
-   * Obtiene elementos de catálogo según su tipo
-   */
   async execute<
     T extends
       | DocumentTypeEntity
@@ -34,7 +31,6 @@ export class GetCatalogsUseCase {
       | SampleReceptionTypeEntity,
   >(catalogType: CatalogTypeEnum): Promise<T[]> {
     const response = await this.catalogRepository.getByType<T>(catalogType);
-    console.log(response);
     return response;
   }
 }

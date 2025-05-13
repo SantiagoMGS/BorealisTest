@@ -2,9 +2,6 @@ import { IDoreReceptionEntity } from '@domain/entities/reception';
 import { CreateDoreReceptionDto, DoreReceptionResponseDto } from '../dtos';
 
 export class DoreReceptionMapper {
-  /**
-   * Convierte un DTO de creación a una entidad de dominio
-   */
   static toEntity(
     createDto: CreateDoreReceptionDto,
     companyId: string,
@@ -32,9 +29,6 @@ export class DoreReceptionMapper {
     };
   }
 
-  /**
-   * Convierte una respuesta del dominio a un DTO de respuesta
-   */
   static toResponseDto(reception: any): DoreReceptionResponseDto {
     const responseDto = new DoreReceptionResponseDto();
     responseDto.id = reception.id;
@@ -45,7 +39,6 @@ export class DoreReceptionMapper {
     responseDto.createdAt = reception.createdAt;
     responseDto.updatedAt = reception.updatedAt;
 
-    // Mapeo de relaciones si existen
     if (reception.company) {
       responseDto.company = reception.company;
     }

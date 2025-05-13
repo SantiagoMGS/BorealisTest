@@ -1,8 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-/**
- * DTO para la respuesta de proveedores por origen
- */
 export class SupplierByOriginResponseDto {
   @ApiProperty({
     description: 'ID del proveedor',

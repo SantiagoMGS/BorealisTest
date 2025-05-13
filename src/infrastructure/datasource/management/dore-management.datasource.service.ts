@@ -27,12 +27,6 @@ export class DoreManagementDataSourceService {
     private readonly receptionTypeDataSource: ReceptionTypeDataSourceService,
   ) {}
 
-  /**
-   * Obtiene datos para llenar los dropdowns del frontend
-   * @param startDate Fecha inicial para filtrar
-   * @param endDate Fecha final para filtrar
-   * @returns Datos para los dropdowns (proveedores, dorés, números de lote, orígenes)
-   */
   async getDropdownData(
     startDate: Date,
     endDate: Date,
@@ -87,7 +81,7 @@ export class DoreManagementDataSourceService {
       where: {
         receptionTypeId: doreReceptionTypeId,
         isActive: true,
-        createdAt: {
+        receptionDate: {
           gte: startDate,
           lte: endDate,
         },
@@ -100,6 +94,12 @@ export class DoreManagementDataSourceService {
           },
         },
       },
+      distinct: ['receptionOriginId'],
+      orderBy: {
+        receptionOrigin: {
+          name: 'asc',
+        },
+      },
     });
 
     return receptionOrigins.map((r) => r.receptionOrigin);
@@ -109,22 +109,27 @@ export class DoreManagementDataSourceService {
     startDate: Date,
     endDate: Date,
   ): Promise<IDore[]> {
-    return this.prisma.dore.findMany({
+    const doreReceptionTypeId = await this.getDoreReceptionTypeId();
+    let dore = await this.prisma.reception.findMany({
       where: {
         isActive: true,
-        createdAt: {
+        receptionDate: {
           gte: startDate,
           lte: endDate,
         },
+        receptionTypeId: doreReceptionTypeId,
       },
       select: {
-        id: true,
-        code: true,
-      },
-      orderBy: {
-        code: 'asc',
+        dore: {
+          select: {
+            id: true,
+            code: true,
+          },
+        },
       },
     });
+
+    return dore.flatMap((r) => r.dore);
   }
 
   private async getAvailableSuppliers(
@@ -134,7 +139,7 @@ export class DoreManagementDataSourceService {
   ): Promise<ISupplier[]> {
     const suppliers = await this.prisma.reception.findMany({
       where: {
-        createdAt: {
+        receptionDate: {
           gte: startDate,
           lte: endDate,
         },
@@ -166,7 +171,7 @@ export class DoreManagementDataSourceService {
   ): Promise<string[]> {
     const batchNumbers = await this.prisma.reception.findMany({
       where: {
-        createdAt: {
+        receptionDate: {
           gte: startDate,
           lte: endDate,
         },
@@ -176,16 +181,14 @@ export class DoreManagementDataSourceService {
         batchNumber: true,
       },
       distinct: ['batchNumber'],
+      orderBy: {
+        batchNumber: 'asc',
+      },
     });
 
     return batchNumbers.map((reception) => reception.batchNumber as string);
   }
 
-  /**
-   * Obtiene recepciones de doré con filtros avanzados y paginación
-   * @param filter Filtros extendidos y opciones de paginación
-   * @returns Datos de recepciones y total para paginación
-   */
   async findByFilters(
     filter: IManagementFilter,
   ): Promise<{ data: IDoreManagementResponse[]; total: number }> {

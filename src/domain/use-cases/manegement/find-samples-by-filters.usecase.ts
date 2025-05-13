@@ -8,11 +8,6 @@ export class FindSamplesByFiltersUseCase {
     private readonly sampleManagementRepository: SampleManagementRepository,
   ) {}
 
-  /**
-   * Ejecuta la búsqueda de recepciones de doré con filtros y paginación
-   * @param filter Filtros y opciones de paginación
-   * @returns Datos paginados de recepciones
-   */
   async execute(filter: IManagementFilter): Promise<any> {
     return await this.sampleManagementRepository.findByFilters(filter);
   }

@@ -1,6 +1,3 @@
-/**
- * Interfaz para la respuesta de operaciones con recepciones de doré
- */
 export interface IDoreReceptionResponse {
   id: string;
   companyId: string;
@@ -16,7 +13,6 @@ export interface IDoreReceptionResponse {
   createdAt: Date;
   updatedAt: Date;
 
-  // Relaciones incluidas
   company?: {
     id: string;
     name: string;
@@ -35,7 +31,6 @@ export interface IDoreReceptionResponse {
     name: string;
   };
 
-  // Dorés asociados a la recepción
   dores: Array<{
     receivedWeight: number | any;
     observation?: string | null;
