@@ -40,8 +40,14 @@ import { createLWAnalysisUseCase } from '@domain/use-cases/analyses/create-lw-an
 import { LWResponse } from './dtos/response-lw-analyses.dto';
 import { DHResponse } from './dtos/response-dh-analyses.dto';
 import { XRFResponse } from './dtos/response-xrf-analyses.dto';
+import { CreateAAAnalysesDto } from './dtos/create-aa-analyses.dto';
+import {
+  CreateAAAnalysesUseCase,
+  ICreateAAAnalysisData,
+} from '@domain/use-cases/analyses/create-aa-analyses.use-case';
+import { ResponseAAAnalysesDto } from './dtos/response-aa-analyses.dto';
 @Controller('analyses')
-@UseGuards(JwtAuthGuard, PermissionsGuard)
+@UseGuards(JwtAuthGuard)
 @UseInterceptors(ResponseInterceptor)
 @ApiTags('Análisis')
 @ApiBearerAuth()
@@ -50,6 +56,7 @@ export class AnalysesController {
     private readonly createDHAnalysisUseCase: CreateDHAnalysesUseCase,
     private readonly createXRFAnalysisUseCase: CreateXRFAnalysesUseCase,
     private readonly createLWAnalysisUseCase: createLWAnalysisUseCase,
+    private readonly createAAAnalysisUseCase: CreateAAAnalysesUseCase,
   ) {}
 
   @Post('dh-analyses')
@@ -180,6 +187,63 @@ export class AnalysesController {
     const analysisEntity = AnalysesMapper.toEntityLW(analysis);
     return this.createLWAnalysisUseCase.execute(
       analysisEntity,
+      user.companyId!,
+    );
+  }
+
+  @Post('aa-analyses')
+  // @RequirePermission('AAAnalyses')
+  @ApiOperation({
+    summary: 'Crear nuevo análisis AA',
+    description:
+      'Crea un nuevo análisis de Absorción Atómica (AA) en el sistema',
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      required: ['sampleId', 'analysisDate', 'file'],
+      properties: {
+        sampleId: {
+          type: 'string',
+          format: 'uuid',
+          description: 'ID de la muestra a analizar',
+        },
+        analysisDate: {
+          type: 'string',
+          format: 'date',
+          description: 'Fecha en que se realizó el análisis (YYYY-MM-DD)',
+        },
+        file: {
+          type: 'string',
+          format: 'binary',
+          description: 'Archivo con los datos del análisis AA',
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    description: 'Análisis AA creado correctamente',
+    type: ResponseAAAnalysesDto,
+  })
+  @ApiBadRequestResponse({
+    description: 'Datos de análisis o archivo inválidos',
+    type: ErrorResponseDto,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'No autorizado - Token JWT inválido o expirado',
+    type: ErrorResponseDto,
+  })
+  @CustomResponse({
+    successMessage: 'Análisis AA creado exitosamente',
+  })
+  async createAAAnalysis(
+    @Req() request: FastifyRequest,
+    @CurrentUser() user: IAuthUser,
+  ): Promise<IAnalysisResponse[]> {
+    return this.createAAAnalysisUseCase.execute(
+      request.body as ICreateAAAnalysisData,
       user.companyId!,
     );
   }

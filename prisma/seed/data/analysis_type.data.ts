@@ -129,8 +129,10 @@ export const analysisTypeInitialData: AnalysisTypeData[] = [
     analysisResult: {
       type: 'object',
       properties: {
-        value: { type: 'number' },
-        unit: { type: 'string' },
+        status: { type: 'string' },
+        dataset: { type: 'string' },
+        method: { type: 'string' },
+        au: { type: 'string' },
       },
     },
   },

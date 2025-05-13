@@ -15,7 +15,7 @@ import { AnalysisTypeDatasourceService } from '@infrastructure/datasource/analys
 import { CreateXRFAnalysesUseCase } from '@domain/use-cases/analyses/create-xrf-analyses.usecase';
 import { PermissionsModule } from '@core/permissions/permissions.module';
 import { createLWAnalysisUseCase } from '@domain/use-cases/analyses/create-lw-analyses-use-case';
-
+import { CreateAAAnalysesUseCase } from '@domain/use-cases/analyses/create-aa-analyses.use-case';
 @Module({
   imports: [PrismaModule, PermissionsModule],
   controllers: [AnalysesController],
@@ -31,6 +31,7 @@ import { createLWAnalysisUseCase } from '@domain/use-cases/analyses/create-lw-an
     CreateXRFAnalysesUseCase,
     CreateDHAnalysesUseCase,
     createLWAnalysisUseCase,
+    CreateAAAnalysesUseCase,
 
     {
       provide: AnalysesRepository,

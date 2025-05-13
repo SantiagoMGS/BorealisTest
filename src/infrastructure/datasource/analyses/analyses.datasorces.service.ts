@@ -71,12 +71,7 @@ export class AnalysesDatasourceService {
       if (error instanceof NotFoundException) {
         throw error;
       }
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code === 'P2003') {
-          throw new NotFoundException('No existe la muestra relacionada');
-        }
-      }
-      console.error('Error al crear el análisis:', error);
+
       throw new BadRequestException('Error al crear el análisis');
     }
   }
@@ -91,7 +86,10 @@ export class AnalysesDatasourceService {
       if (!analysisType) {
         throw new NotFoundException('No existe el tipo de análisis XRF');
       }
-
+      const company = await this.companyDataSource.findById(companyId);
+      if (!company) {
+        throw new NotFoundException('No existe la empresa');
+      }
       const sampleId = (analysis.sampleId as any)?.value || analysis.sampleId;
       const analysisDate = analysis.analysisDate as Date;
 
@@ -121,8 +119,6 @@ export class AnalysesDatasourceService {
             : createdAnalysis.resultValue,
       };
     } catch (error) {
-      console.error('Error al crear el análisis XRF:', error);
-
       if (error instanceof NotFoundException) {
         throw error;
       }
@@ -141,6 +137,10 @@ export class AnalysesDatasourceService {
 
       if (!analysisType) {
         throw new NotFoundException('No existe el tipo de análisis LW');
+      }
+      const company = await this.companyDataSource.findById(companyId);
+      if (!company) {
+        throw new NotFoundException('No existe la empresa');
       }
 
       const sample = await this.sampleDataSource.findById(analysis.sampleId);
@@ -169,8 +169,50 @@ export class AnalysesDatasourceService {
             : createdAnalysis.resultValue,
       };
     } catch (error) {
-      console.error('Error al crear el análisis LW:', error);
       throw new BadRequestException('Error al crear el análisis LW');
+    }
+  }
+  async createAAAnalyses(
+    analysis: IAnalysisEntity,
+    companyId: string,
+  ): Promise<IAnalysisResponse> {
+    try {
+      const analysisType =
+        await this.analysisTypeDatasource.findByShortName('AA');
+
+      if (!analysisType) {
+        throw new NotFoundException('No existe el tipo de análisis AA');
+      }
+      const company = await this.companyDataSource.findById(companyId);
+      if (!company) {
+        throw new NotFoundException('No existe la empresa');
+      }
+
+      const sample = await this.sampleDataSource.findById(analysis.sampleId);
+
+      if (!sample) {
+        throw new NotFoundException('No existe la muestra');
+      }
+      const createdAnalysis = await this.prisma.analysis.create({
+        data: {
+          ...analysis,
+          analysisTypeId: analysisType.id,
+          resultValue: JSON.stringify(analysis.resultValue),
+        },
+      });
+
+      return {
+        id: createdAnalysis.id,
+        sampleId: createdAnalysis.sampleId,
+        analysisTypeId: createdAnalysis.analysisTypeId,
+        analysisDate: createdAnalysis.analysisDate,
+        resultValue:
+          typeof createdAnalysis.resultValue === 'string'
+            ? JSON.parse(createdAnalysis.resultValue)
+            : createdAnalysis.resultValue,
+      };
+    } catch (error) {
+      throw new BadRequestException('Error al crear el análisis AA');
     }
   }
 }

@@ -157,7 +157,6 @@ export class DoreReceptionDataSourceService {
 
       return receptions[0].batchNumber;
     } catch (error) {
-      console.error('Error al buscar el último número de lote:', error);
       return null;
     }
   }
