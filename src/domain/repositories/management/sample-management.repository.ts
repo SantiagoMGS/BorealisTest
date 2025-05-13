@@ -1,5 +1,9 @@
 import { IManagementFilter } from '@domain/interfaces/management';
-import { ISampleDropdownData } from '@domain/interfaces/management/sample-management.interface';
+import {
+  ISampleDropdownData,
+  ISampleManagementResponse,
+} from '@domain/interfaces/management/sample-management.interface';
+import { IPaginatedData } from '@shared/index';
 
 export abstract class SampleManagementRepository {
   abstract getDropdownData(
@@ -7,5 +11,7 @@ export abstract class SampleManagementRepository {
     endDate: Date,
   ): Promise<ISampleDropdownData>;
 
-  abstract findByFilters(filter: IManagementFilter): Promise<any>;
+  abstract findByFilters(
+    filter: IManagementFilter,
+  ): Promise<IPaginatedData<ISampleManagementResponse>>;
 }

@@ -1,6 +1,3 @@
-/**
- * Entidad de dominio para unidad de recepción
- */
 export interface ISampleEntity {
   code?: number;
   receptionOriginId: string;
@@ -8,9 +5,6 @@ export interface ISampleEntity {
   analysisTypeIds?: string[];
 }
 
-/**
- * Entidad de dominio para doré
- */
 export interface IDoreEntity {
   receivedWeight: number;
   observation?: string;
@@ -21,9 +15,7 @@ export interface IDoreImageEntity {
   format: string;
   base64: string;
 }
-/**
- * Entidad de dominio para recepción
- */
+
 export interface IReceptionEntity {
   companyId: string;
   supplierId: string;
@@ -32,12 +24,9 @@ export interface IReceptionEntity {
   observation?: string;
   miningTitleId?: string;
   cityId?: string;
-  Samples: ISampleEntity[];
+  samples: ISampleEntity[];
 }
 
-/**
- * Entidad de dominio para recepción de doré
- */
 export interface IDoreReceptionEntity {
   companyId: string;
   supplierId: string;

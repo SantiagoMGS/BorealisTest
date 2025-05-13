@@ -33,43 +33,31 @@ export class SampleReceptionDataSourceService {
     reception: IReceptionEntity,
   ): Promise<IReceptionResponse> {
     try {
-      // Verificar que el proveedor existe y obtener su shortName
       await this.supplierDataSource.findById(reception.supplierId);
-
-      // Verificar que la compañía existe
       await this.companyDataSource.findById(reception.companyId);
-
-      // Obtener el tipo de recepción "Muestras"
       const receptionType =
         await this.receptionTypeDataSource.findByName('Muestra');
       const receptionTypeId = receptionType.id;
 
-      // Obtener el estado "RECIBIDO"
       const receivedStatus = await this.statusDataSource.findByName('RECIBIDO');
 
-      // Extraemos las unidades de recepción
-      const { Samples, ...receptionData } = reception;
+      const { samples, ...receptionData } = reception;
 
-      // Validamos que los orígenes de recepción existan
       const validatedSamples = [];
 
-      for (const sample of Samples) {
+      for (const sample of samples) {
         await this.receptionOriginDataSource.findById(sample.receptionOriginId);
         validatedSamples.push(sample);
       }
 
-      // Usamos el primer origen como origen principal de la recepción (es requerido por el esquema)
-      const receptionOriginId = Samples[0].receptionOriginId;
+      const receptionOriginId = samples[0].receptionOriginId;
 
-      // Obtenemos el siguiente código base para las muestras
       const lastSample = await this.prisma.sample.findFirst({
         orderBy: { code: 'desc' },
       });
       const baseCode = lastSample ? lastSample.code + 1 : 1;
 
-      // Preparamos las muestras con sus códigos y el estado "RECIBIDO"
       const sampleCreates = validatedSamples.map((sample, index) => {
-        // Creamos el código para la muestra
         const sample_code = baseCode + index;
 
         return {
@@ -88,7 +76,6 @@ export class SampleReceptionDataSourceService {
         };
       });
 
-      // Creamos la recepción con sus unidades de recepción asociadas
       const createdReception = await this.prisma.reception.create({
         data: {
           receptionDate: reception.receptionDate,
@@ -115,10 +102,9 @@ export class SampleReceptionDataSourceService {
               id: receptionTypeId,
             },
           },
-          Samples: {
+          samples: {
             create: sampleCreates,
           },
-          // Relaciones opcionales
           ...(reception.cityId
             ? {
                 city: {
@@ -142,7 +128,7 @@ export class SampleReceptionDataSourceService {
           company: true,
           supplier: true,
           receptionType: true,
-          Samples: {
+          samples: {
             include: {
               receptionOrigin: true,
               requiredAnalyses: {
@@ -155,12 +141,11 @@ export class SampleReceptionDataSourceService {
         },
       });
 
-      // Creamos los análisis requeridos para cada muestra
-      for (let i = 0; i < createdReception.Samples.length; i++) {
-        const sample = createdReception.Samples[i];
-        const originalSample = Samples[i];
+      // Crear los required analysis de cada Muestra
+      for (let i = 0; i < createdReception.samples.length; i++) {
+        const sample = createdReception.samples[i];
+        const originalSample = samples[i];
 
-        // Crear los análisis requeridos y guardar sus referencias
         const requiredAnalyses = await Promise.all(
           originalSample.analysisTypeIds!.map((analysisTypeId) =>
             this.prisma.sampleRequiredAnalysis.create({
@@ -176,7 +161,6 @@ export class SampleReceptionDataSourceService {
           ),
         );
 
-        // Asignar los análisis requeridos a cada muestra en la respuesta
         (sample as any).requiredAnalyses = requiredAnalyses;
       }
 
@@ -208,13 +192,11 @@ export class SampleReceptionDataSourceService {
       const where: any = { isActive: true };
 
       if (companyId) {
-        // Verificar que la compañía existe
         await this.companyDataSource.findById(companyId);
         where.companyId = companyId;
       }
 
       if (supplierId) {
-        // Verificar que el proveedor existe
         await this.supplierDataSource.findById(supplierId);
         where.supplierId = supplierId;
       }
@@ -226,7 +208,7 @@ export class SampleReceptionDataSourceService {
           company: true,
           supplier: true,
           receptionType: true,
-          Samples: {
+          samples: {
             include: {
               receptionOrigin: true,
               requiredAnalyses: {
@@ -267,10 +249,8 @@ export class SampleReceptionDataSourceService {
     companyId: string,
   ): Promise<IReceptionResponse> {
     try {
-      // Verificar que la compañía existe
       await this.companyDataSource.findById(companyId);
 
-      // Primero verificamos si la recepción existe y pertenece a la compañía del usuario
       const receptionExists = await this.prisma.reception.findFirst({
         where: {
           id,
@@ -286,14 +266,13 @@ export class SampleReceptionDataSourceService {
         );
       }
 
-      // Si existe y pertenece a la compañía, obtenemos todos los datos
       const reception = await this.prisma.reception.findUnique({
         where: { id },
         include: {
           company: true,
           supplier: true,
           receptionType: true,
-          Samples: {
+          samples: {
             include: {
               receptionOrigin: true,
               requiredAnalyses: {
@@ -332,7 +311,6 @@ export class SampleReceptionDataSourceService {
     reception: Partial<IReceptionEntity>,
   ): Promise<IReceptionResponse> {
     try {
-      // Verificar que la recepción existe
       const receptionExists = await this.prisma.reception.findUnique({
         where: { id },
       });
@@ -341,7 +319,6 @@ export class SampleReceptionDataSourceService {
         throw new NotFoundException(`No se encontró la recepción con ID ${id}`);
       }
 
-      // Validar las relaciones si se van a actualizar
       if (reception.companyId) {
         await this.companyDataSource.findById(reception.companyId);
       }
@@ -352,9 +329,8 @@ export class SampleReceptionDataSourceService {
 
       const receivedStatus = await this.statusDataSource.findByName('RECIBIDO');
 
-      // Si hay unidades de recepción para actualizar, las validamos
       const {
-        Samples,
+        samples,
         companyId,
         supplierId,
         miningTitleId,
@@ -362,14 +338,11 @@ export class SampleReceptionDataSourceService {
         ...otherFields
       } = reception;
 
-      // Ignoramos campos que no son parte del modelo
       const { analysisTypeIds, receivedWeight, ...receptionData } =
         otherFields as any;
 
-      // Preparar los datos de actualización con las relaciones adecuadas
       const updateData: any = { ...receptionData };
 
-      // Añadir relaciones si se proporcionaron IDs
       if (companyId) {
         updateData.company = {
           connect: { id: companyId },
@@ -394,7 +367,6 @@ export class SampleReceptionDataSourceService {
         };
       }
 
-      // Actualizamos solo los datos de la recepción principal
       const updatedReception = await this.prisma.reception.update({
         where: { id },
         data: updateData,
@@ -403,7 +375,7 @@ export class SampleReceptionDataSourceService {
           supplier: true,
           receptionType: true,
           receptionOrigin: true,
-          Samples: {
+          samples: {
             include: {
               receptionOrigin: true,
             },
@@ -411,9 +383,7 @@ export class SampleReceptionDataSourceService {
         },
       });
 
-      // Si hay unidades nuevas, las procesamos
-      if (Samples && Samples.length > 0) {
-        // Primero eliminamos las unidades existentes
+      if (samples && samples.length > 0) {
         await this.prisma.sample.deleteMany({
           where: { receptionId: id },
         });
@@ -425,8 +395,8 @@ export class SampleReceptionDataSourceService {
         const baseCode = lastSample ? lastSample.code + 1 : 1;
 
         // Luego creamos las nuevas
-        for (let i = 0; i < Samples.length; i++) {
-          const unit = Samples[i];
+        for (let i = 0; i < samples.length; i++) {
+          const unit = samples[i];
           await this.prisma.sample.create({
             data: {
               receptionId: id,
@@ -446,7 +416,7 @@ export class SampleReceptionDataSourceService {
             supplier: true,
             receptionType: true,
             receptionOrigin: true,
-            Samples: {
+            samples: {
               include: {
                 receptionOrigin: true,
               },
@@ -588,7 +558,7 @@ export class SampleReceptionDataSourceService {
       const receptions = await this.prisma.reception.findMany({
         where,
         include: {
-          Samples: {
+          samples: {
             include: {
               requiredAnalyses: true,
               receptionOrigin: true,
@@ -611,7 +581,7 @@ export class SampleReceptionDataSourceService {
 
         // Filtrar por tipo de análisis si se especificó
         if (analysisTypeIds && analysisTypeIds.length > 0) {
-          for (const sample of reception.Samples) {
+          for (const sample of reception.samples) {
             // Verificar si la muestra tiene algún análisis requerido que coincida con los tipos especificados
             const matchingAnalyses = sample.requiredAnalyses.filter(
               (analysis) => analysisTypeIds.includes(analysis.analysisTypeId),
@@ -630,7 +600,7 @@ export class SampleReceptionDataSourceService {
         if (matched && (receivedWeight !== undefined) !== undefined) {
           matched = false; // Resetear para verificar peso
 
-          for (const sample of reception.Samples) {
+          for (const sample of reception.samples) {
             let weightMatched = true;
 
             if (
@@ -658,14 +628,11 @@ export class SampleReceptionDataSourceService {
         );
       }
 
-      // Actualizar las recepciones encontradas
       const updatedReceptions: IReceptionResponse[] = [];
 
       for (const id of filteredReceptionIds) {
-        // Solo pasamos los campos que realmente queremos actualizar
         const updatePayload: Partial<IReceptionEntity> = {};
 
-        // Añadimos solo los campos que están en updateData y son relevantes
         if (updateData.observation !== undefined) {
           updatePayload.observation = updateData.observation;
         }
@@ -673,8 +640,6 @@ export class SampleReceptionDataSourceService {
         if (updateData.batchNumber !== undefined) {
           updatePayload.batchNumber = updateData.batchNumber;
         }
-
-        // Si hay otros campos a actualizar, los añades aquí
 
         const updatedReception = await this.updateReception(id, updatePayload);
         updatedReceptions.push(updatedReception);

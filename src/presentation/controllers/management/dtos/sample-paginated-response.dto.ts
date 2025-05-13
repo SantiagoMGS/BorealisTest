@@ -75,7 +75,7 @@ export class SampleReceptionItemDto {
   cityId!: string | null;
 
   @ApiProperty({ type: [SampleDetailDto] })
-  Samples!: SampleDetailDto[];
+  samples!: SampleDetailDto[];
 
   @ApiProperty({ type: SampleSupplierInfoDto })
   supplier!: SampleSupplierInfoDto;

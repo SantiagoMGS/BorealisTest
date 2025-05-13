@@ -98,16 +98,17 @@ export class CatalogDatasource {
             id: true,
             name: true,
             description: true,
+            hasMiningTitle: true,
           },
         },
       },
     });
-
     // Transformar a formato requerido
     return doreOrigins.map((item) => ({
       id: item.receptionOrigin.id,
       name: item.receptionOrigin.name,
       description: item.receptionOrigin.description,
+      hasMiningTitle: item.receptionOrigin.hasMiningTitle,
     }));
   }
 

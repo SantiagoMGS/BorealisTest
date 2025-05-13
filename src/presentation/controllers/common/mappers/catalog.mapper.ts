@@ -97,6 +97,7 @@ export class CatalogMapper {
       id: entity.id,
       name: entity.name,
       description: entity.description,
+      hasMiningTitle: entity.hasMiningTitle,
     };
   }
 

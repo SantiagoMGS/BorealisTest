@@ -87,6 +87,9 @@ export class DoreReceptionTypeDto {
 
   @ApiProperty({ example: 'Descripción del origen para Doré' })
   description?: string;
+
+  @ApiProperty({ example: true })
+  hasMiningTitle!: boolean;
 }
 
 export class SampleReceptionTypeDto {

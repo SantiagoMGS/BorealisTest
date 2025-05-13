@@ -6,10 +6,9 @@ import {
   IReceptionOrigin,
   ISample,
   ISupplier,
+  ISampleManagementResponse,
 } from '@domain/interfaces/management/sample-management.interface';
 import { IManagementFilter } from '@domain/interfaces/management';
-import { IPaginatedData } from '@shared/interfaces/pagination.interfaces';
-import { PaginationHelper } from '@shared/utils/pagination.helper';
 import { Prisma } from '@prisma/client';
 
 @Injectable()
@@ -21,7 +20,9 @@ export class SampleManagementDataSourceService {
     private readonly receptionTypeDataSource: ReceptionTypeDataSourceService,
   ) {}
 
-  async findByFilters(filter: IManagementFilter): Promise<IPaginatedData<any>> {
+  async findByFilters(
+    filter: IManagementFilter,
+  ): Promise<{ data: ISampleManagementResponse[]; total: number }> {
     const {
       startDate,
       endDate,
@@ -47,13 +48,15 @@ export class SampleManagementDataSourceService {
         receptionOriginId: { in: receptionOriginIds },
       }),
       ...(sampleIds?.length && {
-        Samples: {
+        samples: {
           some: {
             id: { in: sampleIds },
           },
         },
       }),
     };
+
+    console.log(where);
 
     const [total, data] = await Promise.all([
       this.prisma.reception.count({ where }),
@@ -62,7 +65,7 @@ export class SampleManagementDataSourceService {
         skip: (page - 1) * limit,
         take: limit,
         include: {
-          Samples: {
+          samples: {
             select: {
               id: true,
               code: true,
@@ -88,17 +91,7 @@ export class SampleManagementDataSourceService {
       }),
     ]);
 
-    return {
-      items: data,
-      meta: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-        hasNextPage: page < Math.ceil(total / limit),
-        hasPreviousPage: page > 1,
-      },
-    };
+    return { data, total };
   }
 
   /**

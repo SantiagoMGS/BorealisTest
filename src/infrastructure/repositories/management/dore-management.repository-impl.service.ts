@@ -1,4 +1,3 @@
-import { IDoreReceptionResponse } from '@domain/interfaces';
 import { IManagementFilter } from '@domain/interfaces/management';
 import {
   IDoreDropdownData,
@@ -7,7 +6,7 @@ import {
 import { DoreManagementRepository } from '@domain/repositories/management/dore-management.repository';
 import { DoreManagementDataSourceService } from '@infrastructure/datasource/management/dore-management.datasource.service';
 import { Injectable } from '@nestjs/common';
-import { IPaginatedData } from '@shared/index';
+import { IPaginatedData, PaginationHelper } from '@shared/index';
 
 @Injectable()
 export class DoreManagementRepositoryImpl extends DoreManagementRepository {
@@ -30,6 +29,13 @@ export class DoreManagementRepositoryImpl extends DoreManagementRepository {
   async findByFilters(
     filter: IManagementFilter,
   ): Promise<IPaginatedData<IDoreManagementResponse>> {
-    return await this.doreManagementDataSource.findByFilters(filter);
+    const { data, total } =
+      await this.doreManagementDataSource.findByFilters(filter);
+    const { page, limit } = filter;
+
+    return PaginationHelper.createPaginatedResponseFromItems(data, total, {
+      page,
+      limit,
+    });
   }
 }
