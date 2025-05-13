@@ -14,7 +14,7 @@ export const resourceInitialData: Prisma.ResourceCreateInput[] = [
   },
   {
     name: 'Gestión',
-    icon: 'building',
+    icon: 'fa-folder-gear',
     path: '/management',
     application: {
       connect: {
