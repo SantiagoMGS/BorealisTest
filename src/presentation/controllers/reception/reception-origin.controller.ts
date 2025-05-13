@@ -25,9 +25,9 @@ import { GetSuppliersByOriginUseCase } from '@domain/use-cases/reception/get-sup
 
 @ApiTags('Orígenes de Recepción')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard, PermissionsGuard)
+@UseGuards(JwtAuthGuard) //, PermissionsGuard)
 @UseInterceptors(ResponseInterceptor)
-@RequirePermission(ReceptionOriginController.name)
+//@RequirePermission(ReceptionOriginController.name)
 @Controller('reception-origins')
 export class ReceptionOriginController {
   constructor(

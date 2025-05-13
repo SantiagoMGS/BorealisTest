@@ -33,6 +33,8 @@ export class GetCatalogsUseCase {
       | DoreReceptionTypeEntity
       | SampleReceptionTypeEntity,
   >(catalogType: CatalogTypeEnum): Promise<T[]> {
-    return this.catalogRepository.getByType<T>(catalogType);
+    const response = await this.catalogRepository.getByType<T>(catalogType);
+    console.log(response);
+    return response;
   }
 }

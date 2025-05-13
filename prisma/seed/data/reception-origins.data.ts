@@ -24,12 +24,14 @@ export const receptionOriginInitialData: Prisma.ReceptionOriginCreateInput[] = [
     shortName: 'VF',
     description:
       'Material extraído directamente de vetas mineralógicas procesado por fundición',
+    hasMiningTitle: true,
   },
   {
     name: 'Plata Fundida',
     shortName: 'PF',
     description:
       'Material fundido de plata para evaluación o recuperación del metal precioso',
+    hasMiningTitle: true,
   },
   {
     name: 'COLA',
