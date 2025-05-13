@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { DoreManagementController } from './dore-management.controller';
 import { DoreReceptionRepositoryImpl } from '@infrastructure/repositories/reception/dore-reception.repository-impl.service';
 import { DoreReceptionDataSourceService } from '@infrastructure/datasource/reception/dore-reception.datasource.service';
-import { PrismaService } from '@core/prisma/prisma.service';
 import { FindDoreReceptionsByFiltersUseCase } from '@domain/use-cases/reception';
 import { CompanyDataSourceService } from '@infrastructure/datasource/company/company.datasource.service';
 import { SupplierDataSourceService } from '@infrastructure/datasource/supplier/supplier.datasource.service';
@@ -60,9 +59,6 @@ import { DoreManagementDataSourceService } from '@infrastructure/datasource/mana
     ReceptionOriginDataSourceService,
     StatusDataSourceService,
     CityDataSourceService,
-
-    // Core
-    PrismaService,
   ],
 })
 export class ManagementModule {}

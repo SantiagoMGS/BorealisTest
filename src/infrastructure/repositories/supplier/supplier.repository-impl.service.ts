@@ -7,11 +7,11 @@ import {
 } from '@domain/interfaces/supplier';
 import { SupplierDataSourceService } from '@infrastructure/datasource/supplier';
 import { SupplierMapper } from '@presentation/controllers/supplier/mappers/supplier.mapper';
+import { PaginationHelper } from '@shared/utils/pagination.helper';
 import {
   IPaginatedData,
   IPaginationOptions,
 } from '@shared/interfaces/pagination.interfaces';
-import { PaginationHelper } from '@shared/utils/pagination.helper';
 
 @Injectable()
 export class SupplierRepositoryImpl implements SupplierRepository {
