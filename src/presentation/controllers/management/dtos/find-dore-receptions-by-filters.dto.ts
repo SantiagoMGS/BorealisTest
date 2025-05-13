@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsDate, IsOptional, IsUUID } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Type, Transform } from 'class-transformer';
 import { PaginationDto } from '@shared/dtos/paginator.dto';
 
 export class FindDoreReceptionsByFiltersDto extends PaginationDto {
@@ -31,6 +31,12 @@ export class FindDoreReceptionsByFiltersDto extends PaginationDto {
   @IsOptional()
   @IsArray()
   @IsUUID(4, { each: true })
+  @Transform(({ value }) => {
+    if (!Array.isArray(value)) {
+      return value ? [value] : [];
+    }
+    return value;
+  })
   supplierIds?: string[];
 
   @ApiProperty({
@@ -42,6 +48,12 @@ export class FindDoreReceptionsByFiltersDto extends PaginationDto {
   @IsOptional()
   @IsArray()
   @IsUUID(4, { each: true })
+  @Transform(({ value }) => {
+    if (!Array.isArray(value)) {
+      return value ? [value] : [];
+    }
+    return value;
+  })
   receptionOriginIds?: string[];
 
   @ApiProperty({
@@ -53,6 +65,12 @@ export class FindDoreReceptionsByFiltersDto extends PaginationDto {
   @IsOptional()
   @IsArray()
   @IsUUID(4, { each: true })
+  @Transform(({ value }) => {
+    if (!Array.isArray(value)) {
+      return value ? [value] : [];
+    }
+    return value;
+  })
   doreIds?: string[];
 
   @ApiProperty({
@@ -63,5 +81,11 @@ export class FindDoreReceptionsByFiltersDto extends PaginationDto {
   })
   @IsOptional()
   @IsArray()
+  @Transform(({ value }) => {
+    if (!Array.isArray(value)) {
+      return value ? [value] : [];
+    }
+    return value;
+  })
   batchNumbers?: string[];
 }

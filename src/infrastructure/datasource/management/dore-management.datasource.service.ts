@@ -39,8 +39,8 @@ export class DoreManagementDataSourceService {
   ): Promise<IDoreDropdownData> {
     const doreReceptionTypeId = await this.getDoreReceptionTypeId();
 
-    const [suppliers, batchNumbers, receptionOrigins, dores] =
-      await Promise.all([
+    const [suppliers, batchNumbers, receptionOrigins, dore] = await Promise.all(
+      [
         this.getAvailableSuppliers(startDate, endDate, doreReceptionTypeId),
         this.getAvailableBatchNumbers(startDate, endDate, doreReceptionTypeId),
         this.getAvailableReceptionOrigins(
@@ -49,12 +49,13 @@ export class DoreManagementDataSourceService {
           doreReceptionTypeId,
         ),
         this.getAvailableDores(startDate, endDate),
-      ]);
+      ],
+    );
 
     if (
       receptionOrigins.length === 0 &&
       suppliers.length === 0 &&
-      dores.length === 0 &&
+      dore.length === 0 &&
       batchNumbers.length === 0
     ) {
       throw new HttpException('No content', HttpStatus.NO_CONTENT);
@@ -62,15 +63,12 @@ export class DoreManagementDataSourceService {
 
     return {
       suppliers,
-      dores,
+      dore,
       batchNumbers,
       receptionOrigins,
     };
   }
 
-  /**
-   * Obtiene y cachea el ID del tipo de recepción "Doré"
-   */
   private async getDoreReceptionTypeId(): Promise<string> {
     if (!this.doreReceptionTypeId) {
       const receptionType =
@@ -204,7 +202,7 @@ export class DoreManagementDataSourceService {
     const doreReceptionTypeId = await this.getDoreReceptionTypeId();
 
     const where: Prisma.ReceptionWhereInput = {
-      createdAt: {
+      receptionDate: {
         gte: startDate,
         lte: endDate,
       },
