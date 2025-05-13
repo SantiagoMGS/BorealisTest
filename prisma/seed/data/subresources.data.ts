@@ -203,4 +203,15 @@ export const subresourceInitialData: Prisma.SubresourceCreateInput[] = [
     path: 'analyses/lw-analyses',
     controller: 'LWAnalyses',
   },
+  {
+    name: 'Absorción atómica',
+    resource: {
+      connect: {
+        name: 'Análisis',
+      },
+    },
+    icon: 'fa-truck',
+    path: 'analyses/aa-analyses',
+    controller: 'AAAnalyses',
+  },
 ];

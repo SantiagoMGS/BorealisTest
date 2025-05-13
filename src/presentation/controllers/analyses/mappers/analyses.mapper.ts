@@ -5,7 +5,7 @@ import {
 import { CreateDHAnalysesDto } from '../dtos/create-dh-analyses.dto';
 import { BadRequestException } from '@nestjs/common';
 import { CreateLWAnalysesDto } from '../dtos/create-lw-analyses.dto';
-
+import { CreateAAAnalysesDto } from '../dtos/create-aa-analyses.dto';
 interface XRFAnalysisData {
   sampleId: string;
   analysisDate: string;
@@ -147,7 +147,6 @@ export class AnalysesMapper {
 
       return results;
     } catch (error) {
-      console.error('Error parsing XRF content:', error);
       throw error;
     }
   }
@@ -280,6 +279,14 @@ export class AnalysesMapper {
   }
 
   static toEntityLW(analysis: CreateLWAnalysesDto): IAnalysisEntity {
+    return {
+      sampleId: analysis.sampleId,
+      analysisDate: new Date(analysis.analysisDate),
+      resultValue: analysis.resultValue,
+    };
+  }
+
+  static toEntityAA(analysis: CreateAAAnalysesDto): IAnalysisEntity {
     return {
       sampleId: analysis.sampleId,
       analysisDate: new Date(analysis.analysisDate),

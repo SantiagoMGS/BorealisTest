@@ -56,8 +56,6 @@ export class SampleManagementDataSourceService {
       }),
     };
 
-    console.log(where);
-
     const [total, data] = await Promise.all([
       this.prisma.reception.count({ where }),
       this.prisma.reception.findMany({

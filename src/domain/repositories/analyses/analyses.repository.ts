@@ -14,4 +14,8 @@ export abstract class AnalysesRepository {
     analysis: IAnalysisEntity,
     companyId: string,
   ): Promise<IAnalysisResponse>;
+  abstract createAAAnalyses(
+    analysis: IAnalysisEntity,
+    companyId: string,
+  ): Promise<IAnalysisResponse>;
 }
