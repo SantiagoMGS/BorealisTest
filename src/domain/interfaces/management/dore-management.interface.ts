@@ -1,6 +1,6 @@
 export interface IDoreDropdownData {
   suppliers: ISupplier[];
-  dores: IDore[];
+  dore: IDore[];
   batchNumbers: string[];
   receptionOrigins: IReceptionOrigin[];
 }
@@ -19,9 +19,6 @@ export interface IReceptionOrigin {
   name: string;
 }
 
-/**
- * Interfaz para la respuesta de operaciones con gestión de dorés
- */
 export interface IDoreManagementResponse {
   id: string;
   batchNumber: string | null;
@@ -30,7 +27,7 @@ export interface IDoreManagementResponse {
   dore: Array<{
     id: string;
     code: number;
-    receivedWeight: number | any; // Usando any para compatibilidad con Decimal de Prisma
+    receivedWeight: number | any;
     status: {
       id: string;
       name: string;
