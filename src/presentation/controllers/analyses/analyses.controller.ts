@@ -17,6 +17,7 @@ import {
   ApiUnauthorizedResponse,
   ApiBearerAuth,
   ApiConsumes,
+  ApiResponse,
 } from '@nestjs/swagger';
 import { CurrentUser } from '@core/decorators/current-user.decorator';
 import { IAnalysisEntity } from '@domain/entities/analyses/analyses.entity';
@@ -36,6 +37,9 @@ import { CustomResponse } from '@core/decorators/custom-response.decorator';
 import { ErrorResponseDto } from '@shared/models/error-response.dto';
 import { CreateLWAnalysesDto } from './dtos/create-lw-analyses.dto';
 import { createLWAnalysisUseCase } from '@domain/use-cases/analyses/create-lw-analyses-use-case';
+import { LWResponse } from './dtos/response-lw-analyses.dto';
+import { DHResponse } from './dtos/response-dh-analyses.dto';
+import { XRFResponse } from './dtos/response-xrf-analyses.dto';
 @Controller('analyses')
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @UseInterceptors(ResponseInterceptor)
@@ -59,6 +63,11 @@ export class AnalysesController {
     type: CreateDHAnalysesDto,
     description: 'Datos necesarios para crear el análisis DH',
     required: true,
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Análisis DH creado correctamente',
+    type: DHResponse,
   })
   @ApiBadRequestResponse({
     description: 'Datos de análisis inválidos',
@@ -115,9 +124,7 @@ export class AnalysesController {
   })
   @ApiCreatedResponse({
     description: 'Análisis XRF creado exitosamente',
-    schema: {
-      $ref: '#/components/schemas/AnalysisResponse',
-    },
+    type: XRFResponse,
   })
   @ApiBadRequestResponse({
     description: 'Datos de análisis o archivo inválidos',
@@ -149,6 +156,11 @@ export class AnalysesController {
     type: CreateLWAnalysesDto,
     description: 'Datos necesarios para crear el análisis LW',
     required: true,
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Análisis LW creado correctamente',
+    type: LWResponse,
   })
   @ApiBadRequestResponse({
     description: 'Datos de análisis inválidos',
