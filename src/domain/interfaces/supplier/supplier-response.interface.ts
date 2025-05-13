@@ -3,6 +3,8 @@ import { DocumentType } from '@prisma/client';
 export interface ISupplierResponse {
   id: string;
   name: string;
+  createdAt: Date;
+  updatedAt: Date;
   documentType: {
     id: string;
     name: string;

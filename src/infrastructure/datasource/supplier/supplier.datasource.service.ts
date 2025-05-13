@@ -90,6 +90,9 @@ export class SupplierDataSourceService {
       include: {
         documentType: true, // Incluir los datos del tipo de documento
       },
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
 
     return suppliers;
@@ -143,8 +146,20 @@ export class SupplierDataSourceService {
 
     const supplier = await this.prisma.supplier.findFirst({
       where,
-      include: {
-        documentType: true,
+      select: {
+        id: true,
+        name: true,
+        documentNumber: true,
+        shortName: true,
+        createdAt: true,
+        updatedAt: true,
+        documentType: {
+          select: {
+            id: true,
+            name: true,
+            code: true,
+          },
+        },
       },
     });
 
