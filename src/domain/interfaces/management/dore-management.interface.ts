@@ -1,6 +1,6 @@
 export interface IDoreDropdownData {
   suppliers: ISupplier[];
-  dores: IDore[];
+  dore: IDore[];
   batchNumbers: string[];
   receptionOrigins: IReceptionOrigin[];
 }

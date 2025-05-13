@@ -53,7 +53,7 @@ export class DoreDropdownResponseDto {
     description: 'Lista de dorés',
     type: [DoreDto],
   })
-  dores!: DoreDto[];
+  dore!: DoreDto[];
 
   @ApiProperty({
     description: 'Lista de números de lote',

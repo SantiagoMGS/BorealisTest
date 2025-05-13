@@ -35,7 +35,7 @@ export class SampleManagementDataSourceService {
     const sampleReceptionTypeId = await this.getSampleReceptionTypeId();
 
     const where: Prisma.ReceptionWhereInput = {
-      createdAt: {
+      receptionDate: {
         gte: startDate,
         lte: endDate,
       },
