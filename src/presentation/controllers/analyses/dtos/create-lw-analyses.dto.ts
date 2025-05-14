@@ -40,7 +40,7 @@ export class CreateLWAnalysesDto {
   resultValue!: ResultValueLW;
 }
 
-class ResultValueLWDto implements ResultValueLW {
+class ResultValueLWDto {
   @ApiProperty({
     description: 'Tiempo en segundos (número entero positivo)',
     example: 10,

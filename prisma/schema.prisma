@@ -122,7 +122,6 @@ model Company {
   receptions   Reception[]
   users        UserCompany[]
   Printer      Printer[]
-  analyses     Analysis[]
 
   @@index([name])
   @@map("companies")
@@ -503,7 +502,6 @@ model AnalysisType {
 
 model Analysis {
   id             String       @id @default(uuid()) @db.Uuid
-  companyId      String       @db.Uuid
   analysisTypeId String       @db.Uuid
   sampleId       String       @db.Uuid
   resultValue    Json
@@ -514,13 +512,11 @@ model Analysis {
   createdBy      String?      @db.Uuid
   updatedBy      String?      @db.Uuid
   
-  company        Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
   analysisType   AnalysisType @relation(fields: [analysisTypeId], references: [id], onDelete: Cascade)
   sample         Sample       @relation(fields: [sampleId], references: [id], onDelete: Cascade)
 
-  @@index([companyId])
-  @@index([companyId, sampleId])
-  @@index([companyId, sampleId, analysisTypeId])
+  @@index([sampleId])
+  @@index([sampleId, analysisTypeId])
   @@map("analyses")
 }
 

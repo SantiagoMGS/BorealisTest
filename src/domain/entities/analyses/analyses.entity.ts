@@ -1,3 +1,5 @@
+import { InputJsonObject } from '@prisma/client/runtime/library';
+
 export interface IAnalysisEntity {
   sampleId: string;
   analysisDate: Date;
@@ -5,11 +7,11 @@ export interface IAnalysisEntity {
   analysisTypeId?: string;
 }
 
-export interface ResultValueDH {
+export interface ResultValueDH extends InputJsonObject {
   dryWeight: number;
 }
 
-export interface ResultValueXRF {
+export interface ResultValueXRF extends InputJsonObject {
   readingNo: string;
   time: Date;
   type: string;
@@ -113,12 +115,13 @@ export interface ResultValueXRF {
   mgError: string;
 }
 
-export interface ResultValueLW {
+export interface ResultValueLW extends InputJsonObject {
   time: number;
   endDateTime?: Date;
+  done: boolean;
 }
 
-export interface ResultValueAA {
+export interface ResultValueAA extends InputJsonObject {
   status: string;
   dataset: string;
   method: string;

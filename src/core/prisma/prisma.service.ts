@@ -33,10 +33,8 @@ export class PrismaService
    */
   private setupMiddleware() {
     this.$use(async (params, next) => {
-      // Obtenemos el companyId del contexto
       const companyId = getCurrentCompanyId();
 
-      // Si no hay companyId o el modelo no debe filtrarse, continuamos sin modificar
       if (!companyId || !this.shouldApplyCompanyFilter(params.model || '')) {
         return next(params);
       }
@@ -47,12 +45,10 @@ export class PrismaService
           params.action,
         )
       ) {
-        // Iniciamos logging para debug
         this.logger.debug(
           `Aplicando filtro de compañía (${companyId}) a ${params.model}.${params.action}`,
         );
 
-        // Inicializar where si no existe
         if (!params.args) params.args = {};
         if (!params.args.where) params.args.where = {};
 
@@ -61,7 +57,6 @@ export class PrismaService
           // Para modelos con campo companyId directo
           params.args.where.companyId = companyId;
         } else if (params.model === 'Supplier') {
-          // Para proveedores que se relacionan a través de CompanySupplier
           params.args.where.companies = {
             some: {
               companyId: companyId,
@@ -80,16 +75,13 @@ export class PrismaService
               },
             };
           } else if (params.model === 'Analysis') {
-            params.args.where.subSample = {
-              Sample: {
-                reception: {
-                  companyId: companyId,
-                },
+            params.args.where.sample = {
+              reception: {
+                companyId: companyId,
               },
             };
           }
         } else if (params.model === 'SupplierMiningTitle') {
-          // Para títulos mineros que se relacionan con Supplier
           params.args.where.supplier = {
             companies: {
               some: {
@@ -98,7 +90,6 @@ export class PrismaService
             },
           };
         } else if (params.model === 'SupplierReceptionOrigin') {
-          // Para la relación entre proveedores y orígenes de recepción
           params.args.where.supplier = {
             companies: {
               some: {

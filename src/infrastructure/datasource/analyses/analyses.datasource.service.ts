@@ -1,5 +1,11 @@
 import { PrismaService } from '@core/prisma/prisma.service';
-import { IAnalysisEntity } from '@domain/entities/analyses/analyses.entity';
+import {
+  IAnalysisEntity,
+  ResultValueAA,
+  ResultValueDH,
+  ResultValueLW,
+  ResultValueXRF,
+} from '@domain/entities/analyses/analyses.entity';
 import { IAnalysisResponse } from '@domain/interfaces/analyses/analyses.response.interfaces';
 import {
   Injectable,
@@ -33,9 +39,8 @@ export class AnalysesDatasourceService {
         data: {
           sampleId: analysisData.sampleId,
           analysisDate: analysisData.analysisDate,
-          companyId: companyId,
           analysisTypeId: analysisType.id,
-          resultValue: JSON.stringify(analysisData.resultValue),
+          resultValue: analysisData.resultValue as ResultValueDH,
         },
       });
 
@@ -44,6 +49,7 @@ export class AnalysesDatasourceService {
         sampleId: createdAnalysis.sampleId,
         analysisTypeId: createdAnalysis.analysisTypeId,
         analysisDate: createdAnalysis.analysisDate,
+        //TODO: Cambiar para que no se devuelva el resultValue como string
         resultValue:
           typeof createdAnalysis.resultValue === 'string'
             ? JSON.parse(createdAnalysis.resultValue)
@@ -72,11 +78,10 @@ export class AnalysesDatasourceService {
 
       const createdAnalysis = await this.prisma.analysis.create({
         data: {
-          companyId: companyId,
           sampleId: sampleId,
           analysisDate: analysis.analysisDate,
           analysisTypeId: analysisType.id,
-          resultValue: JSON.stringify(analysis.resultValue),
+          resultValue: analysis.resultValue as ResultValueXRF[],
         },
       });
 
@@ -85,6 +90,7 @@ export class AnalysesDatasourceService {
         sampleId: createdAnalysis.sampleId,
         analysisTypeId: createdAnalysis.analysisTypeId,
         analysisDate: createdAnalysis.analysisDate,
+        //TODO: Cambiar para que no se devuelva el resultValue como string
         resultValue:
           typeof createdAnalysis.resultValue === 'string'
             ? JSON.parse(createdAnalysis.resultValue)
@@ -113,11 +119,10 @@ export class AnalysesDatasourceService {
 
       const createdAnalysis = await this.prisma.analysis.create({
         data: {
-          companyId: companyId,
           sampleId: analysis.sampleId,
           analysisDate: analysis.analysisDate,
           analysisTypeId: analysisType.id,
-          resultValue: JSON.stringify(analysis.resultValue),
+          resultValue: analysis.resultValue as ResultValueLW,
         },
       });
 
@@ -126,6 +131,7 @@ export class AnalysesDatasourceService {
         sampleId: createdAnalysis.sampleId,
         analysisTypeId: createdAnalysis.analysisTypeId,
         analysisDate: createdAnalysis.analysisDate,
+        //TODO: Cambiar para que no se devuelva el resultValue como string
         resultValue:
           typeof createdAnalysis.resultValue === 'string'
             ? JSON.parse(createdAnalysis.resultValue)
@@ -160,9 +166,8 @@ export class AnalysesDatasourceService {
       const createdAnalysis = await this.prisma.analysis.create({
         data: {
           ...analysis,
-          companyId: companyId,
           analysisTypeId: analysisType.id,
-          resultValue: JSON.stringify(analysis.resultValue),
+          resultValue: analysis.resultValue as ResultValueAA,
         },
       });
 
@@ -171,6 +176,7 @@ export class AnalysesDatasourceService {
         sampleId: createdAnalysis.sampleId,
         analysisTypeId: createdAnalysis.analysisTypeId,
         analysisDate: createdAnalysis.analysisDate,
+        //TODO: Cambiar para que no se devuelva el resultValue como string
         resultValue:
           typeof createdAnalysis.resultValue === 'string'
             ? JSON.parse(createdAnalysis.resultValue)
@@ -179,5 +185,22 @@ export class AnalysesDatasourceService {
     } catch (error) {
       throw new BadRequestException('Error al crear el análisis AA');
     }
+  }
+
+  async getActiveLWAnalyses(): Promise<any> {
+    const analysisType =
+      await this.analysisTypeDatasource.findByShortName('LW');
+
+    const activeLWanalyses = await this.prisma.analysis.findMany({
+      where: {
+        resultValue: {
+          path: ['done'],
+          equals: false,
+        },
+        analysisTypeId: analysisType.id,
+      },
+    });
+
+    return activeLWanalyses;
   }
 }

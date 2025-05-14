@@ -8,7 +8,6 @@ import { ReceptionOriginDataSourceService } from '@infrastructure/datasource/rec
 import { SupplierDataSourceService } from '@infrastructure/datasource/supplier/supplier.datasource.service';
 import { ReceptionTypeDataSourceService } from '@infrastructure/datasource/reception/reception-type.datasource.service';
 import { StatusDataSourceService } from '@infrastructure/datasource/status/status.datasource.service';
-import { AnalysesRepositoryImpl } from '@infrastructure/repositories/analyses/analyses.repository-imp.services';
 import { CreateDHAnalysesUseCase } from '@domain/use-cases/analyses/create-dh-analyses.usecase';
 import { AnalysesRepository } from '@domain/repositories/analyses/analyses.repository';
 import { AnalysisTypeDatasourceService } from '@infrastructure/datasource/analysis-type/analysis-type.datasorce.service';
@@ -16,6 +15,8 @@ import { CreateXRFAnalysesUseCase } from '@domain/use-cases/analyses/create-xrf-
 import { PermissionsModule } from '@core/permissions/permissions.module';
 import { createLWAnalysisUseCase } from '@domain/use-cases/analyses/create-lw-analyses-use-case';
 import { CreateAAAnalysesUseCase } from '@domain/use-cases/analyses/create-aa-analyses.use-case';
+import { GetActiveLWAnalysesUseCase } from '@domain/use-cases/analyses/get-active-lw-analyses.use-case';
+import { AnalysesRepositoryImpl } from '@infrastructure/repositories/analyses/analyses.repository-imp.service';
 @Module({
   imports: [PrismaModule, PermissionsModule],
   controllers: [AnalysesController],
@@ -32,6 +33,7 @@ import { CreateAAAnalysesUseCase } from '@domain/use-cases/analyses/create-aa-an
     CreateDHAnalysesUseCase,
     createLWAnalysisUseCase,
     CreateAAAnalysesUseCase,
+    GetActiveLWAnalysesUseCase,
 
     {
       provide: AnalysesRepository,

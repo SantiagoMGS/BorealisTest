@@ -7,6 +7,7 @@ import {
   HttpStatus,
   Req,
   BadRequestException,
+  Get,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -46,6 +47,7 @@ import {
   ICreateAAAnalysisData,
 } from '@domain/use-cases/analyses/create-aa-analyses.use-case';
 import { ResponseAAAnalysesDto } from './dtos/response-aa-analyses.dto';
+import { GetActiveLWAnalysesUseCase } from '@domain/use-cases/analyses/get-active-lw-analyses.use-case';
 @Controller('analyses')
 @UseGuards(JwtAuthGuard)
 @UseInterceptors(ResponseInterceptor)
@@ -57,7 +59,21 @@ export class AnalysesController {
     private readonly createXRFAnalysisUseCase: CreateXRFAnalysesUseCase,
     private readonly createLWAnalysisUseCase: createLWAnalysisUseCase,
     private readonly createAAAnalysisUseCase: CreateAAAnalysesUseCase,
+    private readonly getActiveLWAnalysesUseCase: GetActiveLWAnalysesUseCase,
   ) {}
+
+  @Get('active-leachwell')
+  @RequirePermission('LWAnalyses')
+  @ApiOperation({
+    summary: 'Obtener análisis LW activos',
+    description: 'Obtiene los análisis LW activos en el sistema',
+  })
+  @CustomResponse({
+    successMessage: 'Análisis LW activos obtenidos exitosamente',
+  })
+  async getActiveLWAnalyses(): Promise<any> {
+    return this.getActiveLWAnalysesUseCase.execute();
+  }
 
   @Post('moisture-determination')
   @RequirePermission('DHAnalyses')
