@@ -10,8 +10,6 @@ import {
 } from '@domain/entities/analyses/analyses.entity';
 import { IAnalysisResponse } from '@domain/interfaces/analyses/analyses.response.interfaces';
 import { SampleReceptionDataSourceService } from '@infrastructure/datasource/reception/sample-reception.datasource.service';
-import { CompanyDataSourceService } from '@infrastructure/datasource/company/company.datasource.service';
-import { AnalysisTypeDatasourceService } from '@infrastructure/datasource/analysis-type/analysis-type.datasorce.service';
 
 @Injectable()
 export class CreateDHAnalysesUseCase {
