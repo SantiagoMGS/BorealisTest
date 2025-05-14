@@ -24,37 +24,17 @@ export class AnalysesDatasourceService {
   ) {}
 
   async createDHAnalyses(
-    analysis: IAnalysisEntity,
+    analysisData: IAnalysisEntity,
     companyId: string,
   ): Promise<IAnalysisResponse> {
     try {
-      const analysisType =
-        await this.analysisTypeDatasource.findByShortName('DH');
-
-      await this.companyDataSource.findById(companyId);
-
-      const sample = await this.sampleDataSource.findById(analysis.sampleId);
-
-      const resultValue = analysis.resultValue as ResultValueDH;
-
-      const receivedWeight = Number(sample.receivedWeight);
-      const dryWeight = Number(resultValue.dryWeight);
-
-      console.log(receivedWeight, dryWeight);
-
-      const moisture = (1 - dryWeight / receivedWeight) * 100;
-
-      const normalizedResultValue = {
-        dryWeight,
-        moisture: parseFloat(moisture.toFixed(4)),
-      };
-
       const createdAnalysis = await this.prisma.analysis.create({
         data: {
-          ...analysis,
+          sampleId: analysisData.sampleId,
+          analysisDate: analysisData.analysisDate,
           companyId: companyId,
-          analysisTypeId: analysisType.id,
-          resultValue: JSON.stringify(normalizedResultValue),
+          analysisTypeId: analysisData.analysisTypeId!,
+          resultValue: JSON.stringify(analysisData.resultValue),
         },
       });
 
@@ -63,20 +43,18 @@ export class AnalysesDatasourceService {
         sampleId: createdAnalysis.sampleId,
         analysisTypeId: createdAnalysis.analysisTypeId,
         analysisDate: createdAnalysis.analysisDate,
-
         resultValue:
           typeof createdAnalysis.resultValue === 'string'
             ? JSON.parse(createdAnalysis.resultValue)
             : createdAnalysis.resultValue,
       };
     } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw error;
-      }
-
-      throw new BadRequestException('Error al crear el análisis');
+      throw new BadRequestException(
+        'Error al crear el análisis en la base de datos',
+      );
     }
   }
+
   async createXRFAnalyses(
     analysis: IAnalysisEntity,
     companyId: string,

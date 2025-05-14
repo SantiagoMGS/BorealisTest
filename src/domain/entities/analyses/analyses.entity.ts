@@ -2,6 +2,7 @@ export interface IAnalysisEntity {
   sampleId: string;
   analysisDate: Date;
   resultValue: ResultValueDH | ResultValueXRF[] | ResultValueLW | ResultValueAA;
+  analysisTypeId?: string;
 }
 
 export interface ResultValueDH {
