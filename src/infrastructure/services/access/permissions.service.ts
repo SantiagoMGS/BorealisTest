@@ -18,7 +18,7 @@ export class PermissionsService implements IPermissionsPort, OnModuleInit {
 
   async onModuleInit() {
     // Cargar el caché de subrecursos al iniciar la aplicación
-    // await this.reloadSubresourcesCache();
+    await this.reloadSubresourcesCache();
   }
 
   /**
