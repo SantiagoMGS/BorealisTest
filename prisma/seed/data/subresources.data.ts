@@ -47,17 +47,6 @@ export const subresourceInitialData: Prisma.SubresourceCreateInput[] = [
     controller: 'SampleManagementController',
   },
   {
-    name: 'Niton',
-    resource: {
-      connect: {
-        name: 'Resultados',
-      },
-    },
-    icon: 'device-niton',
-    path: '/niton-results',
-    controller: 'NitonResultsController',
-  },
-  {
     name: 'Absorción atómica',
     resource: {
       connect: {
@@ -147,17 +136,17 @@ export const subresourceInitialData: Prisma.SubresourceCreateInput[] = [
     path: '/administration/suppliers',
     controller: 'SupplierController',
   },
-  //{
-  //  name: 'Orígenes de Recepción',
-  //  resource: {
-  //    connect: {
-  //      name: 'Orígenes de Recepción',
-  //    },
-  //  },
-  //  icon: 'fa-truck',
-  //  path: '/administration/reception-origins',
-  //  controller: 'ReceptionOriginController',
-  //},
+  {
+    name: 'Orígenes de Recepción',
+    resource: {
+      connect: {
+        name: 'Orígenes de Recepción',
+      },
+    },
+    icon: 'fa-truck',
+    path: '/administration/reception-origins',
+    controller: 'ReceptionOriginController',
+  },
   {
     name: 'Impresoras de Etiquetas',
     resource: {
@@ -210,8 +199,8 @@ export const subresourceInitialData: Prisma.SubresourceCreateInput[] = [
         name: 'Análisis',
       },
     },
-    icon: 'fa-truck',
-    path: 'analyses/aa-analyses',
+    icon: 'fa-atom',
+    path: '/analysis/atomic-absorption',
     controller: 'AAAnalyses',
   },
 ];

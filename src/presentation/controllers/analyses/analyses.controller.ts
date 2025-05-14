@@ -68,12 +68,12 @@ export class AnalysesController {
   })
   @ApiBody({
     type: CreateDHAnalysesDto,
-    description: 'Datos necesarios para crear el análisis DH',
+    description: 'Datos necesarios para obtener la determinación de humedad',
     required: true,
   })
   @ApiResponse({
     status: 201,
-    description: 'Análisis DH creado correctamente',
+    description: 'Determinación de Humedad creada exitosamente',
     type: DHResponse,
   })
   @ApiBadRequestResponse({
@@ -85,7 +85,7 @@ export class AnalysesController {
     type: ErrorResponseDto,
   })
   @CustomResponse({
-    successMessage: 'Análisis DH creado exitosamente',
+    successMessage: 'Determinación de Humedad creada exitosamente',
   })
   async createDHAnalysis(
     @Body() analysis: CreateDHAnalysesDto,
