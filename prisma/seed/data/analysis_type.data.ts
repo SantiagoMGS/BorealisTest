@@ -230,7 +230,7 @@ export const analysisTypeInitialData: AnalysisTypeData[] = [
       type: 'object',
       properties: {
         dryWeight: { type: 'number' },
-        humidityPercentage: { type: 'number' },
+        moisture: { type: 'number' },
       },
     },
   },

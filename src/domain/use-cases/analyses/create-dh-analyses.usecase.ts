@@ -1,16 +1,54 @@
 import { AnalysesRepository } from '@domain/repositories/analyses/analyses.repository';
-import { Injectable } from '@nestjs/common';
-import { IAnalysisEntity } from '@domain/entities/analyses/analyses.entity';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
+import {
+  IAnalysisEntity,
+  ResultValueDH,
+} from '@domain/entities/analyses/analyses.entity';
 import { IAnalysisResponse } from '@domain/interfaces/analyses/analyses.response.interfaces';
+import { SampleReceptionDataSourceService } from '@infrastructure/datasource/reception/sample-reception.datasource.service';
 
 @Injectable()
 export class CreateDHAnalysesUseCase {
-  constructor(private readonly analysesRepository: AnalysesRepository) {}
+  constructor(
+    private readonly analysesRepository: AnalysesRepository,
+    private readonly sampleDataSource: SampleReceptionDataSourceService,
+  ) {}
 
   async execute(
     analysis: IAnalysisEntity,
     companyId: string,
   ): Promise<IAnalysisResponse> {
-    return this.analysesRepository.createDHAnalyses(analysis, companyId);
+    try {
+      const sample = await this.sampleDataSource.findById(analysis.sampleId);
+
+      const resultValue = analysis.resultValue as ResultValueDH;
+
+      const receivedWeight = Number(sample.receivedWeight);
+      const dryWeight = Number(resultValue.dryWeight);
+
+      const moisture = (1 - dryWeight / receivedWeight) * 100;
+
+      const normalizedResultValue = {
+        dryWeight,
+        moisture: parseFloat(moisture.toFixed(4)),
+      };
+
+      const analysisData = {
+        ...analysis,
+        resultValue: normalizedResultValue,
+      };
+
+      return this.analysesRepository.createDHAnalyses(analysisData, companyId);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+
+      throw new BadRequestException('Error al crear el análisis');
+    }
   }
 }
