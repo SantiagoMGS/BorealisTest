@@ -18,8 +18,6 @@ export class CreateDHAnalysesUseCase {
   constructor(
     private readonly analysesRepository: AnalysesRepository,
     private readonly sampleDataSource: SampleReceptionDataSourceService,
-    private readonly companyDataSource: CompanyDataSourceService,
-    private readonly analysisTypeDatasource: AnalysisTypeDatasourceService,
   ) {}
 
   async execute(
