@@ -59,7 +59,7 @@ export class AnalysesController {
     private readonly createAAAnalysisUseCase: CreateAAAnalysesUseCase,
   ) {}
 
-  @Post('humidity-determination')
+  @Post('moisture-determination')
   @RequirePermission('DHAnalyses')
   @ApiOperation({
     summary: 'Crear nuevo análisis DH',

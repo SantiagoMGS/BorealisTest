@@ -178,7 +178,7 @@ export const subresourceInitialData: Prisma.SubresourceCreateInput[] = [
       },
     },
     icon: 'fa-droplet',
-    path: '/analysis/humidity-determination',
+    path: '/analysis/moisture-determination',
     controller: 'DHAnalyses',
   },
   {
