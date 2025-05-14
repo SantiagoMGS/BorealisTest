@@ -46,50 +46,6 @@ export const subresourceInitialData: Prisma.SubresourceCreateInput[] = [
     path: 'lims/gestion-muestras',
     controller: 'SampleManagementController',
   },
-  {
-    name: 'Absorción atómica',
-    resource: {
-      connect: {
-        name: 'Resultados',
-      },
-    },
-    icon: 'atom',
-    path: '/absorbance-results',
-    controller: 'AbsorbanceResultsController',
-  },
-  {
-    name: 'Copelación',
-    resource: {
-      connect: {
-        name: 'Resultados',
-      },
-    },
-    icon: 'fire-hot',
-    path: '/copelation',
-    controller: 'CopelationController',
-  },
-  {
-    name: 'Niton',
-    resource: {
-      connect: {
-        name: 'Análisis',
-      },
-    },
-    icon: 'shield-check',
-    path: '/niton-analysis',
-    controller: 'NitonAnalysisController',
-  },
-  {
-    name: 'Absorción atómica',
-    resource: {
-      connect: {
-        name: 'Análisis',
-      },
-    },
-    icon: 'shield-check',
-    path: '/absorbance-analysis',
-    controller: 'AbsorbanceAnalysisController',
-  },
 
   // Subrecursos para ADMINISTRACIÓN
   {
@@ -167,7 +123,7 @@ export const subresourceInitialData: Prisma.SubresourceCreateInput[] = [
       },
     },
     icon: 'fa-droplet',
-    path: '/analysis/moisture-determination',
+    path: 'lims/moisture-determination',
     controller: 'DHAnalyses',
   },
   {
@@ -178,7 +134,7 @@ export const subresourceInitialData: Prisma.SubresourceCreateInput[] = [
       },
     },
     icon: 'fa-raygun',
-    path: '/analysis/x-ray-fluorescence',
+    path: 'lims/x-ray-fluorescence',
     controller: 'XRFAnalyses',
   },
   {
@@ -189,7 +145,7 @@ export const subresourceInitialData: Prisma.SubresourceCreateInput[] = [
       },
     },
     icon: 'fa-stopwatch',
-    path: '/analysis/leachwell',
+    path: 'lims/leachwell',
     controller: 'LWAnalyses',
   },
   {
@@ -200,7 +156,7 @@ export const subresourceInitialData: Prisma.SubresourceCreateInput[] = [
       },
     },
     icon: 'fa-atom',
-    path: '/analysis/atomic-absorption',
+    path: 'lims/atomic-absorption',
     controller: 'AAAnalyses',
   },
 ];
