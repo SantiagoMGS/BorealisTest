@@ -8,7 +8,6 @@ import {
 } from '@nestjs/common';
 import { SampleReceptionDataSourceService } from '../reception';
 import { CompanyDataSourceService } from '@infrastructure/datasource/company/company.datasource.service';
-import { Prisma } from '@prisma/client';
 import { AnalysisTypeDatasourceService } from '../analysis-type/analysis-type.datasorce.service';
 
 @Injectable()
@@ -21,38 +20,22 @@ export class AnalysesDatasourceService {
   ) {}
 
   async createDHAnalyses(
-    analysis: IAnalysisEntity,
+    analysisData: IAnalysisEntity,
     companyId: string,
   ): Promise<IAnalysisResponse> {
     try {
       const analysisType =
         await this.analysisTypeDatasource.findByShortName('DH');
 
-      if (!analysisType) {
-        throw new NotFoundException('No existe el tipo de análisis');
-      }
-
-      const company = await this.companyDataSource.findById(companyId);
-      if (!company) {
-        throw new NotFoundException('No existe la empresa');
-      }
-      const sample = await this.sampleDataSource.findById(analysis.sampleId);
-
-      const receivedWeight = Number(sample.receivedWeight);
-      const dryWeight = Number((analysis.resultValue as any).dryWeigth);
-
-      const humidityPercentage = (1 - dryWeight / receivedWeight) * 100;
-
-      const normalizedResultValue = {
-        dryWeight,
-        humidityPercentage: parseFloat(humidityPercentage.toFixed(4)),
-      };
+      await this.companyDataSource.findById(companyId);
 
       const createdAnalysis = await this.prisma.analysis.create({
         data: {
-          ...analysis,
+          sampleId: analysisData.sampleId,
+          analysisDate: analysisData.analysisDate,
+          companyId: companyId,
           analysisTypeId: analysisType.id,
-          resultValue: JSON.stringify(normalizedResultValue),
+          resultValue: JSON.stringify(analysisData.resultValue),
         },
       });
 
@@ -61,20 +44,18 @@ export class AnalysesDatasourceService {
         sampleId: createdAnalysis.sampleId,
         analysisTypeId: createdAnalysis.analysisTypeId,
         analysisDate: createdAnalysis.analysisDate,
-
         resultValue:
           typeof createdAnalysis.resultValue === 'string'
             ? JSON.parse(createdAnalysis.resultValue)
             : createdAnalysis.resultValue,
       };
     } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw error;
-      }
-
-      throw new BadRequestException('Error al crear el análisis');
+      throw new BadRequestException(
+        'Error al crear el análisis en la base de datos',
+      );
     }
   }
+
   async createXRFAnalyses(
     analysis: IAnalysisEntity,
     companyId: string,
@@ -83,24 +64,15 @@ export class AnalysesDatasourceService {
       const analysisType =
         await this.analysisTypeDatasource.findByShortName('XRF');
 
-      if (!analysisType) {
-        throw new NotFoundException('No existe el tipo de análisis XRF');
-      }
-      const company = await this.companyDataSource.findById(companyId);
-      if (!company) {
-        throw new NotFoundException('No existe la empresa');
-      }
+      await this.companyDataSource.findById(companyId);
+
       const sampleId = (analysis.sampleId as any)?.value || analysis.sampleId;
-      const analysisDate = analysis.analysisDate as Date;
 
-      const sample = await this.sampleDataSource.findById(sampleId);
-
-      if (!sample) {
-        throw new NotFoundException('No existe la muestra');
-      }
+      await this.sampleDataSource.findById(sampleId);
 
       const createdAnalysis = await this.prisma.analysis.create({
         data: {
+          companyId: companyId,
           sampleId: sampleId,
           analysisDate: analysis.analysisDate,
           analysisTypeId: analysisType.id,
@@ -135,23 +107,15 @@ export class AnalysesDatasourceService {
       const analysisType =
         await this.analysisTypeDatasource.findByShortName('LW');
 
-      if (!analysisType) {
-        throw new NotFoundException('No existe el tipo de análisis LW');
-      }
-      const company = await this.companyDataSource.findById(companyId);
-      if (!company) {
-        throw new NotFoundException('No existe la empresa');
-      }
+      await this.companyDataSource.findById(companyId);
 
-      const sample = await this.sampleDataSource.findById(analysis.sampleId);
-
-      if (!sample) {
-        throw new NotFoundException('No existe la muestra');
-      }
+      await this.sampleDataSource.findById(analysis.sampleId);
 
       const createdAnalysis = await this.prisma.analysis.create({
         data: {
-          ...analysis,
+          companyId: companyId,
+          sampleId: analysis.sampleId,
+          analysisDate: analysis.analysisDate,
           analysisTypeId: analysisType.id,
           resultValue: JSON.stringify(analysis.resultValue),
         },
@@ -162,7 +126,6 @@ export class AnalysesDatasourceService {
         sampleId: createdAnalysis.sampleId,
         analysisTypeId: createdAnalysis.analysisTypeId,
         analysisDate: createdAnalysis.analysisDate,
-
         resultValue:
           typeof createdAnalysis.resultValue === 'string'
             ? JSON.parse(createdAnalysis.resultValue)
@@ -172,6 +135,7 @@ export class AnalysesDatasourceService {
       throw new BadRequestException('Error al crear el análisis LW');
     }
   }
+
   async createAAAnalyses(
     analysis: IAnalysisEntity,
     companyId: string,
@@ -196,6 +160,7 @@ export class AnalysesDatasourceService {
       const createdAnalysis = await this.prisma.analysis.create({
         data: {
           ...analysis,
+          companyId: companyId,
           analysisTypeId: analysisType.id,
           resultValue: JSON.stringify(analysis.resultValue),
         },

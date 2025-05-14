@@ -1,6 +1,14 @@
 import { ResultValueLW } from '@domain/entities/analyses/analyses.entity';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsObject, IsString, IsUUID } from 'class-validator';
+import { Type } from 'class-transformer';
+import {
+  IsInt,
+  IsNotEmpty,
+  IsString,
+  IsUUID,
+  Min,
+  ValidateNested,
+} from 'class-validator';
 
 export class CreateLWAnalysesDto {
   @ApiProperty({
@@ -22,9 +30,23 @@ export class CreateLWAnalysesDto {
 
   @ApiProperty({
     description: 'Resultado del análisis',
-    example: '123e4567-e89b-12d3-a456-426614174000',
+    example: {
+      time: 10,
+    },
   })
-  @IsObject()
+  @ValidateNested()
+  @Type(() => ResultValueLWDto)
   @IsNotEmpty()
   resultValue!: ResultValueLW;
+}
+
+class ResultValueLWDto implements ResultValueLW {
+  @ApiProperty({
+    description: 'Tiempo en segundos (número entero positivo)',
+    example: 10,
+  })
+  @IsInt()
+  @Min(1)
+  @IsNotEmpty()
+  time!: number;
 }

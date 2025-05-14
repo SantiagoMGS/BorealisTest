@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { PrismaModule } from '@core/prisma/prisma.module';
 import { AnalysesController } from './analyses.controller';
-import { AnalysesDatasourceService } from '@infrastructure/datasource/analyses/analyses.datasorces.service';
+import { AnalysesDatasourceService } from '@infrastructure/datasource/analyses/analyses.datasource.service';
 import { SampleReceptionDataSourceService } from '@infrastructure/datasource/reception/sample-reception.datasource.service';
 import { CompanyDataSourceService } from '@infrastructure/datasource/company/company.datasource.service';
 import { ReceptionOriginDataSourceService } from '@infrastructure/datasource/reception/reception-origin.datasource.service';

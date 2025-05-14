@@ -114,12 +114,15 @@ model Company {
   updatedAt    DateTime             @updatedAt
   createdBy    String?              @db.Uuid
   updatedBy    String?              @db.Uuid
+
+
   applications CompanyApplication[]
   branding     CompanyBranding?
   suppliers    CompanySupplier[]
   receptions   Reception[]
   users        UserCompany[]
   Printer      Printer[]
+  analyses     Analysis[]
 
   @@index([name])
   @@map("companies")
@@ -500,6 +503,7 @@ model AnalysisType {
 
 model Analysis {
   id             String       @id @default(uuid()) @db.Uuid
+  companyId      String       @db.Uuid
   analysisTypeId String       @db.Uuid
   sampleId       String       @db.Uuid
   resultValue    Json
@@ -509,11 +513,14 @@ model Analysis {
   updatedAt      DateTime     @updatedAt
   createdBy      String?      @db.Uuid
   updatedBy      String?      @db.Uuid
+  
+  company        Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
   analysisType   AnalysisType @relation(fields: [analysisTypeId], references: [id], onDelete: Cascade)
   sample         Sample       @relation(fields: [sampleId], references: [id], onDelete: Cascade)
 
-  @@index([analysisTypeId])
-  @@index([sampleId])
+  @@index([companyId])
+  @@index([companyId, sampleId])
+  @@index([companyId, sampleId, analysisTypeId])
   @@map("analyses")
 }
 
