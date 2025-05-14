@@ -8,31 +8,23 @@ import { ActionLevel } from '@domain/entities/access/action.entity';
 export class PermissionsService implements IPermissionsPort, OnModuleInit {
   private readonly logger = new Logger(PermissionsService.name);
 
-  // Caché de subrecursos para mejorar rendimiento
   private subresourcesCache: Map<string, ISubresourceEntity> = new Map();
 
-  // Caché de resultados de permisos para mejorar rendimiento
   private permissionsCache: Map<string, boolean> = new Map();
 
   constructor(private readonly permissionsRepository: PermissionsRepository) {}
 
   async onModuleInit() {
-    // Cargar el caché de subrecursos al iniciar la aplicación
-    // await this.reloadSubresourcesCache();
+    await this.reloadSubresourcesCache();
   }
 
-  /**
-   * Recarga el caché de subrecursos
-   */
   async reloadSubresourcesCache(): Promise<void> {
     try {
       const subresources =
         await this.permissionsRepository.getAllSubresources();
 
-      // Limpiar caché anterior
       this.subresourcesCache.clear();
 
-      // Llenar nuevo caché
       subresources.forEach((subresource) => {
         this.subresourcesCache.set(subresource.controller, subresource);
       });
@@ -46,9 +38,6 @@ export class PermissionsService implements IPermissionsPort, OnModuleInit {
     }
   }
 
-  /**
-   * Convierte un método HTTP a un nivel de acción
-   */
   private getActionLevelByHttpMethod(method: string): number {
     const methodMap: Record<string, number> = {
       GET: ActionLevel.READ,
@@ -61,9 +50,6 @@ export class PermissionsService implements IPermissionsPort, OnModuleInit {
     return methodMap[method.toUpperCase()] || ActionLevel.READ;
   }
 
-  /**
-   * Obtiene la clave de caché para un permiso
-   */
   private getPermissionCacheKey(
     roleId: string,
     companyId: string,
@@ -73,9 +59,6 @@ export class PermissionsService implements IPermissionsPort, OnModuleInit {
     return `${roleId}:${companyId}:${controller}:${action}`;
   }
 
-  /**
-   * Verifica si un rol tiene permiso para una acción en un controlador
-   */
   async hasPermission(
     roleId: string,
     companyId: string,
@@ -83,7 +66,6 @@ export class PermissionsService implements IPermissionsPort, OnModuleInit {
     action: string,
   ): Promise<boolean> {
     try {
-      // Crear clave de caché
       const cacheKey = this.getPermissionCacheKey(
         roleId,
         companyId,
@@ -91,27 +73,22 @@ export class PermissionsService implements IPermissionsPort, OnModuleInit {
         action,
       );
 
-      // Verificar si el resultado está en caché
       if (this.permissionsCache.has(cacheKey)) {
         return this.permissionsCache.get(cacheKey) || false;
       }
 
-      // Obtener el subrecurso asociado al controlador
       const subresource = this.subresourcesCache.get(controller);
 
       if (!subresource) {
         this.logger.warn(
           `No se encontró subrecurso para el controlador: ${controller}`,
         );
-        // Guardar en caché y retornar falso
         this.permissionsCache.set(cacheKey, false);
         return false;
       }
 
-      // Obtener el nivel de acción requerido
       const requiredLevel = this.getActionLevelByHttpMethod(action);
 
-      // Verificar si el rol tiene el permiso requerido
       const hasPermission =
         await this.permissionsRepository.hasRoleActionForSubresource(
           roleId,
@@ -119,7 +96,6 @@ export class PermissionsService implements IPermissionsPort, OnModuleInit {
           requiredLevel,
         );
 
-      // Guardar resultado en caché
       this.permissionsCache.set(cacheKey, hasPermission);
 
       return hasPermission;
