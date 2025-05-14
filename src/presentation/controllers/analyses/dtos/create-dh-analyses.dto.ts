@@ -4,7 +4,6 @@ import { Type } from 'class-transformer';
 import {
   IsNotEmpty,
   IsNumber,
-  IsObject,
   IsPositive,
   IsString,
   IsUUID,
