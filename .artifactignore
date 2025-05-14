@@ -1,7 +1,0 @@
-node_modules/
-*.ts
-*.log
-*.env
-.prisma/
-prisma/
-coverage/
