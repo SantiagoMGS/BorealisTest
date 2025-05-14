@@ -29,12 +29,17 @@ export class AnalysesDatasourceService {
     companyId: string,
   ): Promise<IAnalysisResponse> {
     try {
+      const analysisType =
+        await this.analysisTypeDatasource.findByShortName('DH');
+
+      await this.companyDataSource.findById(companyId);
+
       const createdAnalysis = await this.prisma.analysis.create({
         data: {
           sampleId: analysisData.sampleId,
           analysisDate: analysisData.analysisDate,
           companyId: companyId,
-          analysisTypeId: analysisData.analysisTypeId!,
+          analysisTypeId: analysisType.id,
           resultValue: JSON.stringify(analysisData.resultValue),
         },
       });
@@ -111,21 +116,13 @@ export class AnalysesDatasourceService {
 
       await this.sampleDataSource.findById(analysis.sampleId);
 
-      const resultValue = analysis.resultValue as ResultValueLW;
-
-      console.log(analysis);
-
-      const endDateTime = new Date(analysis.analysisDate);
-      endDateTime.setMinutes(endDateTime.getMinutes() + resultValue.time);
-
-      resultValue.endDateTime = endDateTime;
-
       const createdAnalysis = await this.prisma.analysis.create({
         data: {
-          ...analysis,
           companyId: companyId,
+          sampleId: analysis.sampleId,
+          analysisDate: analysis.analysisDate,
           analysisTypeId: analysisType.id,
-          resultValue: JSON.stringify(resultValue),
+          resultValue: JSON.stringify(analysis.resultValue),
         },
       });
 
@@ -134,7 +131,6 @@ export class AnalysesDatasourceService {
         sampleId: createdAnalysis.sampleId,
         analysisTypeId: createdAnalysis.analysisTypeId,
         analysisDate: createdAnalysis.analysisDate,
-
         resultValue:
           typeof createdAnalysis.resultValue === 'string'
             ? JSON.parse(createdAnalysis.resultValue)
@@ -144,6 +140,7 @@ export class AnalysesDatasourceService {
       throw new BadRequestException('Error al crear el análisis LW');
     }
   }
+
   async createAAAnalyses(
     analysis: IAnalysisEntity,
     companyId: string,

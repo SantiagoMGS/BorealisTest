@@ -1,4 +1,7 @@
-import { IAnalysisEntity } from '@domain/entities/analyses/analyses.entity';
+import {
+  ResultValueLW,
+  IAnalysisEntity,
+} from '@domain/entities/analyses/analyses.entity';
 import { AnalysesRepository } from '@domain/repositories/analyses/analyses.repository';
 import { Injectable } from '@nestjs/common';
 import { IAnalysisResponse } from '@domain/interfaces/analyses/analyses.response.interfaces';
@@ -11,6 +14,22 @@ export class createLWAnalysisUseCase {
     analysis: IAnalysisEntity,
     companyId: string,
   ): Promise<IAnalysisResponse> {
-    return this.analysesRepository.createLWAnalysis(analysis, companyId);
+    const resultValue = analysis.resultValue as ResultValueLW;
+
+    const endDateTime = new Date(analysis.analysisDate);
+    endDateTime.setMinutes(endDateTime.getMinutes() + resultValue.time);
+
+    const processedAnalysis: IAnalysisEntity = {
+      ...analysis,
+      resultValue: {
+        ...resultValue,
+        endDateTime: endDateTime,
+      },
+    };
+
+    return this.analysesRepository.createLWAnalysis(
+      processedAnalysis,
+      companyId,
+    );
   }
 }

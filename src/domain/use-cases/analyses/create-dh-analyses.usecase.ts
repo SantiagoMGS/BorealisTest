@@ -27,11 +27,6 @@ export class CreateDHAnalysesUseCase {
     companyId: string,
   ): Promise<IAnalysisResponse> {
     try {
-      const analysisType =
-        await this.analysisTypeDatasource.findByShortName('DH');
-
-      await this.companyDataSource.findById(companyId);
-
       const sample = await this.sampleDataSource.findById(analysis.sampleId);
 
       const resultValue = analysis.resultValue as ResultValueDH;
@@ -49,7 +44,6 @@ export class CreateDHAnalysesUseCase {
       const analysisData = {
         ...analysis,
         resultValue: normalizedResultValue,
-        analysisTypeId: analysisType.id,
       };
 
       return this.analysesRepository.createDHAnalyses(analysisData, companyId);
