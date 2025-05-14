@@ -8,6 +8,7 @@ import {
   Req,
   BadRequestException,
   Get,
+  Query,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -41,13 +42,15 @@ import { createLWAnalysisUseCase } from '@domain/use-cases/analyses/create-lw-an
 import { LWResponse } from './dtos/response-lw-analyses.dto';
 import { DHResponse } from './dtos/response-dh-analyses.dto';
 import { XRFResponse } from './dtos/response-xrf-analyses.dto';
-import { CreateAAAnalysesDto } from './dtos/create-aa-analyses.dto';
 import {
   CreateAAAnalysesUseCase,
   ICreateAAAnalysisData,
 } from '@domain/use-cases/analyses/create-aa-analyses.use-case';
 import { ResponseAAAnalysesDto } from './dtos/response-aa-analyses.dto';
 import { GetActiveLWAnalysesUseCase } from '@domain/use-cases/analyses/get-active-lw-analyses.use-case';
+import { IPaginatedData } from '@shared/interfaces/pagination.interfaces';
+import { PaginationDto } from '@shared/dtos/paginator.dto';
+
 @Controller('analyses')
 @UseGuards(JwtAuthGuard)
 @UseInterceptors(ResponseInterceptor)
@@ -71,8 +74,10 @@ export class AnalysesController {
   @CustomResponse({
     successMessage: 'Análisis LW activos obtenidos exitosamente',
   })
-  async getActiveLWAnalyses(): Promise<any> {
-    return this.getActiveLWAnalysesUseCase.execute();
+  async getActiveLWAnalyses(
+    @Query() paginationQuery: PaginationDto,
+  ): Promise<IPaginatedData<any>> {
+    return this.getActiveLWAnalysesUseCase.execute(paginationQuery);
   }
 
   @Post('moisture-determination')

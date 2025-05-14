@@ -3,6 +3,12 @@ import { AnalysesRepository } from '@domain/repositories/analyses/analyses.repos
 import { IAnalysisEntity } from '@domain/entities/analyses/analyses.entity';
 import { IAnalysisResponse } from '@domain/interfaces/analyses/analyses.response.interfaces';
 import { AnalysesDatasourceService } from '@infrastructure/datasource/analyses/analyses.datasource.service';
+import {
+  IPaginatedData,
+  IPaginationOptions,
+} from '@shared/interfaces/pagination.interfaces';
+import { PaginationHelper } from '@shared/utils/pagination.helper';
+
 @Injectable()
 export class AnalysesRepositoryImpl extends AnalysesRepository {
   constructor(private readonly analysesDatasource: AnalysesDatasourceService) {
@@ -37,7 +43,19 @@ export class AnalysesRepositoryImpl extends AnalysesRepository {
     return await this.analysesDatasource.createAAAnalyses(analysis, companyId);
   }
 
-  async getActiveLWAnalyses(): Promise<any> {
-    return await this.analysesDatasource.getActiveLWAnalyses();
+  async getActiveLWAnalyses(
+    options: IPaginationOptions,
+  ): Promise<IPaginatedData<any>> {
+    const data = await this.analysesDatasource.getActiveLWAnalyses(options);
+    const { page, limit } = options;
+
+    return PaginationHelper.createPaginatedResponseFromItems(
+      data,
+      data.length,
+      {
+        page,
+        limit,
+      },
+    );
   }
 }

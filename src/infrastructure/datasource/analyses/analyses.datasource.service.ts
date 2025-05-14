@@ -15,6 +15,7 @@ import {
 import { SampleReceptionDataSourceService } from '../reception';
 import { CompanyDataSourceService } from '@infrastructure/datasource/company/company.datasource.service';
 import { AnalysisTypeDatasourceService } from '../analysis-type/analysis-type.datasorce.service';
+import { IPaginationOptions } from '@shared/interfaces/pagination.interfaces';
 
 @Injectable()
 export class AnalysesDatasourceService {
@@ -150,13 +151,7 @@ export class AnalysesDatasourceService {
       const analysisType =
         await this.analysisTypeDatasource.findByShortName('AA');
 
-      if (!analysisType) {
-        throw new NotFoundException('No existe el tipo de análisis AA');
-      }
-      const company = await this.companyDataSource.findById(companyId);
-      if (!company) {
-        throw new NotFoundException('No existe la empresa');
-      }
+      await this.companyDataSource.findById(companyId);
 
       const sample = await this.sampleDataSource.findById(analysis.sampleId);
 
@@ -187,11 +182,36 @@ export class AnalysesDatasourceService {
     }
   }
 
-  async getActiveLWAnalyses(): Promise<any> {
+  async getActiveLWAnalyses(options: IPaginationOptions): Promise<any> {
+    const { page, limit } = options;
+    const skip = (page - 1) * limit;
+
     const analysisType =
       await this.analysisTypeDatasource.findByShortName('LW');
 
     const activeLWanalyses = await this.prisma.analysis.findMany({
+      where: {
+        isActive: true,
+        resultValue: {
+          path: ['done'],
+          equals: false,
+        },
+        analysisTypeId: analysisType.id,
+      },
+      select: {
+        analysisDate: true,
+        sample: {
+          select: {
+            id: true,
+            code: true,
+          },
+        },
+        resultValue: true,
+      },
+      skip,
+      take: limit,
+    });
+    this.prisma.analysis.count({
       where: {
         resultValue: {
           path: ['done'],
