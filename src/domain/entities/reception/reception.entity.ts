@@ -1,4 +1,5 @@
 export interface ISampleEntity {
+  id?: string;
   code?: number;
   receptionOriginId: string;
   receivedWeight: number;

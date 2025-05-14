@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { AnalysesRepository } from '@domain/repositories/analyses/analyses.repository';
 import { IAnalysisEntity } from '@domain/entities/analyses/analyses.entity';
 import { IAnalysisResponse } from '@domain/interfaces/analyses/analyses.response.interfaces';
-import { AnalysesDatasourceService } from '@infrastructure/datasource/analyses/analyses.datasorces.service';
+import { AnalysesDatasourceService } from '@infrastructure/datasource/analyses/analyses.datasource.service';
 @Injectable()
 export class AnalysesRepositoryImpl extends AnalysesRepository {
   constructor(

@@ -1,5 +1,8 @@
 import { PrismaService } from '@core/prisma/prisma.service';
-import { IAnalysisEntity } from '@domain/entities/analyses/analyses.entity';
+import {
+  IAnalysisEntity,
+  ResultValueDH,
+} from '@domain/entities/analyses/analyses.entity';
 import { IAnalysisResponse } from '@domain/interfaces/analyses/analyses.response.interfaces';
 import {
   Injectable,
@@ -28,29 +31,28 @@ export class AnalysesDatasourceService {
       const analysisType =
         await this.analysisTypeDatasource.findByShortName('DH');
 
-      if (!analysisType) {
-        throw new NotFoundException('No existe el tipo de análisis');
-      }
+      await this.companyDataSource.findById(companyId);
 
-      const company = await this.companyDataSource.findById(companyId);
-      if (!company) {
-        throw new NotFoundException('No existe la empresa');
-      }
       const sample = await this.sampleDataSource.findById(analysis.sampleId);
 
-      const receivedWeight = Number(sample.receivedWeight);
-      const dryWeight = Number((analysis.resultValue as any).dryWeigth);
+      const resultValue = analysis.resultValue as ResultValueDH;
 
-      const humidityPercentage = (1 - dryWeight / receivedWeight) * 100;
+      const receivedWeight = Number(sample.receivedWeight);
+      const dryWeight = Number(resultValue.dryWeight);
+
+      console.log(receivedWeight, dryWeight);
+
+      const moisture = (1 - dryWeight / receivedWeight) * 100;
 
       const normalizedResultValue = {
         dryWeight,
-        humidityPercentage: parseFloat(humidityPercentage.toFixed(4)),
+        moisture: parseFloat(moisture.toFixed(4)),
       };
 
       const createdAnalysis = await this.prisma.analysis.create({
         data: {
           ...analysis,
+          companyId: companyId,
           analysisTypeId: analysisType.id,
           resultValue: JSON.stringify(normalizedResultValue),
         },
@@ -83,24 +85,15 @@ export class AnalysesDatasourceService {
       const analysisType =
         await this.analysisTypeDatasource.findByShortName('XRF');
 
-      if (!analysisType) {
-        throw new NotFoundException('No existe el tipo de análisis XRF');
-      }
-      const company = await this.companyDataSource.findById(companyId);
-      if (!company) {
-        throw new NotFoundException('No existe la empresa');
-      }
+      await this.companyDataSource.findById(companyId);
+
       const sampleId = (analysis.sampleId as any)?.value || analysis.sampleId;
-      const analysisDate = analysis.analysisDate as Date;
 
-      const sample = await this.sampleDataSource.findById(sampleId);
-
-      if (!sample) {
-        throw new NotFoundException('No existe la muestra');
-      }
+      await this.sampleDataSource.findById(sampleId);
 
       const createdAnalysis = await this.prisma.analysis.create({
         data: {
+          companyId: companyId,
           sampleId: sampleId,
           analysisDate: analysis.analysisDate,
           analysisTypeId: analysisType.id,
@@ -135,23 +128,16 @@ export class AnalysesDatasourceService {
       const analysisType =
         await this.analysisTypeDatasource.findByShortName('LW');
 
-      if (!analysisType) {
-        throw new NotFoundException('No existe el tipo de análisis LW');
-      }
-      const company = await this.companyDataSource.findById(companyId);
-      if (!company) {
-        throw new NotFoundException('No existe la empresa');
-      }
+      await this.companyDataSource.findById(companyId);
 
-      const sample = await this.sampleDataSource.findById(analysis.sampleId);
+      await this.sampleDataSource.findById(analysis.sampleId);
 
-      if (!sample) {
-        throw new NotFoundException('No existe la muestra');
-      }
-
+      //analysis.resultValue.cosa = 'HOLAAAAAAAAAA';
+      console.log(analysis);
       const createdAnalysis = await this.prisma.analysis.create({
         data: {
           ...analysis,
+          companyId: companyId,
           analysisTypeId: analysisType.id,
           resultValue: JSON.stringify(analysis.resultValue),
         },
@@ -196,6 +182,7 @@ export class AnalysesDatasourceService {
       const createdAnalysis = await this.prisma.analysis.create({
         data: {
           ...analysis,
+          companyId: companyId,
           analysisTypeId: analysisType.id,
           resultValue: JSON.stringify(analysis.resultValue),
         },

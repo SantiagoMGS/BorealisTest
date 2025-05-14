@@ -1,6 +1,26 @@
 import { ResultValueDH } from '@domain/entities/analyses/analyses.entity';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsObject, IsString, IsUUID } from 'class-validator';
+import { Type } from 'class-transformer';
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsObject,
+  IsPositive,
+  IsString,
+  IsUUID,
+  ValidateNested,
+} from 'class-validator';
+
+class ResultValueDHDto implements ResultValueDH {
+  @ApiProperty({
+    description: 'Peso seco en gramos',
+    example: 950,
+  })
+  @IsNumber()
+  @IsPositive()
+  @IsNotEmpty()
+  dryWeight!: number;
+}
 
 export class CreateDHAnalysesDto {
   @ApiProperty({
@@ -13,15 +33,6 @@ export class CreateDHAnalysesDto {
   sampleId!: string;
 
   @ApiProperty({
-    description: 'ID de la submuestra',
-    example: '123e4567-e89b-12d3-a456-426614174000',
-  })
-  @IsString()
-  @IsUUID()
-  @IsNotEmpty()
-  subsampleId!: string;
-
-  @ApiProperty({
     description: 'Fecha del análisis',
     example: '2023-09-15T14:30:00Z',
   })
@@ -32,11 +43,12 @@ export class CreateDHAnalysesDto {
   @ApiProperty({
     description: 'Resultado del análisis',
     example: {
-      dryWeight: 83,
+      dryWeight: 950,
     },
-    type: Object,
+    type: ResultValueDHDto,
   })
-  @IsObject()
+  @ValidateNested()
+  @Type(() => ResultValueDHDto)
   @IsNotEmpty()
   resultValue!: ResultValueDH;
 }
