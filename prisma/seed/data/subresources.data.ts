@@ -46,61 +46,6 @@ export const subresourceInitialData: Prisma.SubresourceCreateInput[] = [
     path: 'lims/gestion-muestras',
     controller: 'SampleManagementController',
   },
-  {
-    name: 'Niton',
-    resource: {
-      connect: {
-        name: 'Resultados',
-      },
-    },
-    icon: 'device-niton',
-    path: '/niton-results',
-    controller: 'NitonResultsController',
-  },
-  {
-    name: 'Absorción atómica',
-    resource: {
-      connect: {
-        name: 'Resultados',
-      },
-    },
-    icon: 'atom',
-    path: '/absorbance-results',
-    controller: 'AbsorbanceResultsController',
-  },
-  {
-    name: 'Copelación',
-    resource: {
-      connect: {
-        name: 'Resultados',
-      },
-    },
-    icon: 'fire-hot',
-    path: '/copelation',
-    controller: 'CopelationController',
-  },
-  {
-    name: 'Niton',
-    resource: {
-      connect: {
-        name: 'Análisis',
-      },
-    },
-    icon: 'shield-check',
-    path: '/niton-analysis',
-    controller: 'NitonAnalysisController',
-  },
-  {
-    name: 'Absorción atómica',
-    resource: {
-      connect: {
-        name: 'Análisis',
-      },
-    },
-    icon: 'shield-check',
-    path: '/absorbance-analysis',
-    controller: 'AbsorbanceAnalysisController',
-  },
 
   // Subrecursos para ADMINISTRACIÓN
   {
@@ -147,17 +92,17 @@ export const subresourceInitialData: Prisma.SubresourceCreateInput[] = [
     path: '/administration/suppliers',
     controller: 'SupplierController',
   },
-  //{
-  //  name: 'Orígenes de Recepción',
-  //  resource: {
-  //    connect: {
-  //      name: 'Orígenes de Recepción',
-  //    },
-  //  },
-  //  icon: 'fa-truck',
-  //  path: '/administration/reception-origins',
-  //  controller: 'ReceptionOriginController',
-  //},
+  {
+    name: 'Orígenes de Recepción',
+    resource: {
+      connect: {
+        name: 'Orígenes de Recepción',
+      },
+    },
+    icon: 'fa-truck',
+    path: '/administration/reception-origins',
+    controller: 'ReceptionOriginController',
+  },
   {
     name: 'Impresoras de Etiquetas',
     resource: {
@@ -178,7 +123,7 @@ export const subresourceInitialData: Prisma.SubresourceCreateInput[] = [
       },
     },
     icon: 'fa-droplet',
-    path: '/analysis/moisture-determination',
+    path: 'lims/moisture-determination',
     controller: 'DHAnalyses',
   },
   {
@@ -189,7 +134,7 @@ export const subresourceInitialData: Prisma.SubresourceCreateInput[] = [
       },
     },
     icon: 'fa-raygun',
-    path: '/analysis/x-ray-fluorescence',
+    path: 'lims/x-ray-fluorescence',
     controller: 'XRFAnalyses',
   },
   {
@@ -200,7 +145,7 @@ export const subresourceInitialData: Prisma.SubresourceCreateInput[] = [
       },
     },
     icon: 'fa-stopwatch',
-    path: '/analysis/leachwell',
+    path: 'lims/leachwell',
     controller: 'LWAnalyses',
   },
   {
@@ -210,8 +155,8 @@ export const subresourceInitialData: Prisma.SubresourceCreateInput[] = [
         name: 'Análisis',
       },
     },
-    icon: 'fa-truck',
-    path: 'analyses/aa-analyses',
+    icon: 'fa-atom',
+    path: 'lims/atomic-absorption',
     controller: 'AAAnalyses',
   },
 ];
