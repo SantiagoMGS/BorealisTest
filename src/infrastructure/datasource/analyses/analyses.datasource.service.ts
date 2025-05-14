@@ -1,9 +1,5 @@
 import { PrismaService } from '@core/prisma/prisma.service';
-import {
-  IAnalysisEntity,
-  ResultValueDH,
-  ResultValueLW,
-} from '@domain/entities/analyses/analyses.entity';
+import { IAnalysisEntity } from '@domain/entities/analyses/analyses.entity';
 import { IAnalysisResponse } from '@domain/interfaces/analyses/analyses.response.interfaces';
 import {
   Injectable,
@@ -12,7 +8,6 @@ import {
 } from '@nestjs/common';
 import { SampleReceptionDataSourceService } from '../reception';
 import { CompanyDataSourceService } from '@infrastructure/datasource/company/company.datasource.service';
-import { Prisma } from '@prisma/client';
 import { AnalysisTypeDatasourceService } from '../analysis-type/analysis-type.datasorce.service';
 
 @Injectable()
