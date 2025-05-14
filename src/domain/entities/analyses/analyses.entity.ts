@@ -115,6 +115,7 @@ export interface ResultValueXRF {
 
 export interface ResultValueLW {
   time: number;
+  endDateTime?: Date;
 }
 
 export interface ResultValueAA {

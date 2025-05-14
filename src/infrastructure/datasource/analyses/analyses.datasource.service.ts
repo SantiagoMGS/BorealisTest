@@ -2,6 +2,7 @@ import { PrismaService } from '@core/prisma/prisma.service';
 import {
   IAnalysisEntity,
   ResultValueDH,
+  ResultValueLW,
 } from '@domain/entities/analyses/analyses.entity';
 import { IAnalysisResponse } from '@domain/interfaces/analyses/analyses.response.interfaces';
 import {
@@ -110,14 +111,21 @@ export class AnalysesDatasourceService {
 
       await this.sampleDataSource.findById(analysis.sampleId);
 
-      //analysis.resultValue.cosa = 'HOLAAAAAAAAAA';
+      const resultValue = analysis.resultValue as ResultValueLW;
+
       console.log(analysis);
+
+      const endDateTime = new Date(analysis.analysisDate);
+      endDateTime.setMinutes(endDateTime.getMinutes() + resultValue.time);
+
+      resultValue.endDateTime = endDateTime;
+
       const createdAnalysis = await this.prisma.analysis.create({
         data: {
           ...analysis,
           companyId: companyId,
           analysisTypeId: analysisType.id,
-          resultValue: JSON.stringify(analysis.resultValue),
+          resultValue: JSON.stringify(resultValue),
         },
       });
 

@@ -6,10 +6,7 @@ import { IAnalysisResponse } from '@domain/interfaces/analyses/analyses.response
 import { AnalysesDatasourceService } from '@infrastructure/datasource/analyses/analyses.datasource.service';
 @Injectable()
 export class AnalysesRepositoryImpl extends AnalysesRepository {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly analysesDatasource: AnalysesDatasourceService,
-  ) {
+  constructor(private readonly analysesDatasource: AnalysesDatasourceService) {
     super();
   }
 
