@@ -34,7 +34,7 @@ export const resourceInitialData: Prisma.ResourceCreateInput[] = [
   },
   {
     name: 'Análisis',
-    icon: 'shield-check',
+    icon: 'fa-flask',
     path: '/analysis',
     application: {
       connect: {

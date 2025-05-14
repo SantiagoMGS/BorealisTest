@@ -59,7 +59,7 @@ export class AnalysesController {
     private readonly createAAAnalysisUseCase: CreateAAAnalysesUseCase,
   ) {}
 
-  @Post('dh-analyses')
+  @Post('humidity-determination')
   @RequirePermission('DHAnalyses')
   @ApiOperation({
     summary: 'Crear nuevo análisis DH',
@@ -152,7 +152,7 @@ export class AnalysesController {
     return this.createXRFAnalysisUseCase.execute(body, user.companyId!);
   }
 
-  @Post('lw-analyses')
+  @Post('leachwell')
   @RequirePermission('LWAnalyses')
   @ApiOperation({
     summary: 'Crear nuevo análisis LW',
