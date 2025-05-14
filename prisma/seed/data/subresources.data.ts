@@ -171,14 +171,14 @@ export const subresourceInitialData: Prisma.SubresourceCreateInput[] = [
   },
   // Subrecursos para ANÁLISIS
   {
-    name: 'Detección de Humedad',
+    name: 'Determinación de Humedad',
     resource: {
       connect: {
         name: 'Análisis',
       },
     },
-    icon: 'fa-truck',
-    path: 'analyses/dh-analyses',
+    icon: 'fa-droplet',
+    path: '/analysis/moisture-determination',
     controller: 'DHAnalyses',
   },
   {
@@ -188,8 +188,8 @@ export const subresourceInitialData: Prisma.SubresourceCreateInput[] = [
         name: 'Análisis',
       },
     },
-    icon: 'fa-truck',
-    path: 'analyses/xrf-analyses',
+    icon: 'fa-raygun',
+    path: '/analysis/x-ray-fluorescence',
     controller: 'XRFAnalyses',
   },
   {
@@ -199,8 +199,8 @@ export const subresourceInitialData: Prisma.SubresourceCreateInput[] = [
         name: 'Análisis',
       },
     },
-    icon: 'fa-truck',
-    path: 'analyses/lw-analyses',
+    icon: 'fa-stopwatch',
+    path: '/analysis/leachwell',
     controller: 'LWAnalyses',
   },
   {
