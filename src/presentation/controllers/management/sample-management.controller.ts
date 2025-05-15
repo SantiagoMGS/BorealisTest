@@ -33,6 +33,7 @@ import {
 import { RequirePermission } from '@core/decorators/require-permission.decorator';
 import { IPaginatedData } from '@shared/index';
 import { ISampleManagementResponse } from '@domain/interfaces/management/sample-management.interface';
+import { MappedSamples } from '@infrastructure/mappers/sample-management.mapper';
 
 @ApiTags('Sample Management')
 @ApiBearerAuth()
@@ -86,7 +87,7 @@ export class SampleManagementController {
   })
   async findByFilters(
     @Query() filterParams: FindSampleByFiltersDto,
-  ): Promise<IPaginatedData<ISampleManagementResponse>> {
+  ): Promise<IPaginatedData<MappedSamples>> {
     return await this.findSamplesByFiltersUseCase.execute({
       page: filterParams.page || 1,
       limit: filterParams.limit || 10,

@@ -3,16 +3,7 @@ import {
   IPaginationOptions,
 } from '../interfaces/pagination.interfaces';
 
-/**
- * Clase de utilidad para crear respuestas paginadas
- */
 export class PaginationHelper {
-  /**
-   * Crea un objeto de resultado paginado a partir de un array y opciones de paginación
-   * @param data Array con todos los items
-   * @param options Opciones de paginación (página, límite)
-   * @returns Objeto con la estructura de datos paginados
-   */
   static createPaginatedResponse<T>(
     data: T[],
     options: IPaginationOptions,
@@ -37,13 +28,6 @@ export class PaginationHelper {
     };
   }
 
-  /**
-   * Crea un objeto de resultado paginado cuando ya tenemos los items paginados y el total
-   * @param paginatedItems Array con los items ya paginados
-   * @param totalItems Total de items sin paginar
-   * @param options Opciones de paginación (página, límite)
-   * @returns Objeto con la estructura de datos paginados
-   */
   static createPaginatedResponseFromItems<T>(
     paginatedItems: T[],
     totalItems: number,

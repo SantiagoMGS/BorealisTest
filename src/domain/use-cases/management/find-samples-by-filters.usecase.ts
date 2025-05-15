@@ -1,6 +1,6 @@
 import { IManagementFilter } from '@domain/interfaces/management';
-import { ISampleManagementResponse } from '@domain/interfaces/management/sample-management.interface';
 import { SampleManagementRepository } from '@domain/repositories/management/sample-management.repository';
+import { MappedSamples } from '@infrastructure/mappers/sample-management.mapper';
 import { Injectable } from '@nestjs/common';
 import { IPaginatedData } from '@shared/index';
 
@@ -12,7 +12,7 @@ export class FindSamplesByFiltersUseCase {
 
   async execute(
     filter: IManagementFilter,
-  ): Promise<IPaginatedData<ISampleManagementResponse>> {
+  ): Promise<IPaginatedData<MappedSamples>> {
     return await this.sampleManagementRepository.findByFilters(filter);
   }
 }

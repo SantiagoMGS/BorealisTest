@@ -380,7 +380,7 @@ model Sample {
   subSamples       SubSample[]
   requiredAnalyses SampleRequiredAnalysis[]
   traces           SamplePrinterTrace[]
-  Analysis         Analysis[]
+  analyses         Analysis[]
 
   @@index([receptionId])
   @@index([receptionOriginId])

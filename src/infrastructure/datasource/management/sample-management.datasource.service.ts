@@ -6,10 +6,10 @@ import {
   IReceptionOrigin,
   ISample,
   ISupplier,
-  ISampleManagementResponse,
 } from '@domain/interfaces/management/sample-management.interface';
 import { IManagementFilter } from '@domain/interfaces/management';
 import { Prisma } from '@prisma/client';
+import { SamplesWithAnalyses } from './types/sample-management-reception-select.type';
 
 @Injectable()
 export class SampleManagementDataSourceService {
@@ -22,7 +22,7 @@ export class SampleManagementDataSourceService {
 
   async findByFilters(
     filter: IManagementFilter,
-  ): Promise<{ data: ISampleManagementResponse[]; total: number }> {
+  ): Promise<SamplesWithAnalyses[]> {
     const {
       startDate,
       endDate,
@@ -56,40 +56,61 @@ export class SampleManagementDataSourceService {
       }),
     };
 
-    const [total, data] = await Promise.all([
-      this.prisma.reception.count({ where }),
-      this.prisma.reception.findMany({
-        where,
-        skip: (page - 1) * limit,
-        take: limit,
-        include: {
-          samples: {
-            select: {
-              id: true,
-              code: true,
-              receivedWeight: true,
+    const data = await this.prisma.reception.findMany({
+      where,
+      skip: (page - 1) * limit,
+      take: limit,
+      select: {
+        receptionDate: true,
+        isActive: true,
+        samples: {
+          select: {
+            code: true,
+            receivedWeight: true,
+            receptionOrigin: {
+              select: {
+                name: true,
+                shortName: true,
+              },
             },
-          },
-          supplier: {
-            select: {
-              id: true,
-              name: true,
+            requiredAnalyses: {
+              select: {
+                done: true,
+                analysisType: {
+                  select: {
+                    name: true,
+                    shortName: true,
+                  },
+                },
+              },
             },
-          },
-          receptionOrigin: {
-            select: {
-              id: true,
-              name: true,
+            analyses: {
+              select: {
+                analysisDate: true,
+                analysisType: {
+                  select: {
+                    name: true,
+                    shortName: true,
+                  },
+                },
+                resultValue: true,
+              },
             },
           },
         },
-        orderBy: {
-          receptionDate: 'desc',
+        supplier: {
+          select: {
+            name: true,
+            shortName: true,
+          },
         },
-      }),
-    ]);
+      },
+      orderBy: {
+        receptionDate: 'desc',
+      },
+    });
 
-    return { data, total };
+    return data;
   }
 
   async getDropdownData(
