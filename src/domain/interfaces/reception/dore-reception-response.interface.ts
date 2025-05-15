@@ -34,7 +34,7 @@ export interface IDoreReceptionResponse {
   dores: Array<{
     receivedWeight: number | any;
     observation?: string | null;
-    base64: string;
+    base64: string | null;
     format: string;
   }>;
 }

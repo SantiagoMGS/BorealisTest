@@ -210,7 +210,7 @@ export class DoreManagementDataSourceService {
         receptionOriginId: { in: receptionOriginIds },
       }),
       ...(doreIds?.length && {
-        doreId: { in: doreIds },
+        dore: { some: { id: { in: doreIds } } },
       }),
     };
 
@@ -252,6 +252,10 @@ export class DoreManagementDataSourceService {
         },
       },
     });
+
+    if (data.length === 0) {
+      throw new HttpException('No content', HttpStatus.NO_CONTENT);
+    }
 
     return data;
   }

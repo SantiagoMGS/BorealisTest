@@ -411,7 +411,7 @@ model Dore {
   silverBalance  Decimal  @default(0) @db.Decimal(10, 4)
   approvedLaw    Boolean  @default(false)
   observation    String?
-  base64         String
+  base64         String?
   format         String
   statusId       String   @db.Uuid
   isActive       Boolean  @default(true)
