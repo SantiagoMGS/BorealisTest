@@ -25,7 +25,4 @@ export abstract class SupplierRepository {
   ): Promise<ISupplierResponse>;
   abstract delete(id: string, userId?: string): Promise<ISupplierResponse>;
   abstract findById(id: string): Promise<ISupplierResponse>;
-  abstract findMiningTitles(
-    supplierId: string,
-  ): Promise<IMiningTitleResponse[]>;
 }

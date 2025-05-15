@@ -47,7 +47,6 @@ import { UpdateSupplierUseCase } from '@domain/use-cases/supplier/update-supplie
 import { DeleteSupplierUseCase } from '@domain/use-cases/supplier/delete-supplier.use-case';
 import { RequirePermission } from '@core/decorators/require-permission.decorator';
 import { PermissionsGuard } from '@infrastructure/guards/permissions.guard';
-import { FindMiningTitlesUseCase } from '@domain/use-cases/supplier/find-mining-title.use-case';
 import {
   ApiResponseDto,
   getResponseSchema,
@@ -56,6 +55,7 @@ import {
 import { Paginated } from '@core/decorators/paginated.decorator';
 import { PaginationDto } from '@shared/dtos/paginator.dto';
 import { isUUID } from 'class-validator';
+import { GetMiningTitlesBySupplierUseCase } from '@domain/use-cases/mining-title/get-mining-titles-by-supplier.use-case';
 
 @ApiTags('Proveedores')
 @ApiBearerAuth()
@@ -77,7 +77,7 @@ export class SupplierController {
     private readonly findSupplierUseCase: FindSupplierUseCase,
     private readonly updateSupplierUseCase: UpdateSupplierUseCase,
     private readonly deleteSupplierUseCase: DeleteSupplierUseCase,
-    private readonly findMiningTitlesUseCase: FindMiningTitlesUseCase,
+    private readonly getMiningTitlesBySupplierUseCase: GetMiningTitlesBySupplierUseCase,
   ) {}
 
   @Post()
@@ -248,7 +248,8 @@ export class SupplierController {
   async findMiningTitles(
     @Param('id') id: string,
   ): Promise<MiningTitleResponseDto[]> {
-    const miningTitles = await this.findMiningTitlesUseCase.execute(id);
+    const miningTitles =
+      await this.getMiningTitlesBySupplierUseCase.execute(id);
 
     if (miningTitles.length === 0) {
       return [];

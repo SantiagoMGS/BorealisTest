@@ -244,28 +244,4 @@ export class SupplierDataSourceService {
 
     return supplier;
   }
-
-  async findMiningTitles(supplierId: string): Promise<IMiningTitleResponse[]> {
-    await this.findById(supplierId);
-
-    const miningTitles = await this.prisma.supplierMiningTitle.findMany({
-      where: { supplierId },
-      include: {
-        mineType: true,
-        city: {
-          include: {
-            department: true,
-          },
-        },
-      },
-    });
-
-    if (miningTitles.length === 0)
-      throw new HttpException(
-        'No se encontraron títulos mineros para este proveedor',
-        HttpStatus.NO_CONTENT,
-      );
-
-    return MiningTitlePersistenceMapper.toDomainList(miningTitles);
-  }
 }
