@@ -1,22 +1,12 @@
+import { SupplierDropdown } from '@shared/types/supplier-dropdown.type';
+import { ReceptionOriginDropdown } from '@shared/types/reception-origin-dropdown.type';
+import { DoreDropdown } from '@shared/types/dore-dropdopwn.type';
+
 export interface IDoreDropdownData {
-  suppliers: ISupplier[];
-  dore: IDore[];
+  suppliers: SupplierDropdown[];
+  dore: DoreDropdown[];
   batchNumbers: string[];
-  receptionOrigins: IReceptionOrigin[];
-}
-export interface ISupplier {
-  id: string;
-  name: string;
-}
-
-export interface IDore {
-  id: string;
-  code: number;
-}
-
-export interface IReceptionOrigin {
-  id: string;
-  name: string;
+  receptionOrigins: ReceptionOriginDropdown[];
 }
 
 export interface IDoreManagementResponse {

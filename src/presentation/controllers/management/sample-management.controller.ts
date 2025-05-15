@@ -17,7 +17,7 @@ import { PermissionsGuard } from '@infrastructure/guards/permissions.guard';
 import { ResponseInterceptor } from '@core/interceptores/response.interceptor';
 import {
   FindSampleByFiltersDto,
-  SampleDropdownDataDto,
+  SampleDropdownResponseDto,
   SamplePaginatedResponseDto,
 } from './dtos';
 import { Paginated } from '@core/decorators/paginated.decorator';
@@ -41,7 +41,7 @@ import { DropdownDataDto } from '@shared/dtos/get-dropdown-data.dto';
 @RequirePermission(SampleManagementController.name)
 @ApiExtraModels(
   ApiResponseDto,
-  SampleDropdownDataDto,
+  SampleDropdownResponseDto,
   SamplePaginatedResponseDto,
 )
 @Controller('sample-management')
@@ -59,7 +59,7 @@ export class SampleManagementController {
   @ApiResponse({
     status: 200,
     description: 'Datos obtenidos correctamente',
-    ...getResponseSchema(SampleDropdownDataDto),
+    ...getResponseSchema(SampleDropdownResponseDto),
   })
   @ApiResponse({
     status: 204,
@@ -67,7 +67,7 @@ export class SampleManagementController {
   })
   async getDropdownData(
     @Query() queryParams: DropdownDataDto,
-  ): Promise<SampleDropdownDataDto> {
+  ): Promise<SampleDropdownResponseDto> {
     const dropdownData = await this.getSampleDropdownDataUseCase.execute(
       queryParams.startDate,
       queryParams.endDate,
@@ -95,14 +95,6 @@ export class SampleManagementController {
   async findByFilters(
     @Query() filterParams: FindSampleByFiltersDto,
   ): Promise<IPaginatedData<MappedSamples>> {
-    return await this.findSamplesByFiltersUseCase.execute({
-      page: filterParams.page || 1,
-      limit: filterParams.limit || 10,
-      startDate: filterParams.startDate,
-      endDate: filterParams.endDate,
-      supplierIds: filterParams.supplierIds,
-      receptionOriginIds: filterParams.receptionOriginIds,
-      sampleIds: filterParams.sampleIds,
-    });
+    return await this.findSamplesByFiltersUseCase.execute(filterParams);
   }
 }

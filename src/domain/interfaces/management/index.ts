@@ -1,2 +1,2 @@
-export * from './sample-management.interface';
+export * from './sample-dropdown.interface';
 export * from './management-filters.interface';

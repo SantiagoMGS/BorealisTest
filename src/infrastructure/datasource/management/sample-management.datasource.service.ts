@@ -1,7 +1,7 @@
 import { PrismaService } from '@core/prisma/prisma.service';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ReceptionTypeDataSourceService } from '../reception';
-import { ISampleDropdownData } from '@domain/interfaces/management/sample-management.interface';
+import { ISampleDropdownData } from '@domain/interfaces/management/sample-dropdown.interface';
 import { IManagementFilter } from '@domain/interfaces/management';
 import { Prisma } from '@prisma/client';
 import { SamplesWithAnalyses } from './types/sample-management-reception-select.type';

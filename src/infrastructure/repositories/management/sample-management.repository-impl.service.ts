@@ -1,5 +1,5 @@
 import { IManagementFilter } from '@domain/interfaces/management';
-import { ISampleDropdownData } from '@domain/interfaces/management/sample-management.interface';
+import { ISampleDropdownData } from '@domain/interfaces/management/sample-dropdown.interface';
 import { SampleManagementRepository } from '@domain/repositories/management/sample-management.repository';
 import { SampleManagementDataSourceService } from '@infrastructure/datasource/management/sample-management.datasource.service';
 import {
