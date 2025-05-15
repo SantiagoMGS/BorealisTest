@@ -210,7 +210,7 @@ export class DoreManagementDataSourceService {
         receptionOriginId: { in: receptionOriginIds },
       }),
       ...(doreIds?.length && {
-        doreId: { in: doreIds },
+        dore: { some: { id: { in: doreIds } } },
       }),
     };
 
