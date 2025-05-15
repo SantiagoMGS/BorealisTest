@@ -29,6 +29,7 @@ import {
   seedDefaultAnalysisOrigins,
   seedPrinters,
   seedDoreReceptions,
+  seedSampleReceptions,
 } from './seed/index';
 
 const prisma = new PrismaClient();
@@ -70,6 +71,7 @@ async function main() {
     await seedDefaultAnalysisOrigins(prisma); // Análisis por defecto
     await seedPrinters(prisma); // Impresoras
     await seedDoreReceptions(prisma); // Recepciones de doré
+    await seedSampleReceptions(prisma); // Recepciones de muestras
 
     logger.log('✅ ¡Proceso de sembrado completado con éxito!');
   } catch (error: unknown) {
