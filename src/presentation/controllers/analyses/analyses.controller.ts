@@ -7,6 +7,8 @@ import {
   HttpStatus,
   Req,
   BadRequestException,
+  Get,
+  Query,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -20,7 +22,10 @@ import {
   ApiResponse,
 } from '@nestjs/swagger';
 import { CurrentUser } from '@core/decorators/current-user.decorator';
-import { IAnalysisEntity } from '@domain/entities/analyses/analyses.entity';
+import {
+  IAnalysisEntity,
+  ResultValueLW,
+} from '@domain/entities/analyses/analyses.entity';
 import { IAuthUser } from '@domain/entities/auth/auth-user.entity';
 import { IAnalysisResponse } from '@domain/interfaces/analyses/analyses.response.interfaces';
 import { AnalysesMapper } from './mappers/analyses.mapper';
@@ -40,12 +45,16 @@ import { createLWAnalysisUseCase } from '@domain/use-cases/analyses/create-lw-an
 import { LWResponse } from './dtos/response-lw-analyses.dto';
 import { DHResponse } from './dtos/response-dh-analyses.dto';
 import { XRFResponse } from './dtos/response-xrf-analyses.dto';
-import { CreateAAAnalysesDto } from './dtos/create-aa-analyses.dto';
 import {
   CreateAAAnalysesUseCase,
   ICreateAAAnalysisData,
 } from '@domain/use-cases/analyses/create-aa-analyses.use-case';
 import { ResponseAAAnalysesDto } from './dtos/response-aa-analyses.dto';
+import { GetActiveLWAnalysesUseCase } from '@domain/use-cases/analyses/get-active-lw-analyses.use-case';
+import { IPaginatedData } from '@shared/interfaces/pagination.interfaces';
+import { PaginationDto } from '@shared/dtos/paginator.dto';
+import { ActiveAnalysis } from '@domain/entities/analyses/active-analysis.entity';
+
 @Controller('analyses')
 @UseGuards(JwtAuthGuard)
 @UseInterceptors(ResponseInterceptor)
@@ -57,7 +66,23 @@ export class AnalysesController {
     private readonly createXRFAnalysisUseCase: CreateXRFAnalysesUseCase,
     private readonly createLWAnalysisUseCase: createLWAnalysisUseCase,
     private readonly createAAAnalysisUseCase: CreateAAAnalysesUseCase,
+    private readonly getActiveLWAnalysesUseCase: GetActiveLWAnalysesUseCase,
   ) {}
+
+  @Get('active-leachwell')
+  @RequirePermission('LWAnalyses')
+  @ApiOperation({
+    summary: 'Obtener análisis LW activos',
+    description: 'Obtiene los análisis LW activos en el sistema',
+  })
+  @CustomResponse({
+    successMessage: 'Análisis LW activos obtenidos exitosamente',
+  })
+  async getActiveLWAnalyses(
+    @Query() paginationQuery: PaginationDto,
+  ): Promise<IPaginatedData<ActiveAnalysis<ResultValueLW>>> {
+    return this.getActiveLWAnalysesUseCase.execute(paginationQuery);
+  }
 
   @Post('moisture-determination')
   @RequirePermission('DHAnalyses')

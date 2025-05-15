@@ -24,6 +24,7 @@ export class createLWAnalysisUseCase {
       resultValue: {
         ...resultValue,
         endDateTime: endDateTime,
+        done: false,
       },
     };
 

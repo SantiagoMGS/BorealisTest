@@ -1,5 +1,11 @@
 import { PrismaService } from '@core/prisma/prisma.service';
-import { IAnalysisEntity } from '@domain/entities/analyses/analyses.entity';
+import {
+  IAnalysisEntity,
+  ResultValueAA,
+  ResultValueDH,
+  ResultValueLW,
+  ResultValueXRF,
+} from '@domain/entities/analyses/analyses.entity';
 import { IAnalysisResponse } from '@domain/interfaces/analyses/analyses.response.interfaces';
 import {
   Injectable,
@@ -9,6 +15,8 @@ import {
 import { SampleReceptionDataSourceService } from '../reception';
 import { CompanyDataSourceService } from '@infrastructure/datasource/company/company.datasource.service';
 import { AnalysisTypeDatasourceService } from '../analysis-type/analysis-type.datasorce.service';
+import { IPaginationOptions } from '@shared/interfaces/pagination.interfaces';
+import { ActiveAnalysis } from '@domain/entities/analyses/active-analysis.entity';
 
 @Injectable()
 export class AnalysesDatasourceService {
@@ -33,9 +41,8 @@ export class AnalysesDatasourceService {
         data: {
           sampleId: analysisData.sampleId,
           analysisDate: analysisData.analysisDate,
-          companyId: companyId,
           analysisTypeId: analysisType.id,
-          resultValue: JSON.stringify(analysisData.resultValue),
+          resultValue: analysisData.resultValue as ResultValueDH,
         },
       });
 
@@ -44,6 +51,7 @@ export class AnalysesDatasourceService {
         sampleId: createdAnalysis.sampleId,
         analysisTypeId: createdAnalysis.analysisTypeId,
         analysisDate: createdAnalysis.analysisDate,
+        //TODO: Cambiar para que no se devuelva el resultValue como string
         resultValue:
           typeof createdAnalysis.resultValue === 'string'
             ? JSON.parse(createdAnalysis.resultValue)
@@ -72,11 +80,10 @@ export class AnalysesDatasourceService {
 
       const createdAnalysis = await this.prisma.analysis.create({
         data: {
-          companyId: companyId,
           sampleId: sampleId,
           analysisDate: analysis.analysisDate,
           analysisTypeId: analysisType.id,
-          resultValue: JSON.stringify(analysis.resultValue),
+          resultValue: analysis.resultValue as ResultValueXRF[],
         },
       });
 
@@ -85,6 +92,7 @@ export class AnalysesDatasourceService {
         sampleId: createdAnalysis.sampleId,
         analysisTypeId: createdAnalysis.analysisTypeId,
         analysisDate: createdAnalysis.analysisDate,
+        //TODO: Cambiar para que no se devuelva el resultValue como string
         resultValue:
           typeof createdAnalysis.resultValue === 'string'
             ? JSON.parse(createdAnalysis.resultValue)
@@ -113,11 +121,10 @@ export class AnalysesDatasourceService {
 
       const createdAnalysis = await this.prisma.analysis.create({
         data: {
-          companyId: companyId,
           sampleId: analysis.sampleId,
           analysisDate: analysis.analysisDate,
           analysisTypeId: analysisType.id,
-          resultValue: JSON.stringify(analysis.resultValue),
+          resultValue: analysis.resultValue as ResultValueLW,
         },
       });
 
@@ -126,6 +133,7 @@ export class AnalysesDatasourceService {
         sampleId: createdAnalysis.sampleId,
         analysisTypeId: createdAnalysis.analysisTypeId,
         analysisDate: createdAnalysis.analysisDate,
+        //TODO: Cambiar para que no se devuelva el resultValue como string
         resultValue:
           typeof createdAnalysis.resultValue === 'string'
             ? JSON.parse(createdAnalysis.resultValue)
@@ -144,13 +152,7 @@ export class AnalysesDatasourceService {
       const analysisType =
         await this.analysisTypeDatasource.findByShortName('AA');
 
-      if (!analysisType) {
-        throw new NotFoundException('No existe el tipo de análisis AA');
-      }
-      const company = await this.companyDataSource.findById(companyId);
-      if (!company) {
-        throw new NotFoundException('No existe la empresa');
-      }
+      await this.companyDataSource.findById(companyId);
 
       const sample = await this.sampleDataSource.findById(analysis.sampleId);
 
@@ -160,9 +162,8 @@ export class AnalysesDatasourceService {
       const createdAnalysis = await this.prisma.analysis.create({
         data: {
           ...analysis,
-          companyId: companyId,
           analysisTypeId: analysisType.id,
-          resultValue: JSON.stringify(analysis.resultValue),
+          resultValue: analysis.resultValue as ResultValueAA,
         },
       });
 
@@ -171,6 +172,7 @@ export class AnalysesDatasourceService {
         sampleId: createdAnalysis.sampleId,
         analysisTypeId: createdAnalysis.analysisTypeId,
         analysisDate: createdAnalysis.analysisDate,
+        //TODO: Cambiar para que no se devuelva el resultValue como string
         resultValue:
           typeof createdAnalysis.resultValue === 'string'
             ? JSON.parse(createdAnalysis.resultValue)
@@ -179,5 +181,47 @@ export class AnalysesDatasourceService {
     } catch (error) {
       throw new BadRequestException('Error al crear el análisis AA');
     }
+  }
+
+  async getActiveLWAnalyses(
+    options: IPaginationOptions,
+  ): Promise<ActiveAnalysis<ResultValueLW>[]> {
+    const { page, limit } = options;
+    const skip = (page - 1) * limit;
+
+    const analysisType =
+      await this.analysisTypeDatasource.findByShortName('LW');
+
+    const activeLWanalyses = await this.prisma.analysis.findMany({
+      where: {
+        isActive: true,
+        resultValue: {
+          path: ['done'],
+          equals: false,
+        },
+        analysisTypeId: analysisType.id,
+      },
+      select: {
+        analysisDate: true,
+        sample: {
+          select: {
+            id: true,
+            code: true,
+          },
+        },
+        resultValue: true,
+      },
+      skip,
+      take: limit,
+    });
+
+    return activeLWanalyses.map((analysis) => ({
+      analysisDate: analysis.analysisDate,
+      sample: {
+        id: analysis.sample.id,
+        code: String(analysis.sample.code),
+      },
+      resultValue: analysis.resultValue as unknown as ResultValueLW,
+    }));
   }
 }

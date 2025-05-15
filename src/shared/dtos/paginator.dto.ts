@@ -1,19 +1,20 @@
 import { Type } from '@nestjs/common';
 import { IsNumber, IsOptional, Min } from 'class-validator';
 import { Transform } from 'class-transformer';
+import { IPaginationOptions } from '@shared/interfaces/pagination.interfaces';
 
-export class PaginationDto {
+export class PaginationDto implements IPaginationOptions {
   @IsOptional()
   @IsNumber()
   @Min(1)
   @Transform(({ value }) => parseInt(value, 10))
-  page?: number = 1;
+  page: number = 1;
 
   @IsOptional()
   @IsNumber()
   @Min(1)
   @Transform(({ value }) => parseInt(value, 10))
-  limit?: number = 10;
+  limit: number = 10;
 
   @IsOptional()
   @Transform(({ value }) => value === 'true')

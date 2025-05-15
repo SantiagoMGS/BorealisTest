@@ -10,7 +10,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 
-class ResultValueDHDto implements ResultValueDH {
+class ResultValueDHDto {
   @ApiProperty({
     description: 'Peso seco en gramos',
     example: 950,
