@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { AnalysesRepository } from '@domain/repositories/analyses/analyses.repository';
-import { IAnalysisEntity } from '@domain/entities/analyses/analyses.entity';
+import {
+  IAnalysisEntity,
+  ResultValueLW,
+} from '@domain/entities/analyses/analyses.entity';
 import { IAnalysisResponse } from '@domain/interfaces/analyses/analyses.response.interfaces';
 import { AnalysesDatasourceService } from '@infrastructure/datasource/analyses/analyses.datasource.service';
 import {
@@ -8,6 +11,7 @@ import {
   IPaginationOptions,
 } from '@shared/interfaces/pagination.interfaces';
 import { PaginationHelper } from '@shared/utils/pagination.helper';
+import { ActiveAnalysis } from '@domain/entities/analyses/active-analysis.entity';
 
 @Injectable()
 export class AnalysesRepositoryImpl extends AnalysesRepository {
@@ -45,9 +49,16 @@ export class AnalysesRepositoryImpl extends AnalysesRepository {
 
   async getActiveLWAnalyses(
     options: IPaginationOptions,
-  ): Promise<IPaginatedData<any>> {
+  ): Promise<IPaginatedData<ActiveAnalysis<ResultValueLW>>> {
     const data = await this.analysesDatasource.getActiveLWAnalyses(options);
     const { page, limit } = options;
+
+    data.sort((a, b) => {
+      return (
+        a.resultValue.endDateTime!.getTime() -
+        b.resultValue.endDateTime!.getTime()
+      );
+    });
 
     return PaginationHelper.createPaginatedResponseFromItems(
       data,

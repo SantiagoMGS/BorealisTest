@@ -22,7 +22,10 @@ import {
   ApiResponse,
 } from '@nestjs/swagger';
 import { CurrentUser } from '@core/decorators/current-user.decorator';
-import { IAnalysisEntity } from '@domain/entities/analyses/analyses.entity';
+import {
+  IAnalysisEntity,
+  ResultValueLW,
+} from '@domain/entities/analyses/analyses.entity';
 import { IAuthUser } from '@domain/entities/auth/auth-user.entity';
 import { IAnalysisResponse } from '@domain/interfaces/analyses/analyses.response.interfaces';
 import { AnalysesMapper } from './mappers/analyses.mapper';
@@ -50,6 +53,7 @@ import { ResponseAAAnalysesDto } from './dtos/response-aa-analyses.dto';
 import { GetActiveLWAnalysesUseCase } from '@domain/use-cases/analyses/get-active-lw-analyses.use-case';
 import { IPaginatedData } from '@shared/interfaces/pagination.interfaces';
 import { PaginationDto } from '@shared/dtos/paginator.dto';
+import { ActiveAnalysis } from '@domain/entities/analyses/active-analysis.entity';
 
 @Controller('analyses')
 @UseGuards(JwtAuthGuard)
@@ -76,7 +80,7 @@ export class AnalysesController {
   })
   async getActiveLWAnalyses(
     @Query() paginationQuery: PaginationDto,
-  ): Promise<IPaginatedData<any>> {
+  ): Promise<IPaginatedData<ActiveAnalysis<ResultValueLW>>> {
     return this.getActiveLWAnalysesUseCase.execute(paginationQuery);
   }
 

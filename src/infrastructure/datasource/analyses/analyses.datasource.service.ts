@@ -16,6 +16,7 @@ import { SampleReceptionDataSourceService } from '../reception';
 import { CompanyDataSourceService } from '@infrastructure/datasource/company/company.datasource.service';
 import { AnalysisTypeDatasourceService } from '../analysis-type/analysis-type.datasorce.service';
 import { IPaginationOptions } from '@shared/interfaces/pagination.interfaces';
+import { ActiveAnalysis } from '@domain/entities/analyses/active-analysis.entity';
 
 @Injectable()
 export class AnalysesDatasourceService {
@@ -182,7 +183,9 @@ export class AnalysesDatasourceService {
     }
   }
 
-  async getActiveLWAnalyses(options: IPaginationOptions): Promise<any> {
+  async getActiveLWAnalyses(
+    options: IPaginationOptions,
+  ): Promise<ActiveAnalysis<ResultValueLW>[]> {
     const { page, limit } = options;
     const skip = (page - 1) * limit;
 
@@ -211,16 +214,14 @@ export class AnalysesDatasourceService {
       skip,
       take: limit,
     });
-    this.prisma.analysis.count({
-      where: {
-        resultValue: {
-          path: ['done'],
-          equals: false,
-        },
-        analysisTypeId: analysisType.id,
-      },
-    });
 
-    return activeLWanalyses;
+    return activeLWanalyses.map((analysis) => ({
+      analysisDate: analysis.analysisDate,
+      sample: {
+        id: analysis.sample.id,
+        code: String(analysis.sample.code),
+      },
+      resultValue: analysis.resultValue as unknown as ResultValueLW,
+    }));
   }
 }

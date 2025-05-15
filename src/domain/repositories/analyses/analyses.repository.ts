@@ -1,4 +1,8 @@
-import { IAnalysisEntity } from '@domain/entities/analyses/analyses.entity';
+import { ActiveAnalysis } from '@domain/entities/analyses/active-analysis.entity';
+import {
+  IAnalysisEntity,
+  ResultValueLW,
+} from '@domain/entities/analyses/analyses.entity';
 import { IAnalysisResponse } from '@domain/interfaces/analyses/analyses.response.interfaces';
 import {
   IPaginatedData,
@@ -24,5 +28,5 @@ export abstract class AnalysesRepository {
   ): Promise<IAnalysisResponse>;
   abstract getActiveLWAnalyses(
     options: IPaginationOptions,
-  ): Promise<IPaginatedData<any>>;
+  ): Promise<IPaginatedData<ActiveAnalysis<ResultValueLW>>>;
 }
