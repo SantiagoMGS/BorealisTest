@@ -1,5 +1,4 @@
-import { Injectable } from '@nestjs/common';
-import { IMiningTitleResponse } from '../../../domain/interfaces/supplier/mining-title-response.interface';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@core/prisma/prisma.service';
 import { SupplierMiningTitleWithRelations } from './mining-title.datasource.types';
 
@@ -21,6 +20,12 @@ export class MiningTitleDatasource {
         },
       },
     });
+
+    if (miningTitles.length === 0) {
+      throw new NotFoundException(
+        'No se encontraron títulos mineros para este proveedor',
+      );
+    }
 
     return miningTitles;
   }

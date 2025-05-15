@@ -1,8 +1,5 @@
 import { ISupplierEntity } from '@domain/entities/supplier';
-import {
-  ISupplierResponse,
-  IMiningTitleResponse,
-} from '@domain/interfaces/supplier';
+import { ISupplierResponse } from '@domain/interfaces/supplier';
 import {
   IPaginatedData,
   IPaginationOptions,
