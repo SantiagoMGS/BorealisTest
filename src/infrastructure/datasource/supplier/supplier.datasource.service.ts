@@ -230,21 +230,11 @@ export class SupplierDataSourceService {
     return deletedSupplier;
   }
 
-  async findById(id: string): Promise<ISupplierResponse> {
+  async findById(id: string): Promise<SupplierWithDocumentType> {
     const supplier = await this.prisma.supplier.findUnique({
       where: { id },
       include: {
         documentType: true,
-        supplierMiningTitles: {
-          include: {
-            mineType: true,
-            city: {
-              include: {
-                department: true,
-              },
-            },
-          },
-        },
       },
     });
 
@@ -277,11 +267,5 @@ export class SupplierDataSourceService {
       );
 
     return MiningTitlePersistenceMapper.toDomainList(miningTitles);
-  }
-
-  async findMiningTitle(supplierId: string): Promise<IMiningTitleResponse> {
-    // Este método puede mantenerse para compatibilidad o eliminarse
-    const titles = await this.findMiningTitles(supplierId);
-    return titles[0]; // Retorna el primer título encontrado
   }
 }
