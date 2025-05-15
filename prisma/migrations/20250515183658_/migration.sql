@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "dore" ALTER COLUMN "base64" DROP NOT NULL;
