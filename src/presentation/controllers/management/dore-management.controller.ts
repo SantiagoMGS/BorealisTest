@@ -88,15 +88,6 @@ export class DoreManagementController {
   async findByFilters(
     @Query() filterParams: FindDoreReceptionsByFiltersDto,
   ): Promise<IPaginatedData<IDoreManagementResponse>> {
-    return await this.findDoreReceptionsByFiltersUseCase.execute({
-      page: filterParams.page || 1,
-      limit: filterParams.limit || 10,
-      startDate: filterParams.startDate,
-      endDate: filterParams.endDate,
-      supplierIds: filterParams.supplierIds,
-      receptionOriginIds: filterParams.receptionOriginIds,
-      doreIds: filterParams.doreIds,
-      batchNumbers: filterParams.batchNumbers,
-    });
+    return await this.findDoreReceptionsByFiltersUseCase.execute(filterParams);
   }
 }
