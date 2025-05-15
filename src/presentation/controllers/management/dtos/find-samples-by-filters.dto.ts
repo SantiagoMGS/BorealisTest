@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Type, Transform } from 'class-transformer';
+import { Type } from 'class-transformer';
 import { IsDate, IsOptional, IsArray, IsUUID } from 'class-validator';
 import { PaginationDto } from '@shared/dtos/paginator.dto';
+import { TransformCommaSeparated } from '@core/decorators/transform-comma-separated.decorator';
 
 export class FindSampleByFiltersDto extends PaginationDto {
   @ApiProperty({
@@ -23,53 +24,44 @@ export class FindSampleByFiltersDto extends PaginationDto {
   endDate!: Date;
 
   @ApiProperty({
-    description: 'IDs de proveedores para filtrar',
-    example: ['123e4567-e89b-12d3-a456-426614174000'],
+    description:
+      'String con IDs de proveedores separados por comas (deben ser UUIDs válidos)',
+    example:
+      '123e4567-e89b-12d3-a456-426614174000,456e7891-e89b-12d3-a456-426614174111',
     required: false,
-    type: [String],
+    type: String,
   })
   @IsOptional()
+  @TransformCommaSeparated()
   @IsArray()
   @IsUUID(4, { each: true })
-  @Transform(({ value }) => {
-    if (!Array.isArray(value)) {
-      return value ? [value] : [];
-    }
-    return value;
-  })
   supplierIds?: string[];
 
   @ApiProperty({
-    description: 'IDs de orígenes de recepción para filtrar',
-    example: ['123e4567-e89b-12d3-a456-426614174000'],
+    description:
+      'String con IDs de orígenes de recepción separados por comas (deben ser UUIDs válidos)',
+    example:
+      '123e4567-e89b-12d3-a456-426614174000,456e7891-e89b-12d3-a456-426614174111',
     required: false,
-    type: [String],
+    type: String,
   })
   @IsOptional()
+  @TransformCommaSeparated()
   @IsArray()
   @IsUUID(4, { each: true })
-  @Transform(({ value }) => {
-    if (!Array.isArray(value)) {
-      return value ? [value] : [];
-    }
-    return value;
-  })
   receptionOriginIds?: string[];
 
   @ApiProperty({
-    description: 'IDs de dorés para filtrar',
-    example: ['123e4567-e89b-12d3-a456-426614174000'],
+    description:
+      'String con IDs de muestras separados por comas (deben ser UUIDs válidos)',
+    example:
+      '123e4567-e89b-12d3-a456-426614174000,456e7891-e89b-12d3-a456-426614174111',
     required: false,
-    type: [String],
+    type: String,
   })
   @IsOptional()
+  @TransformCommaSeparated()
   @IsArray()
   @IsUUID(4, { each: true })
-  @Transform(({ value }) => {
-    if (!Array.isArray(value)) {
-      return value ? [value] : [];
-    }
-    return value;
-  })
   sampleIds?: string[];
 }
