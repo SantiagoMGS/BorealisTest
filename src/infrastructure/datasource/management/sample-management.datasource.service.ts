@@ -110,6 +110,10 @@ export class SampleManagementDataSourceService {
       },
     });
 
+    if (data.length === 0) {
+      throw new HttpException('No content', HttpStatus.NO_CONTENT);
+    }
+
     return data;
   }
 

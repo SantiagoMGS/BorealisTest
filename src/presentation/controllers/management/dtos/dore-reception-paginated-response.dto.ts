@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { PaginationMeta } from '@shared/dtos/paginator.dto';
+import { PaginatedResponseDto } from '@shared/dtos/paginated-response.dto';
 
 class DoreStatusDto {
   @ApiProperty({ example: 'e24cfd09-01e4-400a-adb9-013b2917c34b' })
@@ -71,19 +71,7 @@ export class DoreReceptionItemDto {
   receptionOrigin!: ReceptionOriginDto;
 }
 
-export class DoreReceptionPaginatedResponseDto {
+export class DoreReceptionPaginatedResponseDto extends PaginatedResponseDto<DoreReceptionItemDto> {
   @ApiProperty({ type: [DoreReceptionItemDto] })
-  items!: DoreReceptionItemDto[];
-
-  @ApiProperty({
-    example: {
-      page: 1,
-      limit: 10,
-      total: 100,
-      totalPages: 10,
-      hasNextPage: true,
-      hasPreviousPage: false,
-    },
-  })
-  meta!: PaginationMeta;
+  declare items: DoreReceptionItemDto[];
 }

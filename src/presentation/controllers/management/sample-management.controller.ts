@@ -85,6 +85,10 @@ export class SampleManagementController {
     description: 'Muestras encontradas correctamente',
     ...getResponseSchema(SamplePaginatedResponseDto),
   })
+  @ApiResponse({
+    status: 204,
+    description: 'No se encontraron muestras',
+  })
   async findByFilters(
     @Query() filterParams: FindSampleByFiltersDto,
   ): Promise<IPaginatedData<MappedSamples>> {
