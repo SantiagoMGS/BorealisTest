@@ -15,21 +15,18 @@ import {
 } from '@domain/interfaces/supplier';
 import { MiningTitlePersistenceMapper } from './mappers/mining-title.mapper';
 import { IPaginationOptions } from '@shared/interfaces/pagination.interfaces';
+import {
+  SupplierSelected,
+  SupplierWithDocumentType,
+} from './supplier.datasource.types';
 
 @Injectable()
 export class SupplierDataSourceService {
   constructor(private readonly prisma: PrismaService) {}
 
-  /**
-   * Crea un nuevo proveedor en la base de datos
-   *
-   * @param supplierData Datos del proveedor a crear
-   * @returns El proveedor creado
-   * @throws ConflictException si ya existe un proveedor con el mismo documento y nombre
-   */
   async createSupplier(
     supplierData: ISupplierEntity,
-  ): Promise<ISupplierResponse> {
+  ): Promise<SupplierWithDocumentType> {
     try {
       // Verificar si existe el tipo de documento
       const documentType = await this.prisma.documentType.findUnique({
@@ -40,16 +37,10 @@ export class SupplierDataSourceService {
         throw new NotFoundException('Tipo de documento no encontrado');
       }
 
-      if (!supplierData.shortName) {
-        throw new BadRequestException(
-          'El nombre corto del proveedor es requerido',
-        );
-      }
-
       const supplier = await this.prisma.supplier.create({
         data: {
           ...supplierData,
-          shortName: supplierData.shortName,
+          shortName: supplierData.shortName!,
         },
         include: {
           documentType: true,
@@ -84,41 +75,15 @@ export class SupplierDataSourceService {
     }
   }
 
-  async findAll(): Promise<ISupplierResponse[]> {
-    const suppliers = await this.prisma.supplier.findMany({
-      where: { isActive: true },
-      include: {
-        documentType: true, // Incluir los datos del tipo de documento
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
-
-    return suppliers;
-  }
-
-  /**
-   * Obtiene una lista paginada de proveedores
-   * @param options Opciones de paginación
-   * @returns Objetos que contiene los proveedores paginados y el total
-   */
-  async findAllPaginated(
+  async findAll(
     options: IPaginationOptions,
-  ): Promise<{ suppliers: ISupplierResponse[]; total: number }> {
-    const { page, limit } = options;
+  ): Promise<SupplierWithDocumentType[]> {
+    const { page, limit, withDeleted } = options;
 
-    // Calcular el número de elementos a saltar
     const skip = (page - 1) * limit;
 
-    // Obtener el total de proveedores
-    const total = await this.prisma.supplier.count({
-      where: { isActive: true },
-    });
-
-    // Obtener los proveedores paginados
     const suppliers = await this.prisma.supplier.findMany({
-      where: { isActive: true },
+      where: { isActive: withDeleted ? true : false },
       include: {
         documentType: true,
       },
@@ -129,13 +94,13 @@ export class SupplierDataSourceService {
       },
     });
 
-    return { suppliers, total };
+    return suppliers;
   }
 
   async findByParams(params: {
     id?: string;
     documentNumber?: string;
-  }): Promise<ISupplierResponse> {
+  }): Promise<SupplierSelected> {
     let where: Prisma.SupplierWhereInput = { isActive: true };
 
     if (params.id) {
@@ -153,6 +118,7 @@ export class SupplierDataSourceService {
         shortName: true,
         createdAt: true,
         updatedAt: true,
+        isActive: true,
         documentType: {
           select: {
             id: true,
@@ -173,7 +139,7 @@ export class SupplierDataSourceService {
   async updateSupplier(
     id: string,
     supplierData: Partial<ISupplierEntity>,
-  ): Promise<ISupplierResponse> {
+  ): Promise<SupplierWithDocumentType> {
     try {
       // Primero verificar si existe el proveedor
       const existingSupplier = await this.prisma.supplier.findUnique({
@@ -243,7 +209,7 @@ export class SupplierDataSourceService {
   async deleteSupplier(
     id: string,
     userId?: string,
-  ): Promise<ISupplierResponse> {
+  ): Promise<SupplierWithDocumentType> {
     const supplier = await this.findByParams({ id });
     if (!supplier.isActive) {
       throw new NotFoundException('Proveedor inactivo');

@@ -12,8 +12,7 @@ export abstract class SupplierRepository {
   abstract createSupplier(
     supplierData: ISupplierEntity,
   ): Promise<ISupplierResponse>;
-  abstract findAll(): Promise<ISupplierResponse[]>;
-  abstract findAllPaginated(
+  abstract findAll(
     options: IPaginationOptions,
   ): Promise<IPaginatedData<ISupplierResponse>>;
   abstract findByParams(params: {
