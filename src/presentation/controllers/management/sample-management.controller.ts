@@ -17,7 +17,6 @@ import { PermissionsGuard } from '@infrastructure/guards/permissions.guard';
 import { ResponseInterceptor } from '@core/interceptores/response.interceptor';
 import {
   FindSampleByFiltersDto,
-  DropdownDataDto,
   SampleDropdownDataDto,
   SamplePaginatedResponseDto,
 } from './dtos';
@@ -32,8 +31,8 @@ import {
 } from '@shared/dtos/api-response.dto';
 import { RequirePermission } from '@core/decorators/require-permission.decorator';
 import { IPaginatedData } from '@shared/index';
-import { ISampleManagementResponse } from '@domain/interfaces/management/sample-management.interface';
 import { MappedSamples } from '@infrastructure/mappers/sample-management.mapper';
+import { DropdownDataDto } from '@shared/dtos/get-dropdown-data.dto';
 
 @ApiTags('Sample Management')
 @ApiBearerAuth()
@@ -61,6 +60,10 @@ export class SampleManagementController {
     status: 200,
     description: 'Datos obtenidos correctamente',
     ...getResponseSchema(SampleDropdownDataDto),
+  })
+  @ApiResponse({
+    status: 204,
+    description: 'No se encontraron datos',
   })
   async getDropdownData(
     @Query() queryParams: DropdownDataDto,

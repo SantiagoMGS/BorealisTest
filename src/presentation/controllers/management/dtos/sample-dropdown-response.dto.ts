@@ -1,12 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  ISampleDropdownData,
-  ISample,
-  ISupplier,
-  IReceptionOrigin,
-} from '@domain/interfaces/management/sample-management.interface';
+import { ISampleDropdownData } from '@domain/interfaces/management/sample-management.interface';
+import { SupplierDropdown } from '@shared/types/supplier-dropdown.type';
+import { SampleDropdown } from '@shared/types/sample-dropdown.type';
+import { ReceptionOriginDropdown } from '@shared/types/reception-origin-dropdown.type';
 
-export class SampleSupplierDto implements ISupplier {
+export class SampleSupplierDto implements SupplierDropdown {
   @ApiProperty({
     example: 'cfe72ce1-7144-4d85-9765-1c4c3fd5db4c',
     description: 'ID único del proveedor',
@@ -20,7 +18,7 @@ export class SampleSupplierDto implements ISupplier {
   name!: string;
 }
 
-export class SampleItemDto implements ISample {
+export class SampleItemDto implements SampleDropdown {
   @ApiProperty({
     example: 'cfe72ce1-7144-4d85-9765-1c4c3fd5db4c',
     description: 'ID único de la muestra',
@@ -35,7 +33,7 @@ export class SampleItemDto implements ISample {
   code!: string | number;
 }
 
-export class SampleOriginDto implements IReceptionOrigin {
+export class SampleOriginDto implements ReceptionOriginDropdown {
   @ApiProperty({
     example: 'cfe72ce1-7144-4d85-9765-1c4c3fd5db4c',
     description: 'ID único del origen de recepción',
