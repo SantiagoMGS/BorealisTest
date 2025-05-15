@@ -9,7 +9,7 @@ class DoreStatusDto {
   name!: string;
 }
 
-class DoreItemSimplifiedDto {
+class DoreItemsDto {
   @ApiProperty({ example: '8ee8dc58-2c10-487b-96dc-21c5ff6310f8' })
   id!: string;
 
@@ -18,6 +18,12 @@ class DoreItemSimplifiedDto {
 
   @ApiProperty({ example: '1250.75' })
   receivedWeight!: string | number;
+
+  @ApiProperty({ example: 'https://example.com/image.jpg' })
+  base64!: string;
+
+  @ApiProperty({ example: 'jpg' })
+  format!: string;
 
   @ApiProperty({ type: DoreStatusDto })
   status!: DoreStatusDto;
@@ -55,8 +61,8 @@ export class DoreReceptionItemDto {
   })
   observation?: string | null;
 
-  @ApiProperty({ type: [DoreItemSimplifiedDto] })
-  dore!: DoreItemSimplifiedDto[];
+  @ApiProperty({ type: [DoreItemsDto] })
+  dore!: DoreItemsDto[];
 
   @ApiProperty({ type: SupplierDto })
   supplier!: SupplierDto;

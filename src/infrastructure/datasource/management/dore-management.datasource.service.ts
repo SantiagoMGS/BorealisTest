@@ -184,7 +184,7 @@ export class DoreManagementDataSourceService {
 
   async findByFilters(
     filter: IManagementFilter,
-  ): Promise<{ data: IDoreManagementResponse[]; total: number }> {
+  ): Promise<IDoreManagementResponse[]> {
     const {
       startDate,
       endDate,
@@ -214,46 +214,45 @@ export class DoreManagementDataSourceService {
       }),
     };
 
-    const [total, data] = await Promise.all([
-      this.prisma.reception.count({ where }),
-      this.prisma.reception.findMany({
-        where,
-        skip: (page - 1) * limit,
-        take: limit,
-        select: {
-          id: true,
-          batchNumber: true,
-          receptionDate: true,
-          observation: true,
-          dore: {
-            select: {
-              id: true,
-              code: true,
-              receivedWeight: true,
-              status: {
-                select: {
-                  id: true,
-                  name: true,
-                },
+    const data = await this.prisma.reception.findMany({
+      where,
+      skip: (page - 1) * limit,
+      take: limit,
+      select: {
+        id: true,
+        batchNumber: true,
+        receptionDate: true,
+        observation: true,
+        dore: {
+          select: {
+            id: true,
+            code: true,
+            receivedWeight: true,
+            base64: true,
+            format: true,
+            status: {
+              select: {
+                id: true,
+                name: true,
               },
             },
           },
-          supplier: {
-            select: {
-              id: true,
-              name: true,
-            },
-          },
-          receptionOrigin: {
-            select: {
-              id: true,
-              name: true,
-            },
+        },
+        supplier: {
+          select: {
+            id: true,
+            name: true,
           },
         },
-      }),
-    ]);
+        receptionOrigin: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
 
-    return { data, total };
+    return data;
   }
 }

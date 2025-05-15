@@ -30,13 +30,16 @@ export class DoreManagementRepositoryImpl extends DoreManagementRepository {
   async findByFilters(
     filter: IManagementFilter,
   ): Promise<IPaginatedData<IDoreManagementResponse>> {
-    const { data, total } =
-      await this.doreManagementDataSource.findByFilters(filter);
+    const data = await this.doreManagementDataSource.findByFilters(filter);
     const { page, limit } = filter;
 
-    return PaginationHelper.createPaginatedResponseFromItems(data, total, {
-      page,
-      limit,
-    });
+    return PaginationHelper.createPaginatedResponseFromItems(
+      data,
+      data.length,
+      {
+        page,
+        limit,
+      },
+    );
   }
 }
