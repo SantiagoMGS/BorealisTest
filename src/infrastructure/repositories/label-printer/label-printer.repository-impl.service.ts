@@ -2,18 +2,12 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ILabelPrinterRepository } from '@domain/repositories/label-printer/label-printer.repository';
 import { LabelPrinterService } from '@infrastructure/datasource/printer-label/label-printer.datasource.service';
 import { PrinterConfigDto } from '@presentation/controllers/label-printer/dtos/printer';
-import { CompanyRepositoryImpl } from '@infrastructure/repositories/company-supplier/company.repository-impl.service';
-import { SampleReceptionRepositoryImpl } from '@infrastructure/repositories/reception/sample-reception.repository-impl.service';
 
 @Injectable()
 export class LabelPrinterRepositoryImpl implements ILabelPrinterRepository {
   private readonly logger = new Logger(LabelPrinterRepositoryImpl.name);
 
-  constructor(
-    private readonly labelPrinterDataSource: LabelPrinterService,
-    private readonly companyRepository: CompanyRepositoryImpl,
-    private readonly sampleRepository: SampleReceptionRepositoryImpl,
-  ) {}
+  constructor(private readonly labelPrinterDataSource: LabelPrinterService) {}
 
   /**
    * Busca una muestra por su ID

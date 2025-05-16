@@ -22,11 +22,12 @@ import { AnalysisTypeRepository } from '@domain/repositories/analysis-type/analy
 import { AnalysisTypeRepositoryImpl } from '@infrastructure/repositories/analysis-type/analysis-type.repository-impl.service';
 import { FindCompanyByIdUseCase } from '@domain/use-cases/company/find-company-by-id.use-case';
 import { CompanyRepository } from '@domain/repositories/company/company.repository';
-import { CompanyRepositoryImpl } from '@infrastructure/repositories/company-supplier/company.repository-impl.service';
 import { FindSampleByIdUseCase } from '@domain/use-cases/sample/find-sample-by-id.use-case';
 import { SampleRepository } from '@domain/repositories/sample/sample.repository';
 import { SampleRepositoryImplService } from '@infrastructure/repositories/sample/sample.repository.impl.service';
 import { FindExistingAnalysisUseCase } from '@domain/use-cases/analyses/find-existing-analysis.use-case';
+import { CompanyRepositoryImpl } from '@infrastructure/repositories/company/company.repository-impl.service';
+
 @Module({
   imports: [PrismaModule, PermissionsModule],
   controllers: [AnalysesController],

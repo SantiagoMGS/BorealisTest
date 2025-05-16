@@ -16,10 +16,8 @@ import {
 import { StatusDataSourceService } from '@infrastructure/datasource/status';
 import { PrismaModule } from '@core/prisma/prisma.module';
 import { PermissionsModule } from '@core/permissions/permissions.module';
-import { ReceptionSupplierRepositoryImpl } from '@infrastructure/repositories/reception/reception-supplier.repository-impl.service';
 import { SampleReceptionRepository } from '@domain/repositories/reception/sample-reception.repository';
 import { ReceptionOriginRepository } from '@domain/repositories/reception/reception-origin.repository';
-import { CompanySupplierDataSourceService } from '@infrastructure/datasource/company-supplier';
 import { SampleReceptionController } from './sample-reception.controller';
 import { ReceptionOriginController } from './reception-origin.controller';
 import { CompanyModule } from '../company/company.module';
@@ -30,6 +28,7 @@ import { DoreReceptionRepositoryImpl } from '@infrastructure/repositories/recept
 import { DoreReceptionDataSourceService } from '@infrastructure/datasource/reception/dore-reception.datasource.service';
 import { DoreReceptionRepository } from '@domain/repositories/reception/dore-reception.repository';
 import { CityDataSourceService } from '@infrastructure/datasource/city';
+import { CompanyDataSourceService } from '@infrastructure/datasource/company';
 
 @Module({
   imports: [PermissionsModule, PrismaModule, CompanyModule, SupplierModule],
@@ -52,11 +51,9 @@ import { CityDataSourceService } from '@infrastructure/datasource/city';
     ReceptionOriginDataSourceService,
     ReceptionTypeDataSourceService,
     StatusDataSourceService,
-    CompanySupplierDataSourceService,
+    CompanyDataSourceService,
     CityDataSourceService,
 
-    // Implementaciones de repositorios
-    ReceptionSupplierRepositoryImpl,
     SampleReceptionRepositoryImpl,
     ReceptionOriginRepositoryImpl,
 
@@ -80,6 +77,6 @@ import { CityDataSourceService } from '@infrastructure/datasource/city';
       useClass: DoreReceptionRepositoryImpl,
     },
   ],
-  exports: [ReceptionSupplierRepositoryImpl],
+  exports: [],
 })
 export class ReceptionModule {}

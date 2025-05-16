@@ -22,9 +22,9 @@ import { RequirePermission } from '@core/decorators/require-permission.decorator
 import { PermissionsGuard } from '@infrastructure/guards/permissions.guard';
 import { CustomResponse } from '@core/decorators/custom-response.decorator';
 import { ErrorResponseDto } from '@shared/models/error-response.dto';
-import { AssignSuppliersUseCase } from '@domain/use-cases/company-supplier/assign-suppliers.use-case';
 import { AssignSuppliersDto, SuppliersAssignmentResultDto } from './dtos';
 import { CurrentUser } from '@core/decorators/current-user.decorator';
+import { AssignCompanySupplierUseCase } from '@domain/use-cases/company/assign-company-supplier.use-case';
 
 @ApiTags('Compañías')
 @ApiBearerAuth()
@@ -34,7 +34,7 @@ import { CurrentUser } from '@core/decorators/current-user.decorator';
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 export class CompanyController {
   constructor(
-    private readonly assignSuppliersUseCase: AssignSuppliersUseCase,
+    private readonly assignCompanySupplierUseCase: AssignCompanySupplierUseCase,
   ) {}
 
   @Post('assign-suppliers')
@@ -63,7 +63,10 @@ export class CompanyController {
     @Body() data: AssignSuppliersDto,
     @CurrentUser('companyId') companyId: string,
   ): Promise<SuppliersAssignmentResultDto> {
-    const result = await this.assignSuppliersUseCase.execute(data, companyId);
+    const result = await this.assignCompanySupplierUseCase.execute(
+      data,
+      companyId,
+    );
 
     if (result.allFailed) {
       throw new BadRequestException(
