@@ -30,6 +30,12 @@ export class CreateDHAnalysesUseCase {
       const receivedWeight = Number(sample.receivedWeight);
       const dryWeight = Number(resultValue.dryWeight);
 
+      if (dryWeight > receivedWeight) {
+        throw new BadRequestException(
+          'El peso seco no puede ser mayor al peso recibido',
+        );
+      }
+
       const moisture = (1 - dryWeight / receivedWeight) * 100;
 
       const normalizedResultValue = {
