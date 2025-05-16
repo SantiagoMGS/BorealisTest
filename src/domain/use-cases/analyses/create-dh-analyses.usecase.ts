@@ -12,13 +12,17 @@ import { IAnalysisResponse } from '@domain/interfaces/analyses/analyses.response
 import { SampleReceptionDataSourceService } from '@infrastructure/datasource/reception/sample-reception.datasource.service';
 import { AnalysisTypeRepository } from '@domain/repositories/analysis-type/analysis-type.respository';
 import { CompanyRepository } from '@domain/repositories/company/company.repository';
+import { FindCompanyByIdUseCase } from '../company/find-company-by-id.use-case';
+import { FindAnalysisTypeByNameUseCase } from '../analysis-type/find-analysis-type-by-name.use-case';
+import { FindSampleByIdUseCase } from '../sample/find-sample-by-id.use-case';
+
 @Injectable()
 export class CreateDHAnalysesUseCase {
   constructor(
     private readonly analysesRepository: AnalysesRepository,
-    private readonly sampleDataSource: SampleReceptionDataSourceService,
-    private readonly analysisTypeRepository: AnalysisTypeRepository,
-    private readonly companyRepository: CompanyRepository,
+    private readonly findCompanyByIdUseCase: FindCompanyByIdUseCase,
+    private readonly findAnalysisTypeByNameUseCase: FindAnalysisTypeByNameUseCase,
+    private readonly findSampleByIdUseCase: FindSampleByIdUseCase,
   ) {}
 
   async execute(
@@ -26,12 +30,14 @@ export class CreateDHAnalysesUseCase {
     companyId: string,
   ): Promise<IAnalysisResponse> {
     try {
-      await this.companyRepository.findById(companyId);
+      await this.findCompanyByIdUseCase.execute(companyId);
 
-      const sample = await this.sampleDataSource.findById(analysis.sampleId);
+      const sample = await this.findSampleByIdUseCase.execute(
+        analysis.sampleId,
+      );
 
       const analysisType =
-        await this.analysisTypeRepository.findByShortName('DH');
+        await this.findAnalysisTypeByNameUseCase.execute('DH');
 
       const resultValue = analysis.resultValue as ResultValueDH;
 

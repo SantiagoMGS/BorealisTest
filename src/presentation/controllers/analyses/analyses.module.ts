@@ -23,6 +23,9 @@ import { AnalysisTypeRepositoryImpl } from '@infrastructure/repositories/analysi
 import { FindCompanyByIdUseCase } from '@domain/use-cases/company/find-company-by-id.use-case';
 import { CompanyRepository } from '@domain/repositories/company/company.repository';
 import { CompanyRepositoryImpl } from '@infrastructure/repositories/company-supplier/company.repository-impl.service';
+import { FindSampleByIdUseCase } from '@domain/use-cases/sample/find-sample-by-id.use-case';
+import { SampleRepository } from '@domain/repositories/sample/sample.repository';
+import { SampleRepositoryImplService } from '@infrastructure/repositories/sample/sample.repository.impl.service';
 @Module({
   imports: [PrismaModule, PermissionsModule],
   controllers: [AnalysesController],
@@ -42,6 +45,7 @@ import { CompanyRepositoryImpl } from '@infrastructure/repositories/company-supp
     GetActiveLWAnalysesUseCase,
     FindAnalysisTypeByNameUseCase,
     FindCompanyByIdUseCase,
+    FindSampleByIdUseCase,
 
     {
       provide: AnalysesRepository,
@@ -54,6 +58,10 @@ import { CompanyRepositoryImpl } from '@infrastructure/repositories/company-supp
     {
       provide: CompanyRepository,
       useClass: CompanyRepositoryImpl,
+    },
+    {
+      provide: SampleRepository,
+      useClass: SampleRepositoryImplService,
     },
   ],
 })

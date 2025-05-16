@@ -18,6 +18,7 @@ import { ReceptionOriginDataSourceService } from './reception-origin.datasource.
 import { StatusDataSourceService } from '@infrastructure/datasource/status';
 import { UpdateSampleFilter } from '@domain/repositories/reception/sample-reception.repository';
 import { Sample } from '@prisma/client';
+import { SampleSelectAllFields } from './types/sample-select.type';
 @Injectable()
 export class SampleReceptionDataSourceService {
   constructor(
@@ -657,17 +658,13 @@ export class SampleReceptionDataSourceService {
       );
     }
   }
-  async findById(id: string): Promise<ISampleEntity> {
+  async findById(id: string): Promise<SampleSelectAllFields> {
     const sample = await this.prisma.sample.findUnique({
       where: { id },
     });
     if (!sample) {
       throw new NotFoundException(`No se encontró la muestra con ID ${id}`);
     }
-    return {
-      code: sample.code,
-      receivedWeight: Number(sample.receivedWeight),
-      receptionOriginId: sample.receptionOriginId,
-    };
+    return sample;
   }
 }
