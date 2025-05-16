@@ -1,14 +1,16 @@
 import { PrismaService } from '@core/prisma/prisma.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { AnalysisTypeSelect } from './types/analysis-type-select.type';
 
 @Injectable()
 export class AnalysisTypeDatasourceService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findByShortName(shortName: string) {
+  async findByShortName(shortName: string): Promise<AnalysisTypeSelect> {
     const analysisType = await this.prisma.analysisType.findUnique({
       where: {
         shortName,
+        isActive: true,
       },
     });
     if (!analysisType) {

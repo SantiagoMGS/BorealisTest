@@ -32,16 +32,13 @@ export class AnalysesDatasourceService {
     companyId: string,
   ): Promise<IAnalysisResponse> {
     try {
-      const analysisType =
-        await this.analysisTypeDatasource.findByShortName('DH');
-
       await this.companyDataSource.findById(companyId);
 
       const createdAnalysis = await this.prisma.analysis.create({
         data: {
           sampleId: analysisData.sampleId,
           analysisDate: analysisData.analysisDate,
-          analysisTypeId: analysisType.id,
+          analysisTypeId: analysisData.analysisTypeId!,
           resultValue: analysisData.resultValue as ResultValueDH,
         },
       });
@@ -223,5 +220,18 @@ export class AnalysesDatasourceService {
       },
       resultValue: analysis.resultValue as unknown as ResultValueLW,
     }));
+  }
+
+  async findExistingAnalysis(
+    analysisTypeId: string,
+    sampleId: string,
+  ): Promise<any> {
+    return await this.prisma.analysis.findFirst({
+      where: {
+        analysisTypeId,
+        sampleId,
+        isActive: true,
+      },
+    });
   }
 }

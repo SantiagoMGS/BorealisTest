@@ -17,6 +17,9 @@ import { createLWAnalysisUseCase } from '@domain/use-cases/analyses/create-lw-an
 import { CreateAAAnalysesUseCase } from '@domain/use-cases/analyses/create-aa-analyses.use-case';
 import { GetActiveLWAnalysesUseCase } from '@domain/use-cases/analyses/get-active-lw-analyses.use-case';
 import { AnalysesRepositoryImpl } from '@infrastructure/repositories/analyses/analyses.repository-imp.service';
+import { FindAnalysisTypeByNameUseCase } from '@domain/use-cases/analysis-type/find-analysis-type-by-name.use-case';
+import { AnalysisTypeRepository } from '@domain/repositories/analysis-type/analysis-type.respository';
+import { AnalysisTypeRepositoryImpl } from '@infrastructure/repositories/analysis-type/analysis-type.repository-impl.service';
 @Module({
   imports: [PrismaModule, PermissionsModule],
   controllers: [AnalysesController],
@@ -34,10 +37,15 @@ import { AnalysesRepositoryImpl } from '@infrastructure/repositories/analyses/an
     createLWAnalysisUseCase,
     CreateAAAnalysesUseCase,
     GetActiveLWAnalysesUseCase,
+    FindAnalysisTypeByNameUseCase,
 
     {
       provide: AnalysesRepository,
       useClass: AnalysesRepositoryImpl,
+    },
+    {
+      provide: AnalysisTypeRepository,
+      useClass: AnalysisTypeRepositoryImpl,
     },
   ],
 })

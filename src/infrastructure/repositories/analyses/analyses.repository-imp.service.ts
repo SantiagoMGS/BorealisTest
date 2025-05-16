@@ -69,4 +69,14 @@ export class AnalysesRepositoryImpl extends AnalysesRepository {
       },
     );
   }
+
+  async findExistingAnalysis(
+    analysisTypeId: string,
+    sampleId: string,
+  ): Promise<any> {
+    return await this.analysesDatasource.findExistingAnalysis(
+      analysisTypeId,
+      sampleId,
+    );
+  }
 }

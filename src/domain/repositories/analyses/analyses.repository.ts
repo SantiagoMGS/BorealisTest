@@ -29,4 +29,8 @@ export abstract class AnalysesRepository {
   abstract getActiveLWAnalyses(
     options: IPaginationOptions,
   ): Promise<IPaginatedData<ActiveAnalysis<ResultValueLW>>>;
+  abstract findExistingAnalysis(
+    analysisTypeId: string,
+    sampleId: string,
+  ): Promise<any>;
 }

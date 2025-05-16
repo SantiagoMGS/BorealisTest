@@ -10,12 +10,14 @@ import {
 } from '@domain/entities/analyses/analyses.entity';
 import { IAnalysisResponse } from '@domain/interfaces/analyses/analyses.response.interfaces';
 import { SampleReceptionDataSourceService } from '@infrastructure/datasource/reception/sample-reception.datasource.service';
+import { AnalysisTypeRepository } from '@domain/repositories/analysis-type/analysis-type.respository';
 
 @Injectable()
 export class CreateDHAnalysesUseCase {
   constructor(
     private readonly analysesRepository: AnalysesRepository,
     private readonly sampleDataSource: SampleReceptionDataSourceService,
+    private readonly analysisTypeRepository: AnalysisTypeRepository,
   ) {}
 
   async execute(
@@ -24,6 +26,9 @@ export class CreateDHAnalysesUseCase {
   ): Promise<IAnalysisResponse> {
     try {
       const sample = await this.sampleDataSource.findById(analysis.sampleId);
+
+      const analysisType =
+        await this.analysisTypeRepository.findByShortName('DH');
 
       const resultValue = analysis.resultValue as ResultValueDH;
 
@@ -45,6 +50,7 @@ export class CreateDHAnalysesUseCase {
 
       const analysisData = {
         ...analysis,
+        analysisTypeId: analysisType.id,
         resultValue: normalizedResultValue,
       };
 
