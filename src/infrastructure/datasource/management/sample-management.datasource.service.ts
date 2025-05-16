@@ -190,7 +190,7 @@ export class SampleManagementDataSourceService {
     endDate: Date,
   ): Promise<SampleDropdown[]> {
     const sampleReceptionTypeId = await this.getSampleReceptionTypeId();
-    let samples = await this.prisma.reception.findMany({
+    const samples = await this.prisma.reception.findMany({
       where: {
         receptionDate: {
           gte: startDate,

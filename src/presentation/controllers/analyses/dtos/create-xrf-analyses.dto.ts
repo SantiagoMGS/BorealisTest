@@ -1,12 +1,5 @@
-import { ResultValueXRF } from '@domain/entities/analyses/analyses.entity';
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsNotEmpty,
-  IsObject,
-  IsString,
-  IsUUID,
-  IsDateString,
-} from 'class-validator';
+import { IsNotEmpty, IsString, IsUUID, IsDateString } from 'class-validator';
 import { MultipartFile } from '@fastify/multipart';
 
 export class CreateXRFAnalysesDto {

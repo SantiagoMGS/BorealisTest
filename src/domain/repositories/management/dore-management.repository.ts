@@ -1,4 +1,3 @@
-import { IDoreReceptionResponse } from '@domain/interfaces';
 import {
   IDoreDropdownData,
   IDoreManagementResponse,

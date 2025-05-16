@@ -14,8 +14,6 @@ import {
 } from '@nestjs/swagger';
 import { ResponseInterceptor } from '@core/interceptores/response.interceptor';
 import { JwtAuthGuard } from '@infrastructure/guards/jwt-auth.guard';
-import { PermissionsGuard } from '@infrastructure/guards/permissions.guard';
-import { RequirePermission } from '@core/decorators/require-permission.decorator';
 import {
   DefaultAnalysisResponseDto,
   SupplierByOriginResponseDto,

@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { ICurrentTenantPort } from '@domain/ports/common/current-tenant.port';
 import { CurrentTenantAdapter } from '@infrastructure/adapters/current-tenant.adapter';
 import { CoreModule } from '../core.module';
 

@@ -1,12 +1,8 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { AnalysesRepository } from '@domain/repositories/analyses/analyses.repository';
-import {
-  IAnalysisEntity,
-  ResultValueAA,
-} from '@domain/entities/analyses/analyses.entity';
+import { ResultValueAA } from '@domain/entities/analyses/analyses.entity';
 import { IAnalysisResponse } from '@domain/interfaces/analyses/analyses.response.interfaces';
 import { MultipartFile } from '@fastify/multipart';
-import { AnalysesMapper } from '@presentation/controllers/analyses/mappers/analyses.mapper';
 import * as XLSX from 'xlsx';
 
 export interface ICreateAAAnalysisData {

@@ -8,8 +8,6 @@ import {
   Param,
   Patch,
   Delete,
-  HttpException,
-  HttpStatus,
   Query,
 } from '@nestjs/common';
 import {
@@ -40,7 +38,6 @@ import { CurrentUser } from '@core/decorators/current-user.decorator';
 import { ResponseInterceptor } from '@core/interceptores/response.interceptor';
 import { CustomResponse } from '@core/decorators/custom-response.decorator';
 import { IAuthUser } from '@domain/entities/auth';
-import { AllSupplierResponseDto } from './dtos/all-supplier.response.dto';
 import { FindAllSupplierUseCase } from '@domain/use-cases/supplier/find-all-supplier.use-case';
 import { FindSupplierUseCase } from '@domain/use-cases/supplier/find-supplier.use-case';
 import { UpdateSupplierUseCase } from '@domain/use-cases/supplier/update-supplier.use-case';

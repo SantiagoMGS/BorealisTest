@@ -1,5 +1,5 @@
 import { PrismaService } from '@core/prisma/prisma.service';
-import { Injectable, Logger, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import {
   PrinterConfigDto,
   PrintLabelDto,

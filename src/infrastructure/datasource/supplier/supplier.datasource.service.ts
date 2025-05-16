@@ -2,18 +2,11 @@ import {
   Injectable,
   ConflictException,
   NotFoundException,
-  HttpException,
-  HttpStatus,
-  BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from '@core/prisma/prisma.service';
 import { ISupplierEntity } from '@domain/entities/supplier';
-import { Prisma, Supplier } from '@prisma/client';
-import {
-  ISupplierResponse,
-  IMiningTitleResponse,
-} from '@domain/interfaces/supplier';
-import { MiningTitlePersistenceMapper } from './mappers/mining-title.mapper';
+import { Prisma } from '@prisma/client';
+
 import { IPaginationOptions } from '@shared/interfaces/pagination.interfaces';
 import {
   SupplierSelected,
@@ -101,7 +94,7 @@ export class SupplierDataSourceService {
     id?: string;
     documentNumber?: string;
   }): Promise<SupplierSelected> {
-    let where: Prisma.SupplierWhereInput = { isActive: true };
+    const where: Prisma.SupplierWhereInput = { isActive: true };
 
     if (params.id) {
       where.id = params.id;

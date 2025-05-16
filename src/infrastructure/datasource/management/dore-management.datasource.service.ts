@@ -103,7 +103,7 @@ export class DoreManagementDataSourceService {
     endDate: Date,
   ): Promise<DoreDropdown[]> {
     const doreReceptionTypeId = await this.getDoreReceptionTypeId();
-    let dore = await this.prisma.reception.findMany({
+    const dore = await this.prisma.reception.findMany({
       where: {
         isActive: true,
         receptionDate: {
