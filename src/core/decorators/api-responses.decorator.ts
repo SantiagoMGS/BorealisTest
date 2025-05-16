@@ -1,8 +1,7 @@
 // src/core/decorators/api-responses.decorator.ts
 import { applyDecorators, Type } from '@nestjs/common';
 import { ApiExtraModels, ApiResponse, getSchemaPath } from '@nestjs/swagger';
-import { SuccessResponseDto } from '@shared/models/api-response.dto';
-import { PaginationMeta } from '@shared/dtos/paginator.dto';
+import { ApiResponseDto } from '@shared/dtos/api-response.dto';
 
 interface ErrorExample {
   message: string;
@@ -14,13 +13,13 @@ export function ApiPaginatedResponse<T extends Type<any>>(
   itemType: T,
 ) {
   return applyDecorators(
-    ApiExtraModels(itemType, SuccessResponseDto),
+    ApiExtraModels(itemType, ApiResponseDto),
     ApiResponse({
       status: 200,
       description,
       schema: {
         allOf: [
-          { $ref: getSchemaPath(SuccessResponseDto) },
+          { $ref: getSchemaPath(ApiResponseDto) },
           {
             properties: {
               success: { type: 'boolean', example: true },
@@ -65,13 +64,13 @@ export function ApiSuccessResponse<T extends Type<any>>(
   dataType: T,
 ) {
   return applyDecorators(
-    ApiExtraModels(dataType, SuccessResponseDto),
+    ApiExtraModels(dataType, ApiResponseDto),
     ApiResponse({
       status,
       description,
       schema: {
         allOf: [
-          { $ref: getSchemaPath(SuccessResponseDto) },
+          { $ref: getSchemaPath(ApiResponseDto) },
           {
             properties: {
               success: { type: 'boolean', example: true },
@@ -103,7 +102,7 @@ export function ApiSuccessResponseWithExample<T extends Type<any>>(
         'application/json': {
           schema: {
             allOf: [
-              { $ref: getSchemaPath(SuccessResponseDto) },
+              { $ref: getSchemaPath(ApiResponseDto) },
               {
                 properties: {
                   data: { $ref: getSchemaPath(dataType) },
