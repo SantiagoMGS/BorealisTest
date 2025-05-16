@@ -1,8 +1,5 @@
 import { ISupplierEntity } from '@domain/entities/supplier';
-import {
-  ISupplierResponse,
-  IMiningTitleResponse,
-} from '@domain/interfaces/supplier';
+import { ISupplierResponse } from '@domain/interfaces/supplier';
 import {
   IPaginatedData,
   IPaginationOptions,
@@ -12,8 +9,7 @@ export abstract class SupplierRepository {
   abstract createSupplier(
     supplierData: ISupplierEntity,
   ): Promise<ISupplierResponse>;
-  abstract findAll(): Promise<ISupplierResponse[]>;
-  abstract findAllPaginated(
+  abstract findAll(
     options: IPaginationOptions,
   ): Promise<IPaginatedData<ISupplierResponse>>;
   abstract findByParams(params: {
@@ -26,7 +22,4 @@ export abstract class SupplierRepository {
   ): Promise<ISupplierResponse>;
   abstract delete(id: string, userId?: string): Promise<ISupplierResponse>;
   abstract findById(id: string): Promise<ISupplierResponse>;
-  abstract findMiningTitles(
-    supplierId: string,
-  ): Promise<IMiningTitleResponse[]>;
 }

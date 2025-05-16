@@ -47,7 +47,6 @@ import { UpdateSupplierUseCase } from '@domain/use-cases/supplier/update-supplie
 import { DeleteSupplierUseCase } from '@domain/use-cases/supplier/delete-supplier.use-case';
 import { RequirePermission } from '@core/decorators/require-permission.decorator';
 import { PermissionsGuard } from '@infrastructure/guards/permissions.guard';
-import { FindMiningTitlesUseCase } from '@domain/use-cases/supplier/find-mining-title.use-case';
 import {
   ApiResponseDto,
   getResponseSchema,
@@ -56,6 +55,7 @@ import {
 import { Paginated } from '@core/decorators/paginated.decorator';
 import { PaginationDto } from '@shared/dtos/paginator.dto';
 import { isUUID } from 'class-validator';
+import { GetMiningTitlesBySupplierUseCase } from '@domain/use-cases/mining-title/get-mining-titles-by-supplier.use-case';
 
 @ApiTags('Proveedores')
 @ApiBearerAuth()
@@ -77,10 +77,9 @@ export class SupplierController {
     private readonly findSupplierUseCase: FindSupplierUseCase,
     private readonly updateSupplierUseCase: UpdateSupplierUseCase,
     private readonly deleteSupplierUseCase: DeleteSupplierUseCase,
-    private readonly findMiningTitlesUseCase: FindMiningTitlesUseCase,
+    private readonly getMiningTitlesBySupplierUseCase: GetMiningTitlesBySupplierUseCase,
   ) {}
 
-  // Crear un nuevo proveedor
   @Post()
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Crear un nuevo proveedor' })
@@ -108,21 +107,17 @@ export class SupplierController {
     @Body() createSupplierDto: CreateSupplierDto,
     @CurrentUser() user: IAuthUser,
   ): Promise<SupplierResponseDto> {
-    // Convertir DTO a entidad de dominio
     const supplierEntity = SupplierMapper.toEntity(createSupplierDto);
 
-    // Ejecutar caso de uso, pasando el ID del usuario y el ID de la compañía actual
     const result = await this.createSupplierUseCase.execute(
       supplierEntity,
       user.id,
       user.companyId,
     );
 
-    // Convertir resultado a DTO de respuesta
     return SupplierMapper.toResponseDto(result);
   }
 
-  // Obtener todos los proveedores
   @Get()
   @Paginated()
   @UseGuards(JwtAuthGuard)
@@ -136,13 +131,7 @@ export class SupplierController {
     successMessage: 'Proveedores obtenidos exitosamente',
   })
   async findAll(@Query() paginationDto: PaginationDto) {
-    // Asegurar valores por defecto para page y limit
-    const options = {
-      page: paginationDto.page || 1,
-      limit: paginationDto.limit || 10,
-      withDeleted: paginationDto.withDeleted || false,
-    };
-    return await this.findAllSupplierUseCase.executePaginated(options);
+    return await this.findAllSupplierUseCase.execute(paginationDto);
   }
 
   @Get(':param')
@@ -259,7 +248,8 @@ export class SupplierController {
   async findMiningTitles(
     @Param('id') id: string,
   ): Promise<MiningTitleResponseDto[]> {
-    const miningTitles = await this.findMiningTitlesUseCase.execute(id);
+    const miningTitles =
+      await this.getMiningTitlesBySupplierUseCase.execute(id);
 
     if (miningTitles.length === 0) {
       return [];
