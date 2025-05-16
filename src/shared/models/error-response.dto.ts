@@ -1,27 +1,50 @@
+// src/shared/models/error-response.dto.ts
 import { ApiProperty } from '@nestjs/swagger';
 
+/**
+ * DTO para documentar la estructura de errores de la API en Swagger
+ */
 export class ErrorResponseDto {
   @ApiProperty({
+    description: 'Indicador de éxito de la operación',
+    example: false,
+  })
+  success!: boolean;
+
+  @ApiProperty({
     description: 'Código de estado HTTP',
-    example: 401,
+    example: 400,
   })
   statusCode!: number;
 
   @ApiProperty({
-    description: 'Mensaje de error',
-    example: 'Operación no autorizada',
+    description: 'Fecha y hora de la respuesta',
+    example: '2025-05-16T19:00:58.615Z',
   })
-  message!: string;
+  timestamp!: string;
 
   @ApiProperty({
-    description: 'Ruta que generó el error',
-    example: '/api/resource',
+    description: 'Ruta de la petición',
+    example: '/api/analyses/moisture-determination',
   })
   path!: string;
 
   @ApiProperty({
-    description: 'Marca de tiempo',
-    example: '2023-01-01T00:00:00.000Z',
+    description: 'Mensaje descriptivo del error',
+    example: 'Error en la operación',
   })
-  timestamp!: string;
+  message!: string;
+
+  @ApiProperty({
+    description: 'Tipo de error',
+    example: 'BAD_REQUEST',
+  })
+  error!: string;
+
+  @ApiProperty({
+    description: 'Datos adicionales',
+    example: null,
+    nullable: true,
+  })
+  data!: any;
 }

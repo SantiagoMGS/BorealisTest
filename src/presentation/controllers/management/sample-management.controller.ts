@@ -11,6 +11,7 @@ import {
   ApiOperation,
   ApiResponse,
   ApiExtraModels,
+  ApiNoContentResponse,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '@infrastructure/guards/jwt-auth.guard';
 import { PermissionsGuard } from '@infrastructure/guards/permissions.guard';
@@ -33,17 +34,17 @@ import { RequirePermission } from '@core/decorators/require-permission.decorator
 import { IPaginatedData } from '@shared/index';
 import { MappedSamples } from '@infrastructure/mappers/sample-management.mapper';
 import { DropdownDataDto } from '@shared/dtos/get-dropdown-data.dto';
+import {
+  ApiPaginatedResponse,
+  ApiSuccessResponse,
+} from '@core/decorators/api-responses.decorator';
+import { MappedSampleDto } from './dtos/mapped-sample.dto';
 
 @ApiTags('Sample Management')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @UseInterceptors(ResponseInterceptor)
 @RequirePermission(SampleManagementController.name)
-@ApiExtraModels(
-  ApiResponseDto,
-  SampleDropdownResponseDto,
-  SamplePaginatedResponseDto,
-)
 @Controller('sample-management')
 export class SampleManagementController {
   constructor(
@@ -53,18 +54,14 @@ export class SampleManagementController {
 
   @Get('dropdown-data')
   @ApiOperation({
-    summary: 'Obtener datos para poblar los dropdowns de la UI',
-    description: 'Devuelve listas de proveedores, muestras y orígenes',
+    summary: 'Obtener datos para poblar los dropdowns de la UI de muestras',
   })
-  @ApiResponse({
-    status: 200,
-    description: 'Datos obtenidos correctamente',
-    ...getResponseSchema(SampleDropdownResponseDto),
-  })
-  @ApiResponse({
-    status: 204,
-    description: 'No se encontraron datos',
-  })
+  @ApiSuccessResponse(
+    200,
+    'Datos obtenidos correctamente',
+    SampleDropdownResponseDto,
+  )
+  @ApiNoContentResponse()
   async getDropdownData(
     @Query() queryParams: DropdownDataDto,
   ): Promise<SampleDropdownResponseDto> {
@@ -79,19 +76,10 @@ export class SampleManagementController {
   @Get('find-by-filters')
   @Paginated()
   @ApiOperation({
-    summary: 'Buscar muestras aplicando filtros',
-    description:
-      'Devuelve una lista paginada de muestras que cumplen con los filtros especificados',
+    summary: 'Buscar muestras aplicando filtros combinados (logica &)',
   })
-  @ApiResponse({
-    status: 200,
-    description: 'Muestras encontradas correctamente',
-    ...getResponseSchema(SamplePaginatedResponseDto),
-  })
-  @ApiResponse({
-    status: 204,
-    description: 'No se encontraron muestras',
-  })
+  @ApiPaginatedResponse('Muestras encontradas correctamente', MappedSampleDto)
+  @ApiNoContentResponse()
   async findByFilters(
     @Query() filterParams: FindSampleByFiltersDto,
   ): Promise<IPaginatedData<MappedSamples>> {

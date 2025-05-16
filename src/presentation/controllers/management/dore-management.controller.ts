@@ -20,7 +20,7 @@ import { FindDoreReceptionsByFiltersUseCase } from '@domain/use-cases/reception'
 import {
   DoreDropdownResponseDto,
   FindDoreReceptionsByFiltersDto,
-  DoreReceptionPaginatedResponseDto,
+  DoreReceptionItemDto,
 } from './dtos';
 import { Paginated } from '@core/decorators/paginated.decorator';
 import {
@@ -31,17 +31,16 @@ import { GetDoreDropdownDataUseCase } from '@domain/use-cases/management';
 import { IDoreManagementResponse } from '@domain/interfaces/management/dore-management.interface';
 import { IPaginatedData } from '@shared/index';
 import { DropdownDataDto } from '@shared/dtos/get-dropdown-data.dto';
+import {
+  ApiPaginatedResponse,
+  ApiSuccessResponse,
+} from '@core/decorators/api-responses.decorator';
 
 @ApiTags('Gestion Recepciones de Doré')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @UseInterceptors(ResponseInterceptor)
 @RequirePermission(DoreManagementController.name)
-@ApiExtraModels(
-  ApiResponseDto,
-  DoreDropdownResponseDto,
-  DoreReceptionPaginatedResponseDto,
-)
 @Controller('dore-management')
 export class DoreManagementController {
   constructor(
@@ -52,39 +51,33 @@ export class DoreManagementController {
   @Get('dropdown-data')
   @ApiOperation({
     summary: 'Obtener datos para poblar los dropdowns de la UI de doré',
-    description:
-      'Devuelve listas de proveedores, dorés, números de lote y orígenes de recepción',
   })
-  @ApiResponse({
-    status: 200,
-    description: 'Datos obtenidos correctamente',
-    ...getResponseSchema(DoreDropdownResponseDto),
-  })
+  @ApiSuccessResponse(
+    200,
+    'Datos obtenidos correctamente',
+    DoreDropdownResponseDto,
+  )
   async getDropdownData(
     @Query() queryParams: DropdownDataDto,
   ): Promise<DoreDropdownResponseDto> {
-    // Obtener los datos para los dropdowns
     const dropdownData = await this.getDoreDropdownDataUseCase.execute(
       queryParams.startDate,
       queryParams.endDate,
     );
 
-    // Retornar directamente los datos sin anidar
     return dropdownData;
   }
 
   @Get('find-by-filters')
   @Paginated()
   @ApiOperation({
-    summary: 'Buscar recepciones de doré aplicando filtros',
-    description:
-      'Devuelve una lista paginada de recepciones de doré que cumplen con los filtros especificados',
+    summary:
+      'Buscar recepciones de doré aplicando filtros combinados (logica &)',
   })
-  @ApiResponse({
-    status: 200,
-    description: 'Recepciones encontradas correctamente',
-    ...getResponseSchema(DoreReceptionPaginatedResponseDto),
-  })
+  @ApiPaginatedResponse(
+    'Recepciones encontradas correctamente',
+    DoreReceptionItemDto,
+  )
   async findByFilters(
     @Query() filterParams: FindDoreReceptionsByFiltersDto,
   ): Promise<IPaginatedData<IDoreManagementResponse>> {

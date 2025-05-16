@@ -41,11 +41,11 @@ export class CreateDHAnalysesUseCase {
       analysis.sampleId,
     );
 
-    //if (existingAnalysis) {
-    //  throw new BadRequestException(
-    //    'La muestra ya tiene un análisis de humedad activo',
-    //  );
-    //}
+    if (existingAnalysis) {
+      throw new BadRequestException(
+        'La muestra ya tiene un análisis de humedad activo',
+      );
+    }
 
     const resultValue = analysis.resultValue as ResultValueDH;
 
