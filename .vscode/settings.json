@@ -1,3 +1,9 @@
 {
-  "cSpell.words": ["Bixolon"]
+  "cSpell.words": ["Bixolon"],
+  "eslint.enable": true,
+  "eslint.format.enable": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "eslint.validate": ["javascript", "typescript"]
 }
