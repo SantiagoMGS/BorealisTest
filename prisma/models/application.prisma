@@ -1,0 +1,17 @@
+model Application {
+  id          String               @id @default(uuid()) @db.Uuid
+  name        String               @unique
+  description String?
+  path        String               @unique
+  logo        String?
+  isActive    Boolean              @default(true)
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+  createdBy   String?              @db.Uuid
+  updatedBy   String?              @db.Uuid
+  companies   CompanyApplication[]
+  resources   Resource[]
+
+  @@index([name])
+  @@map("applications")
+}

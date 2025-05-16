@@ -1,0 +1,76 @@
+model ReceptionType {
+  id           String                @id @default(uuid()) @db.Uuid
+  name         String                @unique
+  description  String?
+  isActive     Boolean               @default(true)
+  validOrigins ReceptionTypeOrigin[]
+  receptions   Reception[]
+
+  @@map("reception_types")
+}
+model ReceptionOrigin {
+  id             String  @id @default(uuid()) @db.Uuid
+  name           String  @unique
+  description    String?
+  hasMiningTitle Boolean @default(false)
+  isActive       Boolean @default(true)
+  shortName      String  @unique
+
+  validTypes           ReceptionTypeOrigin[]
+  receptions           Reception[]
+  Sample               Sample[]
+  defaultAnalysisTypes DefaultAnalysisTypeOrigin[]
+  suppliers            SupplierReceptionOrigin[]
+
+  @@map("reception_origins")
+}
+
+model ReceptionTypeOrigin {
+  receptionTypeId   String          @db.Uuid
+  receptionOriginId String          @db.Uuid
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  createdBy         String?         @db.Uuid
+  updatedBy         String?         @db.Uuid
+  receptionOrigin   ReceptionOrigin @relation(fields: [receptionOriginId], references: [id], onDelete: Cascade)
+  receptionType     ReceptionType   @relation(fields: [receptionTypeId], references: [id], onDelete: Cascade)
+
+  @@id([receptionTypeId, receptionOriginId])
+  @@index([receptionTypeId])
+  @@index([receptionOriginId])
+  @@map("reception_type_origins")
+}
+
+model Reception {
+  id                String               @id @default(uuid()) @db.Uuid
+  companyId         String               @db.Uuid
+  supplierId        String               @db.Uuid
+  receptionDate     DateTime
+  batchNumber       String?
+  observation       String?
+  isActive          Boolean              @default(true)
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+  createdBy         String?              @db.Uuid
+  updatedBy         String?              @db.Uuid
+  receptionOriginId String               @db.Uuid
+  receptionTypeId   String               @db.Uuid
+  miningTitleId     String?              @db.Uuid
+  cityId            String?              @db.Uuid
+  company           Company              @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  receptionOrigin   ReceptionOrigin      @relation(fields: [receptionOriginId], references: [id])
+  receptionType     ReceptionType        @relation(fields: [receptionTypeId], references: [id])
+  supplier          Supplier             @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  miningTitle       SupplierMiningTitle? @relation(fields: [miningTitleId], references: [id])
+  city              City?                @relation(fields: [cityId], references: [id])
+  samples           Sample[]
+  dore              Dore[]
+
+  @@index([companyId])
+  @@index([supplierId])
+  @@index([receptionTypeId])
+  @@index([receptionOriginId])
+  @@index([miningTitleId])
+  @@index([cityId])
+  @@map("receptions")
+}

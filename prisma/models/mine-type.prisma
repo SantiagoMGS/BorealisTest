@@ -1,0 +1,10 @@
+model MineType {
+  id                   String                @id @default(uuid()) @db.Uuid
+  name                 String                @unique
+  royaltyPercentage    Decimal               @db.Decimal(7, 4)
+  isActive             Boolean               @default(true)
+  supplierMiningTitles SupplierMiningTitle[]
+
+  @@index([name])
+  @@map("mine_types")
+}

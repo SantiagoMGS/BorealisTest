@@ -1,0 +1,32 @@
+model Printer {
+  id          String               @id @default(uuid()) @db.Uuid
+  companyId   String               @db.Uuid
+  ip          String
+  port        String
+  location    String
+  printerName String
+  isActive    Boolean              @default(true)
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+  createdBy   String?              @db.Uuid
+  updatedBy   String?              @db.Uuid
+  company     Company              @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  traces      SamplePrinterTrace[]
+
+  @@unique([companyId, ip])
+  @@index([companyId])
+  @@map("printers")
+}
+
+model SamplePrinterTrace {
+  id        String   @id @default(uuid()) @db.Uuid
+  sampleId  String   @db.Uuid
+  printerId String   @db.Uuid
+  count     Int
+  createdAt DateTime @default(now())
+  sample    Sample   @relation(fields: [sampleId], references: [id], onDelete: Cascade)
+  printer   Printer  @relation(fields: [printerId], references: [id], onDelete: Cascade)
+
+  @@index([sampleId])
+  @@map("sample_printer_traces")
+}

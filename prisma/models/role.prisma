@@ -1,0 +1,49 @@
+model Role {
+  id          String           @id @default(uuid()) @db.Uuid
+  name        String           @unique
+  description String?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  createdBy   String?          @db.Uuid
+  updatedBy   String?          @db.Uuid
+  isSystem    Boolean          @default(false)
+  permissions RolePermission[]
+  users       UserCompany[]
+
+  @@index([name])
+  @@map("roles")
+}
+
+model RolePermission {
+  roleId        String      @db.Uuid
+  actionId      String      @db.Uuid
+  subresourceId String      @db.Uuid
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  createdBy     String?     @db.Uuid
+  updatedBy     String?     @db.Uuid
+  action        Action      @relation(fields: [actionId], references: [id], onDelete: Cascade)
+  role          Role        @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  subresource   Subresource @relation(fields: [subresourceId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, actionId, subresourceId])
+  @@unique([roleId, subresourceId])
+  @@index([roleId])
+  @@index([subresourceId])
+  @@map("role_permissions")
+}
+
+model Action {
+  id          String           @id @default(uuid()) @db.Uuid
+  name        String           @unique
+  level       Int
+  description String?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  createdBy   String?          @db.Uuid
+  updatedBy   String?          @db.Uuid
+  permissions RolePermission[]
+
+  @@index([name])
+  @@map("actions")
+}

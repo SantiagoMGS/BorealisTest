@@ -1,0 +1,9 @@
+model Status {
+  id       String   @id @default(uuid()) @db.Uuid
+  name     String   @unique
+  isActive Boolean  @default(true)
+  dores    Dore[]
+  samples  Sample[]
+
+  @@map("status")
+}

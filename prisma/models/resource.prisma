@@ -1,0 +1,18 @@
+model Resource {
+  id            String        @id @default(uuid()) @db.Uuid
+  name          String        @unique
+  icon          String
+  path          String        @unique
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  createdBy     String?       @db.Uuid
+  updatedBy     String?       @db.Uuid
+  applicationId String        @db.Uuid
+  application   Application   @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  subresources  Subresource[]
+
+  @@index([name])
+  @@index([applicationId])
+  @@map("resources")
+}
+
