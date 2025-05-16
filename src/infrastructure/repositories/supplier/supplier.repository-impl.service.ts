@@ -1,10 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { SupplierRepository } from '@domain/repositories/supplier';
 import { ISupplierEntity } from '@domain/entities/supplier';
-import {
-  ISupplierResponse,
-  IMiningTitleResponse,
-} from '@domain/interfaces/supplier';
+import { ISupplierResponse } from '@domain/interfaces/supplier';
 import { SupplierDataSourceService } from '@infrastructure/datasource/supplier';
 import { SupplierMapper } from '@presentation/controllers/supplier/mappers/supplier.mapper';
 import { PaginationHelper } from '@shared/utils/pagination.helper';
@@ -20,24 +17,23 @@ export class SupplierRepositoryImpl implements SupplierRepository {
   async createSupplier(
     supplierData: ISupplierEntity,
   ): Promise<ISupplierResponse> {
+    if (!supplierData.shortName) {
+      throw new BadRequestException(
+        'El nombre corto del proveedor es requerido',
+      );
+    }
     const supplier = await this.supplierDataSource.createSupplier(supplierData);
     return SupplierMapper.toResponseDto(supplier);
   }
 
-  async findAll(): Promise<ISupplierResponse[]> {
-    const suppliers = await this.supplierDataSource.findAll();
-    return suppliers.map(SupplierMapper.toResponseDto);
-  }
-
-  async findAllPaginated(
+  async findAll(
     options: IPaginationOptions,
   ): Promise<IPaginatedData<ISupplierResponse>> {
-    const { suppliers, total } =
-      await this.supplierDataSource.findAllPaginated(options);
+    const suppliers = await this.supplierDataSource.findAll(options);
     const mappedSuppliers = suppliers.map(SupplierMapper.toResponseDto);
     return PaginationHelper.createPaginatedResponseFromItems(
       mappedSuppliers,
-      total,
+      mappedSuppliers.length,
       options,
     );
   }
@@ -72,9 +68,5 @@ export class SupplierRepositoryImpl implements SupplierRepository {
   async findById(id: string): Promise<ISupplierResponse> {
     const supplier = await this.supplierDataSource.findById(id);
     return SupplierMapper.toResponseDto(supplier);
-  }
-
-  async findMiningTitles(supplierId: string): Promise<IMiningTitleResponse[]> {
-    return this.supplierDataSource.findMiningTitles(supplierId);
   }
 }

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PermissionRepository } from '@domain/repositories/user/permission.repository';
 import { PermissionDataSourceService } from '@infrastructure/datasource/user/permission.datasource.service';
 import { IPermissionsByCompanyResponse } from '@domain/interfaces/user/permission-response.interface';

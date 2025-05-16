@@ -1,5 +1,3 @@
-import { DocumentType } from '@prisma/client';
-
 export interface ISupplierEntity {
   id?: string;
   name: string;

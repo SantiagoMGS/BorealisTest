@@ -1,5 +1,4 @@
 import { ISupplierEntity } from '@domain/entities/supplier';
-import { ISupplierResponse } from '@domain/interfaces/supplier';
 import { CreateSupplierDto, SupplierResponseDto } from '../dtos';
 
 export class SupplierMapper {

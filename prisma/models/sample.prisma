@@ -1,0 +1,34 @@
+model Sample {
+  id                String   @id @default(uuid()) @db.Uuid
+  receptionId       String   @db.Uuid
+  receptionOriginId String   @db.Uuid
+  receivedWeight    Decimal
+  code              Int      @unique
+  statusId          String   @db.Uuid
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  createdBy         String?  @db.Uuid
+  updatedBy         String?  @db.Uuid
+
+  reception        Reception                @relation(fields: [receptionId], references: [id], onDelete: Cascade)
+  receptionOrigin  ReceptionOrigin          @relation(fields: [receptionOriginId], references: [id])
+  status           Status                   @relation(fields: [statusId], references: [id])
+  subSamples       SubSample[]
+  requiredAnalyses SampleRequiredAnalysis[]
+  traces           SamplePrinterTrace[]
+  analyses         Analysis[]
+
+  @@index([receptionId])
+  @@index([receptionOriginId])
+  @@index([statusId])
+  @@map("samples")
+}
+
+model SampleRequiredAnalysis {
+  id             String       @id @default(uuid()) @db.Uuid
+  sampleId       String       @db.Uuid
+  analysisTypeId String       @db.Uuid
+  done           Boolean      @default(false)
+  sample         Sample       @relation(fields: [sampleId], references: [id], onDelete: Cascade)
+  analysisType   AnalysisType @relation(fields: [analysisTypeId], references: [id], onDelete: Cascade)
+}

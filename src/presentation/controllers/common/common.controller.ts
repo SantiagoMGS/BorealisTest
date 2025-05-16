@@ -35,7 +35,6 @@ import { CatalogTypeEnum } from '@domain/entities/catalog/catalog.entity';
 import {
   ApiResponseDto,
   getResponseSchema,
-  getArrayResponseSchema,
   getPrimitiveArrayResponseSchema,
 } from '@shared/dtos/api-response.dto';
 

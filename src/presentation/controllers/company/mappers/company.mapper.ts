@@ -1,4 +1,4 @@
-import { ICompanyResponse, ICompanyBranding } from '@domain/interfaces/auth';
+import { ICompanyResponse } from '@domain/interfaces/auth';
 import { Company, CompanyBranding } from '@prisma/client';
 
 export class CompanyMapper {

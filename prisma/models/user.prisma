@@ -1,0 +1,52 @@
+model User {
+  id             String        @id @default(uuid()) @db.Uuid
+  name           String
+  email          String        @unique
+  hashedPassword String
+  isActive       Boolean       @default(true)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  sessions       Session[]
+  companies      UserCompany[]
+
+  @@index([email])
+  @@map("users")
+}
+
+model Session {
+  id               String    @id @default(uuid()) @db.Uuid
+  userId           String    @db.Uuid
+  token            String    @unique
+  refreshToken     String?
+  expiresAt        DateTime
+  refreshExpiresAt DateTime?
+  device           String?
+  ipAddress        String?
+  lastActive       DateTime  @default(now())
+  createdAt        DateTime  @default(now())
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+  @@map("sessions")
+}
+
+model UserCompany {
+  userId    String   @db.Uuid
+  companyId String   @db.Uuid
+  roleId    String   @db.Uuid
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String?  @db.Uuid
+  updatedBy String?  @db.Uuid
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  role      Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, companyId, roleId])
+  @@unique([userId, companyId])
+  @@index([userId])
+  @@index([companyId])
+  @@map("user_companies")
+}

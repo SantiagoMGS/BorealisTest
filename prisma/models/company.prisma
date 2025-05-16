@@ -1,0 +1,71 @@
+model Company {
+  id           String               @id @default(uuid()) @db.Uuid
+  name         String               @unique
+  shortName    String               @unique
+  isActive     Boolean              @default(true)
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+  createdBy    String?              @db.Uuid
+  updatedBy    String?              @db.Uuid
+
+
+  applications CompanyApplication[]
+  branding     CompanyBranding?
+  suppliers    CompanySupplier[]
+  receptions   Reception[]
+  users        UserCompany[]
+  Printer      Printer[]
+
+  @@index([name])
+  @@map("companies")
+}
+
+model CompanyBranding {
+  companyId      String   @id @db.Uuid
+  logo           String?
+  primaryColor   String?  @db.VarChar(25)
+  secondaryColor String?  @db.VarChar(25)
+  tertiaryColor  String?  @db.VarChar(25)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  createdBy      String?  @db.Uuid
+  updatedBy      String?  @db.Uuid
+  company        Company  @relation(fields: [companyId], references: [id])
+
+  @@map("company_brandings")
+}
+
+model CompanyApplication {
+  companyId     String      @db.Uuid
+  applicationId String      @db.Uuid
+  isActive      Boolean     @default(true)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  createdBy     String?     @db.Uuid
+  updatedBy     String?     @db.Uuid
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  company       Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@id([companyId, applicationId])
+  @@unique([companyId, applicationId])
+  @@index([companyId])
+  @@index([applicationId])
+  @@map("company_applications")
+}
+
+model CompanySupplier {
+  companyId  String   @db.Uuid
+  supplierId String   @db.Uuid
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  createdBy  String?  @db.Uuid
+  updatedBy  String?  @db.Uuid
+  id         String   @id @default(uuid()) @db.Uuid
+  company    Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  supplier   Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+  @@index([supplierId])
+  @@map("company_suppliers")
+}

@@ -1,0 +1,8 @@
+model MeasurementUnit {
+  id        String  @id @default(uuid()) @db.Uuid
+  name      String  @unique
+  shortName String  @unique
+  isActive  Boolean @default(true)
+
+  @@map("measurement_units")
+}

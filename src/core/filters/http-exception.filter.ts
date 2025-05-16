@@ -8,10 +8,6 @@ import {
 } from '@nestjs/common';
 import { FastifyReply } from 'fastify';
 import { Reflector } from '@nestjs/core';
-import {
-  CUSTOM_RESPONSE_METADATA,
-  CustomResponseOptions,
-} from '../decorators/custom-response.decorator';
 
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {

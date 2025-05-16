@@ -17,8 +17,7 @@ import { PermissionsGuard } from '@infrastructure/guards/permissions.guard';
 import { ResponseInterceptor } from '@core/interceptores/response.interceptor';
 import {
   FindSampleByFiltersDto,
-  DropdownDataDto,
-  SampleDropdownDataDto,
+  SampleDropdownResponseDto,
   SamplePaginatedResponseDto,
 } from './dtos';
 import { Paginated } from '@core/decorators/paginated.decorator';
@@ -32,7 +31,8 @@ import {
 } from '@shared/dtos/api-response.dto';
 import { RequirePermission } from '@core/decorators/require-permission.decorator';
 import { IPaginatedData } from '@shared/index';
-import { ISampleManagementResponse } from '@domain/interfaces/management/sample-management.interface';
+import { MappedSamples } from '@infrastructure/mappers/sample-management.mapper';
+import { DropdownDataDto } from '@shared/dtos/get-dropdown-data.dto';
 
 @ApiTags('Sample Management')
 @ApiBearerAuth()
@@ -41,7 +41,7 @@ import { ISampleManagementResponse } from '@domain/interfaces/management/sample-
 @RequirePermission(SampleManagementController.name)
 @ApiExtraModels(
   ApiResponseDto,
-  SampleDropdownDataDto,
+  SampleDropdownResponseDto,
   SamplePaginatedResponseDto,
 )
 @Controller('sample-management')
@@ -59,11 +59,15 @@ export class SampleManagementController {
   @ApiResponse({
     status: 200,
     description: 'Datos obtenidos correctamente',
-    ...getResponseSchema(SampleDropdownDataDto),
+    ...getResponseSchema(SampleDropdownResponseDto),
+  })
+  @ApiResponse({
+    status: 204,
+    description: 'No se encontraron datos',
   })
   async getDropdownData(
     @Query() queryParams: DropdownDataDto,
-  ): Promise<SampleDropdownDataDto> {
+  ): Promise<SampleDropdownResponseDto> {
     const dropdownData = await this.getSampleDropdownDataUseCase.execute(
       queryParams.startDate,
       queryParams.endDate,
@@ -84,17 +88,13 @@ export class SampleManagementController {
     description: 'Muestras encontradas correctamente',
     ...getResponseSchema(SamplePaginatedResponseDto),
   })
+  @ApiResponse({
+    status: 204,
+    description: 'No se encontraron muestras',
+  })
   async findByFilters(
     @Query() filterParams: FindSampleByFiltersDto,
-  ): Promise<IPaginatedData<ISampleManagementResponse>> {
-    return await this.findSamplesByFiltersUseCase.execute({
-      page: filterParams.page || 1,
-      limit: filterParams.limit || 10,
-      startDate: filterParams.startDate,
-      endDate: filterParams.endDate,
-      supplierIds: filterParams.supplierIds,
-      receptionOriginIds: filterParams.receptionOriginIds,
-      sampleIds: filterParams.sampleIds,
-    });
+  ): Promise<IPaginatedData<MappedSamples>> {
+    return await this.findSamplesByFiltersUseCase.execute(filterParams);
   }
 }

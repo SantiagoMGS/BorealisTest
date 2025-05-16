@@ -1,4 +1,4 @@
-import { ISampleDropdownData } from '@domain/interfaces/management/sample-management.interface';
+import { ISampleDropdownData } from '@domain/interfaces/management/sample-dropdown.interface';
 import { SampleManagementRepository } from '@domain/repositories/management/sample-management.repository';
 import { Injectable } from '@nestjs/common';
 

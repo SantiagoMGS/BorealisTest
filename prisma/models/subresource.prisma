@@ -1,0 +1,18 @@
+model Subresource {
+  id              String           @id @default(uuid()) @db.Uuid
+  name            String
+  resourceId      String           @db.Uuid
+  icon            String
+  path            String           @unique
+  updatedAt       DateTime         @updatedAt
+  createdAt       DateTime         @default(now())
+  createdBy       String?          @db.Uuid
+  updatedBy       String?          @db.Uuid
+  controller      String           @unique
+  rolePermissions RolePermission[]
+  resource        Resource         @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+
+  @@unique([name, resourceId])
+  @@index([resourceId])
+  @@map("subresources")
+}

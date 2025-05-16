@@ -4,15 +4,12 @@ import {
   Body,
   UseGuards,
   UseInterceptors,
-  Get,
   BadRequestException,
-  HttpStatus,
 } from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
   ApiBody,
-  ApiCreatedResponse,
   ApiBadRequestResponse,
   ApiUnauthorizedResponse,
   ApiBearerAuth,

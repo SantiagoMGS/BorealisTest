@@ -10,13 +10,9 @@ import {
 export class FindAllSupplierUseCase {
   constructor(private readonly supplierRepository: SupplierRepository) {}
 
-  async execute(): Promise<ISupplierResponse[]> {
-    return this.supplierRepository.findAll();
-  }
-
-  async executePaginated(
+  async execute(
     options: IPaginationOptions,
   ): Promise<IPaginatedData<ISupplierResponse>> {
-    return this.supplierRepository.findAllPaginated(options);
+    return this.supplierRepository.findAll(options);
   }
 }

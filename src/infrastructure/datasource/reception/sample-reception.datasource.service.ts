@@ -544,7 +544,7 @@ export class SampleReceptionDataSourceService {
       }
 
       // Construir la consulta para encontrar recepciones que coincidan con los criterios
-      let where: any = { isActive: true };
+      const where: any = { isActive: true };
 
       if (companyId) {
         where.companyId = companyId;

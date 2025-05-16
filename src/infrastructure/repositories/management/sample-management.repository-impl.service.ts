@@ -1,10 +1,11 @@
 import { IManagementFilter } from '@domain/interfaces/management';
-import {
-  ISampleDropdownData,
-  ISampleManagementResponse,
-} from '@domain/interfaces/management/sample-management.interface';
+import { ISampleDropdownData } from '@domain/interfaces/management/sample-dropdown.interface';
 import { SampleManagementRepository } from '@domain/repositories/management/sample-management.repository';
 import { SampleManagementDataSourceService } from '@infrastructure/datasource/management/sample-management.datasource.service';
+import {
+  MappedSamples,
+  SampleManagementMapper,
+} from '@infrastructure/mappers/sample-management.mapper';
 import { Injectable } from '@nestjs/common';
 import { IPaginatedData } from '@shared/interfaces/pagination.interfaces';
 import { PaginationHelper } from '@shared/utils/pagination.helper';
@@ -29,14 +30,17 @@ export class SampleManagementRepositoryImpl extends SampleManagementRepository {
 
   async findByFilters(
     filter: IManagementFilter,
-  ): Promise<IPaginatedData<ISampleManagementResponse>> {
-    const { data, total } =
-      await this.sampleManagementDataSource.findByFilters(filter);
+  ): Promise<IPaginatedData<MappedSamples>> {
+    const data = await this.sampleManagementDataSource.findByFilters(filter);
     const { page, limit } = filter;
-
-    return PaginationHelper.createPaginatedResponseFromItems(data, total, {
-      page,
-      limit,
-    });
+    const resultado = SampleManagementMapper.toDomain(data);
+    return PaginationHelper.createPaginatedResponseFromItems(
+      resultado,
+      resultado.length,
+      {
+        page,
+        limit,
+      },
+    );
   }
 }

@@ -3,8 +3,12 @@ import { Type } from 'class-transformer';
 import { IsDate, IsOptional, IsArray, IsUUID } from 'class-validator';
 import { PaginationDto } from '@shared/dtos/paginator.dto';
 import { TransformCommaSeparated } from '@core/decorators/transform-comma-separated.decorator';
+import { IManagementFilter } from '@domain/interfaces/management';
 
-export class FindSampleByFiltersDto extends PaginationDto {
+export class FindSampleByFiltersDto
+  extends PaginationDto
+  implements IManagementFilter
+{
   @ApiProperty({
     description: 'Fecha inicial para filtrar',
     example: '2023-01-01T00:00:00Z',

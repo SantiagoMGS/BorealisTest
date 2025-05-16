@@ -1,7 +1,4 @@
-import {
-  PrinterConfigDto,
-  PrintLabelDto,
-} from '@presentation/controllers/label-printer/dtos/printer';
+import { PrinterConfigDto } from '@presentation/controllers/label-printer/dtos/printer';
 
 export interface ILabelPrinterRepository {
   findSampleById(sampleId: string): Promise<any | null>;

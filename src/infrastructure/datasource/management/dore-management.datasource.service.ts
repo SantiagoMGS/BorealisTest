@@ -2,14 +2,14 @@ import { PrismaService } from '@core/prisma/prisma.service';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ReceptionTypeDataSourceService } from '../reception';
 import {
-  IDore,
   IDoreDropdownData,
   IDoreManagementResponse,
-  IReceptionOrigin,
-  ISupplier,
 } from '@domain/interfaces/management/dore-management.interface';
 import { IManagementFilter } from '@domain/interfaces/management';
 import { Prisma } from '@prisma/client';
+import { DoreDropdown } from '@shared/types/dore-dropdopwn.type';
+import { SupplierDropdown } from '@shared/types/supplier-dropdown.type';
+import { ReceptionOriginDropdown } from '@shared/types/reception-origin-dropdown.type';
 
 @Injectable()
 export class DoreManagementDataSourceService {
@@ -69,7 +69,7 @@ export class DoreManagementDataSourceService {
     startDate: Date,
     endDate: Date,
     doreReceptionTypeId: string,
-  ): Promise<IReceptionOrigin[]> {
+  ): Promise<ReceptionOriginDropdown[]> {
     const receptionOrigins = await this.prisma.reception.findMany({
       where: {
         receptionTypeId: doreReceptionTypeId,
@@ -101,9 +101,9 @@ export class DoreManagementDataSourceService {
   private async getAvailableDores(
     startDate: Date,
     endDate: Date,
-  ): Promise<IDore[]> {
+  ): Promise<DoreDropdown[]> {
     const doreReceptionTypeId = await this.getDoreReceptionTypeId();
-    let dore = await this.prisma.reception.findMany({
+    const dore = await this.prisma.reception.findMany({
       where: {
         isActive: true,
         receptionDate: {
@@ -129,7 +129,7 @@ export class DoreManagementDataSourceService {
     startDate: Date,
     endDate: Date,
     doreReceptionTypeId: string,
-  ): Promise<ISupplier[]> {
+  ): Promise<SupplierDropdown[]> {
     const suppliers = await this.prisma.reception.findMany({
       where: {
         receptionDate: {

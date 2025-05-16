@@ -1,15 +1,13 @@
 import { PrismaService } from '@core/prisma/prisma.service';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ReceptionTypeDataSourceService } from '../reception';
-import {
-  ISampleDropdownData,
-  IReceptionOrigin,
-  ISample,
-  ISupplier,
-  ISampleManagementResponse,
-} from '@domain/interfaces/management/sample-management.interface';
+import { ISampleDropdownData } from '@domain/interfaces/management/sample-dropdown.interface';
 import { IManagementFilter } from '@domain/interfaces/management';
 import { Prisma } from '@prisma/client';
+import { SamplesWithAnalyses } from './types/sample-management-reception-select.type';
+import { SupplierDropdown } from '@shared/types/supplier-dropdown.type';
+import { SampleDropdown } from '@shared/types/sample-dropdown.type';
+import { ReceptionOriginDropdown } from '@shared/types/reception-origin-dropdown.type';
 
 @Injectable()
 export class SampleManagementDataSourceService {
@@ -22,7 +20,7 @@ export class SampleManagementDataSourceService {
 
   async findByFilters(
     filter: IManagementFilter,
-  ): Promise<{ data: ISampleManagementResponse[]; total: number }> {
+  ): Promise<SamplesWithAnalyses[]> {
     const {
       startDate,
       endDate,
@@ -56,40 +54,65 @@ export class SampleManagementDataSourceService {
       }),
     };
 
-    const [total, data] = await Promise.all([
-      this.prisma.reception.count({ where }),
-      this.prisma.reception.findMany({
-        where,
-        skip: (page - 1) * limit,
-        take: limit,
-        include: {
-          samples: {
-            select: {
-              id: true,
-              code: true,
-              receivedWeight: true,
+    const data = await this.prisma.reception.findMany({
+      where,
+      skip: (page - 1) * limit,
+      take: limit,
+      select: {
+        receptionDate: true,
+        isActive: true,
+        samples: {
+          select: {
+            code: true,
+            receivedWeight: true,
+            receptionOrigin: {
+              select: {
+                name: true,
+                shortName: true,
+              },
             },
-          },
-          supplier: {
-            select: {
-              id: true,
-              name: true,
+            requiredAnalyses: {
+              select: {
+                done: true,
+                analysisType: {
+                  select: {
+                    name: true,
+                    shortName: true,
+                  },
+                },
+              },
             },
-          },
-          receptionOrigin: {
-            select: {
-              id: true,
-              name: true,
+            analyses: {
+              select: {
+                analysisDate: true,
+                analysisType: {
+                  select: {
+                    name: true,
+                    shortName: true,
+                  },
+                },
+                resultValue: true,
+              },
             },
           },
         },
-        orderBy: {
-          receptionDate: 'desc',
+        supplier: {
+          select: {
+            name: true,
+            shortName: true,
+          },
         },
-      }),
-    ]);
+      },
+      orderBy: {
+        receptionDate: 'desc',
+      },
+    });
 
-    return { data, total };
+    if (data.length === 0) {
+      throw new HttpException('No content', HttpStatus.NO_CONTENT);
+    }
+
+    return data;
   }
 
   async getDropdownData(
@@ -131,7 +154,7 @@ export class SampleManagementDataSourceService {
   private async getAvailableReceptionOrigins(
     startDate: Date,
     endDate: Date,
-  ): Promise<IReceptionOrigin[]> {
+  ): Promise<ReceptionOriginDropdown[]> {
     const sampleReceptionTypeId = await this.getSampleReceptionTypeId();
     const receptionOrigins = await this.prisma.reception.findMany({
       where: {
@@ -165,9 +188,9 @@ export class SampleManagementDataSourceService {
   private async getAvailableSamples(
     startDate: Date,
     endDate: Date,
-  ): Promise<ISample[]> {
+  ): Promise<SampleDropdown[]> {
     const sampleReceptionTypeId = await this.getSampleReceptionTypeId();
-    let samples = await this.prisma.reception.findMany({
+    const samples = await this.prisma.reception.findMany({
       where: {
         receptionDate: {
           gte: startDate,
@@ -192,7 +215,7 @@ export class SampleManagementDataSourceService {
     startDate: Date,
     endDate: Date,
     sampleReceptionTypeId: string,
-  ): Promise<ISupplier[]> {
+  ): Promise<SupplierDropdown[]> {
     const suppliers = await this.prisma.reception.findMany({
       where: {
         createdAt: {

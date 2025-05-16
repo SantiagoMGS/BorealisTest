@@ -18,7 +18,6 @@ import {
 } from '@nestjs/swagger';
 import { FindDoreReceptionsByFiltersUseCase } from '@domain/use-cases/reception';
 import {
-  DropdownDataDto,
   DoreDropdownResponseDto,
   FindDoreReceptionsByFiltersDto,
   DoreReceptionPaginatedResponseDto,
@@ -31,6 +30,7 @@ import {
 import { GetDoreDropdownDataUseCase } from '@domain/use-cases/management';
 import { IDoreManagementResponse } from '@domain/interfaces/management/dore-management.interface';
 import { IPaginatedData } from '@shared/index';
+import { DropdownDataDto } from '@shared/dtos/get-dropdown-data.dto';
 
 @ApiTags('Gestion Recepciones de Doré')
 @ApiBearerAuth()

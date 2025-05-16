@@ -6,7 +6,6 @@ import {
   UseInterceptors,
   HttpStatus,
   Req,
-  BadRequestException,
   Get,
   Query,
 } from '@nestjs/common';
@@ -22,10 +21,7 @@ import {
   ApiResponse,
 } from '@nestjs/swagger';
 import { CurrentUser } from '@core/decorators/current-user.decorator';
-import {
-  IAnalysisEntity,
-  ResultValueLW,
-} from '@domain/entities/analyses/analyses.entity';
+import { ResultValueLW } from '@domain/entities/analyses/analyses.entity';
 import { IAuthUser } from '@domain/entities/auth/auth-user.entity';
 import { IAnalysisResponse } from '@domain/interfaces/analyses/analyses.response.interfaces';
 import { AnalysesMapper } from './mappers/analyses.mapper';
@@ -37,7 +33,6 @@ import { CreateXRFAnalysesUseCase } from '@domain/use-cases/analyses/create-xrf-
 import { CreateXRFAnalysesDto } from './dtos/create-xrf-analyses.dto';
 import { FastifyRequest } from 'fastify';
 import { ResponseInterceptor } from '@core/interceptores/response.interceptor';
-import { PermissionsGuard } from '@infrastructure/guards/permissions.guard';
 import { CustomResponse } from '@core/decorators/custom-response.decorator';
 import { ErrorResponseDto } from '@shared/models/error-response.dto';
 import { CreateLWAnalysesDto } from './dtos/create-lw-analyses.dto';

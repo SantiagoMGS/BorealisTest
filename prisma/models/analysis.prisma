@@ -1,0 +1,51 @@
+model AnalysisType {
+  id                String                      @id @default(uuid()) @db.Uuid
+  name              String                      @unique
+  description       String?
+  isActive          Boolean                     @default(true)
+  shortName         String                      @unique
+  analysisResult    Json
+  analyses          Analysis[]
+  requiredIn        SampleRequiredAnalysis[]
+  defaultForOrigins DefaultAnalysisTypeOrigin[]
+
+  @@index([name])
+  @@index([shortName])
+  @@map("analysis_types")
+}
+
+model Analysis {
+  id             String       @id @default(uuid()) @db.Uuid
+  analysisTypeId String       @db.Uuid
+  sampleId       String       @db.Uuid
+  resultValue    Json
+  analysisDate   DateTime
+  isActive       Boolean      @default(true)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  createdBy      String?      @db.Uuid
+  updatedBy      String?      @db.Uuid
+  
+  analysisType   AnalysisType @relation(fields: [analysisTypeId], references: [id], onDelete: Cascade)
+  sample         Sample       @relation(fields: [sampleId], references: [id], onDelete: Cascade)
+
+  @@index([sampleId])
+  @@index([sampleId, analysisTypeId])
+  @@map("analyses")
+}
+
+model DefaultAnalysisTypeOrigin {
+  receptionOriginId String          @db.Uuid
+  analysisTypeId    String          @db.Uuid
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  createdBy         String?         @db.Uuid
+  updatedBy         String?         @db.Uuid
+  receptionOrigin   ReceptionOrigin @relation(fields: [receptionOriginId], references: [id], onDelete: Cascade)
+  analysisType      AnalysisType    @relation(fields: [analysisTypeId], references: [id], onDelete: Cascade)
+
+  @@id([receptionOriginId, analysisTypeId])
+  @@index([receptionOriginId])
+  @@index([analysisTypeId])
+  @@map("default_analysis_type_origins")
+}

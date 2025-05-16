@@ -1,0 +1,31 @@
+model SubSampleType {
+  id          String      @id @default(uuid()) @db.Uuid
+  name        String      @unique
+  description String?
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  createdBy   String?     @db.Uuid
+  updatedBy   String?     @db.Uuid
+  subSamples  SubSample[]
+
+  @@index([name])
+  @@map("sub_sample_types")
+}
+
+model SubSample {
+  id              String        @id @default(uuid()) @db.Uuid
+  SampleId        String        @db.Uuid
+  weight          Decimal
+  isActive        Boolean       @default(true)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  createdBy       String?       @db.Uuid
+  updatedBy       String?       @db.Uuid
+  subSampleTypeId String        @db.Uuid
+  Sample          Sample        @relation(fields: [SampleId], references: [id], onDelete: Cascade)
+  subSampleType   SubSampleType @relation(fields: [subSampleTypeId], references: [id])
+
+  @@index([SampleId])
+  @@map("sub_samples")
+}
