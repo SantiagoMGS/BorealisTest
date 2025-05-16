@@ -3,8 +3,7 @@ import { CompanyRepository } from '@domain/repositories/company/company.reposito
 import { Injectable } from '@nestjs/common';
 import { ICompanyResponse } from '@domain/interfaces/auth';
 import { CompanyMapper } from '@presentation/controllers/company/mappers/';
-import { CompanyAllFields } from '@infrastructure/datasource/company/types/company-select.type';
-
+import { NOT_FOUND_COMPANY } from '@shared/constants/not-found-message';
 @Injectable()
 export class CompanyRepositoryImpl implements CompanyRepository {
   constructor(private readonly companyDataSource: CompanyDataSourceService) {}
@@ -12,7 +11,7 @@ export class CompanyRepositoryImpl implements CompanyRepository {
   async findById(id: string): Promise<ICompanyResponse> {
     const company = await this.companyDataSource.findById(id);
     if (!company) {
-      throw new Error('Company not found');
+      throw new Error(NOT_FOUND_COMPANY);
     }
     return CompanyMapper.toResponseDto(company);
   }

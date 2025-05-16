@@ -26,6 +26,7 @@ import { CompanyRepositoryImpl } from '@infrastructure/repositories/company-supp
 import { FindSampleByIdUseCase } from '@domain/use-cases/sample/find-sample-by-id.use-case';
 import { SampleRepository } from '@domain/repositories/sample/sample.repository';
 import { SampleRepositoryImplService } from '@infrastructure/repositories/sample/sample.repository.impl.service';
+import { FindExistingAnalysisUseCase } from '@domain/use-cases/analyses/find-existing-analysis.use-case';
 @Module({
   imports: [PrismaModule, PermissionsModule],
   controllers: [AnalysesController],
@@ -46,6 +47,7 @@ import { SampleRepositoryImplService } from '@infrastructure/repositories/sample
     FindAnalysisTypeByNameUseCase,
     FindCompanyByIdUseCase,
     FindSampleByIdUseCase,
+    FindExistingAnalysisUseCase,
 
     {
       provide: AnalysesRepository,
