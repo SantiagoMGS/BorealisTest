@@ -55,8 +55,8 @@ export class AnalysesRepositoryImpl extends AnalysesRepository {
 
     data.sort((a, b) => {
       return (
-        a.resultValue.endDateTime!.getTime() -
-        b.resultValue.endDateTime!.getTime()
+        new Date(a.resultValue.endDateTime!).getTime() -
+        new Date(b.resultValue.endDateTime!).getTime()
       );
     });
 
