@@ -34,6 +34,9 @@ export class MappedSampleDto {
   supplierShortName!: string;
 
   @ApiProperty()
+  sampleId!: string;
+
+  @ApiProperty()
   sampleCode!: number | string;
 
   @ApiProperty()

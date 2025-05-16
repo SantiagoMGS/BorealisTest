@@ -32,6 +32,7 @@ export class SampleManagementRepositoryImpl extends SampleManagementRepository {
     filter: IManagementFilter,
   ): Promise<IPaginatedData<MappedSamples>> {
     const data = await this.sampleManagementDataSource.findByFilters(filter);
+    console.log({ data });
     const { page, limit } = filter;
     const resultado = SampleManagementMapper.toDomain(data);
     return PaginationHelper.createPaginatedResponseFromItems(

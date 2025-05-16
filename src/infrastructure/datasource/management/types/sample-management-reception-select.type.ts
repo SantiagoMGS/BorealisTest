@@ -6,6 +6,7 @@ export type SamplesWithAnalyses = Prisma.ReceptionGetPayload<{
     isActive: true;
     samples: {
       select: {
+        id: true;
         code: true;
         receivedWeight: true;
         receptionOrigin: {
