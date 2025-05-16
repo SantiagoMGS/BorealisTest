@@ -17,6 +17,7 @@ import { CompanyDataSourceService } from '@infrastructure/datasource/company/com
 import { AnalysisTypeDatasourceService } from '../analysis-type/analysis-type.datasorce.service';
 import { IPaginationOptions } from '@shared/interfaces/pagination.interfaces';
 import { ActiveAnalysis } from '@domain/entities/analyses/active-analysis.entity';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class AnalysesDatasourceService {
@@ -29,28 +30,18 @@ export class AnalysesDatasourceService {
 
   async createDHAnalyses(
     analysisData: IAnalysisEntity,
-  ): Promise<IAnalysisResponse> {
+  ): Promise<Prisma.AnalysisGetPayload<{}>> {
     try {
       const createdAnalysis = await this.prisma.analysis.create({
         data: {
-          sampleId: analysisData.sampleId,
           analysisDate: analysisData.analysisDate,
-          analysisTypeId: analysisData.analysisTypeId!,
           resultValue: analysisData.resultValue as ResultValueDH,
+          analysisType: { connect: { id: analysisData.analysisTypeId! } },
+          sample: { connect: { id: analysisData.sampleId } },
         },
       });
 
-      return {
-        id: createdAnalysis.id,
-        sampleId: createdAnalysis.sampleId,
-        analysisTypeId: createdAnalysis.analysisTypeId,
-        analysisDate: createdAnalysis.analysisDate,
-        //TODO: Cambiar para que no se devuelva el resultValue como string
-        resultValue:
-          typeof createdAnalysis.resultValue === 'string'
-            ? JSON.parse(createdAnalysis.resultValue)
-            : createdAnalysis.resultValue,
-      };
+      return createdAnalysis;
     } catch (error) {
       throw new BadRequestException(
         'Error al crear el análisis en la base de datos',

@@ -12,6 +12,7 @@ import {
 } from '@shared/interfaces/pagination.interfaces';
 import { PaginationHelper } from '@shared/utils/pagination.helper';
 import { ActiveAnalysis } from '@domain/entities/analyses/active-analysis.entity';
+import { DHAnalysisMapper } from '@infrastructure/mappers/analyses/dh-analysis.mapper';
 
 @Injectable()
 export class AnalysesRepositoryImpl extends AnalysesRepository {
@@ -22,7 +23,9 @@ export class AnalysesRepositoryImpl extends AnalysesRepository {
   async createDHAnalyses(
     analysisData: IAnalysisEntity,
   ): Promise<IAnalysisResponse> {
-    return await this.analysesDatasource.createDHAnalyses(analysisData);
+    const createdAnalysis =
+      await this.analysesDatasource.createDHAnalyses(analysisData);
+    return DHAnalysisMapper.toDomain(createdAnalysis);
   }
 
   async createXRFAnalyses(
