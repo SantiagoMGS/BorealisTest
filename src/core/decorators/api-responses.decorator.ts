@@ -1,4 +1,3 @@
-// src/core/decorators/api-responses.decorator.ts
 import { applyDecorators, Type } from '@nestjs/common';
 import { ApiExtraModels, ApiResponse, getSchemaPath } from '@nestjs/swagger';
 import { ApiResponseDto } from '@shared/dtos/api-response.dto';
@@ -148,9 +147,6 @@ export function ApiNoContentResponse(
   );
 }
 
-/**
- * Decorador para documentar una respuesta de error con formato estándar
- */
 export function ApiErrorResponse(
   statusCode: number,
   errorType: string,
