@@ -29,11 +29,8 @@ export class AnalysesDatasourceService {
 
   async createDHAnalyses(
     analysisData: IAnalysisEntity,
-    companyId: string,
   ): Promise<IAnalysisResponse> {
     try {
-      await this.companyDataSource.findById(companyId);
-
       const createdAnalysis = await this.prisma.analysis.create({
         data: {
           sampleId: analysisData.sampleId,

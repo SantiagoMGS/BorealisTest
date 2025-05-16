@@ -1,11 +1,12 @@
 import { CompanyDataSourceService } from '@infrastructure/datasource/company';
-import { ICompanyRepository } from '@domain/repositories/company/company.repository';
+import { CompanyRepository } from '@domain/repositories/company/company.repository';
 import { Injectable } from '@nestjs/common';
 import { ICompanyResponse } from '@domain/interfaces/auth';
 import { CompanyMapper } from '@presentation/controllers/company/mappers/';
+import { CompanyAllFields } from '@infrastructure/datasource/company/types/company-select.type';
 
 @Injectable()
-export class CompanyRepositoryImpl implements ICompanyRepository {
+export class CompanyRepositoryImpl implements CompanyRepository {
   constructor(private readonly companyDataSource: CompanyDataSourceService) {}
 
   async findById(id: string): Promise<ICompanyResponse> {

@@ -11,8 +11,7 @@ import {
 
 export abstract class AnalysesRepository {
   abstract createDHAnalyses(
-    analysis: IAnalysisEntity,
-    companyId: string,
+    analysisData: IAnalysisEntity,
   ): Promise<IAnalysisResponse>;
   abstract createXRFAnalyses(
     analysis: IAnalysisEntity,

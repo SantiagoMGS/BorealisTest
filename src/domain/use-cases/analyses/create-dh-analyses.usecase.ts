@@ -11,13 +11,14 @@ import {
 import { IAnalysisResponse } from '@domain/interfaces/analyses/analyses.response.interfaces';
 import { SampleReceptionDataSourceService } from '@infrastructure/datasource/reception/sample-reception.datasource.service';
 import { AnalysisTypeRepository } from '@domain/repositories/analysis-type/analysis-type.respository';
-
+import { CompanyRepository } from '@domain/repositories/company/company.repository';
 @Injectable()
 export class CreateDHAnalysesUseCase {
   constructor(
     private readonly analysesRepository: AnalysesRepository,
     private readonly sampleDataSource: SampleReceptionDataSourceService,
     private readonly analysisTypeRepository: AnalysisTypeRepository,
+    private readonly companyRepository: CompanyRepository,
   ) {}
 
   async execute(
@@ -25,6 +26,8 @@ export class CreateDHAnalysesUseCase {
     companyId: string,
   ): Promise<IAnalysisResponse> {
     try {
+      await this.companyRepository.findById(companyId);
+
       const sample = await this.sampleDataSource.findById(analysis.sampleId);
 
       const analysisType =
@@ -54,7 +57,7 @@ export class CreateDHAnalysesUseCase {
         resultValue: normalizedResultValue,
       };
 
-      return this.analysesRepository.createDHAnalyses(analysisData, companyId);
+      return this.analysesRepository.createDHAnalyses(analysisData);
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error;

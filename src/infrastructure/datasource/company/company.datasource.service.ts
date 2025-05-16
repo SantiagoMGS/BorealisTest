@@ -1,12 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@core/prisma/prisma.service';
 import { Company } from '@prisma/client';
+import { CompanyAllFields } from './types/company-select.type';
 
 @Injectable()
 export class CompanyDataSourceService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findById(id: string): Promise<Company> {
+  async findById(id: string): Promise<CompanyAllFields> {
     const company = await this.prisma.company.findUnique({ where: { id } });
     if (!company) {
       throw new NotFoundException(`Company with id ${id} not found`);

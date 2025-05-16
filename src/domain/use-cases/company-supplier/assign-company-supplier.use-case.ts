@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ICompanySupplierRepository } from '@domain/repositories/company-supplier/company-supplier.repository';
-import { ICompanyRepository } from '@domain/repositories/company/company.repository';
+import { CompanyRepository } from '@domain/repositories/company/company.repository';
 import { SupplierRepository } from '@domain/repositories/supplier/supplier.repository';
 import { AssignSuppliersDto } from '@presentation/controllers/company/dtos';
 import { ISuppliersAssignmentResult } from '@domain/interfaces/company-supplier';
@@ -9,7 +9,7 @@ import { ISuppliersAssignmentResult } from '@domain/interfaces/company-supplier'
 export class AssignCompanySupplierUseCase {
   constructor(
     private readonly companySupplierRepository: ICompanySupplierRepository,
-    private readonly companyRepository: ICompanyRepository,
+    private readonly companyRepository: CompanyRepository,
     private readonly supplierRepository: SupplierRepository,
   ) {}
 
