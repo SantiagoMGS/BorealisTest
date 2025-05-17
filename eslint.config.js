@@ -16,6 +16,9 @@ export default [
         project: './tsconfig.json',
         tsconfigRootDir: process.cwd(),
         sourceType: 'module',
+        ecmaFeatures: {
+          jsx: true,
+        },
       },
       globals: {
         ...globals.node,
@@ -45,17 +48,25 @@ export default [
           ignoreRestSiblings: true,
         },
       ],
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          vars: 'all',
+          varsIgnorePattern: '^_',
+          args: 'after-used',
+          argsIgnorePattern: '^_',
+          ignoreRestSiblings: true,
+          caughtErrors: 'all',
+        },
+      ],
       eqeqeq: ['error', 'always'],
       'no-console': 'warn',
       'no-duplicate-imports': 'error',
-      'no-magic-numbers': [
-        'warn',
-        { ignore: [0, 1, -1], ignoreArrayIndexes: true },
-      ],
       'no-shadow': 'error',
       'no-var': 'error',
       'prefer-const': 'error',
-      'no-return-await': 'error',
+      'no-return-await': 'off',
+      '@typescript-eslint/return-await': ['error', 'in-try-catch'],
       'prettier/prettier': [
         'error',
         {

@@ -22,17 +22,13 @@ export class SampleManagementRepositoryImpl extends SampleManagementRepository {
     startDate: Date,
     endDate: Date,
   ): Promise<ISampleDropdownData> {
-    return await this.sampleManagementDataSource.getDropdownData(
-      startDate,
-      endDate,
-    );
+    return this.sampleManagementDataSource.getDropdownData(startDate, endDate);
   }
 
   async findByFilters(
     filter: IManagementFilter,
   ): Promise<IPaginatedData<MappedSamples>> {
     const data = await this.sampleManagementDataSource.findByFilters(filter);
-    console.log({ data });
     const { page, limit } = filter;
     const resultado = SampleManagementMapper.toDomain(data);
     return PaginationHelper.createPaginatedResponseFromItems(

@@ -1,0 +1,6 @@
+node_modules
+dist
+eslint.config.js
+.eslintrc.js
+.eslintrc.json
+.eslintrc 

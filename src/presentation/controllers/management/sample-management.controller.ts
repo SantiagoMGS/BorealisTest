@@ -9,27 +9,18 @@ import {
   ApiTags,
   ApiBearerAuth,
   ApiOperation,
-  ApiResponse,
-  ApiExtraModels,
   ApiNoContentResponse,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '@infrastructure/guards/jwt-auth.guard';
 import { PermissionsGuard } from '@infrastructure/guards/permissions.guard';
 import { ResponseInterceptor } from '@core/interceptores/response.interceptor';
-import {
-  FindSampleByFiltersDto,
-  SampleDropdownResponseDto,
-  SamplePaginatedResponseDto,
-} from './dtos';
+import { FindSampleByFiltersDto, SampleDropdownResponseDto } from './dtos';
 import { Paginated } from '@core/decorators/paginated.decorator';
 import {
   FindSamplesByFiltersUseCase,
   GetSampleDropdownDataUseCase,
 } from '@domain/use-cases/management';
-import {
-  ApiResponseDto,
-  getResponseSchema,
-} from '@shared/dtos/api-response.dto';
+
 import { RequirePermission } from '@core/decorators/require-permission.decorator';
 import { IPaginatedData } from '@shared/index';
 import { MappedSamples } from '@infrastructure/mappers/sample-management.mapper';
@@ -83,6 +74,6 @@ export class SampleManagementController {
   async findByFilters(
     @Query() filterParams: FindSampleByFiltersDto,
   ): Promise<IPaginatedData<MappedSamples>> {
-    return await this.findSamplesByFiltersUseCase.execute(filterParams);
+    return this.findSamplesByFiltersUseCase.execute(filterParams);
   }
 }
