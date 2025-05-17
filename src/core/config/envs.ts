@@ -9,27 +9,29 @@ interface EnvVars {
   JWT_SECRET: string;
   MAX_ACTIVE_SESSIONS: number;
   DATABASE_URL: string;
-  DB_NAME: string;
-  DB_USER: string;
-  DB_PASSWORD: string;
-  DB_HOST: string;
-  DB_PORT: number;
+  DB_NAME?: string;
+  DB_USER?: string;
+  DB_PASSWORD?: string;
+  DB_HOST?: string;
+  DB_PORT?: number;
 }
 
 const envVarsSchema = joi
   .object({
-    PORT: joi.number().required(),
-    JWT_REFRESH_SECRET: joi.string().required(),
-    JWT_REFRESH_EXPIRATION: joi.string().required(),
-    JWT_EXPIRATION: joi.string().required(),
-    JWT_SECRET: joi.string().required(),
-    DATABASE_URL: joi.string().required(),
-    DB_NAME: joi.string().required(),
-    DB_USER: joi.string().required(),
-    DB_PASSWORD: joi.string().required(),
-    DB_HOST: joi.string().required(),
-    DB_PORT: joi.number().required(),
-    MAX_ACTIVE_SESSIONS: joi.number().required(),
+    PORT: joi.number().default(3000),
+    JWT_REFRESH_SECRET: joi.string().default('borealis_dev_refresh'),
+    JWT_REFRESH_EXPIRATION: joi.string().default('604800'),
+    JWT_EXPIRATION: joi.string().default('8h'),
+    JWT_SECRET: joi.string().default('borealis_dev'),
+    DATABASE_URL: joi
+      .string()
+      .default('postgresql://postgres:postgres@localhost:5432/borealis_dev_db'),
+    DB_NAME: joi.string().optional(),
+    DB_USER: joi.string().optional(),
+    DB_PASSWORD: joi.string().optional(),
+    DB_HOST: joi.string().optional(),
+    DB_PORT: joi.number().optional(),
+    MAX_ACTIVE_SESSIONS: joi.number().default(1),
   })
   .unknown(true);
 
