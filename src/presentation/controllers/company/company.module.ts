@@ -8,7 +8,6 @@ import { AssignCompanySupplierUseCase } from '@domain/use-cases/company/assign-c
 import { CompanyRepository } from '@domain/repositories/company/company.repository';
 import { SupplierRepository } from '@domain/repositories/supplier';
 import { SupplierRepositoryImpl } from '@infrastructure/repositories/supplier';
-import { SupplierDataSourceService } from '@infrastructure/datasource/supplier';
 import { SupplierModule } from '../supplier/supplier.module';
 
 @Module({

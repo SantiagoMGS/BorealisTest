@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { PaginatedResponseDto } from '@shared/dtos/paginated-response.dto';
 
 class DoreStatusDto {
   @ApiProperty({})

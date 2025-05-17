@@ -12,14 +12,14 @@ export class DoreReceptionRepositoryImpl extends DoreReceptionRepository {
   }
 
   async createDoreReception(doreReception: IDoreReceptionEntity): Promise<any> {
-    return await this.doreReceptionDatasource.createReception(doreReception);
+    return this.doreReceptionDatasource.createReception(doreReception);
   }
 
   async findLastBatchNumberBySupplierId(
     supplierId: string,
     prefix: string,
   ): Promise<string | null> {
-    return await this.doreReceptionDatasource.findLastBatchNumberBySupplierId(
+    return this.doreReceptionDatasource.findLastBatchNumberBySupplierId(
       supplierId,
       prefix,
     );

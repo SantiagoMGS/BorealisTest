@@ -12,6 +12,6 @@ export class AnalysisTypeRepositoryImpl extends AnalysisTypeRepository {
   }
 
   async findByShortName(shortName: string): Promise<AnalysisTypeSelect> {
-    return await this.analysisTypeDatasource.findByShortName(shortName);
+    return this.analysisTypeDatasource.findByShortName(shortName);
   }
 }

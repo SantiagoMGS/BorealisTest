@@ -12,6 +12,6 @@ export class SampleRepositoryImplService extends SampleRepository {
   }
 
   async findById(id: string): Promise<SampleSelectAllFields> {
-    return await this.sampleDataSource.findById(id);
+    return this.sampleDataSource.findById(id);
   }
 }

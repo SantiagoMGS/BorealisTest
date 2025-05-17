@@ -7,6 +7,6 @@ export class FindSampleByIdUseCase {
   constructor(private readonly sampleRepository: SampleRepository) {}
 
   async execute(id: string): Promise<SampleSelectAllFields> {
-    return await this.sampleRepository.findById(id);
+    return this.sampleRepository.findById(id);
   }
 }

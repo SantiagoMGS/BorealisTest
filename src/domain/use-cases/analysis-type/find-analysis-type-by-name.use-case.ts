@@ -9,6 +9,6 @@ export class FindAnalysisTypeByNameUseCase {
   ) {}
 
   async execute(shortName: string): Promise<AnalysisTypeSelect> {
-    return await this.analysisTypeRepository.findByShortName(shortName);
+    return this.analysisTypeRepository.findByShortName(shortName);
   }
 }

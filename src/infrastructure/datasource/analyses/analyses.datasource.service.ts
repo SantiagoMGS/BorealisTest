@@ -214,7 +214,7 @@ export class AnalysesDatasourceService {
     analysisTypeId: string,
     sampleId: string,
   ): Promise<any> {
-    return await this.prisma.analysis.findFirst({
+    return this.prisma.analysis.findFirst({
       where: {
         analysisTypeId,
         sampleId,

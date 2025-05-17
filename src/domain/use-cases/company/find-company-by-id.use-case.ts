@@ -7,6 +7,6 @@ export class FindCompanyByIdUseCase {
   constructor(private readonly companyRepository: CompanyRepository) {}
 
   async execute(id: string): Promise<ICompanyResponse> {
-    return await this.companyRepository.findById(id);
+    return this.companyRepository.findById(id);
   }
 }

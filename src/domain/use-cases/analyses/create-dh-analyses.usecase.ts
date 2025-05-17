@@ -1,17 +1,10 @@
 import { AnalysesRepository } from '@domain/repositories/analyses/analyses.repository';
-import {
-  Injectable,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import {
   IAnalysisEntity,
   ResultValueDH,
 } from '@domain/entities/analyses/analyses.entity';
 import { IAnalysisResponse } from '@domain/interfaces/analyses/analyses.response.interfaces';
-import { SampleReceptionDataSourceService } from '@infrastructure/datasource/reception/sample-reception.datasource.service';
-import { AnalysisTypeRepository } from '@domain/repositories/analysis-type/analysis-type.respository';
-import { CompanyRepository } from '@domain/repositories/company/company.repository';
 import { FindCompanyByIdUseCase } from '../company/find-company-by-id.use-case';
 import { FindAnalysisTypeByNameUseCase } from '../analysis-type/find-analysis-type-by-name.use-case';
 import { FindSampleByIdUseCase } from '../sample/find-sample-by-id.use-case';

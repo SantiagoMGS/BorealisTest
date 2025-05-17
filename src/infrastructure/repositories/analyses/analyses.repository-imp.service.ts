@@ -32,21 +32,21 @@ export class AnalysesRepositoryImpl extends AnalysesRepository {
     analysis: IAnalysisEntity,
     companyId: string,
   ): Promise<IAnalysisResponse> {
-    return await this.analysesDatasource.createXRFAnalyses(analysis, companyId);
+    return this.analysesDatasource.createXRFAnalyses(analysis, companyId);
   }
 
   async createLWAnalysis(
     analysis: IAnalysisEntity,
     companyId: string,
   ): Promise<IAnalysisResponse> {
-    return await this.analysesDatasource.createLWAnalysis(analysis, companyId);
+    return this.analysesDatasource.createLWAnalysis(analysis, companyId);
   }
 
   async createAAAnalyses(
     analysis: IAnalysisEntity,
     companyId: string,
   ): Promise<IAnalysisResponse> {
-    return await this.analysesDatasource.createAAAnalyses(analysis, companyId);
+    return this.analysesDatasource.createAAAnalyses(analysis, companyId);
   }
 
   async getActiveLWAnalyses(
@@ -76,7 +76,7 @@ export class AnalysesRepositoryImpl extends AnalysesRepository {
     analysisTypeId: string,
     sampleId: string,
   ): Promise<any> {
-    return await this.analysesDatasource.findExistingAnalysis(
+    return this.analysesDatasource.findExistingAnalysis(
       analysisTypeId,
       sampleId,
     );

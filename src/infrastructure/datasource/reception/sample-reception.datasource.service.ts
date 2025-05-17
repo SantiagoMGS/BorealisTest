@@ -6,10 +6,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import {
-  IReceptionEntity,
-  ISampleEntity,
-} from '@domain/entities/reception/reception.entity';
+import { IReceptionEntity } from '@domain/entities/reception/reception.entity';
 import { IReceptionResponse } from '@domain/interfaces/reception';
 import { CompanyDataSourceService } from '@infrastructure/datasource/company/company.datasource.service';
 import { SupplierDataSourceService } from '@infrastructure/datasource/supplier/supplier.datasource.service';

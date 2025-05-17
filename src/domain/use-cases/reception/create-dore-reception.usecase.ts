@@ -9,6 +9,6 @@ export class CreateDoreReceptionUseCase {
   ) {}
 
   async execute(reception: IDoreReceptionEntity): Promise<any> {
-    return await this.doreReceptionRepository.createDoreReception(reception);
+    return this.doreReceptionRepository.createDoreReception(reception);
   }
 }

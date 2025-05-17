@@ -9,9 +9,6 @@ export class GetDoreDropdownDataUseCase {
   ) {}
 
   async execute(startDate: Date, endDate: Date): Promise<IDoreDropdownData> {
-    return await this.doreManagementRepository.getDropdownData(
-      startDate,
-      endDate,
-    );
+    return this.doreManagementRepository.getDropdownData(startDate, endDate);
   }
 }

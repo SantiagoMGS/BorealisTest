@@ -32,7 +32,7 @@ export class CompanyRepositoryImpl implements CompanyRepository {
     companyId: string,
     supplierIds: string[],
   ): Promise<ISuppliersAssignmentResult> {
-    return await this.companyDataSource.assignSuppliers(companyId, supplierIds);
+    return this.companyDataSource.assignSuppliers(companyId, supplierIds);
   }
 
   async getCompanySuppliers(

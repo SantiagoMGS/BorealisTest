@@ -9,9 +9,6 @@ export class GetSampleDropdownDataUseCase {
   ) {}
 
   async execute(startDate: Date, endDate: Date): Promise<ISampleDropdownData> {
-    return await this.sampleManagementRepository.getDropdownData(
-      startDate,
-      endDate,
-    );
+    return this.sampleManagementRepository.getDropdownData(startDate, endDate);
   }
 }

@@ -13,6 +13,6 @@ export class FindSamplesByFiltersUseCase {
   async execute(
     filter: IManagementFilter,
   ): Promise<IPaginatedData<MappedSamples>> {
-    return await this.sampleManagementRepository.findByFilters(filter);
+    return this.sampleManagementRepository.findByFilters(filter);
   }
 }
