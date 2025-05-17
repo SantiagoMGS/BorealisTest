@@ -9,24 +9,14 @@ import {
   Get,
   Query,
 } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiBearerAuth,
-  ApiOperation,
-  ApiResponse,
-  ApiExtraModels,
-} from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { FindDoreReceptionsByFiltersUseCase } from '@domain/use-cases/reception';
 import {
   DoreDropdownResponseDto,
   FindDoreReceptionsByFiltersDto,
   DoreReceptionItemDto,
 } from './dtos';
-import { Paginated } from '@core/decorators/paginated.decorator';
-import {
-  ApiResponseDto,
-  getResponseSchema,
-} from '@shared/dtos/api-response.dto';
+
 import { GetDoreDropdownDataUseCase } from '@domain/use-cases/management';
 import { IDoreManagementResponse } from '@domain/interfaces/management/dore-management.interface';
 import { IPaginatedData } from '@shared/index';
@@ -69,7 +59,6 @@ export class DoreManagementController {
   }
 
   @Get('find-by-filters')
-  @Paginated()
   @ApiOperation({
     summary:
       'Buscar recepciones de doré aplicando filtros combinados (logica &)',
@@ -81,6 +70,6 @@ export class DoreManagementController {
   async findByFilters(
     @Query() filterParams: FindDoreReceptionsByFiltersDto,
   ): Promise<IPaginatedData<IDoreManagementResponse>> {
-    return await this.findDoreReceptionsByFiltersUseCase.execute(filterParams);
+    return this.findDoreReceptionsByFiltersUseCase.execute(filterParams);
   }
 }

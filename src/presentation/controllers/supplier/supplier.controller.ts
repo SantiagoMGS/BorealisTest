@@ -49,7 +49,6 @@ import {
   getResponseSchema,
   getArrayResponseSchema,
 } from '@shared/dtos/api-response.dto';
-import { Paginated } from '@core/decorators/paginated.decorator';
 import { PaginationDto } from '@shared/dtos/paginator.dto';
 import { isUUID } from 'class-validator';
 import { GetMiningTitlesBySupplierUseCase } from '@domain/use-cases/mining-title/get-mining-titles-by-supplier.use-case';
@@ -116,7 +115,6 @@ export class SupplierController {
   }
 
   @Get()
-  @Paginated()
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Obtener todos los proveedores (paginado)' })
   @ApiResponse({
@@ -128,7 +126,7 @@ export class SupplierController {
     successMessage: 'Proveedores obtenidos exitosamente',
   })
   async findAll(@Query() paginationDto: PaginationDto) {
-    return await this.findAllSupplierUseCase.execute(paginationDto);
+    return this.findAllSupplierUseCase.execute(paginationDto);
   }
 
   @Get(':param')

@@ -15,7 +15,6 @@ import { JwtAuthGuard } from '@infrastructure/guards/jwt-auth.guard';
 import { PermissionsGuard } from '@infrastructure/guards/permissions.guard';
 import { ResponseInterceptor } from '@core/interceptores/response.interceptor';
 import { FindSampleByFiltersDto, SampleDropdownResponseDto } from './dtos';
-import { Paginated } from '@core/decorators/paginated.decorator';
 import {
   FindSamplesByFiltersUseCase,
   GetSampleDropdownDataUseCase,
@@ -65,7 +64,6 @@ export class SampleManagementController {
   }
 
   @Get('find-by-filters')
-  @Paginated()
   @ApiOperation({
     summary: 'Buscar muestras aplicando filtros combinados (logica &)',
   })
