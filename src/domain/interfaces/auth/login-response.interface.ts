@@ -18,7 +18,7 @@ export interface ITokens {
   refresh_token: string;
 }
 
-export interface ILoginResponse {
+export interface ILogin {
   id: string;
   name: string;
   email: string;

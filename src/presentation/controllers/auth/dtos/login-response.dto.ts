@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  ILoginResponse,
+  ILogin,
   ICompanyResponse,
   ICompanyBranding,
   ITokens,
@@ -84,7 +84,7 @@ export class TokensDto implements ITokens {
   refresh_token!: string;
 }
 
-export class LoginResponseDto implements ILoginResponse {
+export class LoginResponseDto implements ILogin {
   @ApiProperty({
     description: 'ID único del usuario',
     example: '12345678-1234-1234-1234-123456789012',

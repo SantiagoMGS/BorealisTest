@@ -1,6 +1,6 @@
 import { LoginDto } from '../dtos';
 import { ILoginEntity } from '@domain/entities/auth';
-import { ILoginResponse } from '@domain/interfaces/auth';
+import { ILogin } from '@domain/interfaces/auth';
 import { LoginResponseDto } from '../dtos';
 
 export class LoginMapper {
@@ -11,7 +11,7 @@ export class LoginMapper {
     };
   }
 
-  static toResponseDto(entity: ILoginResponse): LoginResponseDto {
+  static toResponseDto(entity: ILogin): LoginResponseDto {
     return {
       id: entity.id,
       name: entity.name,

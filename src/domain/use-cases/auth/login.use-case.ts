@@ -1,10 +1,8 @@
-import { ILoginEntity } from '@domain/entities/auth';
-import { ILoginResponse } from '@domain/interfaces/auth';
+import { ILoginEntity, ISessionEntity } from '@domain/entities/auth';
+import { ILogin } from '@domain/interfaces/auth';
 import { Injectable } from '@nestjs/common';
-import { LoginRepository } from '@domain/repositories/auth';
+import { LoginRepository, SessionRepository } from '@domain/repositories/auth';
 import { Request } from 'express';
-import { SessionRepository } from '@domain/repositories/auth';
-import { ISessionEntity } from '@domain/entities/auth';
 
 @Injectable()
 export class LoginUseCase {
@@ -13,17 +11,13 @@ export class LoginUseCase {
     private readonly sessionRepository: SessionRepository,
   ) {}
 
-  async execute(
-    loginData: ILoginEntity,
-    req?: Request,
-  ): Promise<ILoginResponse> {
+  async execute(loginData: ILoginEntity, req?: Request): Promise<ILogin> {
     // Obtener usuario con tokens ya generados por el repositorio
     const user = await this.loginRepository.login(loginData);
 
     const deviceInfo = req?.headers['user-agent'];
     const ipAddress = req?.ip;
 
-    // Registrar la sesión con los tokens generados por el repositorio
     if (user.tokens) {
       const expiresAt = new Date();
       expiresAt.setHours(expiresAt.getHours() + 1);
@@ -31,7 +25,6 @@ export class LoginUseCase {
       const refreshExpiresAt = new Date();
       refreshExpiresAt.setDate(refreshExpiresAt.getDate() + 7);
 
-      // Eliminar todas las sesiones anteriores del usuario
       await this.sessionRepository.deleteUserSessions(user.id);
 
       const sessionData: ISessionEntity = {
