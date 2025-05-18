@@ -39,12 +39,13 @@ export const sampleReceptionData = [
           {
             analysisType: {
               connect: { name: 'LEACHWELL' },
-              resultValue:{
-                time: 60,
-                endDateTime: new Date('2025-05-05 12:00:00'),
-                done: false,
-              },
             },
+            resultValue:{
+              time: 60,
+              endDateTime: new Date('2025-05-05 12:00:00'),
+              done: false,
+            },
+            analysisDate: new Date('2025-05-05 11:00:00'),
           },
         ],
       },
@@ -73,6 +74,7 @@ export const sampleReceptionData = [
               endDateTime: new Date('2025-05-05 13:00:00'),
               done: false,
             },
+            analysisDate: new Date('2025-05-05 12:00:00'),
           },
         ],
       },
@@ -121,6 +123,7 @@ export const sampleReceptionData = [
               endDateTime: new Date('2025-05-07 14:00:00'),
               done: false,
             },
+            analysisDate: new Date('2025-05-07 13:00:00'),
           },
         ],
       },
@@ -170,12 +173,13 @@ export const sampleReceptionData = [
           {
             analysisType: {
               connect: { name: 'LEACHWELL' },
-              resultValue:{
-                time: 30,
-                endDateTime: new Date('2025-05-10 15:00:00'),
-                done: false,
-              },
             },
+            resultValue:{
+              time: 30,
+              endDateTime: new Date('2025-05-10 15:00:00'),
+              done: false,
+            },
+            analysisDate: new Date('2025-05-10 14:30:00'),
           },
         ],
       },
@@ -210,6 +214,7 @@ export const sampleReceptionData = [
               endDateTime: new Date('2025-05-10 12:00:00'),
               done: false,
             },
+            analysisDate: new Date('2025-05-10 11:30:00'),
           },
         ],
       },
@@ -244,6 +249,7 @@ export const sampleReceptionData = [
               endDateTime: new Date('2025-05-10 12:00:00'),
               done: false,
             },
+            analysisDate: new Date('2025-05-10 11:30:00'),
           },
         ],
       },
@@ -290,12 +296,13 @@ export const sampleReceptionData = [
           {
             analysisType: {
               connect: { name: 'LEACHWELL' },
-              resultValue:{
-                time: 30,
-                endDateTime: new Date('2025-05-12 14:00:00'),
-                done: false,
-              },
             },
+            resultValue:{
+              time: 30,
+              endDateTime: new Date('2025-05-12 14:00:00'),
+              done: false,
+            },
+            analysisDate: new Date('2025-05-12 13:30:00'),
           },
         ],
       },
@@ -324,6 +331,7 @@ export const sampleReceptionData = [
               endDateTime: new Date('2025-05-12 14:00:00'),
               done: false,
             },
+            analysisDate: new Date('2025-05-12 13:00:00'),
           },
         ],
       },
@@ -374,12 +382,13 @@ export const sampleReceptionData = [
           {
             analysisType: {
               connect: { name: 'LEACHWELL' },
-              resultValue:{
-                time: 60,
-                endDateTime: new Date('2025-05-15 15:00:00'),
-                done: false,
-              },
             },
+            resultValue: {
+              time: 60,
+              endDateTime: new Date('2025-05-15 15:00:00'),
+              done: false,
+            },
+            analysisDate: new Date('2025-05-15 14:00:00'),
           },
         ],
       },
@@ -419,6 +428,19 @@ export const sampleReceptionData = [
             done: false,
           },
         ],
+        analyses: [
+          {
+            analysisType: {
+              connect: { name: 'LEACHWELL' },
+            },
+            resultValue: {
+              time: 60,
+              endDateTime: new Date('2025-05-18 15:00:00'),
+              done: false,
+            },
+            analysisDate: new Date('2025-05-18 14:00:00'),
+          },
+        ],
       },
       {
         receivedWeight: 380.5,
@@ -433,6 +455,19 @@ export const sampleReceptionData = [
               connect: { name: 'ABSORCION ATOMICA' },
             },
             done: false,
+          },
+        ],
+        analyses: [
+          {
+            analysisType: {
+              connect: { name: 'LEACHWELL' },
+            },
+            resultValue: {
+              time: 60,
+              endDateTime: new Date('2025-05-18 15:00:00'),
+              done: false,
+            },
+            analysisDate: new Date('2025-05-18 14:00:00'),
           },
         ],
       },
@@ -451,6 +486,19 @@ export const sampleReceptionData = [
             done: false,
           },
         ],
+        analyses: [
+          {
+            analysisType: {
+              connect: { name: 'LEACHWELL' },
+            },
+            resultValue: {
+              time: 60,
+              endDateTime: new Date('2025-05-18 15:00:00'),
+              done: false,
+            },
+            analysisDate: new Date('2025-05-18 14:00:00'),
+          },
+        ],
       },
       {
         receivedWeight: 390.2,
@@ -465,6 +513,19 @@ export const sampleReceptionData = [
               connect: { name: 'ABSORCION ATOMICA' },
             },
             done: false,
+          },
+        ],
+        analyses: [
+          {
+            analysisType: {
+              connect: { name: 'LEACHWELL' },
+            },
+            resultValue: {
+              time: 60,
+              endDateTime: new Date('2025-05-18 15:00:00'),
+              done: false,
+            },
+            analysisDate: new Date('2025-05-18 14:00:00'),
           },
         ],
       },
@@ -505,6 +566,19 @@ export const sampleReceptionData = [
             done: false,
           },
         ],
+        analyses: [
+          {
+            analysisType: {
+              connect: { name: 'LEACHWELL' },
+            },
+            resultValue: {
+              time: 30,
+              endDateTime: new Date('2025-05-20 15:30:00'),
+              done: false,
+            },
+            analysisDate: new Date('2025-05-20 14:00:00'),
+          },
+        ],
       },
       {
         receivedWeight: 280.35,
@@ -519,6 +593,19 @@ export const sampleReceptionData = [
               connect: { name: 'DETERMINACION DE HUMEDAD' },
             },
             done: false,
+          },
+        ],
+        analyses: [
+          {
+            analysisType: {
+              connect: { name: 'LEACHWELL' },
+            },
+            resultValue: {
+              time: 30,
+              endDateTime: new Date('2025-05-20 15:30:00'),
+              done: false,
+            },
+            analysisDate: new Date('2025-05-20 15:00:00'),
           },
         ],
       },
@@ -557,6 +644,19 @@ export const sampleReceptionData = [
               connect: { name: 'ABSORCION ATOMICA' },
             },
             done: false,
+          },
+        ],
+        analyses: [
+          {
+            analysisType: {
+              connect: { name: 'LEACHWELL' },
+            },
+            resultValue: {
+              time: 60,
+              endDateTime: new Date('2025-05-22 15:00:00'),
+              done: false,
+            },
+            analysisDate: new Date('2025-05-22 14:00:00'),
           },
         ],
       },
@@ -603,6 +703,19 @@ export const sampleReceptionData = [
             done: false,
           },
         ],
+        analyses: [
+          {
+            analysisType: {
+              connect: { name: 'LEACHWELL' },
+            },
+            resultValue: {
+              time: 60,
+              endDateTime: new Date('2025-05-24 18:00:00'),
+              done: false,
+            },
+            analysisDate: new Date('2025-05-24 17:00:00'),
+          },
+        ],
       },
       {
         receivedWeight: 480.5,
@@ -625,6 +738,19 @@ export const sampleReceptionData = [
             done: false,
           },
         ],
+        analyses: [
+          {
+            analysisType: {
+              connect: { name: 'LEACHWELL' },
+            },
+            resultValue: {
+              time: 30,
+              endDateTime: new Date('2025-05-24 17:00:00'),
+              done: false,
+            },
+            analysisDate: new Date('2025-05-24 16:30:00'),
+          },
+        ],
       },
       {
         receivedWeight: 540.7,
@@ -645,6 +771,19 @@ export const sampleReceptionData = [
               connect: { name: 'DETERMINACION DE HUMEDAD' },
             },
             done: false,
+          },
+        ],
+        analyses: [
+          {
+            analysisType: {
+              connect: { name: 'LEACHWELL' },
+            },
+            resultValue: {
+              time: 60,
+              endDateTime: new Date('2025-05-24 20:00:00'),
+              done: false,
+            },
+            analysisDate: new Date('2025-05-24 19:00:00'),
           },
         ],
       },
@@ -692,6 +831,19 @@ export const sampleReceptionData = [
             done: false,
           },
         ],
+        analyses: [
+          {
+            analysisType: {
+              connect: { name: 'LEACHWELL' },
+            },
+            resultValue: {
+              time: 60,
+              endDateTime: new Date('2025-05-28 15:00:00'),
+              done: false,
+            },
+            analysisDate: new Date('2025-05-28 14:00:00'),
+          },
+        ],
       },
       {
         receivedWeight: 1350.75,
@@ -712,6 +864,19 @@ export const sampleReceptionData = [
               connect: { name: 'DETERMINACION DE HUMEDAD' },
             },
             done: false,
+          },
+        ],
+        analyses: [
+          {
+            analysisType: {
+              connect: { name: 'LEACHWELL' },
+            },
+            resultValue: {
+              time: 30,
+              endDateTime: new Date('2025-05-28 15:00:00'),
+              done: false,
+            },
+            analysisDate: new Date('2025-05-28 14:30:00'),
           },
         ],
       },

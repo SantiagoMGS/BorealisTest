@@ -34,6 +34,7 @@ export async function seedSampleReceptions(prisma: PrismaClient) {
     let receptionsCreated = 0;
     let samplesCreated = 0;
     let requiredAnalysesCreated = 0;
+    let analysesCreated = 0;
 
     for (const item of sampleReceptionData) {
       const receptionData = item.reception;
@@ -186,11 +187,51 @@ export async function seedSampleReceptions(prisma: PrismaClient) {
             logger.log(`Análisis requerido creado: ${requiredAnalysis.id}`);
           }
         }
+
+        // Procesar los análisis para esta muestra
+        if ('analyses' in sampleData && sampleData.analyses && Array.isArray(sampleData.analyses) && sampleData.analyses.length > 0) {
+          for (const analysisData of sampleData.analyses) {
+            const analysisType = await prisma.analysisType.findUnique({
+              where: { name: analysisData.analysisType.connect.name },
+            });
+
+            if (!analysisType) {
+              logger.warn(
+                `Tipo de análisis ${analysisData.analysisType.connect.name} no encontrado. Omitiendo análisis...`,
+              );
+              continue;
+            }
+
+            // Crear el análisis siguiendo el formato similar a createLWAnalysis
+            try {
+              // Obtener el resultValue que está anidado dentro del objeto analysisType en los datos
+              const analysisDataAny = analysisData as any;
+              const resultValue = analysisDataAny.resultValue || 
+                (analysisDataAny.analysisType?.resultValue) || {};
+
+              const createdAnalysis = await prisma.analysis.create({
+                data: {
+                  sampleId: sample.id,
+                  analysisDate: new Date(),
+                  analysisTypeId: analysisType.id,
+                  resultValue,
+                },
+              });
+
+              analysesCreated++;
+              logger.log(`Análisis creado: ${createdAnalysis.id}`);
+            } catch (error: unknown) {
+              const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+              logger.error(`Error al crear análisis: ${errorMessage}`);
+              continue;
+            }
+          }
+        }
       }
     }
 
     logger.log(
-      `✅ Sembrado completado: ${receptionsCreated} recepciones, ${samplesCreated} muestras y ${requiredAnalysesCreated} análisis requeridos creados`,
+      `✅ Sembrado completado: ${receptionsCreated} recepciones, ${samplesCreated} muestras, ${requiredAnalysesCreated} análisis requeridos y ${analysesCreated} análisis creados`,
     );
   } catch (error: unknown) {
     const errorMessage =
