@@ -3,7 +3,7 @@ model Sample {
   receptionId       String   @db.Uuid
   receptionOriginId String   @db.Uuid
   receivedWeight    Decimal
-  code              Int      @unique
+  code              String
   statusId          String   @db.Uuid
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt

@@ -59,7 +59,7 @@ export const receptionOriginInitialData: Prisma.ReceptionOriginCreateInput[] = [
   },
   {
     name: 'MUESTRA DE MINA',
-    shortName: 'MM (VARIAS)',
+    shortName: 'MM',
     description:
       'Especímenes recolectados directamente de la explotación minera para análisis y control',
   },

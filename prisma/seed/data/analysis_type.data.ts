@@ -122,7 +122,7 @@ export const analysisTypeInitialData: AnalysisTypeData[] = [
     },
   },
   {
-    name: 'ABSORCION ATOMIC',
+    name: 'ABSORCION ATOMICA',
     shortName: 'AA',
     description:
       'Análisis por absorción atómica para determinar elementos químicos',

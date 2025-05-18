@@ -22,7 +22,7 @@ export const sampleReceptionData = [
     samples: [
       {
         receivedWeight: 750.25,
-        code: 10001,
+        code: "MINER-M-2025-1",
         status: { connect: { name: 'RECIBIDO' } },
         receptionOrigin: {
           connect: { name: 'COLA' },
@@ -30,15 +30,27 @@ export const sampleReceptionData = [
         requiredAnalyses: [
           {
             analysisType: {
-              connect: { name: 'ABSORCION ATOMIC' },
+              connect: { name: 'ABSORCION ATOMICA' },
             },
             done: false,
+          },
+        ],
+        analyses: [
+          {
+            analysisType: {
+              connect: { name: 'LEACHWELL' },
+              resultValue:{
+                time: 60,
+                endDateTime: new Date('2025-05-05 12:00:00'),
+                done: false,
+              },
+            },
           },
         ],
       },
       {
         receivedWeight: 825.5,
-        code: 10002,
+        code: "MINER-M-2025-1",
         status: { connect: { name: 'RECIBIDO' } },
         receptionOrigin: {
           connect: { name: 'COLA' },
@@ -49,6 +61,18 @@ export const sampleReceptionData = [
               connect: { name: 'LEACHWELL' },
             },
             done: false,
+          },
+        ],
+        analyses: [
+          {
+            analysisType: {
+              connect: { name: 'LEACHWELL' },
+            },
+            resultValue:{
+              time: 60,
+              endDateTime: new Date('2025-05-05 13:00:00'),
+              done: false,
+            },
           },
         ],
       },
@@ -74,7 +98,7 @@ export const sampleReceptionData = [
     samples: [
       {
         receivedWeight: 350.75,
-        code: 10003,
+        code: "CARLP-MM-250507",
         status: { connect: { name: 'RECIBIDO' } },
         receptionOrigin: {
           connect: { name: 'MUESTRA DE MINA' },
@@ -85,6 +109,18 @@ export const sampleReceptionData = [
               connect: { name: 'DETERMINACION DE HUMEDAD' },
             },
             done: false,
+          },
+        ],
+        analyses: [
+          {
+            analysisType: {
+              connect: { name: 'LEACHWELL' },
+            },
+            resultValue:{
+              time: 60,
+              endDateTime: new Date('2025-05-07 14:00:00'),
+              done: false,
+            },
           },
         ],
       },
@@ -111,7 +147,7 @@ export const sampleReceptionData = [
     samples: [
       {
         receivedWeight: 420.3,
-        code: 10004,
+        code: "COOPA-MM-250510",
         status: { connect: { name: 'RECIBIDO' } },
         receptionOrigin: {
           connect: { name: 'CONCENTRADO FLOTACION' },
@@ -119,7 +155,7 @@ export const sampleReceptionData = [
         requiredAnalyses: [
           {
             analysisType: {
-              connect: { name: 'ABSORCION ATOMIC' },
+              connect: { name: 'ABSORCION ATOMICA' },
             },
             done: false,
           },
@@ -128,12 +164,24 @@ export const sampleReceptionData = [
               connect: { name: 'LEACHWELL' },
             },
             done: false,
+          },
+        ],
+        analyses: [
+          {
+            analysisType: {
+              connect: { name: 'LEACHWELL' },
+              resultValue:{
+                time: 30,
+                endDateTime: new Date('2025-05-10 15:00:00'),
+                done: false,
+              },
+            },
           },
         ],
       },
       {
         receivedWeight: 450.8,
-        code: 10005,
+        code: "COOPA-MM-250510",
         status: { connect: { name: 'RECIBIDO' } },
         receptionOrigin: {
           connect: { name: 'CONCENTRADO FLOTACION' },
@@ -141,7 +189,7 @@ export const sampleReceptionData = [
         requiredAnalyses: [
           {
             analysisType: {
-              connect: { name: 'ABSORCION ATOMIC' },
+              connect: { name: 'ABSORCION ATOMICA' },
             },
             done: false,
           },
@@ -152,10 +200,22 @@ export const sampleReceptionData = [
             done: false,
           },
         ],
+        analyses: [
+          {
+            analysisType: {
+              connect: { name: 'LEACHWELL' },
+            },
+            resultValue:{
+              time: 30,
+              endDateTime: new Date('2025-05-10 12:00:00'),
+              done: false,
+            },
+          },
+        ],
       },
       {
         receivedWeight: 480.5,
-        code: 10006,
+        code: "COOPA-MM-250510",
         status: { connect: { name: 'RECIBIDO' } },
         receptionOrigin: {
           connect: { name: 'CONCENTRADO FLOTACION' },
@@ -172,6 +232,18 @@ export const sampleReceptionData = [
               connect: { name: 'DETERMINACION DE HUMEDAD' },
             },
             done: false,
+          },
+        ],
+        analyses: [
+          {
+            analysisType: {
+              connect: { name: 'LEACHWELL' },
+            },
+            resultValue:{
+              time: 30,
+              endDateTime: new Date('2025-05-10 12:00:00'),
+              done: false,
+            },
           },
         ],
       },
@@ -201,7 +273,7 @@ export const sampleReceptionData = [
     samples: [
       {
         receivedWeight: 680.25,
-        code: 10007,
+        code: "EXTRA-MM-250512",
         status: { connect: { name: 'RECIBIDO' } },
         receptionOrigin: {
           connect: { name: 'CABEZA MOLINO' },
@@ -209,15 +281,27 @@ export const sampleReceptionData = [
         requiredAnalyses: [
           {
             analysisType: {
-              connect: { name: 'ABSORCION ATOMIC' },
+              connect: { name: 'ABSORCION ATOMICA' },
             },
             done: false,
+          },
+        ],
+        analyses: [
+          {
+            analysisType: {
+              connect: { name: 'LEACHWELL' },
+              resultValue:{
+                time: 30,
+                endDateTime: new Date('2025-05-12 14:00:00'),
+                done: false,
+              },
+            },
           },
         ],
       },
       {
         receivedWeight: 720.5,
-        code: 10008,
+        code: "EXTRA-MM-250512",
         status: { connect: { name: 'RECIBIDO' } },
         receptionOrigin: {
           connect: { name: 'CABEZA MOLINO' },
@@ -228,6 +312,18 @@ export const sampleReceptionData = [
               connect: { name: 'DETERMINACION DE HUMEDAD' },
             },
             done: false,
+          },
+        ],
+        analyses: [
+          {
+            analysisType: {
+              connect: { name: 'LEACHWELL' },
+            },
+            resultValue:{
+              time: 60,
+              endDateTime: new Date('2025-05-12 14:00:00'),
+              done: false,
+            },
           },
         ],
       },
@@ -255,7 +351,7 @@ export const sampleReceptionData = [
     samples: [
       {
         receivedWeight: 950.75,
-        code: 10009,
+        code: "MINER-M-2025-2",
         status: { connect: { name: 'RECIBIDO' } },
         receptionOrigin: {
           connect: { name: 'COLA' },
@@ -263,7 +359,7 @@ export const sampleReceptionData = [
         requiredAnalyses: [
           {
             analysisType: {
-              connect: { name: 'ABSORCION ATOMIC' },
+              connect: { name: 'ABSORCION ATOMICA' },
             },
             done: false,
           },
@@ -272,6 +368,18 @@ export const sampleReceptionData = [
               connect: { name: 'LEACHWELL' },
             },
             done: false,
+          },
+        ],
+        analyses: [
+          {
+            analysisType: {
+              connect: { name: 'LEACHWELL' },
+              resultValue:{
+                time: 60,
+                endDateTime: new Date('2025-05-15 15:00:00'),
+                done: false,
+              },
+            },
           },
         ],
       },
@@ -298,7 +406,7 @@ export const sampleReceptionData = [
     samples: [
       {
         receivedWeight: 350.3,
-        code: 10010,
+        code: "CONMA-MM-250518",
         status: { connect: { name: 'RECIBIDO' } },
         receptionOrigin: {
           connect: { name: 'MUESTRA DE MINA' },
@@ -314,7 +422,7 @@ export const sampleReceptionData = [
       },
       {
         receivedWeight: 380.5,
-        code: 10011,
+        code: "CONMA-MM-250518",
         status: { connect: { name: 'RECIBIDO' } },
         receptionOrigin: {
           connect: { name: 'MUESTRA DE MINA' },
@@ -322,7 +430,7 @@ export const sampleReceptionData = [
         requiredAnalyses: [
           {
             analysisType: {
-              connect: { name: 'ABSORCION ATOMIC' },
+              connect: { name: 'ABSORCION ATOMICA' },
             },
             done: false,
           },
@@ -330,7 +438,7 @@ export const sampleReceptionData = [
       },
       {
         receivedWeight: 420.75,
-        code: 10012,
+        code: "CONMA-MM-250518",
         status: { connect: { name: 'RECIBIDO' } },
         receptionOrigin: {
           connect: { name: 'MUESTRA DE MINA' },
@@ -346,7 +454,7 @@ export const sampleReceptionData = [
       },
       {
         receivedWeight: 390.2,
-        code: 10013,
+        code: "CONMA-MM-250518",
         status: { connect: { name: 'RECIBIDO' } },
         receptionOrigin: {
           connect: { name: 'MUESTRA DE MINA' },
@@ -354,7 +462,7 @@ export const sampleReceptionData = [
         requiredAnalyses: [
           {
             analysisType: {
-              connect: { name: 'ABSORCION ATOMIC' },
+              connect: { name: 'ABSORCION ATOMICA' },
             },
             done: false,
           },
@@ -384,7 +492,7 @@ export const sampleReceptionData = [
     samples: [
       {
         receivedWeight: 250.15,
-        code: 10014,
+        code: "EXPOR-OV-250520",
         status: { connect: { name: 'RECIBIDO' } },
         receptionOrigin: {
           connect: { name: 'OVERFLOW' },
@@ -400,7 +508,7 @@ export const sampleReceptionData = [
       },
       {
         receivedWeight: 280.35,
-        code: 10015,
+        code: "EXPOR-OV-250520",
         status: { connect: { name: 'RECIBIDO' } },
         receptionOrigin: {
           connect: { name: 'OVERFLOW' },
@@ -438,7 +546,7 @@ export const sampleReceptionData = [
     samples: [
       {
         receivedWeight: 180.5,
-        code: 10016,
+        code: "JUANM-MM-250522",
         status: { connect: { name: 'RECIBIDO' } },
         receptionOrigin: {
           connect: { name: 'MUESTRA DE MINA' },
@@ -446,7 +554,7 @@ export const sampleReceptionData = [
         requiredAnalyses: [
           {
             analysisType: {
-              connect: { name: 'ABSORCION ATOMIC' },
+              connect: { name: 'ABSORCION ATOMICA' },
             },
             done: false,
           },
@@ -476,7 +584,7 @@ export const sampleReceptionData = [
     samples: [
       {
         receivedWeight: 520.3,
-        code: 10017,
+        code: "ASOMI-MM-250524",
         status: { connect: { name: 'RECIBIDO' } },
         receptionOrigin: {
           connect: { name: 'MUESTRA DE MINA' },
@@ -484,7 +592,7 @@ export const sampleReceptionData = [
         requiredAnalyses: [
           {
             analysisType: {
-              connect: { name: 'ABSORCION ATOMIC' },
+              connect: { name: 'ABSORCION ATOMICA' },
             },
             done: false,
           },
@@ -498,7 +606,7 @@ export const sampleReceptionData = [
       },
       {
         receivedWeight: 480.5,
-        code: 10018,
+        code: "ASOMI-MM-250524",
         status: { connect: { name: 'RECIBIDO' } },
         receptionOrigin: {
           connect: { name: 'MUESTRA DE MINA' },
@@ -520,7 +628,7 @@ export const sampleReceptionData = [
       },
       {
         receivedWeight: 540.7,
-        code: 10019,
+        code: "ASOMI-MM-250524",
         status: { connect: { name: 'RECIBIDO' } },
         receptionOrigin: {
           connect: { name: 'MUESTRA DE MINA' },
@@ -528,7 +636,7 @@ export const sampleReceptionData = [
         requiredAnalyses: [
           {
             analysisType: {
-              connect: { name: 'ABSORCION ATOMIC' },
+              connect: { name: 'ABSORCION ATOMICA' },
             },
             done: false,
           },
@@ -565,7 +673,7 @@ export const sampleReceptionData = [
     samples: [
       {
         receivedWeight: 1200.5,
-        code: 10020,
+        code: "GM-OV-250528",
         status: { connect: { name: 'RECIBIDO' } },
         receptionOrigin: {
           connect: { name: 'OVERFLOW' },
@@ -573,7 +681,7 @@ export const sampleReceptionData = [
         requiredAnalyses: [
           {
             analysisType: {
-              connect: { name: 'ABSORCION ATOMIC' },
+              connect: { name: 'ABSORCION ATOMICA' },
             },
             done: false,
           },
@@ -587,7 +695,7 @@ export const sampleReceptionData = [
       },
       {
         receivedWeight: 1350.75,
-        code: 10021,
+        code: "GM-OV-250528",
         status: { connect: { name: 'RECIBIDO' } },
         receptionOrigin: {
           connect: { name: 'OVERFLOW' },

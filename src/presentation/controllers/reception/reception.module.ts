@@ -29,6 +29,9 @@ import { DoreReceptionDataSourceService } from '@infrastructure/datasource/recep
 import { DoreReceptionRepository } from '@domain/repositories/reception/dore-reception.repository';
 import { CityDataSourceService } from '@infrastructure/datasource/city';
 import { CompanyDataSourceService } from '@infrastructure/datasource/company';
+import { FindSupplierByIdUseCase } from '@domain/use-cases/supplier/find-supplier-by-id.use-case';
+import { FindReceptionOriginByIdUseCase } from '@domain/use-cases/reception-origin/find-recepion-origin-by-id.use-case';
+import { GenerateSampleCodeUseCase } from '@domain/use-cases/reception/generate-sample-code.use-case';
 
 @Module({
   imports: [PermissionsModule, PrismaModule, CompanyModule, SupplierModule],
@@ -45,6 +48,9 @@ import { CompanyDataSourceService } from '@infrastructure/datasource/company';
     DeleteSampleReceptionUseCase,
     GetDefaultAnalysisUseCase,
     GetSuppliersByOriginUseCase,
+    FindSupplierByIdUseCase,
+    FindReceptionOriginByIdUseCase,
+    GenerateSampleCodeUseCase,
 
     // Servicios de fuente de datos
     SampleReceptionDataSourceService,
