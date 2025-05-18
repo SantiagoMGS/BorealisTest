@@ -47,6 +47,15 @@ export const sampleReceptionData = [
             },
             analysisDate: new Date('2025-05-05 11:00:00'),
           },
+          {
+            analysisType: {
+              connect: { name: 'DETERMINACION DE HUMEDAD' },
+            },
+            resultValue: {
+              dryWeight: 700.25,
+            },
+            analysisDate: new Date('2025-05-05 10:00:00'),
+          },
         ],
       },
       {
@@ -75,6 +84,15 @@ export const sampleReceptionData = [
               done: false,
             },
             analysisDate: new Date('2025-05-05 12:00:00'),
+          },
+          {
+            analysisType: {
+              connect: { name: 'DETERMINACION DE HUMEDAD' },
+            },
+            resultValue: {
+              dryWeight: 780.3,
+            },
+            analysisDate: new Date('2025-05-05 10:30:00'),
           },
         ],
       },
@@ -124,6 +142,15 @@ export const sampleReceptionData = [
               done: false,
             },
             analysisDate: new Date('2025-05-07 13:00:00'),
+          },
+          {
+            analysisType: {
+              connect: { name: 'DETERMINACION DE HUMEDAD' },
+            },
+            resultValue: {
+              dryWeight: 320.5,
+            },
+            analysisDate: new Date('2025-05-07 11:00:00'),
           },
         ],
       },
@@ -181,6 +208,15 @@ export const sampleReceptionData = [
             },
             analysisDate: new Date('2025-05-10 14:30:00'),
           },
+          {
+            analysisType: {
+              connect: { name: 'DETERMINACION DE HUMEDAD' },
+            },
+            resultValue: {
+              dryWeight: 390.6,
+            },
+            analysisDate: new Date('2025-05-10 10:00:00'),
+          },
         ],
       },
       {
@@ -216,6 +252,15 @@ export const sampleReceptionData = [
             },
             analysisDate: new Date('2025-05-10 11:30:00'),
           },
+          {
+            analysisType: {
+              connect: { name: 'DETERMINACION DE HUMEDAD' },
+            },
+            resultValue: {
+              dryWeight: 420.2,
+            },
+            analysisDate: new Date('2025-05-10 10:00:00'),
+          },
         ],
       },
       {
@@ -250,6 +295,15 @@ export const sampleReceptionData = [
               done: false,
             },
             analysisDate: new Date('2025-05-10 11:30:00'),
+          },
+          {
+            analysisType: {
+              connect: { name: 'DETERMINACION DE HUMEDAD' },
+            },
+            resultValue: {
+              dryWeight: 450.1,
+            },
+            analysisDate: new Date('2025-05-10 10:30:00'),
           },
         ],
       },
@@ -304,6 +358,15 @@ export const sampleReceptionData = [
             },
             analysisDate: new Date('2025-05-12 13:30:00'),
           },
+          {
+            analysisType: {
+              connect: { name: 'DETERMINACION DE HUMEDAD' },
+            },
+            resultValue: {
+              dryWeight: 630.5,
+            },
+            analysisDate: new Date('2025-05-12 10:00:00'),
+          },
         ],
       },
       {
@@ -332,6 +395,15 @@ export const sampleReceptionData = [
               done: false,
             },
             analysisDate: new Date('2025-05-12 13:00:00'),
+          },
+          {
+            analysisType: {
+              connect: { name: 'DETERMINACION DE HUMEDAD' },
+            },
+            resultValue: {
+              dryWeight: 670.3,
+            },
+            analysisDate: new Date('2025-05-12 10:30:00'),
           },
         ],
       },
@@ -390,6 +462,15 @@ export const sampleReceptionData = [
             },
             analysisDate: new Date('2025-05-15 14:00:00'),
           },
+          {
+            analysisType: {
+              connect: { name: 'DETERMINACION DE HUMEDAD' },
+            },
+            resultValue: {
+              dryWeight: 880.4,
+            },
+            analysisDate: new Date('2025-05-15 10:00:00'),
+          },
         ],
       },
     ],
@@ -440,6 +521,15 @@ export const sampleReceptionData = [
             },
             analysisDate: new Date('2025-05-18 14:00:00'),
           },
+          {
+            analysisType: {
+              connect: { name: 'DETERMINACION DE HUMEDAD' },
+            },
+            resultValue: {
+              dryWeight: 320.1,
+            },
+            analysisDate: new Date('2025-05-18 10:00:00'),
+          },
         ],
       },
       {
@@ -468,6 +558,15 @@ export const sampleReceptionData = [
               done: false,
             },
             analysisDate: new Date('2025-05-18 14:00:00'),
+          },
+          {
+            analysisType: {
+              connect: { name: 'DETERMINACION DE HUMEDAD' },
+            },
+            resultValue: {
+              dryWeight: 350.3,
+            },
+            analysisDate: new Date('2025-05-18 10:30:00'),
           },
         ],
       },
@@ -498,6 +597,15 @@ export const sampleReceptionData = [
             },
             analysisDate: new Date('2025-05-18 14:00:00'),
           },
+          {
+            analysisType: {
+              connect: { name: 'DETERMINACION DE HUMEDAD' },
+            },
+            resultValue: {
+              dryWeight: 390.2,
+            },
+            analysisDate: new Date('2025-05-18 11:00:00'),
+          },
         ],
       },
       {
@@ -526,6 +634,15 @@ export const sampleReceptionData = [
               done: false,
             },
             analysisDate: new Date('2025-05-18 14:00:00'),
+          },
+          {
+            analysisType: {
+              connect: { name: 'DETERMINACION DE HUMEDAD' },
+            },
+            resultValue: {
+              dryWeight: 360.5,
+            },
+            analysisDate: new Date('2025-05-18 11:30:00'),
           },
         ],
       },
@@ -578,6 +695,15 @@ export const sampleReceptionData = [
             },
             analysisDate: new Date('2025-05-20 14:00:00'),
           },
+          {
+            analysisType: {
+              connect: { name: 'DETERMINACION DE HUMEDAD' },
+            },
+            resultValue: {
+              dryWeight: 230.6,
+            },
+            analysisDate: new Date('2025-05-20 10:00:00'),
+          },
         ],
       },
       {
@@ -606,6 +732,15 @@ export const sampleReceptionData = [
               done: false,
             },
             analysisDate: new Date('2025-05-20 15:00:00'),
+          },
+          {
+            analysisType: {
+              connect: { name: 'DETERMINACION DE HUMEDAD' },
+            },
+            resultValue: {
+              dryWeight: 260.8,
+            },
+            analysisDate: new Date('2025-05-20 10:30:00'),
           },
         ],
       },
@@ -657,6 +792,15 @@ export const sampleReceptionData = [
               done: false,
             },
             analysisDate: new Date('2025-05-22 14:00:00'),
+          },
+          {
+            analysisType: {
+              connect: { name: 'DETERMINACION DE HUMEDAD' },
+            },
+            resultValue: {
+              dryWeight: 165.3,
+            },
+            analysisDate: new Date('2025-05-22 10:00:00'),
           },
         ],
       },
@@ -750,6 +894,15 @@ export const sampleReceptionData = [
             },
             analysisDate: new Date('2025-05-24 16:30:00'),
           },
+          {
+            analysisType: {
+              connect: { name: 'DETERMINACION DE HUMEDAD' },
+            },
+            resultValue: {
+              dryWeight: 445.7,
+            },
+            analysisDate: new Date('2025-05-24 10:30:00'),
+          },
         ],
       },
       {
@@ -784,6 +937,15 @@ export const sampleReceptionData = [
               done: false,
             },
             analysisDate: new Date('2025-05-24 19:00:00'),
+          },
+          {
+            analysisType: {
+              connect: { name: 'DETERMINACION DE HUMEDAD' },
+            },
+            resultValue: {
+              dryWeight: 510.2,
+            },
+            analysisDate: new Date('2025-05-24 11:00:00'),
           },
         ],
       },
@@ -843,6 +1005,15 @@ export const sampleReceptionData = [
             },
             analysisDate: new Date('2025-05-28 14:00:00'),
           },
+          {
+            analysisType: {
+              connect: { name: 'DETERMINACION DE HUMEDAD' },
+            },
+            resultValue: {
+              dryWeight: 1135.8,
+            },
+            analysisDate: new Date('2025-05-28 10:00:00'),
+          },
         ],
       },
       {
@@ -877,6 +1048,15 @@ export const sampleReceptionData = [
               done: false,
             },
             analysisDate: new Date('2025-05-28 14:30:00'),
+          },
+          {
+            analysisType: {
+              connect: { name: 'DETERMINACION DE HUMEDAD' },
+            },
+            resultValue: {
+              dryWeight: 490.5,
+            },
+            analysisDate: new Date('2025-05-28 10:00:00'),
           },
         ],
       },

@@ -206,13 +206,29 @@ export async function seedSampleReceptions(prisma: PrismaClient) {
             try {
               // Obtener el resultValue que está anidado dentro del objeto analysisType en los datos
               const analysisDataAny = analysisData as any;
-              const resultValue = analysisDataAny.resultValue || 
+              let resultValue = analysisDataAny.resultValue || 
                 (analysisDataAny.analysisType?.resultValue) || {};
+
+              // Si es un análisis de DETERMINACION DE HUMEDAD, calcular moisture
+              if (analysisType.shortName === 'DH' && resultValue.dryWeight) {
+                const receivedWeight = Number(sample.receivedWeight);
+                const dryWeight = Number(resultValue.dryWeight);
+                
+                // Verificar que el peso seco no sea mayor al recibido
+                if (dryWeight <= receivedWeight) {
+                  const moisture = (1 - dryWeight / receivedWeight) * 100;
+                  // Agregar el moisture al resultValue, con 4 decimales
+                  resultValue = {
+                    ...resultValue,
+                    moisture: parseFloat(moisture.toFixed(4))
+                  };
+                }
+              }
 
               const createdAnalysis = await prisma.analysis.create({
                 data: {
                   sampleId: sample.id,
-                  analysisDate: new Date(),
+                  analysisDate: analysisDataAny.analysisDate || new Date(),
                   analysisTypeId: analysisType.id,
                   resultValue,
                 },
