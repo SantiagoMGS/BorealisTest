@@ -8,6 +8,7 @@ import { SamplesWithAnalyses } from './types/sample-management-reception-select.
 import { SupplierDropdown } from '@shared/types/supplier-dropdown.type';
 import { SampleDropdown } from '@shared/types/sample-dropdown.type';
 import { ReceptionOriginDropdown } from '@shared/types/reception-origin-dropdown.type';
+import { SampleDetailSelect } from './types/sample-detail-select.type';
 
 @Injectable()
 export class SampleManagementDataSourceService {
@@ -242,5 +243,124 @@ export class SampleManagementDataSourceService {
     });
 
     return suppliers.map((reception) => reception.supplier);
+  }
+
+  async getDetailSample(id: string): Promise<SampleDetailSelect> {
+    const reception = await this.prisma.reception.findFirst({
+      where: {
+        samples: {
+          some: {
+            id,
+          },
+        },
+      },
+      select: {
+        id: true,
+        companyId: true,
+        supplierId: true,
+        receptionDate: true,
+        batchNumber: true,
+        observation: true,
+        isActive: true,
+        createdAt: true,
+        updatedAt: true,
+        createdBy: true,
+        updatedBy: true,
+        receptionOriginId: true,
+        receptionTypeId: true,
+        miningTitleId: true,
+        cityId: true,
+        supplier: {
+          select: {
+            id: true,
+            name: true,
+            shortName: true,
+          },
+        },
+        samples: {
+          where: {
+            id,
+          },
+          select: {
+            id: true,
+            receptionId: true,
+            receptionOriginId: true,
+            receivedWeight: true,
+            code: true,
+            statusId: true,
+            createdAt: true,
+            updatedAt: true,
+            createdBy: true,
+            updatedBy: true,
+            receptionOrigin: {
+              select: {
+                id: true,
+                name: true,
+                shortName: true,
+              },
+            },
+            status: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+            requiredAnalyses: {
+              select: {
+                id: true,
+                sampleId: true,
+                analysisTypeId: true,
+                done: true,
+                analysisType: {
+                  select: {
+                    id: true,
+                    name: true,
+                    shortName: true,
+                  },
+                },
+              },
+            },
+            analyses: {
+              select: {
+                id: true,
+                analysisTypeId: true,
+                sampleId: true,
+                resultValue: true,
+                analysisDate: true,
+                isActive: true,
+                createdAt: true,
+                updatedAt: true,
+                analysisType: {
+                  select: {
+                    id: true,
+                    name: true,
+                    shortName: true,
+                  },
+                },
+              },
+            },
+            subSamples: {
+              select: {
+                id: true,
+                isActive: true,
+                createdAt: true,
+                updatedAt: true,
+                createdBy: true,
+                updatedBy: true,
+                SampleId: true,
+                weight: true,
+                subSampleTypeId: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!reception) {
+      throw new HttpException('Sample not found', HttpStatus.NOT_FOUND);
+    }
+
+    return reception;
   }
 }
