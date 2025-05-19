@@ -76,7 +76,7 @@ export class SupplierDataSourceService {
     const skip = (page - 1) * limit;
 
     const suppliers = await this.prisma.supplier.findMany({
-      where: { isActive: !withDeleted ? true : false },
+      where: withDeleted ? {} : { isActive: true },
       include: {
         documentType: true,
       },
