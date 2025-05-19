@@ -50,13 +50,7 @@ export class SampleReceptionDataSourceService {
 
       const receptionOriginId = samples[0].receptionOriginId;
 
-      const lastSample = await this.prisma.sample.findFirst({
-        orderBy: { code: 'desc' },
-      });
-      const baseCode = lastSample ? lastSample.code + 1 : 1;
-
       const sampleCreates = validatedSamples.map((sample, index) => {
-        const sample_code = baseCode + index;
 
         return {
           receptionOrigin: {
@@ -65,7 +59,7 @@ export class SampleReceptionDataSourceService {
             },
           },
           receivedWeight: sample.receivedWeight,
-          code: sample_code,
+          code: sample.code || `SAMPLE-${Date.now()}-${index}`,
           status: {
             connect: {
               id: receivedStatus.id,
@@ -386,11 +380,6 @@ export class SampleReceptionDataSourceService {
           where: { receptionId: id },
         });
 
-        // Obtenemos el siguiente código base para las muestras
-        const lastSample = await this.prisma.sample.findFirst({
-          orderBy: { code: 'desc' },
-        });
-        const baseCode = lastSample ? lastSample.code + 1 : 1;
 
         // Luego creamos las nuevas
         for (let i = 0; i < samples.length; i++) {
@@ -400,7 +389,7 @@ export class SampleReceptionDataSourceService {
               receptionId: id,
               receptionOriginId: unit.receptionOriginId,
               receivedWeight: unit.receivedWeight,
-              code: baseCode + i,
+              code: unit.code || `SAMPLE-${Date.now()}-${i}`,
               statusId: receivedStatus.id, // Todas las nuevas muestras inician con estado "RECIBIDO"
             },
           });

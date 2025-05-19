@@ -15,8 +15,7 @@ export class CreateReceptionUseCase {
 
   async execute(reception: IReceptionEntity): Promise<IReceptionResponse> {
     await Promise.all(reception.samples.map(async (sample) => {
-      const code = await this.generateSampleCodeUseCase.execute(sample, reception.supplierId);
-      console.log(code);
+      sample.code = await this.generateSampleCodeUseCase.execute(sample, reception.supplierId);
     }));
 
     return this.receptionRepository.createReception(reception);
