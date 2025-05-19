@@ -6,10 +6,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import {
-  IReceptionEntity,
-  ISampleEntity,
-} from '@domain/entities/reception/reception.entity';
+import { IReceptionEntity } from '@domain/entities/reception/reception.entity';
 import { IReceptionResponse } from '@domain/interfaces/reception';
 import { CompanyDataSourceService } from '@infrastructure/datasource/company/company.datasource.service';
 import { SupplierDataSourceService } from '@infrastructure/datasource/supplier/supplier.datasource.service';
@@ -18,6 +15,7 @@ import { ReceptionOriginDataSourceService } from './reception-origin.datasource.
 import { StatusDataSourceService } from '@infrastructure/datasource/status';
 import { UpdateSampleFilter } from '@domain/repositories/reception/sample-reception.repository';
 import { Sample } from '@prisma/client';
+import { SampleSelectAllFields } from './types/sample-select.type';
 @Injectable()
 export class SampleReceptionDataSourceService {
   constructor(
@@ -52,13 +50,7 @@ export class SampleReceptionDataSourceService {
 
       const receptionOriginId = samples[0].receptionOriginId;
 
-      const lastSample = await this.prisma.sample.findFirst({
-        orderBy: { code: 'desc' },
-      });
-      const baseCode = lastSample ? lastSample.code + 1 : 1;
-
       const sampleCreates = validatedSamples.map((sample, index) => {
-        const sample_code = baseCode + index;
 
         return {
           receptionOrigin: {
@@ -67,7 +59,7 @@ export class SampleReceptionDataSourceService {
             },
           },
           receivedWeight: sample.receivedWeight,
-          code: sample_code,
+          code: sample.code || `SAMPLE-${Date.now()}-${index}`,
           status: {
             connect: {
               id: receivedStatus.id,
@@ -388,11 +380,6 @@ export class SampleReceptionDataSourceService {
           where: { receptionId: id },
         });
 
-        // Obtenemos el siguiente código base para las muestras
-        const lastSample = await this.prisma.sample.findFirst({
-          orderBy: { code: 'desc' },
-        });
-        const baseCode = lastSample ? lastSample.code + 1 : 1;
 
         // Luego creamos las nuevas
         for (let i = 0; i < samples.length; i++) {
@@ -402,7 +389,7 @@ export class SampleReceptionDataSourceService {
               receptionId: id,
               receptionOriginId: unit.receptionOriginId,
               receivedWeight: unit.receivedWeight,
-              code: baseCode + i,
+              code: unit.code || `SAMPLE-${Date.now()}-${i}`,
               statusId: receivedStatus.id, // Todas las nuevas muestras inician con estado "RECIBIDO"
             },
           });
@@ -657,17 +644,13 @@ export class SampleReceptionDataSourceService {
       );
     }
   }
-  async findById(id: string): Promise<ISampleEntity> {
+  async findById(id: string): Promise<SampleSelectAllFields> {
     const sample = await this.prisma.sample.findUnique({
       where: { id },
     });
     if (!sample) {
       throw new NotFoundException(`No se encontró la muestra con ID ${id}`);
     }
-    return {
-      code: sample.code,
-      receivedWeight: Number(sample.receivedWeight),
-      receptionOriginId: sample.receptionOriginId,
-    };
+    return sample;
   }
 }

@@ -9,6 +9,6 @@ export class FindSamplesByFiltersUseCase {
   ) {}
 
   async execute(filter: IManagementFilter): Promise<any> {
-    return await this.sampleManagementRepository.findByFilters(filter);
+    return this.sampleManagementRepository.findByFilters(filter);
   }
 }

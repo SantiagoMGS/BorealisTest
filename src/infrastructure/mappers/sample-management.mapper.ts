@@ -3,6 +3,7 @@ import { SamplesWithAnalyses } from '@infrastructure/datasource/management/types
 export interface MappedSamples {
   supplierName: string;
   supplierShortName: string;
+  sampleId: string;
   sampleCode: number;
   receivedWeight: string;
   receptionOriginName: string;
@@ -28,6 +29,7 @@ export class SampleManagementMapper {
       (reception.samples || []).map((sample: any) => ({
         supplierName: reception.supplier?.name ?? '',
         supplierShortName: reception.supplier?.shortName ?? '',
+        sampleId: sample.id,
         sampleCode: sample.code,
         receivedWeight: sample.receivedWeight,
         receptionOriginName: sample.receptionOrigin?.name ?? '',

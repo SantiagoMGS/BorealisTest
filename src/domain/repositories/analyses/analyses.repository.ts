@@ -11,8 +11,7 @@ import {
 
 export abstract class AnalysesRepository {
   abstract createDHAnalyses(
-    analysis: IAnalysisEntity,
-    companyId: string,
+    analysisData: IAnalysisEntity,
   ): Promise<IAnalysisResponse>;
   abstract createXRFAnalyses(
     analysis: IAnalysisEntity,
@@ -29,4 +28,8 @@ export abstract class AnalysesRepository {
   abstract getActiveLWAnalyses(
     options: IPaginationOptions,
   ): Promise<IPaginatedData<ActiveAnalysis<ResultValueLW>>>;
+  abstract findExistingAnalysis(
+    analysisTypeId: string,
+    sampleId: string,
+  ): Promise<any>;
 }

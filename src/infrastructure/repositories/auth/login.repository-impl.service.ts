@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { LoginRepository } from '@domain/repositories/auth/login.repository';
 import { LoginDataSourceService } from '@infrastructure/datasource/auth/login.datasource.service';
 import { ILoginEntity } from '@domain/entities/auth/login.entity';
-import { ILoginResponse } from '@domain/interfaces/auth/login-response.interface';
+import { ILogin } from '@domain/interfaces/auth/login-response.interface';
 import { ITokenPort, TokenPayload } from '@domain/ports/auth/token.port';
 
 @Injectable()
@@ -12,7 +12,7 @@ export class LoginRepositoryImplService implements LoginRepository {
     private readonly tokenPort: ITokenPort,
   ) {}
 
-  async login(loginData: ILoginEntity): Promise<ILoginResponse> {
+  async login(loginData: ILoginEntity): Promise<ILogin> {
     // Obtener los datos del usuario autenticado
     const user = await this.loginDataSourceService.login(loginData);
 

@@ -1,28 +1,27 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { PaginatedResponseDto } from '@shared/dtos/paginated-response.dto';
 
 class DoreStatusDto {
-  @ApiProperty({ example: 'e24cfd09-01e4-400a-adb9-013b2917c34b' })
+  @ApiProperty({})
   id!: string;
 
-  @ApiProperty({ example: 'RECIBIDO' })
+  @ApiProperty({})
   name!: string;
 }
 
 class DoreItemsDto {
-  @ApiProperty({ example: '8ee8dc58-2c10-487b-96dc-21c5ff6310f8' })
+  @ApiProperty({})
   id!: string;
 
-  @ApiProperty({ example: 30000 })
+  @ApiProperty({})
   code!: number;
 
-  @ApiProperty({ example: '1250.75' })
-  receivedWeight!: string | number;
+  @ApiProperty({})
+  receivedWeight!: number;
 
-  @ApiProperty({ example: 'https://example.com/image.jpg' })
+  @ApiProperty({})
   base64!: string;
 
-  @ApiProperty({ example: 'jpg' })
+  @ApiProperty({})
   format!: string;
 
   @ApiProperty({ type: DoreStatusDto })
@@ -30,35 +29,32 @@ class DoreItemsDto {
 }
 
 class SupplierDto {
-  @ApiProperty({ example: 'cddfc129-2111-4c06-b019-633c828f1fba' })
+  @ApiProperty({})
   id!: string;
 
-  @ApiProperty({ example: 'Sofia Rodriguez - Joyería' })
+  @ApiProperty({})
   name!: string;
 }
 
 class ReceptionOriginDto {
-  @ApiProperty({ example: 'f2f825a2-5613-4915-84ea-d56d405d839c' })
+  @ApiProperty({})
   id!: string;
 
-  @ApiProperty({ example: 'Joyería Desuso' })
+  @ApiProperty({})
   name!: string;
 }
 
 export class DoreReceptionItemDto {
-  @ApiProperty({ example: '4134b10f-af1e-4613-9974-69583b855300' })
+  @ApiProperty({})
   id!: string;
 
-  @ApiProperty({ example: 'CM-D-2025-001' })
+  @ApiProperty({})
   batchNumber!: string | null;
 
-  @ApiProperty({ example: '2025-04-05T00:00:00.000Z' })
+  @ApiProperty({})
   receptionDate!: Date;
 
-  @ApiProperty({
-    example: 'Piezas de joyería de oro para fundición, excelente calidad',
-    required: false,
-  })
+  @ApiProperty({})
   observation?: string | null;
 
   @ApiProperty({ type: [DoreItemsDto] })
@@ -69,9 +65,4 @@ export class DoreReceptionItemDto {
 
   @ApiProperty({ type: ReceptionOriginDto })
   receptionOrigin!: ReceptionOriginDto;
-}
-
-export class DoreReceptionPaginatedResponseDto extends PaginatedResponseDto<DoreReceptionItemDto> {
-  @ApiProperty({ type: [DoreReceptionItemDto] })
-  declare items: DoreReceptionItemDto[];
 }

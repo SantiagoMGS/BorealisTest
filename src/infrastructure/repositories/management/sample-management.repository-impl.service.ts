@@ -22,10 +22,7 @@ export class SampleManagementRepositoryImpl extends SampleManagementRepository {
     startDate: Date,
     endDate: Date,
   ): Promise<ISampleDropdownData> {
-    return await this.sampleManagementDataSource.getDropdownData(
-      startDate,
-      endDate,
-    );
+    return this.sampleManagementDataSource.getDropdownData(startDate, endDate);
   }
 
   async findByFilters(

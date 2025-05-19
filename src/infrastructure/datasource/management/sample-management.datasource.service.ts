@@ -63,6 +63,7 @@ export class SampleManagementDataSourceService {
         isActive: true,
         samples: {
           select: {
+            id: true,
             code: true,
             receivedWeight: true,
             receptionOrigin: {

@@ -3,14 +3,14 @@ import { ISupplierEntity } from '@domain/entities/supplier';
 import { ISupplierResponse } from '@domain/interfaces/supplier';
 import { SupplierRepository } from '@domain/repositories/supplier';
 import { ShortNameGeneratorService } from '@infrastructure/services/supplier/shortname-generator.service';
-import { ICompanySupplierRepository } from '@domain/repositories/company-supplier/company-supplier.repository';
+import { CompanyRepository } from '@domain/repositories/company/company.repository';
 
 @Injectable()
 export class CreateSupplierUseCase {
   constructor(
     private readonly supplierRepository: SupplierRepository,
     private readonly shortNameGeneratorService: ShortNameGeneratorService,
-    private readonly companySupplierRepository: ICompanySupplierRepository,
+    private readonly companyRepository: CompanyRepository,
   ) {}
 
   async execute(
@@ -36,7 +36,7 @@ export class CreateSupplierUseCase {
 
     // Si se proporciona el ID de la compañía, asignar el proveedor a la compañía
     if (companyId) {
-      await this.companySupplierRepository.assignSuppliers(companyId, [
+      await this.companyRepository.assignSuppliers(companyId, [
         createdSupplier.id,
       ]);
     }

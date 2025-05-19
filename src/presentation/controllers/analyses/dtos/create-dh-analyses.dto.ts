@@ -11,10 +11,7 @@ import {
 } from 'class-validator';
 
 class ResultValueDHDto {
-  @ApiProperty({
-    description: 'Peso seco en gramos',
-    example: 950,
-  })
+  @ApiProperty({})
   @IsNumber()
   @IsPositive()
   @IsNotEmpty()
@@ -22,28 +19,20 @@ class ResultValueDHDto {
 }
 
 export class CreateDHAnalysesDto {
-  @ApiProperty({
-    description: 'ID de la muestra',
-    example: '123e4567-e89b-12d3-a456-426614174000',
-  })
+  @ApiProperty({})
   @IsString()
   @IsUUID()
   @IsNotEmpty()
   sampleId!: string;
 
   @ApiProperty({
-    description: 'Fecha del análisis',
-    example: '2023-09-15T14:30:00Z',
+    format: 'date-time',
   })
   @IsString()
   @IsNotEmpty()
   analysisDate!: string;
 
   @ApiProperty({
-    description: 'Resultado del análisis',
-    example: {
-      dryWeight: 950,
-    },
     type: ResultValueDHDto,
   })
   @ValidateNested()

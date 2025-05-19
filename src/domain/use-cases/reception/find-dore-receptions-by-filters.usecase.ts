@@ -13,6 +13,6 @@ export class FindDoreReceptionsByFiltersUseCase {
   async execute(
     filter: IManagementFilter,
   ): Promise<IPaginatedData<IDoreManagementResponse>> {
-    return await this.doreManagementRepository.findByFilters(filter);
+    return this.doreManagementRepository.findByFilters(filter);
   }
 }

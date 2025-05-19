@@ -17,6 +17,7 @@ import { CompanyDataSourceService } from '@infrastructure/datasource/company/com
 import { AnalysisTypeDatasourceService } from '../analysis-type/analysis-type.datasorce.service';
 import { IPaginationOptions } from '@shared/interfaces/pagination.interfaces';
 import { ActiveAnalysis } from '@domain/entities/analyses/active-analysis.entity';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class AnalysesDatasourceService {
@@ -29,34 +30,18 @@ export class AnalysesDatasourceService {
 
   async createDHAnalyses(
     analysisData: IAnalysisEntity,
-    companyId: string,
-  ): Promise<IAnalysisResponse> {
+  ): Promise<Prisma.AnalysisGetPayload<{}>> {
     try {
-      const analysisType =
-        await this.analysisTypeDatasource.findByShortName('DH');
-
-      await this.companyDataSource.findById(companyId);
-
       const createdAnalysis = await this.prisma.analysis.create({
         data: {
-          sampleId: analysisData.sampleId,
           analysisDate: analysisData.analysisDate,
-          analysisTypeId: analysisType.id,
           resultValue: analysisData.resultValue as ResultValueDH,
+          analysisType: { connect: { id: analysisData.analysisTypeId! } },
+          sample: { connect: { id: analysisData.sampleId } },
         },
       });
 
-      return {
-        id: createdAnalysis.id,
-        sampleId: createdAnalysis.sampleId,
-        analysisTypeId: createdAnalysis.analysisTypeId,
-        analysisDate: createdAnalysis.analysisDate,
-        //TODO: Cambiar para que no se devuelva el resultValue como string
-        resultValue:
-          typeof createdAnalysis.resultValue === 'string'
-            ? JSON.parse(createdAnalysis.resultValue)
-            : createdAnalysis.resultValue,
-      };
+      return createdAnalysis;
     } catch (error) {
       throw new BadRequestException(
         'Error al crear el análisis en la base de datos',
@@ -223,5 +208,18 @@ export class AnalysesDatasourceService {
       },
       resultValue: analysis.resultValue as unknown as ResultValueLW,
     }));
+  }
+
+  async findExistingAnalysis(
+    analysisTypeId: string,
+    sampleId: string,
+  ): Promise<any> {
+    return this.prisma.analysis.findFirst({
+      where: {
+        analysisTypeId,
+        sampleId,
+        isActive: true,
+      },
+    });
   }
 }

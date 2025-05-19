@@ -9,6 +9,6 @@ export class TestConnectionUseCase {
   ) {}
 
   async execute(config?: Partial<PrinterConfigDto>): Promise<boolean> {
-    return await this.labelPrinterRepository.testConnection(config);
+    return this.labelPrinterRepository.testConnection(config);
   }
 }

@@ -1,54 +1,69 @@
 import { AnalysesRepository } from '@domain/repositories/analyses/analyses.repository';
-import {
-  Injectable,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import {
   IAnalysisEntity,
   ResultValueDH,
 } from '@domain/entities/analyses/analyses.entity';
 import { IAnalysisResponse } from '@domain/interfaces/analyses/analyses.response.interfaces';
-import { SampleReceptionDataSourceService } from '@infrastructure/datasource/reception/sample-reception.datasource.service';
-
+import { FindCompanyByIdUseCase } from '../company/find-company-by-id.use-case';
+import { FindAnalysisTypeByNameUseCase } from '../analysis-type/find-analysis-type-by-name.use-case';
+import { FindSampleByIdUseCase } from '../sample/find-sample-by-id.use-case';
+import { FindExistingAnalysisUseCase } from './find-existing-analysis.use-case';
 @Injectable()
 export class CreateDHAnalysesUseCase {
   constructor(
     private readonly analysesRepository: AnalysesRepository,
-    private readonly sampleDataSource: SampleReceptionDataSourceService,
+    private readonly findCompanyByIdUseCase: FindCompanyByIdUseCase,
+    private readonly findAnalysisTypeByNameUseCase: FindAnalysisTypeByNameUseCase,
+    private readonly findSampleByIdUseCase: FindSampleByIdUseCase,
+    private readonly findExistingAnalysisUseCase: FindExistingAnalysisUseCase,
   ) {}
 
   async execute(
     analysis: IAnalysisEntity,
     companyId: string,
   ): Promise<IAnalysisResponse> {
-    try {
-      const sample = await this.sampleDataSource.findById(analysis.sampleId);
+    await this.findCompanyByIdUseCase.execute(companyId);
 
-      const resultValue = analysis.resultValue as ResultValueDH;
+    const sample = await this.findSampleByIdUseCase.execute(analysis.sampleId);
 
-      const receivedWeight = Number(sample.receivedWeight);
-      const dryWeight = Number(resultValue.dryWeight);
+    const analysisType = await this.findAnalysisTypeByNameUseCase.execute('DH');
 
-      const moisture = (1 - dryWeight / receivedWeight) * 100;
+    const existingAnalysis = await this.findExistingAnalysisUseCase.execute(
+      analysisType.id,
+      analysis.sampleId,
+    );
 
-      const normalizedResultValue = {
-        dryWeight,
-        moisture: parseFloat(moisture.toFixed(4)),
-      };
-
-      const analysisData = {
-        ...analysis,
-        resultValue: normalizedResultValue,
-      };
-
-      return this.analysesRepository.createDHAnalyses(analysisData, companyId);
-    } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw error;
-      }
-
-      throw new BadRequestException('Error al crear el análisis');
+    if (existingAnalysis) {
+      throw new BadRequestException(
+        'La muestra ya tiene un análisis de humedad activo',
+      );
     }
+
+    const resultValue = analysis.resultValue as ResultValueDH;
+
+    const receivedWeight = Number(sample.receivedWeight);
+    const dryWeight = Number(resultValue.dryWeight);
+
+    if (dryWeight > receivedWeight) {
+      throw new BadRequestException(
+        'El peso seco no puede ser mayor al peso recibido',
+      );
+    }
+
+    const moisture = (1 - dryWeight / receivedWeight) * 100;
+
+    const normalizedResultValue = {
+      dryWeight,
+      moisture: parseFloat(moisture.toFixed(4)),
+    };
+
+    const analysisData = {
+      ...analysis,
+      analysisTypeId: analysisType.id,
+      resultValue: normalizedResultValue,
+    };
+
+    return this.analysesRepository.createDHAnalyses(analysisData);
   }
 }

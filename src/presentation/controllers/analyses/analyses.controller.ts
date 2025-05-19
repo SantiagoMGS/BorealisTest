@@ -19,6 +19,7 @@ import {
   ApiBearerAuth,
   ApiConsumes,
   ApiResponse,
+  ApiExtraModels,
 } from '@nestjs/swagger';
 import { CurrentUser } from '@core/decorators/current-user.decorator';
 import { ResultValueLW } from '@domain/entities/analyses/analyses.entity';
@@ -50,11 +51,17 @@ import { IPaginatedData } from '@shared/interfaces/pagination.interfaces';
 import { PaginationDto } from '@shared/dtos/paginator.dto';
 import { ActiveAnalysis } from '@domain/entities/analyses/active-analysis.entity';
 
+import {
+  ApiMultipleErrors,
+  ApiSuccessResponse,
+} from '@core/decorators/api-responses.decorator';
+
 @Controller('analyses')
 @UseGuards(JwtAuthGuard)
 @UseInterceptors(ResponseInterceptor)
 @ApiTags('Análisis')
 @ApiBearerAuth()
+@ApiExtraModels(DHResponse, LWResponse, XRFResponse, ResponseAAAnalysesDto)
 export class AnalysesController {
   constructor(
     private readonly createDHAnalysisUseCase: CreateDHAnalysesUseCase,
@@ -82,28 +89,20 @@ export class AnalysesController {
   @Post('moisture-determination')
   @RequirePermission('DHAnalyses')
   @ApiOperation({
-    summary: 'Crear nuevo análisis DH',
-    description:
-      'Crea un nuevo análisis de tipo Diamond Hole (DH) en el sistema',
+    summary: 'Crea la determinación de humedad de una muestra',
   })
   @ApiBody({
     type: CreateDHAnalysesDto,
-    description: 'Datos necesarios para obtener la determinación de humedad',
-    required: true,
   })
-  @ApiResponse({
-    status: 201,
-    description: 'Determinación de Humedad creada exitosamente',
-    type: DHResponse,
-  })
-  @ApiBadRequestResponse({
-    description: 'Datos de análisis inválidos',
-    type: ErrorResponseDto,
-  })
-  @ApiUnauthorizedResponse({
-    description: 'No autorizado - Token JWT inválido o expirado',
-    type: ErrorResponseDto,
-  })
+  @ApiSuccessResponse(
+    201,
+    'Determinación de Humedad creada exitosamente',
+    DHResponse,
+  )
+  @ApiMultipleErrors(400, 'BAD_REQUEST', [
+    { message: 'La muestra ya tiene un análisis de humedad activo' },
+    { message: 'El peso seco no puede ser mayor al peso recibido' },
+  ])
   @CustomResponse({
     successMessage: 'Determinación de Humedad creada exitosamente',
   })
@@ -122,8 +121,6 @@ export class AnalysesController {
   @RequirePermission('XRFAnalyses')
   @ApiOperation({
     summary: 'Crear nuevo análisis XRF',
-    description:
-      'Crea un nuevo análisis de tipo X-Ray Fluorescence (XRF) en el sistema a partir de un archivo',
   })
   @ApiConsumes('multipart/form-data')
   @ApiBody({

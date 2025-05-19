@@ -12,6 +12,7 @@ import {
 } from '@shared/interfaces/pagination.interfaces';
 import { PaginationHelper } from '@shared/utils/pagination.helper';
 import { ActiveAnalysis } from '@domain/entities/analyses/active-analysis.entity';
+import { DHAnalysisMapper } from '@infrastructure/mappers/analyses/dh-analysis.mapper';
 
 @Injectable()
 export class AnalysesRepositoryImpl extends AnalysesRepository {
@@ -20,31 +21,32 @@ export class AnalysesRepositoryImpl extends AnalysesRepository {
   }
 
   async createDHAnalyses(
-    analysis: IAnalysisEntity,
-    companyId: string,
+    analysisData: IAnalysisEntity,
   ): Promise<IAnalysisResponse> {
-    return await this.analysesDatasource.createDHAnalyses(analysis, companyId);
+    const createdAnalysis =
+      await this.analysesDatasource.createDHAnalyses(analysisData);
+    return DHAnalysisMapper.toDomain(createdAnalysis);
   }
 
   async createXRFAnalyses(
     analysis: IAnalysisEntity,
     companyId: string,
   ): Promise<IAnalysisResponse> {
-    return await this.analysesDatasource.createXRFAnalyses(analysis, companyId);
+    return this.analysesDatasource.createXRFAnalyses(analysis, companyId);
   }
 
   async createLWAnalysis(
     analysis: IAnalysisEntity,
     companyId: string,
   ): Promise<IAnalysisResponse> {
-    return await this.analysesDatasource.createLWAnalysis(analysis, companyId);
+    return this.analysesDatasource.createLWAnalysis(analysis, companyId);
   }
 
   async createAAAnalyses(
     analysis: IAnalysisEntity,
     companyId: string,
   ): Promise<IAnalysisResponse> {
-    return await this.analysesDatasource.createAAAnalyses(analysis, companyId);
+    return this.analysesDatasource.createAAAnalyses(analysis, companyId);
   }
 
   async getActiveLWAnalyses(
@@ -55,8 +57,8 @@ export class AnalysesRepositoryImpl extends AnalysesRepository {
 
     data.sort((a, b) => {
       return (
-        a.resultValue.endDateTime!.getTime() -
-        b.resultValue.endDateTime!.getTime()
+        new Date(a.resultValue.endDateTime!).getTime() -
+        new Date(b.resultValue.endDateTime!).getTime()
       );
     });
 
@@ -67,6 +69,16 @@ export class AnalysesRepositoryImpl extends AnalysesRepository {
         page,
         limit,
       },
+    );
+  }
+
+  async findExistingAnalysis(
+    analysisTypeId: string,
+    sampleId: string,
+  ): Promise<any> {
+    return this.analysesDatasource.findExistingAnalysis(
+      analysisTypeId,
+      sampleId,
     );
   }
 }

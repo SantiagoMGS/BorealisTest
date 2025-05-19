@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { SupplierController } from './supplier.controller';
 import { CreateSupplierUseCase } from '@domain/use-cases/supplier';
 import { SupplierRepository } from '@domain/repositories/supplier';
@@ -11,11 +11,11 @@ import { DeleteSupplierUseCase } from '@domain/use-cases/supplier/delete-supplie
 import { PermissionsModule } from '@core/permissions/permissions.module';
 import { ShortNameGeneratorService } from '@infrastructure/services/supplier/shortname-generator.service';
 import { CompanyModule } from '../company/company.module';
-import { ICompanySupplierRepository } from '@domain/repositories/company-supplier/company-supplier.repository';
-import { CompanySupplierRepositoryImpl } from '@infrastructure/repositories/company-supplier/company-supplier.repository-impl.service';
 import { GetMiningTitlesBySupplierUseCase } from '@domain/use-cases/mining-title/get-mining-titles-by-supplier.use-case';
+import { CompanyRepository } from '@domain/repositories/company/company.repository';
+import { CompanyRepositoryImpl } from '@infrastructure/repositories/company/company.repository-impl.service';
 @Module({
-  imports: [PermissionsModule, CompanyModule],
+  imports: [PermissionsModule, forwardRef(() => CompanyModule)],
   controllers: [SupplierController],
   providers: [
     CreateSupplierUseCase,
@@ -31,8 +31,8 @@ import { GetMiningTitlesBySupplierUseCase } from '@domain/use-cases/mining-title
       useClass: SupplierRepositoryImpl,
     },
     {
-      provide: ICompanySupplierRepository,
-      useExisting: CompanySupplierRepositoryImpl,
+      provide: CompanyRepository,
+      useExisting: CompanyRepositoryImpl,
     },
   ],
   exports: [SupplierRepository, SupplierDataSourceService],

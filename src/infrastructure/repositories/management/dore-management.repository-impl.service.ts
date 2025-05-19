@@ -21,10 +21,7 @@ export class DoreManagementRepositoryImpl extends DoreManagementRepository {
     startDate: Date,
     endDate: Date,
   ): Promise<IDoreDropdownData> {
-    return await this.doreManagementDataSource.getDropdownData(
-      startDate,
-      endDate,
-    );
+    return this.doreManagementDataSource.getDropdownData(startDate, endDate);
   }
 
   async findByFilters(
