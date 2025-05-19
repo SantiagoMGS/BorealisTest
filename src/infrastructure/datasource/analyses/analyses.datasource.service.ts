@@ -187,6 +187,7 @@ export class AnalysesDatasourceService {
         analysisTypeId: analysisType.id,
       },
       select: {
+        id: true,
         analysisDate: true,
         sample: {
           select: {
@@ -201,6 +202,7 @@ export class AnalysesDatasourceService {
     });
 
     return activeLWanalyses.map((analysis) => ({
+      analysisId: analysis.id,
       analysisDate: analysis.analysisDate,
       sample: {
         id: analysis.sample.id,
