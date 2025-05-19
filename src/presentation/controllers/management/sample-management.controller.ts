@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Param,
   Query,
   UseGuards,
   UseInterceptors,
@@ -10,6 +11,7 @@ import {
   ApiBearerAuth,
   ApiOperation,
   ApiNoContentResponse,
+  ApiNotFoundResponse,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '@infrastructure/guards/jwt-auth.guard';
 import { PermissionsGuard } from '@infrastructure/guards/permissions.guard';
@@ -29,7 +31,8 @@ import {
   ApiSuccessResponse,
 } from '@core/decorators/api-responses.decorator';
 import { MappedSampleDto } from './dtos/mapped-sample.dto';
-
+import { SampleDetailUseCase } from '@domain/use-cases/management/sample-details.use-case';
+import { SampleDetailResponseDto } from './dtos/sample-detail-response.dto';
 @ApiTags('Sample Management')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, PermissionsGuard)
@@ -40,6 +43,7 @@ export class SampleManagementController {
   constructor(
     private readonly getSampleDropdownDataUseCase: GetSampleDropdownDataUseCase,
     private readonly findSamplesByFiltersUseCase: FindSamplesByFiltersUseCase,
+    private readonly sampleDetailUseCase: SampleDetailUseCase,
   ) {}
 
   @Get('dropdown-data')
@@ -73,5 +77,22 @@ export class SampleManagementController {
     @Query() filterParams: FindSampleByFiltersDto,
   ): Promise<IPaginatedData<MappedSamples>> {
     return this.findSamplesByFiltersUseCase.execute(filterParams);
+  }
+
+  @Get('details/:id')
+  @ApiOperation({
+    summary: 'Obtener detalles de una muestra',
+  })
+  @ApiSuccessResponse(
+    200,
+    'Muestra encontrada correctamente',
+    SampleDetailResponseDto,
+  )
+  @ApiNotFoundResponse()
+  @ApiNoContentResponse()
+  async getDetailSample(
+    @Param('id') id: string,
+  ): Promise<SampleDetailResponseDto> {
+    return this.sampleDetailUseCase.execute(id);
   }
 }

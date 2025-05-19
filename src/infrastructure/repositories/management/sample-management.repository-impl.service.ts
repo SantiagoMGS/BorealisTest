@@ -2,6 +2,7 @@ import { IManagementFilter } from '@domain/interfaces/management';
 import { ISampleDropdownData } from '@domain/interfaces/management/sample-dropdown.interface';
 import { SampleManagementRepository } from '@domain/repositories/management/sample-management.repository';
 import { SampleManagementDataSourceService } from '@infrastructure/datasource/management/sample-management.datasource.service';
+import { SampleDetailSelect } from '@infrastructure/datasource/management/types/sample-detail-select.type';
 import {
   MappedSamples,
   SampleManagementMapper,
@@ -39,5 +40,10 @@ export class SampleManagementRepositoryImpl extends SampleManagementRepository {
         limit,
       },
     );
+  }
+
+  async getDetailSample(id: string): Promise<SampleDetailSelect> {
+    const data = await this.sampleManagementDataSource.getDetailSample(id);
+    return data;
   }
 }

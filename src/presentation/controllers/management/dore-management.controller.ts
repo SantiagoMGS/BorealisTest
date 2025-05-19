@@ -25,6 +25,7 @@ import {
   ApiPaginatedResponse,
   ApiSuccessResponse,
 } from '@core/decorators/api-responses.decorator';
+import { SampleDetailUseCase } from '@domain/use-cases/management/sample-details.use-case';
 
 @ApiTags('Gestion Recepciones de Doré')
 @ApiBearerAuth()
@@ -36,6 +37,7 @@ export class DoreManagementController {
   constructor(
     private readonly getDoreDropdownDataUseCase: GetDoreDropdownDataUseCase,
     private readonly findDoreReceptionsByFiltersUseCase: FindDoreReceptionsByFiltersUseCase,
+    private readonly sampleDetailUseCase: SampleDetailUseCase,
   ) {}
 
   @Get('dropdown-data')
