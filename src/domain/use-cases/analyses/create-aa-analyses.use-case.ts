@@ -4,7 +4,9 @@ import { ResultValueAA } from '@domain/entities/analyses/analyses.entity';
 import { IAnalysisResponse } from '@domain/interfaces/analyses/analyses.response.interfaces';
 import { MultipartFile } from '@fastify/multipart';
 import * as XLSX from 'xlsx';
-
+import { FindCompanyByIdUseCase } from '../company/find-company-by-id.use-case';
+import { FindAnalysisTypeByNameUseCase } from '../analysis-type/find-analysis-type-by-name.use-case';
+import { FindExistingAnalysisUseCase } from './find-existing-analysis.use-case';
 export interface ICreateAAAnalysisData {
   analysisDate: string | { value: string };
   file: MultipartFile;
@@ -12,13 +14,20 @@ export interface ICreateAAAnalysisData {
 
 @Injectable()
 export class CreateAAAnalysesUseCase {
-  constructor(private readonly analysesRepository: AnalysesRepository) {}
+  constructor(
+    private readonly analysesRepository: AnalysesRepository,
+    private readonly findCompanyByIdUseCase: FindCompanyByIdUseCase,
+    private readonly findAnalysisTypeByNameUseCase: FindAnalysisTypeByNameUseCase,
+    private readonly findExistingAnalysisUseCase: FindExistingAnalysisUseCase,
+  ) {}
 
   async execute(
     analysisData: ICreateAAAnalysisData,
     companyId: string,
   ): Promise<IAnalysisResponse[]> {
     try {
+      await this.findCompanyByIdUseCase.execute(companyId);
+
       const dateValue =
         (analysisData.analysisDate as any)?.value || analysisData.analysisDate;
       const analysisDate = new Date(dateValue);
@@ -46,14 +55,25 @@ export class CreateAAAnalysesUseCase {
       const results: IAnalysisResponse[] = [];
 
       for (const analysis of analyses) {
-        const result = await this.analysesRepository.createAAAnalyses(
-          {
-            sampleId: analysis.sampleId,
-            analysisDate,
-            resultValue: analysis.resultValue,
-          },
-          companyId,
+        const analysisType =
+          await this.findAnalysisTypeByNameUseCase.execute('AA');
+
+        const existingAnalysis = await this.findExistingAnalysisUseCase.execute(
+          analysisType.id,
+          analysis.sampleId,
         );
+
+        if (existingAnalysis) {
+          throw new BadRequestException(
+            'La muestra ya tiene un análisis AA activo',
+          );
+        }
+
+        const result = await this.analysesRepository.createAAAnalyses({
+          sampleId: analysis.sampleId,
+          analysisDate,
+          resultValue: analysis.resultValue,
+        });
         results.push(result);
       }
 

@@ -158,4 +158,35 @@ export class DoreReceptionDataSourceService {
       return null;
     }
   }
+
+  async deleteReception(id: string): Promise<void> {
+    if (!id) {
+      throw new BadRequestException('El ID de la recepción es requerido');
+    }
+
+    try {
+      // Verificar que la recepción existe
+      const receptionExists = await this.prisma.dore.findUnique({
+        where: { id },
+      });
+
+      if (!receptionExists) {
+        throw new NotFoundException(`No se encontró la recepción con ID ${id}`);
+      }
+
+      await this.prisma.dore.update({
+        where: { id },
+        data: { isActive: false },
+      });
+    } catch (error: unknown) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      const errorMessage =
+        error instanceof Error ? error.message : 'Error desconocido';
+      throw new BadRequestException(
+        `Error al eliminar la recepción: ${errorMessage}`,
+      );
+    }
+  }
 }

@@ -24,4 +24,8 @@ export class DoreReceptionRepositoryImpl extends DoreReceptionRepository {
       prefix,
     );
   }
+
+  async deleteDoreReception(id: string): Promise<void> {
+    return this.doreReceptionDatasource.deleteReception(id);
+  }
 }

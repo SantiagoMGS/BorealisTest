@@ -51,7 +51,6 @@ export class SampleReceptionDataSourceService {
       const receptionOriginId = samples[0].receptionOriginId;
 
       const sampleCreates = validatedSamples.map((sample, index) => {
-
         return {
           receptionOrigin: {
             connect: {
@@ -379,7 +378,6 @@ export class SampleReceptionDataSourceService {
         await this.prisma.sample.deleteMany({
           where: { receptionId: id },
         });
-
 
         // Luego creamos las nuevas
         for (let i = 0; i < samples.length; i++) {

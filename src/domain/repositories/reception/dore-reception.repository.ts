@@ -10,4 +10,6 @@ export abstract class DoreReceptionRepository {
     supplierId: string,
     prefix: string,
   ): Promise<string | null>;
+
+  abstract deleteDoreReception(id: string): Promise<void>;
 }
