@@ -8,6 +8,7 @@ import {
   Req,
   Get,
   Query,
+  Patch,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -55,7 +56,8 @@ import {
   ApiMultipleErrors,
   ApiSuccessResponse,
 } from '@core/decorators/api-responses.decorator';
-
+import { UpdateLWAnalysisUseCase } from '@domain/use-cases/analyses/update-lw-analysis.use-case';
+import { UpdateLWAnalysis } from '@domain/entities/analyses/update-lw-analysis.entity';
 @Controller('analyses')
 @UseGuards(JwtAuthGuard)
 @UseInterceptors(ResponseInterceptor)
@@ -69,6 +71,7 @@ export class AnalysesController {
     private readonly createLWAnalysisUseCase: createLWAnalysisUseCase,
     private readonly createAAAnalysisUseCase: CreateAAAnalysesUseCase,
     private readonly getActiveLWAnalysesUseCase: GetActiveLWAnalysesUseCase,
+    private readonly updateLWAnalysisUseCase: UpdateLWAnalysisUseCase,
   ) {}
 
   @Get('active-leachwell')
@@ -263,5 +266,13 @@ export class AnalysesController {
       request.body as ICreateAAAnalysisData,
       user.companyId!,
     );
+  }
+
+  @Patch('lw')
+  async updateLWAnalysis(
+    @Body() analysis: UpdateLWAnalysis,
+    @CurrentUser() user: IAuthUser,
+  ): Promise<IAnalysisResponse> {
+    return this.updateLWAnalysisUseCase.execute(analysis, user.companyId!);
   }
 }

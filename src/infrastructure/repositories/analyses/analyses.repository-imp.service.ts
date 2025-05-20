@@ -13,7 +13,7 @@ import {
 import { PaginationHelper } from '@shared/utils/pagination.helper';
 import { ActiveAnalysis } from '@domain/entities/analyses/active-analysis.entity';
 import { DHAnalysisMapper } from '@infrastructure/mappers/analyses/dh-analysis.mapper';
-
+import { UpdateLWAnalysis } from '@domain/entities/analyses/update-lw-analysis.entity';
 @Injectable()
 export class AnalysesRepositoryImpl extends AnalysesRepository {
   constructor(private readonly analysesDatasource: AnalysesDatasourceService) {
@@ -80,5 +80,12 @@ export class AnalysesRepositoryImpl extends AnalysesRepository {
       analysisTypeId,
       sampleId,
     );
+  }
+
+  async updateLWAnalysis(
+    analysis: UpdateLWAnalysis,
+    companyId: string,
+  ): Promise<IAnalysisResponse> {
+    return this.analysesDatasource.updateLWAnalysis(analysis, companyId);
   }
 }

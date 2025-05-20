@@ -1,8 +1,9 @@
 import { ActiveAnalysis } from '@domain/entities/analyses/active-analysis.entity';
-import {
+  import {
   IAnalysisEntity,
   ResultValueLW,
 } from '@domain/entities/analyses/analyses.entity';
+import { UpdateLWAnalysis } from '@domain/entities/analyses/update-lw-analysis.entity';
 import { IAnalysisResponse } from '@domain/interfaces/analyses/analyses.response.interfaces';
 import {
   IPaginatedData,
@@ -32,4 +33,8 @@ export abstract class AnalysesRepository {
     analysisTypeId: string,
     sampleId: string,
   ): Promise<any>;
+  abstract updateLWAnalysis(
+    analysis: UpdateLWAnalysis,
+    companyId: string,
+  ): Promise<IAnalysisResponse>;
 }

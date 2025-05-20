@@ -18,6 +18,7 @@ import { AnalysisTypeDatasourceService } from '../analysis-type/analysis-type.da
 import { IPaginationOptions } from '@shared/interfaces/pagination.interfaces';
 import { ActiveAnalysis } from '@domain/entities/analyses/active-analysis.entity';
 import { Prisma } from '@prisma/client';
+import { UpdateLWAnalysis } from '@domain/entities/analyses/update-lw-analysis.entity';
 
 @Injectable()
 export class AnalysesDatasourceService {
@@ -223,5 +224,52 @@ export class AnalysesDatasourceService {
         isActive: true,
       },
     });
+  }
+
+  async updateLWAnalysis(
+    analysis: UpdateLWAnalysis,
+    companyId: string,
+  ): Promise<IAnalysisResponse> {
+    await this.companyDataSource.findById(companyId);
+
+    const currentAnalysis = await this.prisma.analysis.findUnique({
+      where: { id: analysis.id },
+    });
+
+    if (!currentAnalysis) {
+      throw new NotFoundException('Análisis no encontrado');
+    }
+
+    if (
+      analysis.realEndDateTime &&
+      new Date(analysis.realEndDateTime) <= currentAnalysis.analysisDate
+    ) {
+      throw new BadRequestException(
+        'La fecha de finalización debe ser posterior a la fecha del análisis',
+      );
+    }
+
+    const currentResultValue = currentAnalysis.resultValue as ResultValueLW;
+
+    const updatedAnalysis = await this.prisma.analysis.update({
+      where: {
+        id: analysis.id,
+      },
+      data: {
+        resultValue: {
+          ...currentResultValue,
+          realEndDateTime: analysis.realEndDateTime,
+          done: analysis.done,
+        },
+      },
+    });
+
+    return {
+      id: updatedAnalysis.id,
+      sampleId: updatedAnalysis.sampleId,
+      analysisTypeId: updatedAnalysis.analysisTypeId,
+      analysisDate: updatedAnalysis.analysisDate,
+      resultValue: updatedAnalysis.resultValue as ResultValueLW,
+    };
   }
 }
