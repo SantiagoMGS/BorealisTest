@@ -1,3 +1,4 @@
+import { ResultValueDH } from '@domain/entities/analyses/analyses.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class DHResponse {
@@ -31,5 +32,5 @@ export class DHResponse {
       dryWeight: 10,
     },
   })
-  resultValue!: object;
+  resultValue!: ResultValueDH;
 }

@@ -78,11 +78,7 @@ export class AnalysesDatasourceService {
         sampleId: createdAnalysis.sampleId,
         analysisTypeId: createdAnalysis.analysisTypeId,
         analysisDate: createdAnalysis.analysisDate,
-        //TODO: Cambiar para que no se devuelva el resultValue como string
-        resultValue:
-          typeof createdAnalysis.resultValue === 'string'
-            ? JSON.parse(createdAnalysis.resultValue)
-            : createdAnalysis.resultValue,
+        resultValue: createdAnalysis.resultValue as ResultValueXRF[],
       };
     } catch (error) {
       if (error instanceof NotFoundException) {
@@ -119,11 +115,7 @@ export class AnalysesDatasourceService {
         sampleId: createdAnalysis.sampleId,
         analysisTypeId: createdAnalysis.analysisTypeId,
         analysisDate: createdAnalysis.analysisDate,
-        //TODO: Cambiar para que no se devuelva el resultValue como string
-        resultValue:
-          typeof createdAnalysis.resultValue === 'string'
-            ? JSON.parse(createdAnalysis.resultValue)
-            : createdAnalysis.resultValue,
+        resultValue: createdAnalysis.resultValue as ResultValueLW,
       };
     } catch (error) {
       throw new BadRequestException('Error al crear el análisis LW');
@@ -158,11 +150,7 @@ export class AnalysesDatasourceService {
         sampleId: createdAnalysis.sampleId,
         analysisTypeId: createdAnalysis.analysisTypeId,
         analysisDate: createdAnalysis.analysisDate,
-        //TODO: Cambiar para que no se devuelva el resultValue como string
-        resultValue:
-          typeof createdAnalysis.resultValue === 'string'
-            ? JSON.parse(createdAnalysis.resultValue)
-            : createdAnalysis.resultValue,
+        resultValue: createdAnalysis.resultValue as ResultValueAA,
       };
     } catch (error) {
       throw new BadRequestException('Error al crear el análisis AA');
