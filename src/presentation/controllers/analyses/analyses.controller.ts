@@ -8,6 +8,7 @@ import {
   Req,
   Get,
   Query,
+  Patch,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -55,7 +56,9 @@ import {
   ApiMultipleErrors,
   ApiSuccessResponse,
 } from '@core/decorators/api-responses.decorator';
-
+import { UpdateLWAnalysisUseCase } from '@domain/use-cases/analyses/update-lw-analysis.use-case';
+import { UpdateLWAnalysisDto } from './dtos/update-lw-analyses.dto';
+import { UpdateLWAnalysis } from '@domain/entities/analyses/update-lw-analysis.entity';
 @Controller('analyses')
 @UseGuards(JwtAuthGuard)
 @UseInterceptors(ResponseInterceptor)
@@ -69,6 +72,7 @@ export class AnalysesController {
     private readonly createLWAnalysisUseCase: createLWAnalysisUseCase,
     private readonly createAAAnalysisUseCase: CreateAAAnalysesUseCase,
     private readonly getActiveLWAnalysesUseCase: GetActiveLWAnalysesUseCase,
+    private readonly updateLWAnalysisUseCase: UpdateLWAnalysisUseCase,
   ) {}
 
   @Get('active-leachwell')
@@ -209,7 +213,7 @@ export class AnalysesController {
   }
 
   @Post('aa-analyses')
-  // @RequirePermission('AAAnalyses')
+  @RequirePermission('AAAnalyses')
   @ApiOperation({
     summary: 'Crear nuevo análisis AA',
     description:
@@ -263,5 +267,40 @@ export class AnalysesController {
       request.body as ICreateAAAnalysisData,
       user.companyId!,
     );
+  }
+
+  @Patch('leachwell')
+  @RequirePermission('LWAnalyses')
+  @ApiOperation({
+    summary: 'Actualizar análisis LW',
+    description:
+      'Actualiza un análisis de tipo Lineal Weight (LW) en el sistema',
+  })
+  @ApiBody({
+    type: UpdateLWAnalysisDto,
+    description: 'Datos necesarios para actualizar el análisis LW',
+    required: true,
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Análisis LW actualizado correctamente',
+    type: LWResponse,
+  })
+  @ApiBadRequestResponse({
+    description: 'Datos de análisis inválidos',
+    type: ErrorResponseDto,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'No autorizado - Token JWT inválido o expirado',
+    type: ErrorResponseDto,
+  })
+  @CustomResponse({
+    successMessage: 'Análisis LW actualizado exitosamente',
+  })
+  async updateLWAnalysis(
+    @Body() analysis: UpdateLWAnalysis,
+    @CurrentUser() user: IAuthUser,
+  ): Promise<IAnalysisResponse> {
+    return this.updateLWAnalysisUseCase.execute(analysis, user.companyId!);
   }
 }

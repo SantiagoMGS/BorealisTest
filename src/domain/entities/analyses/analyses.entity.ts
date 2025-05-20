@@ -118,6 +118,7 @@ export interface ResultValueXRF extends InputJsonObject {
 export interface ResultValueLW extends InputJsonObject {
   time: number;
   endDateTime?: Date;
+  realEndDateTime?: Date;
   done: boolean;
 }
 

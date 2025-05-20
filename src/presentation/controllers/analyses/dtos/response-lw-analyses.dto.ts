@@ -1,35 +1,26 @@
 import { ApiProperty } from '@nestjs/swagger';
-
+import { ResultValueLW } from '@domain/entities/analyses/analyses.entity';
 export class LWResponse {
-  @ApiProperty({
-    description: 'ID del análisis',
-    example: '12345678-1234-1234-1234-123456789012',
-  })
+  @ApiProperty({})
   id!: string;
 
-  @ApiProperty({
-    description: 'ID de la muestra',
-    example: '12345678-1234-1234-1234-123456789012',
-  })
+  @ApiProperty({})
   sampleId!: string;
 
-  @ApiProperty({
-    description: 'ID del tipo de análisis',
-    example: 'LW',
-  })
+  @ApiProperty({})
   analysisTypeId!: string;
 
-  @ApiProperty({
-    description: 'Fecha del análisis',
-    example: '2023-01-01T00:00:00.000Z',
-  })
+  @ApiProperty({})
   analysisDate!: string;
 
   @ApiProperty({
-    description: 'Valor del análisis',
+    description: 'Resultado del análisis',
     example: {
+      endDateTime: '2023-01-01T00:00:00.000Z',
+      realEndDateTime: '2023-01-01T00:00:00.000Z',
       time: 10,
+      done: true,
     },
   })
-  resultValue!: object;
+  resultValue!: ResultValueLW;
 }
