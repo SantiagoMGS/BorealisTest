@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseUUIDPipe,
@@ -23,6 +24,7 @@ import {
 import { DoreReceptionMapper } from './mappers';
 import { CreateDoreReceptionUseCase } from '@domain/use-cases/reception/create-dore-reception.usecase';
 import { GetNextBatchNumberUseCase } from '@domain/use-cases/reception/get-next-batch-number.usecase';
+import { DeleteDoreReceptionUseCase } from '@domain/use-cases/reception/delete-dore-reception.usecase';
 import { PermissionsGuard } from '@infrastructure/guards/permissions.guard';
 import { JwtAuthGuard } from '@infrastructure/guards/jwt-auth.guard';
 import { ResponseInterceptor } from '@core/interceptores/response.interceptor';
@@ -49,6 +51,7 @@ export class DoreReceptionController {
   constructor(
     private readonly createDoreReceptionUseCase: CreateDoreReceptionUseCase,
     private readonly getNextBatchNumberUseCase: GetNextBatchNumberUseCase,
+    private readonly deleteDoreReceptionUseCase: DeleteDoreReceptionUseCase,
   ) {}
 
   @Post()
@@ -86,5 +89,17 @@ export class DoreReceptionController {
     const nextBatchNumber =
       await this.getNextBatchNumberUseCase.execute(supplierId);
     return { batchNumber: nextBatchNumber };
+  }
+
+  @Delete(':id')
+  @ApiOperation({ summary: 'Eliminar una recepción de doré' })
+  @ApiResponse({
+    status: 200,
+    description: 'Recepción de doré eliminada exitosamente',
+  })
+  async deleteDoreReception(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<void> {
+    await this.deleteDoreReceptionUseCase.execute(id);
   }
 }

@@ -8,4 +8,5 @@ export interface IManagementFilter extends IPaginationOptions {
   doreIds?: string[];
   sampleIds?: string[];
   batchNumbers?: string[];
+  isDone?: boolean;
 }

@@ -12,7 +12,12 @@ import {
 } from '@shared/interfaces/pagination.interfaces';
 import { PaginationHelper } from '@shared/utils/pagination.helper';
 import { ActiveAnalysis } from '@domain/entities/analyses/active-analysis.entity';
-import { DHAnalysisMapper } from '@infrastructure/mappers/analyses/dh-analysis.mapper';
+import {
+  AAAnalysisMapper,
+  DHAnalysisMapper,
+  LWAnalysisMapper,
+  XRFAnalysisMapper,
+} from '@infrastructure/mappers/analyses/analysis.mapper';
 import { UpdateLWAnalysis } from '@domain/entities/analyses/update-lw-analysis.entity';
 @Injectable()
 export class AnalysesRepositoryImpl extends AnalysesRepository {
@@ -30,23 +35,26 @@ export class AnalysesRepositoryImpl extends AnalysesRepository {
 
   async createXRFAnalyses(
     analysis: IAnalysisEntity,
-    companyId: string,
   ): Promise<IAnalysisResponse> {
-    return this.analysesDatasource.createXRFAnalyses(analysis, companyId);
+    const createdAnalysis =
+      await this.analysesDatasource.createXRFAnalyses(analysis);
+    return XRFAnalysisMapper.toDomain(createdAnalysis);
   }
 
   async createLWAnalysis(
     analysis: IAnalysisEntity,
-    companyId: string,
   ): Promise<IAnalysisResponse> {
-    return this.analysesDatasource.createLWAnalysis(analysis, companyId);
+    const createdAnalysis =
+      await this.analysesDatasource.createLWAnalysis(analysis);
+    return LWAnalysisMapper.toDomain(createdAnalysis);
   }
 
   async createAAAnalyses(
     analysis: IAnalysisEntity,
-    companyId: string,
   ): Promise<IAnalysisResponse> {
-    return this.analysesDatasource.createAAAnalyses(analysis, companyId);
+    const createdAnalysis =
+      await this.analysesDatasource.createAAAnalyses(analysis);
+    return AAAnalysisMapper.toDomain(createdAnalysis);
   }
 
   async getActiveLWAnalyses(

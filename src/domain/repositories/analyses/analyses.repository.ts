@@ -1,5 +1,5 @@
 import { ActiveAnalysis } from '@domain/entities/analyses/active-analysis.entity';
-  import {
+import {
   IAnalysisEntity,
   ResultValueLW,
 } from '@domain/entities/analyses/analyses.entity';
@@ -16,15 +16,12 @@ export abstract class AnalysesRepository {
   ): Promise<IAnalysisResponse>;
   abstract createXRFAnalyses(
     analysis: IAnalysisEntity,
-    companyId: string,
   ): Promise<IAnalysisResponse>;
   abstract createLWAnalysis(
     analysis: IAnalysisEntity,
-    companyId: string,
   ): Promise<IAnalysisResponse>;
   abstract createAAAnalyses(
     analysis: IAnalysisEntity,
-    companyId: string,
   ): Promise<IAnalysisResponse>;
   abstract getActiveLWAnalyses(
     options: IPaginationOptions,

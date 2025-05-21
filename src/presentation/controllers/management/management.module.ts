@@ -24,6 +24,7 @@ import { DoreManagementRepository } from '@domain/repositories/management/dore-m
 import { DoreManagementRepositoryImpl } from '@infrastructure/repositories/management/dore-management.repository-impl.service';
 import { DoreManagementDataSourceService } from '@infrastructure/datasource/management/dore-management.datasource.service';
 import { SampleDetailUseCase } from '@domain/use-cases/management/sample-details.use-case';
+import { UpdateDoreReceptionUseCase } from '@domain/use-cases/reception/update-dore-reception.usecase';
 @Module({
   imports: [PermissionsModule],
   controllers: [DoreManagementController, SampleManagementController],
@@ -33,6 +34,7 @@ import { SampleDetailUseCase } from '@domain/use-cases/management/sample-details
     FindDoreReceptionsByFiltersUseCase,
     GetSampleDropdownDataUseCase,
     FindSamplesByFiltersUseCase,
+    UpdateDoreReceptionUseCase,
     SampleDetailUseCase,
     // Repositorios
     {

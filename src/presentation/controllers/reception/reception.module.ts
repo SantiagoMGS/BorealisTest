@@ -32,6 +32,7 @@ import { CompanyDataSourceService } from '@infrastructure/datasource/company';
 import { FindSupplierByIdUseCase } from '@domain/use-cases/supplier/find-supplier-by-id.use-case';
 import { FindReceptionOriginByIdUseCase } from '@domain/use-cases/reception-origin/find-recepion-origin-by-id.use-case';
 import { GenerateSampleCodeUseCase } from '@domain/use-cases/reception/generate-sample-code.use-case';
+import { DeleteDoreReceptionUseCase } from '@domain/use-cases/reception/delete-dore-reception.usecase';
 
 @Module({
   imports: [PermissionsModule, PrismaModule, CompanyModule, SupplierModule],
@@ -76,6 +77,7 @@ import { GenerateSampleCodeUseCase } from '@domain/use-cases/reception/generate-
     // Dore reception
     CreateDoreReceptionUseCase,
     GetNextBatchNumberUseCase,
+    DeleteDoreReceptionUseCase,
     DoreReceptionDataSourceService,
     DoreReceptionRepositoryImpl,
     {

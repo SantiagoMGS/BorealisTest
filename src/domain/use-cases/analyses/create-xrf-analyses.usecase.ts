@@ -5,7 +5,9 @@ import { IAnalysisResponse } from '@domain/interfaces/analyses/analyses.response
 import * as XLSX from 'xlsx';
 import { MultipartFile } from '@fastify/multipart';
 import { AnalysesMapper } from '@presentation/controllers/analyses/mappers/analyses.mapper';
-
+import { FindAnalysisTypeByNameUseCase } from '../analysis-type/find-analysis-type-by-name.use-case';
+import { FindExistingAnalysisUseCase } from './find-existing-analysis.use-case';
+import { FindCompanyByIdUseCase } from '../company/find-company-by-id.use-case';
 export interface ICreateXRFAnalysisData {
   sampleId: string | { value: string };
   analysisDate: string | { value: string };
@@ -14,13 +16,19 @@ export interface ICreateXRFAnalysisData {
 
 @Injectable()
 export class CreateXRFAnalysesUseCase {
-  constructor(private readonly analysesRepository: AnalysesRepository) {}
+  constructor(
+    private readonly analysesRepository: AnalysesRepository,
+    private readonly findAnalysisTypeByNameUseCase: FindAnalysisTypeByNameUseCase,
+    private readonly findExistingAnalysisUseCase: FindExistingAnalysisUseCase,
+    private readonly findCompanyByIdUseCase: FindCompanyByIdUseCase,
+  ) {}
 
   async execute(
     analysisData: ICreateXRFAnalysisData,
     companyId: string,
   ): Promise<IAnalysisResponse> {
     try {
+      const company = await this.findCompanyByIdUseCase.execute(companyId);
       const dateValue =
         (analysisData.analysisDate as any)?.value || analysisData.analysisDate;
       const analysisDate = new Date(dateValue);
@@ -61,11 +69,21 @@ export class CreateXRFAnalysesUseCase {
         analysisDate: analysisEntity.analysisDate,
         resultValue: analysisEntity.resultValue,
       };
+      const analysisType =
+        await this.findAnalysisTypeByNameUseCase.execute('XRF');
 
-      return await this.analysesRepository.createXRFAnalyses(
-        analysis,
-        companyId,
+      const existingAnalysis = await this.findExistingAnalysisUseCase.execute(
+        analysisType.id,
+        analysis.sampleId,
       );
+
+      if (existingAnalysis) {
+        throw new BadRequestException(
+          'La muestra ya tiene un análisis XRF activo',
+        );
+      }
+
+      return await this.analysesRepository.createXRFAnalyses(analysis);
     } catch (error) {
       if (error instanceof BadRequestException) {
         throw error;

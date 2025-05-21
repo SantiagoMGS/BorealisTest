@@ -4,8 +4,14 @@ import {
   OnModuleDestroy,
   Logger,
 } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { getCurrentCompanyId } from '../services/request-context.service';
+
+interface CompanyFilterConfig {
+  modelsToFilter: string[];
+  modelsWithDirectCompanyId: string[];
+  readOperations: string[];
+}
 
 @Injectable()
 export class PrismaService
@@ -13,6 +19,27 @@ export class PrismaService
   implements OnModuleInit, OnModuleDestroy
 {
   private readonly logger = new Logger(PrismaService.name);
+  private readonly config: CompanyFilterConfig = {
+    modelsToFilter: [
+      'Supplier',
+      'Reception',
+      'Sample',
+      'SubSample',
+      'Analysis',
+      'Barrenado',
+      'CompanySupplier',
+      'SupplierMiningTitle',
+      'SupplierReceptionOrigin',
+    ],
+    modelsWithDirectCompanyId: ['Reception', 'CompanySupplier'],
+    readOperations: [
+      'findMany',
+      'findFirst',
+      'findUnique',
+      'count',
+      'aggregate',
+    ],
+  };
 
   constructor() {
     super();
@@ -39,65 +66,8 @@ export class PrismaService
         return next(params);
       }
 
-      // Solo aplicamos filtros a operaciones de lectura
-      if (
-        ['findMany', 'findFirst', 'findUnique', 'count', 'aggregate'].includes(
-          params.action,
-        )
-      ) {
-        this.logger.debug(
-          `Aplicando filtro de compañía (${companyId}) a ${params.model}.${params.action}`,
-        );
-
-        if (!params.args) params.args = {};
-        if (!params.args.where) params.args.where = {};
-
-        // Aplicar filtro según el modelo
-        if (this.hasDirectCompanyIdField(params.model || '')) {
-          // Para modelos con campo companyId directo
-          params.args.where.companyId = companyId;
-        } else if (params.model === 'Supplier') {
-          params.args.where.companies = {
-            some: {
-              companyId: companyId,
-            },
-          };
-        } else if (
-          params.model === 'SubSample' ||
-          params.model === 'Analysis'
-        ) {
-          // Para modelos relacionados indirectamente a través de Reception
-          // Usamos una operación más compleja aquí
-          if (params.model === 'SubSample') {
-            params.args.where.Sample = {
-              reception: {
-                companyId: companyId,
-              },
-            };
-          } else if (params.model === 'Analysis') {
-            params.args.where.sample = {
-              reception: {
-                companyId: companyId,
-              },
-            };
-          }
-        } else if (params.model === 'SupplierMiningTitle') {
-          params.args.where.supplier = {
-            companies: {
-              some: {
-                companyId: companyId,
-              },
-            },
-          };
-        } else if (params.model === 'SupplierReceptionOrigin') {
-          params.args.where.supplier = {
-            companies: {
-              some: {
-                companyId: companyId,
-              },
-            },
-          };
-        }
+      if (this.isReadOperation(params.action)) {
+        this.applyCompanyFilter(params, companyId);
       }
 
       return next(params);
@@ -105,28 +75,94 @@ export class PrismaService
   }
 
   /**
+   * Determina si una operación es de lectura
+   */
+  private isReadOperation(action: string): boolean {
+    return this.config.readOperations.includes(action);
+  }
+
+  /**
+   * Aplica el filtro de compañía según el modelo
+   */
+  private applyCompanyFilter(
+    params: Prisma.MiddlewareParams,
+    companyId: string,
+  ): void {
+    this.logger.debug(
+      `Aplicando filtro de compañía (${companyId}) a ${params.model}.${params.action}`,
+    );
+
+    if (!params.args) params.args = {};
+    if (!params.args.where) params.args.where = {};
+
+    const model = params.model || '';
+
+    if (this.hasDirectCompanyIdField(model)) {
+      this.applyDirectCompanyFilter(params, companyId);
+    } else {
+      this.applyIndirectCompanyFilter(params, companyId, model);
+    }
+  }
+
+  /**
+   * Aplica filtro para modelos con companyId directo
+   */
+  private applyDirectCompanyFilter(
+    params: Prisma.MiddlewareParams,
+    companyId: string,
+  ): void {
+    params.args.where.companyId = companyId;
+  }
+
+  /**
+   * Aplica filtro para modelos con relaciones indirectas
+   */
+  private applyIndirectCompanyFilter(
+    params: Prisma.MiddlewareParams,
+    companyId: string,
+    model: string,
+  ): void {
+    const filterMap: Record<
+      string,
+      (params: Prisma.MiddlewareParams, companyId: string) => void
+    > = {
+      Supplier: (p, id) => {
+        p.args.where.companies = { some: { companyId: id } };
+      },
+      SubSample: (p, id) => {
+        p.args.where.Sample = { reception: { companyId: id } };
+      },
+      Analysis: (p, id) => {
+        p.args.where.sample = { reception: { companyId: id } };
+      },
+      SupplierMiningTitle: (p, id) => {
+        p.args.where.supplier = { companies: { some: { companyId: id } } };
+      },
+      SupplierReceptionOrigin: (p, id) => {
+        p.args.where.supplier = { companies: { some: { companyId: id } } };
+      },
+      Sample: (p, id) => {
+        p.args.where.reception = { companyId: id };
+      },
+    };
+
+    const filterFunction = filterMap[model];
+    if (filterFunction) {
+      filterFunction(params, companyId);
+    }
+  }
+
+  /**
    * Determina si un modelo debe ser filtrado por compañía
    */
   private shouldApplyCompanyFilter(model: string): boolean {
-    const modelsToFilter = [
-      'Supplier',
-      'Reception',
-      'Sample',
-      'SubSample',
-      'Analysis',
-      'Barrenado',
-      'CompanySupplier',
-      'SupplierMiningTitle',
-      'SupplierReceptionOrigin',
-    ];
-    return modelsToFilter.includes(model);
+    return this.config.modelsToFilter.includes(model);
   }
 
   /**
    * Determina si un modelo tiene un campo companyId directo
    */
   private hasDirectCompanyIdField(model: string): boolean {
-    const modelsWithDirectCompanyId = ['Reception', 'CompanySupplier'];
-    return modelsWithDirectCompanyId.includes(model);
+    return this.config.modelsWithDirectCompanyId.includes(model);
   }
 }

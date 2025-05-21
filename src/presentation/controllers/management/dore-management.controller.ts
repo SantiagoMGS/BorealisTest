@@ -8,6 +8,8 @@ import {
   Controller,
   Get,
   Query,
+  Patch,
+  Body,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { FindDoreReceptionsByFiltersUseCase } from '@domain/use-cases/reception';
@@ -15,6 +17,7 @@ import {
   DoreDropdownResponseDto,
   FindDoreReceptionsByFiltersDto,
   DoreReceptionItemDto,
+  UpdateDoreReceptionDto,
 } from './dtos';
 
 import { GetDoreDropdownDataUseCase } from '@domain/use-cases/management';
@@ -26,6 +29,7 @@ import {
   ApiSuccessResponse,
 } from '@core/decorators/api-responses.decorator';
 import { SampleDetailUseCase } from '@domain/use-cases/management/sample-details.use-case';
+import { UpdateDoreReceptionUseCase } from '@domain/use-cases/reception/update-dore-reception.usecase';
 
 @ApiTags('Gestion Recepciones de Doré')
 @ApiBearerAuth()
@@ -38,6 +42,7 @@ export class DoreManagementController {
     private readonly getDoreDropdownDataUseCase: GetDoreDropdownDataUseCase,
     private readonly findDoreReceptionsByFiltersUseCase: FindDoreReceptionsByFiltersUseCase,
     private readonly sampleDetailUseCase: SampleDetailUseCase,
+    private readonly updateDoreReceptionUseCase: UpdateDoreReceptionUseCase,
   ) {}
 
   @Get('dropdown-data')
@@ -73,5 +78,20 @@ export class DoreManagementController {
     @Query() filterParams: FindDoreReceptionsByFiltersDto,
   ): Promise<IPaginatedData<IDoreManagementResponse>> {
     return this.findDoreReceptionsByFiltersUseCase.execute(filterParams);
+  }
+
+  @Patch()
+  @ApiOperation({
+    summary: 'Actualizar una recepción de doré',
+  })
+  @ApiSuccessResponse(
+    200,
+    'Recepción actualizada correctamente',
+    DoreReceptionItemDto,
+  )
+  async updateDoreReception(
+    @Body() updateData: UpdateDoreReceptionDto,
+  ): Promise<DoreReceptionItemDto> {
+    return this.updateDoreReceptionUseCase.execute(updateData);
   }
 }

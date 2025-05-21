@@ -1,6 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-import { IsDate, IsOptional, IsArray, IsUUID } from 'class-validator';
+import { Type, Transform } from 'class-transformer';
+import {
+  IsDate,
+  IsOptional,
+  IsArray,
+  IsUUID,
+  IsBoolean,
+} from 'class-validator';
 import { PaginationDto } from '@shared/dtos/paginator.dto';
 import { TransformCommaSeparated } from '@core/decorators/transform-comma-separated.decorator';
 import { IManagementFilter } from '@domain/interfaces/management';
@@ -68,4 +74,18 @@ export class FindSampleByFiltersDto
   @IsArray()
   @IsUUID(4, { each: true })
   sampleIds?: string[];
+
+  @ApiProperty({
+    description:
+      'Filtrar por análisis requeridos completados (true) o pendientes (false)',
+    example: true,
+    required: false,
+    type: Boolean,
+  })
+  @IsOptional()
+  @IsBoolean()
+  @Transform(({ value }) =>
+    value === 'true' ? true : value === 'false' ? false : value,
+  )
+  isDone?: boolean;
 }

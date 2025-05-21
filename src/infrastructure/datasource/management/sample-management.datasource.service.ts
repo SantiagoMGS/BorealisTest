@@ -28,6 +28,7 @@ export class SampleManagementDataSourceService {
       supplierIds,
       receptionOriginIds,
       sampleIds,
+      isDone,
       page = 1,
       limit = 10,
     } = filter;
@@ -50,6 +51,17 @@ export class SampleManagementDataSourceService {
         samples: {
           some: {
             id: { in: sampleIds },
+          },
+        },
+      }),
+      ...(typeof isDone === 'boolean' && {
+        samples: {
+          some: {
+            requiredAnalyses: {
+              some: {
+                done: isDone,
+              },
+            },
           },
         },
       }),

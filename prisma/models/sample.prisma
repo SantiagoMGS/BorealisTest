@@ -31,4 +31,8 @@ model SampleRequiredAnalysis {
   done           Boolean      @default(false)
   sample         Sample       @relation(fields: [sampleId], references: [id], onDelete: Cascade)
   analysisType   AnalysisType @relation(fields: [analysisTypeId], references: [id], onDelete: Cascade)
+
+  @@index([sampleId])
+  @@index([analysisTypeId])
+  @@map("sample_required_analyses")
 }
