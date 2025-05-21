@@ -1,13 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-class DoreStatusDto {
-  @ApiProperty({})
-  id!: string;
-
-  @ApiProperty({})
-  name!: string;
-}
-
 class DoreItemsDto {
   @ApiProperty({})
   id!: string;
@@ -18,14 +10,11 @@ class DoreItemsDto {
   @ApiProperty({})
   receivedWeight!: number;
 
-  @ApiProperty({})
-  base64!: string;
+  @ApiProperty({ required: false })
+  base64!: string | null;
 
   @ApiProperty({})
   format!: string;
-
-  @ApiProperty({ type: DoreStatusDto })
-  status!: DoreStatusDto;
 }
 
 class SupplierDto {
@@ -55,7 +44,7 @@ export class DoreReceptionItemDto {
   receptionDate!: Date;
 
   @ApiProperty({})
-  observation?: string | null;
+  observation!: string | null;
 
   @ApiProperty({ type: [DoreItemsDto] })
   dore!: DoreItemsDto[];

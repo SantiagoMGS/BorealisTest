@@ -12,6 +12,7 @@ import { ReceptionTypeDataSourceService } from './reception-type.datasource.serv
 import { ReceptionOriginDataSourceService } from './reception-origin.datasource.service';
 import { StatusDataSourceService } from '@infrastructure/datasource/status';
 import { CityDataSourceService } from '@infrastructure/datasource/city/city.datasource.service';
+import { UpdateDoreReceptionDto } from '@presentation/controllers/management/dtos/update-dore-reception.dto';
 
 @Injectable()
 export class DoreReceptionDataSourceService {
@@ -186,6 +187,91 @@ export class DoreReceptionDataSourceService {
         error instanceof Error ? error.message : 'Error desconocido';
       throw new BadRequestException(
         `Error al eliminar la recepción: ${errorMessage}`,
+      );
+    }
+  }
+
+  async updateReception(
+    updateData: UpdateDoreReceptionDto,
+  ): Promise<IDoreReceptionResponse> {
+    try {
+      const dore = await this.prisma.dore.update({
+        where: { id: updateData.id },
+        data: {
+          receivedWeight: updateData.receivedWeight,
+          finalWeight: updateData.finalWeight,
+          observation: updateData.observation,
+          base64: updateData.base64,
+          format: updateData.format,
+        },
+        include: {
+          reception: {
+            include: {
+              company: {
+                select: {
+                  id: true,
+                  name: true,
+                  shortName: true,
+                },
+              },
+              supplier: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+              receptionType: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+              receptionOrigin: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      return {
+        id: dore.reception.id,
+        companyId: dore.reception.companyId,
+        supplierId: dore.reception.supplierId,
+        receptionTypeId: dore.reception.receptionTypeId,
+        receptionOriginId: dore.reception.receptionOriginId,
+        receptionDate: dore.reception.receptionDate,
+        batchNumber: dore.reception.batchNumber,
+        observation: dore.reception.observation,
+        cityId: dore.reception.cityId,
+        miningTitleId: dore.reception.miningTitleId,
+        isActive: dore.reception.isActive,
+        createdAt: dore.reception.createdAt,
+        updatedAt: dore.reception.updatedAt,
+        company: dore.reception.company,
+        supplier: dore.reception.supplier,
+        receptionType: dore.reception.receptionType,
+        receptionOrigin: dore.reception.receptionOrigin,
+        dores: [
+          {
+            id: dore.id,
+            code: dore.code,
+            receivedWeight: dore.receivedWeight,
+            observation: dore.observation,
+            base64: dore.base64,
+            format: dore.format,
+          },
+        ],
+      };
+    } catch (error: any) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new BadRequestException(
+        `Error al actualizar la recepción de doré: ${error.message}`,
       );
     }
   }
