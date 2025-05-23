@@ -16,8 +16,8 @@ export class TokenService implements ITokenPort {
 
     // Firmar el refresh token con diferente expiración
     const refreshToken = this.jwtService.sign(payload, {
-      secret: envs.jwtRefreshSecret,
-      expiresIn: envs.jwtRefreshExpiration,
+      secret: 'SECRET',
+      expiresIn: '8h',
     });
 
     return {

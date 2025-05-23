@@ -28,9 +28,9 @@ export const TOKEN_PORT = 'TOKEN_PORT';
     PrismaModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
-      secret: envs.jwtSecret,
+      secret: 'SECRET',
       signOptions: {
-        expiresIn: envs.jwtExpiration,
+        expiresIn: '8h',
       },
     }),
   ],
